@@ -61,8 +61,8 @@ body {
 }
 
 .sidebar-nav-chevron {
-  width: 16.33px;
-  height: 16.33px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   cursor: pointer;
   transition: transform 0.2s ease;
