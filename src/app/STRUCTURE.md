@@ -20,6 +20,8 @@ src/
 ├── lib/
 │   └── navigation-utils.js
 ├── components/
+│   ├── icons/
+│   │   └── AppIcon.jsx      # Iconify wrapper (no custom SVGs)
 │   └── layout/
 │       ├── AppShell.jsx
 │       ├── AppSidebar.jsx

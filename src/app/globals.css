@@ -78,11 +78,8 @@ body {
 }
 
 .header-breadcrumb-separator {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 100%;
-  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  color: #94a3b8;
 }
 
 /* Header date/time widget */
@@ -106,8 +103,4 @@ body {
   height: 15.44px;
   flex-shrink: 0;
   color: #8d8d8d;
-}
-
-.header-datetime-icon svg {
-  stroke-width: 1.5;
 }

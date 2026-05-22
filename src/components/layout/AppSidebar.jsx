@@ -4,14 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { footerLinks, navigation } from '@/config/navigation-data';
-import NavIcon from '@/components/icons/NavIcon';
+import AppIcon from '@/components/icons/AppIcon';
 import { getExpandedKeys, isPathActive } from '@/lib/navigation-utils';
 
 function NavChevron({ expanded }) {
   return (
-    <NavIcon
-      name="chevronDown"
-      strokeWidth={1.5}
+    <AppIcon
+      icon="mdi:chevron-down"
       className={`sidebar-nav-chevron ${expanded ? 'rotate-180' : ''}`}
     />
   );
@@ -42,7 +41,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
           onClick={() => onToggle(item.key)}
           className={`sidebar-nav-parent flex w-full items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--hmis-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'}`}
         >
-          {item.icon && <NavIcon name={item.icon} />}
+          {item.icon && <AppIcon icon={item.icon} />}
           {!collapsed && (
             <>
               <span className="flex-1 text-left truncate">{item.label}</span>
@@ -77,7 +76,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
   return (
     <li>
       <SidebarLink href={item.href} active={isSelfActive}>
-        {item.icon && <NavIcon name={item.icon} />}
+        {item.icon && <AppIcon icon={item.icon} />}
         {!collapsed && <span className="truncate">{item.label}</span>}
       </SidebarLink>
     </li>
@@ -108,17 +107,20 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
       <button
         type="button"
         onClick={() => onCollapsedChange(!collapsed)}
-        className="absolute cursor-pointer -right-3 top-6 z-20 flex h-7 w-7 items-center justify-center rounded-[24px] border border-white bg-[#026BB1] p-1.5 text-white transition hover:brightness-110"
+        className="absolute -right-3 top-6 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-[24px] border border-white bg-[#026BB1] p-1.5 text-white transition hover:brightness-110"
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        <NavIcon name={collapsed ? 'chevronRight' : 'chevronLeft'} className="h-4 w-4" />
+        <AppIcon
+          icon={collapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'}
+          className="h-4 w-4"
+        />
       </button>
 
       <div
         className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${collapsed ? 'justify-center px-2' : 'pr-6'}`}
       >
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--hmis-primary)]">
-          <NavIcon name="user" className="h-5 w-5" />
+          <AppIcon icon="carbon:user" className="h-5 w-5" />
         </div>
         {!collapsed && (
           <div className="min-w-0 flex-1">
@@ -159,7 +161,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                   href={link.href}
                   className="sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
                 >
-                  <NavIcon name={link.key === 'help' ? 'help' : 'logout'} />
+                  <AppIcon icon={link.icon} />
                   {!collapsed && <span>{link.label}</span>}
                 </Link>
               </li>
