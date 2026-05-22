@@ -60,6 +60,14 @@ body {
   letter-spacing: -0.02em;
 }
 
+.sidebar-nav-chevron {
+  width: 16.33px;
+  height: 16.33px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
 /* Header breadcrumb typography */
 .header-breadcrumb {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;

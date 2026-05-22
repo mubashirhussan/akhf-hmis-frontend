@@ -11,7 +11,8 @@ function NavChevron({ expanded }) {
   return (
     <NavIcon
       name="chevronDown"
-      className={`h-3 w-3 shrink-0 cursor-pointer transition-transform ${expanded ? 'rotate-180' : ''}`}
+      strokeWidth={1.5}
+      className={`sidebar-nav-chevron ${expanded ? 'rotate-180' : ''}`}
     />
   );
 }
