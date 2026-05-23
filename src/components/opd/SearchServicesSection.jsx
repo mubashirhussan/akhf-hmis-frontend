@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Button, Col, Input, Row, Select, Typography } from 'antd';
+import { Button, Col, Input, Row, Select } from 'antd';
 import HmisCard from '@/components/ui/HmisCard';
-
-const { Title } = Typography;
 
 const SERVICE_CATEGORY_OPTIONS = [
   { value: 'all', label: 'All Category' },
@@ -24,16 +22,12 @@ export default function SearchServicesSection() {
 
   return (
     <section className="walk-in-services-section">
-      <HmisCard className="">
-      <Row align="middle" justify="space-between" gutter={[16, 16]} className="walk-in-services-header">
-        <Col flex="none">
-          <Title level={5} className="walk-in-services-title">
-            Search Services
-          </Title>
-        </Col>
-        <Col xs={24} lg={16} xl={14}>
+      <HmisCard
+        title="Search Services"
+        headerLayout="inline"
+        headerExtra={
           <Row gutter={[12, 12]} align="middle" justify="end" wrap>
-            <Col xs={24} sm={8} md={7}>
+            <Col xs={24} sm={8} md={8}>
               <Select
                 className="w-full"
                 value={category}
@@ -49,14 +43,14 @@ export default function SearchServicesSection() {
                 onPressEnter={handleSearch}
               />
             </Col>
-            <Col xs={24} sm={6} md={6}>
+            <Col xs={24} sm={6} md={5}>
               <Button type="primary" className="walk-in-search-btn w-full" onClick={handleSearch}>
                 Search
               </Button>
             </Col>
           </Row>
-        </Col>
-      </Row>
+        }
+      >
 
       <div className="walk-in-services-illustration">
         <Image

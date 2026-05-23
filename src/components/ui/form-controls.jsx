@@ -1,5 +1,5 @@
 const inputClass =
-  'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[var(--hmis-primary)] focus:ring-2 focus:ring-[var(--hmis-primary)]/15';
+  'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-[#6C6C6C] placeholder:font-medium placeholder:text-[11px] placeholder:leading-none placeholder:tracking-[0.04em] focus:border-[var(--hmis-primary)] focus:ring-2 focus:ring-[var(--hmis-primary)]/15';
 
 export function TextInput({ className = '', ...props }) {
   return <input className={`${inputClass} ${className}`} {...props} />;

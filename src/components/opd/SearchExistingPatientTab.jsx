@@ -11,7 +11,6 @@ import {
   Input,
   Row,
   Select,
-  Typography,
 } from 'antd';
 import { FileTextOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
@@ -20,9 +19,7 @@ import {
   searchWalkInPatients,
 } from '@/data/mock-walk-in-patients';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
-import HmisCard from '../ui/HmisCard';
-
-const { Title, Text } = Typography;
+import HmisCard from '@/components/ui/HmisCard';
 
 const SEARCH_BY_OPTIONS = [
   { value: 'registration', label: 'Registration No' },
@@ -60,7 +57,7 @@ function PatientListItem({ patient, selected, onSelect }) {
       <Avatar size={48} className="walk-in-patient-avatar shrink-0">
         {initials}
       </Avatar>
-      <div className="walk-in-patient-row-main min-w-0 flex-1">
+      <div className="walk-in-patient-row-main min-w-0 flex-2">
         <p className="walk-in-patient-name">{patient.name}</p>
         <p className="walk-in-patient-reg">{patient.registrationNo}</p>
       </div>
@@ -75,7 +72,7 @@ function PatientListItem({ patient, selected, onSelect }) {
           <PatientMetric label="GENDER" value={patient.gender} />
         </div>
         <PatientMetric label="AGE" value={patient.ageLabel} />
-        <PatientMetric label="WEIGHT" value={patient.weight} />
+        {/* <PatientMetric label="WEIGHT" value={patient.weight} /> */}
       </div>
     </button>
   );
@@ -119,23 +116,20 @@ function PatientDetailsPanel({ patient }) {
   ];
 
   return (
-    <div className="walk-in-details-panel">
-      <div className="walk-in-panel-header">
-        <UserOutlined className="walk-in-panel-header-icon" />
-        <span className="walk-in-panel-header-title">Patient Details</span>
+    <>
+      <div className="walk-in-details-panel">
+        <div className="walk-in-panel-header">
+          <UserOutlined className="walk-in-panel-header-icon" />
+          <span className="walk-in-panel-header-title">Patient Details</span>
+        </div>
+        <Descriptions className="walk-in-descriptions" column={1} colon={false} items={items} />
       </div>
-      <Descriptions
-        className="walk-in-descriptions"
-        column={1}
-        colon={false}
-        items={items}
-      />
       <div className="walk-in-panel-header walk-in-panel-header--spaced">
         <FileTextOutlined className="walk-in-panel-header-icon" />
         <span className="walk-in-panel-header-title">Visit Summary</span>
       </div>
       <VisitSummaryCards summary={patient.visitSummary} />
-    </div>
+    </>
   );
 }
 
@@ -170,18 +164,15 @@ export default function SearchExistingPatientTab() {
         },
       }}
     >
-      <HmisCard className='rounded-tl-none'>
- <div className="walk-in-search-layout">
-        <Row gutter={[24, 24]}>
+      <HmisCard
+        className="rounded-tl-none"
+        title="Search Registration"
+        description="Search patient by registration number or mobile number."
+      >
+        <div className="walk-in-search-layout">
+        <Row gutter={[24, 24]} align="stretch" className="walk-in-search-row">
           <Col xs={24} xl={15}>
             <section className="walk-in-search-section">
-              <Title level={5} className="walk-in-section-title">
-                Search Registration
-              </Title>
-              <Text className="walk-in-section-subtitle">
-                Search patient by registration number or mobile number.
-              </Text>
-
               <Row gutter={[12, 12]} align="bottom" className="walk-in-search-form">
                 <Col xs={24} sm={8} md={7}>
                   <label className="walk-in-field-label" htmlFor="walk-in-search-by">
@@ -261,7 +252,7 @@ export default function SearchExistingPatientTab() {
             </section>
           </Col>
 
-          <Col xs={24} xl={9}>
+          <Col xs={24} xl={9} className="walk-in-details-col">
             {selectedPatient ? (
               <PatientDetailsPanel patient={selectedPatient} />
             ) : (
