@@ -1,24 +1,21 @@
-'use client'
-import { Tabs } from "antd";
+'use client';
 
-const onChange = key => {
-  console.log(key);
-};
-const items = [
+import SearchExistingPatientTab from '@/components/opd/SearchExistingPatientTab';
+import HmisTabs from '@/components/ui/HmisTabs';
+
+const tabItems = [
   {
-    key: '1',
+    key: 'search-existing',
     label: 'Search Existing',
-    children: 'Content of Tab Pane 1',
+    children: <SearchExistingPatientTab />,
   },
   {
-    key: '2',
+    key: 'add-new',
     label: 'Add New Record',
     children: 'Add New Record',
   },
- 
 ];
+
 export default function WalkInPatientForm() {
-return(
-  <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-)
+  return <HmisTabs defaultActiveKey="search-existing" items={tabItems} />;
 }
