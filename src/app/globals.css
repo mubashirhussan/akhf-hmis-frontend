@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
+  --background: #f4f7fd;
   --foreground: #1e293b;
   --hmis-primary: #026BB1;
-  --hmis-header-bg: #eef4f9;
+  --hmis-header-bg: #f4f7fd;
 }
 
 @theme inline {
