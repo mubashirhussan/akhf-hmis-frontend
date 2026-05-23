@@ -1,9 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Button, Col, Input, Row, Select } from 'antd';
+import { Button, Checkbox, Col, Input, message, Pagination, Row, Select } from 'antd';
 import HmisCard from '@/components/ui/HmisCard';
+import AddedServicesPanel from '@/components/opd/AddedServicesPanel';
+import {
+  MOCK_DOCTORS,
+  MOCK_SERVICES,
+  formatPkr,
+  formatServiceDateTime,
+  paginateServices,
+  searchServices,
+} from '@/data/mock-walk-in-services';
 
 const SERVICE_CATEGORY_OPTIONS = [
   { value: 'all', label: 'All Category' },
@@ -12,17 +21,88 @@ const SERVICE_CATEGORY_OPTIONS = [
   { value: 'radiology', label: 'Radiology' },
 ];
 
+function createAddedService(service) {
+  return {
+    id: `added-${service.id}-${Date.now()}`,
+    serviceId: service.id,
+    name: service.name,
+    price: service.price,
+    quantity: 1,
+    discount: 0,
+    doctorId: MOCK_DOCTORS[0].id,
+    addedAt: formatServiceDateTime(),
+  };
+}
+
 export default function SearchServicesSection() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [resultsPage, setResultsPage] = useState(1);
+  const [addedServices, setAddedServices] = useState([]);
+
+  const { items: pagedResults, total: resultsTotal } = useMemo(
+    () => paginateServices(searchResults, resultsPage),
+    [searchResults, resultsPage],
+  );
+
+  const addedServiceIds = useMemo(
+    () => new Set(addedServices.map((s) => s.serviceId)),
+    [addedServices],
+  );
 
   const handleSearch = () => {
-    // TODO: wire service search API
+    const matched = searchServices(MOCK_SERVICES, category, searchQuery);
+    setSearchResults(matched);
+    setResultsPage(1);
+    setHasSearched(true);
+  };
+
+  const handleToggleService = (service, checked) => {
+    if (checked) {
+      if (addedServiceIds.has(service.id)) return;
+      setAddedServices((prev) => [...prev, createAddedService(service)]);
+      return;
+    }
+
+    setAddedServices((prev) => prev.filter((row) => row.serviceId !== service.id));
+  };
+
+  const handleQuantityChange = (rowId, quantity) => {
+    const nextQty = Math.max(1, quantity);
+    setAddedServices((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, quantity: nextQty } : row)),
+    );
+  };
+
+  const handleDoctorChange = (rowId, doctorId) => {
+    setAddedServices((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, doctorId } : row)),
+    );
+  };
+
+  const handleRemove = (rowId) => {
+    setAddedServices((prev) => prev.filter((row) => row.id !== rowId));
+  };
+
+  const handleCancel = () => {
+    setAddedServices([]);
+    setHasSearched(false);
+    setSearchResults([]);
+    setSearchQuery('');
+    setResultsPage(1);
+  };
+
+  const handleSave = () => {
+    message.success('Record saved successfully.');
+    // TODO: wire save walk-in record API
   };
 
   return (
     <section className="walk-in-services-section">
       <HmisCard
+        className="walk-in-services-card"
         title="Search Services"
         headerLayout="inline"
         headerExtra={
@@ -51,17 +131,78 @@ export default function SearchServicesSection() {
           </Row>
         }
       >
+        {!hasSearched ? (
+          <div className="walk-in-services-illustration">
+            <Image
+              src="/hmis-base-img.svg"
+              alt="Search services illustration"
+              width={320}
+              height={280}
+              className="walk-in-services-illustration-img"
+              priority={false}
+            />
+          </div>
+        ) : (
+          <div className="walk-in-services-body">
+          <Row gutter={[20, 20]} className="walk-in-services-content">
+            <Col xs={24} xl={10}>
+              <div className="walk-in-service-results">
+                {pagedResults.length === 0 ? (
+                  <p className="walk-in-service-results-empty">No services found</p>
+                ) : (
+                  <ul className="walk-in-service-results-list">
+                    {pagedResults.map((service) => {
+                      const isChecked = addedServiceIds.has(service.id);
 
-      <div className="walk-in-services-illustration">
-        <Image
-          src="/hmis-base-img.svg"
-          alt="Search services illustration"
-          width={320}
-          height={280}
-          className="walk-in-services-illustration-img"
-          priority={false}
-        />
-      </div>
+                      return (
+                        <li
+                          key={service.id}
+                          className={`walk-in-service-result-item ${isChecked ? 'walk-in-service-result-item--selected' : ''}`}
+                        >
+                          <Checkbox
+                            checked={isChecked}
+                            onChange={(e) => handleToggleService(service, e.target.checked)}
+                          />
+                          <span className="walk-in-service-result-name">{service.name}</span>
+                          <span className="walk-in-service-result-price">{formatPkr(service.price)}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                <div className="walk-in-service-results-footer">
+                  <span className="walk-in-service-results-count">
+                    Showing {pagedResults.length} of {resultsTotal} results
+                  </span>
+                  {resultsTotal > 0 && (
+                    <Pagination
+                      size="small"
+                      current={resultsPage}
+                      total={resultsTotal}
+                      pageSize={10}
+                      showSizeChanger={false}
+                      onChange={setResultsPage}
+                    />
+                  )}
+                </div>
+              </div>
+            </Col>
+
+            <Col xs={24} xl={14}>
+              <AddedServicesPanel
+                services={addedServices}
+                doctors={MOCK_DOCTORS}
+                onQuantityChange={handleQuantityChange}
+                onDoctorChange={handleDoctorChange}
+                onRemove={handleRemove}
+                onCancel={handleCancel}
+                onSave={handleSave}
+              />
+            </Col>
+          </Row>
+          </div>
+        )}
       </HmisCard>
     </section>
   );

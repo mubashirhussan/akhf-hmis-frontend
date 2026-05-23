@@ -175,9 +175,9 @@ export default function SearchExistingPatientTab() {
             <section className="walk-in-search-section">
               <Row gutter={[12, 12]} align="bottom" className="walk-in-search-form">
                 <Col xs={24} sm={8} md={7}>
-                  <label className="walk-in-field-label" htmlFor="walk-in-search-by">
+                  {/* <label className="walk-in-field-label" htmlFor="walk-in-search-by">
                     Search By
-                  </label>
+                  </label> */}
                   <Select
                     id="walk-in-search-by"
                     className="w-full"
