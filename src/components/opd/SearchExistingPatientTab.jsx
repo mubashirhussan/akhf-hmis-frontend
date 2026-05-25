@@ -19,6 +19,7 @@ import {
 } from '@/data/mock-walk-in-patients';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
 import HmisCard from '@/components/ui/HmisCard';
+import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
 
 const SEARCH_BY_OPTIONS = [
   { value: 'registration', label: 'Registration No' },
@@ -171,7 +172,7 @@ export default function SearchExistingPatientTab() {
                   </label> */}
                   <Select
                     id="walk-in-search-by"
-                    className="w-full"
+                    className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
                     value={searchBy}
                     options={SEARCH_BY_OPTIONS}
                     onChange={(value) => {
@@ -186,6 +187,7 @@ export default function SearchExistingPatientTab() {
                   </label>
                   <Input
                     id="walk-in-search-query"
+                    className={HMIS_FIELD_CONTROL_CLASS}
                     placeholder={placeholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

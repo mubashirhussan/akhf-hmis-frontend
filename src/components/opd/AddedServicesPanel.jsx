@@ -5,6 +5,7 @@ import { DeleteOutlined, InfoCircleOutlined, MinusOutlined, PlusOutlined } from 
 import { Button, Select } from 'antd';
 import HmisTable from '@/components/ui/HmisTable';
 import { formatPkr } from '@/data/mock-walk-in-services';
+import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
 
 const ADDED_SERVICES_SCROLL_Y = {
   sidebar: 188,
@@ -98,7 +99,7 @@ export default function AddedServicesPanel({
               width: 140,
               render: (_, record) => (
                 <Select
-                  className="w-full"
+                  className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
                   value={record.doctorId}
                   options={doctors.map((d) => ({ value: d.id, label: d.name }))}
                   onChange={(value) => onDoctorChange(record.id, value)}

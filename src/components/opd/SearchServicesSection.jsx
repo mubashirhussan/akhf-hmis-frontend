@@ -13,6 +13,7 @@ import {
   Select,
 } from "antd";
 import HmisCard from "@/components/ui/HmisCard";
+import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
 import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
 import {
   MOCK_DOCTORS,
@@ -116,13 +117,13 @@ export default function SearchServicesSection({ variant = "full" }) {
   const searchFilters = isSidebar ? (
     <div className="walk-in-services-filters">
       <Select
-        className="walk-in-services-filter-category"
+        className={`walk-in-services-filter-category ${HMIS_FIELD_CONTROL_CLASS}`}
         value={category}
         options={SERVICE_CATEGORY_OPTIONS}
         onChange={setCategory}
       />
       <Input
-        className="walk-in-services-filter-input"
+        className={`walk-in-services-filter-input ${HMIS_FIELD_CONTROL_CLASS}`}
         placeholder="Search Services"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -143,7 +144,7 @@ export default function SearchServicesSection({ variant = "full" }) {
     <Row gutter={[12, 12]} align="middle" justify="end" wrap>
       <Col xs={24} sm={8} md={8}>
         <Select
-          className="w-full"
+          className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
           onChange={setCategory}
@@ -151,6 +152,7 @@ export default function SearchServicesSection({ variant = "full" }) {
       </Col>
       <Col xs={24} sm={10} md={11}>
         <Input
+          className={HMIS_FIELD_CONTROL_CLASS}
           placeholder="Search Services"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

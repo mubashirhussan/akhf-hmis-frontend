@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Col, DatePicker, Input, Radio, Row, Select } from "antd";
+import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
 import dayjs from "dayjs";
 import SearchServicesSection from "@/components/opd/SearchServicesSection";
 import HmisCard from "@/components/ui/HmisCard";
@@ -73,7 +74,7 @@ const INSURER_OPTIONS = [
 
 const DESIGNATION_OPTIONS = [{ value: "na", label: "N/A" }];
 
-const controlClass = "walk-in-add-record-control";
+const controlClass = HMIS_FIELD_CONTROL_CLASS;
 
 function FormField({ label, htmlFor, children, className = "" }) {
   return (
