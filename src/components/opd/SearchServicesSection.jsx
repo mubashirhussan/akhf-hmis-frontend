@@ -114,6 +114,9 @@ export default function SearchServicesSection({ variant = 'full' }) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onPressEnter={handleSearch}
+        autoComplete="off"
+        data-lpignore="true"
+        data-1p-ignore="true"
       />
       <Button type="primary" className="walk-in-search-btn walk-in-services-filter-btn" onClick={handleSearch}>
         Search
@@ -135,6 +138,9 @@ export default function SearchServicesSection({ variant = 'full' }) {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onPressEnter={handleSearch}
+          autoComplete="off"
+          data-lpignore="true"
+          data-1p-ignore="true"
         />
       </Col>
       <Col xs={24} sm={6} md={5}>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Col, DatePicker, Input, Radio, Row, Select } from "antd";
+import dayjs from "dayjs";
 import SearchServicesSection from "@/components/opd/SearchServicesSection";
 import HmisCard from "@/components/ui/HmisCard";
 
@@ -24,12 +25,6 @@ const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
   { value: "female", label: "Female" },
   { value: "other", label: "Other" },
-];
-
-const AGE_UNIT_OPTIONS = [
-  { value: "years", label: "Years" },
-  { value: "months", label: "Months" },
-  { value: "days", label: "Days" },
 ];
 
 const RELIGION_OPTIONS = [
@@ -95,9 +90,10 @@ export default function AddNewRecordTab() {
   const [title, setTitle] = useState("mr");
   const [relation, setRelation] = useState("so");
   const [category, setCategory] = useState("panel");
+  const [dob, setDob] = useState(null);
 
   return (
-    <HmisCard className="walk-in-add-record-layout border-tl-none">
+    <HmisCard className="walk-in-add-record-layout rounded-tl-none!">
       <Row gutter={[32, 24]} align="stretch" className="walk-in-add-record-row">
         <Col xs={24} xl={12} className="walk-in-add-record-form-col">
           <form
@@ -162,22 +158,17 @@ export default function AddNewRecordTab() {
               </Col>
               <Col xs={24} sm={8}>
                 <FormField label="DOB">
-                  <div className="walk-in-dob-group">
-                    <DatePicker
-                      className={`walk-in-dob-date ${controlClass}`}
-                      format="DD/MM/YYYY"
-                      placeholder="DD/MM/YYYY"
-                    />
-                    <Input
-                      className={`walk-in-dob-age ${controlClass}`}
-                      placeholder="22"
-                    />
-                    <Select
-                      className={`walk-in-dob-unit ${controlClass}`}
-                      defaultValue="years"
-                      options={AGE_UNIT_OPTIONS}
-                    />
-                  </div>
+                  <DatePicker
+                    className={`w-full ${controlClass}`}
+                    value={dob}
+                    onChange={setDob}
+                    format="DD/MM/YYYY"
+                    placeholder="DD/MM/YYYY"
+                    allowClear
+                    disabledDate={(current) =>
+                      current && current > dayjs().endOf("day")
+                    }
+                  />
                 </FormField>
               </Col>
               <Col xs={24} sm={8}>

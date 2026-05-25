@@ -199,6 +199,9 @@ export default function SearchExistingPatientTab() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onPressEnter={handleSearch}
+                    autoComplete="off"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
                   />
                 </Col>
                 <Col xs={24} sm={6} md={6}>
