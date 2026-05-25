@@ -144,8 +144,8 @@ body {
 /* Unified HMIS scrollbars (thin primary, no arrow buttons) */
 html,
 body,
-.hmis-scrollbar,
-.hmis-scrollbar *,
+.hmis-scrollbar:not(.sidebar-scroll),
+.hmis-scrollbar:not(.sidebar-scroll) *,
 .ant-table-body,
 .ant-table-content {
   scrollbar-width: thin;
@@ -154,8 +154,8 @@ body,
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
-.hmis-scrollbar::-webkit-scrollbar,
-.hmis-scrollbar *::-webkit-scrollbar,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar,
 .ant-table-body::-webkit-scrollbar,
 .ant-table-content::-webkit-scrollbar {
   width: var(--hmis-scrollbar-size);
@@ -164,8 +164,8 @@ body::-webkit-scrollbar,
 
 html::-webkit-scrollbar-button,
 body::-webkit-scrollbar-button,
-.hmis-scrollbar::-webkit-scrollbar-button,
-.hmis-scrollbar *::-webkit-scrollbar-button,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-button,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-button,
 .ant-table-body::-webkit-scrollbar-button,
 .ant-table-content::-webkit-scrollbar-button,
 *::-webkit-scrollbar-button {
@@ -176,8 +176,8 @@ body::-webkit-scrollbar-button,
 
 html::-webkit-scrollbar-corner,
 body::-webkit-scrollbar-corner,
-.hmis-scrollbar::-webkit-scrollbar-corner,
-.hmis-scrollbar *::-webkit-scrollbar-corner,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-corner,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-corner,
 .ant-table-body::-webkit-scrollbar-corner,
 .ant-table-content::-webkit-scrollbar-corner,
 *::-webkit-scrollbar-corner {
@@ -186,8 +186,8 @@ body::-webkit-scrollbar-corner,
 
 html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
-.hmis-scrollbar::-webkit-scrollbar-track,
-.hmis-scrollbar *::-webkit-scrollbar-track,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-track,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-track,
 .ant-table-body::-webkit-scrollbar-track,
 .ant-table-content::-webkit-scrollbar-track {
   background: var(--hmis-scrollbar-track);
@@ -196,8 +196,8 @@ body::-webkit-scrollbar-track,
 
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb,
-.hmis-scrollbar::-webkit-scrollbar-thumb,
-.hmis-scrollbar *::-webkit-scrollbar-thumb,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb,
 .ant-table-body::-webkit-scrollbar-thumb,
 .ant-table-content::-webkit-scrollbar-thumb {
   background: var(--hmis-scrollbar-thumb);
@@ -206,46 +206,52 @@ body::-webkit-scrollbar-thumb,
 
 html::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover,
-.hmis-scrollbar::-webkit-scrollbar-thumb:hover,
-.hmis-scrollbar *::-webkit-scrollbar-thumb:hover,
+.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb:hover,
+.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb:hover,
 .ant-table-body::-webkit-scrollbar-thumb:hover,
 .ant-table-content::-webkit-scrollbar-thumb:hover {
   background: var(--hmis-scrollbar-thumb-hover);
 }
 
-/* Sidebar only — white thumb, transparent track */
-.sidebar-scroll,
-.sidebar-scroll * {
+/* Sidebar only — scrollbar fully hidden until hover (Windows needs width: 0) */
+.sidebar-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-gutter: auto;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.sidebar-scroll:hover {
+  -ms-overflow-style: auto;
   scrollbar-width: thin;
   scrollbar-color: #ffffff transparent;
 }
 
-.sidebar-scroll::-webkit-scrollbar,
-.sidebar-scroll *::-webkit-scrollbar {
+.sidebar-scroll:hover::-webkit-scrollbar {
   width: var(--hmis-scrollbar-size);
   height: var(--hmis-scrollbar-size);
 }
 
-.sidebar-scroll::-webkit-scrollbar-button,
-.sidebar-scroll *::-webkit-scrollbar-button {
+.sidebar-scroll:hover::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;
 }
 
-.sidebar-scroll::-webkit-scrollbar-track,
-.sidebar-scroll *::-webkit-scrollbar-track {
+.sidebar-scroll:hover::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.sidebar-scroll::-webkit-scrollbar-thumb,
-.sidebar-scroll *::-webkit-scrollbar-thumb {
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
   background: #ffffff;
   border-radius: 999px;
 }
 
-.sidebar-scroll::-webkit-scrollbar-thumb:hover,
-.sidebar-scroll *::-webkit-scrollbar-thumb:hover {
+.sidebar-scroll:hover::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.85);
 }
 
