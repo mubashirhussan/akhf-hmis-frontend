@@ -5,7 +5,6 @@ import {
   Avatar,
   Button,
   Col,
-  ConfigProvider,
   Descriptions,
   Empty,
   Input,
@@ -155,15 +154,7 @@ export default function SearchExistingPatientTab() {
   }, [hasSearched, results.length]);
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#026BB1',
-          fontFamily: 'var(--font-poppins), Poppins, system-ui, sans-serif',
-          borderRadius: 6,
-        },
-      }}
-    >
+    <>
       <HmisCard
         className="rounded-tl-none"
         title="Search Registration"
@@ -228,7 +219,7 @@ export default function SearchExistingPatientTab() {
                 <span className="walk-in-patient-list-total">{totalLabel}</span>
               </div>
 
-              <div className="walk-in-patient-list-body">
+              <div className="walk-in-patient-list-body hmis-scrollbar">
                 {!hasSearched ? (
                   <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -276,7 +267,6 @@ export default function SearchExistingPatientTab() {
       </div>
       </HmisCard>
         <SearchServicesSection />
-     
-    </ConfigProvider>
+    </>
   );
 }

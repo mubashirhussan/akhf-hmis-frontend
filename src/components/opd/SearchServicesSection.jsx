@@ -1,10 +1,19 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import Image from 'next/image';
-import { Button, Checkbox, Col, Input, message, Pagination, Row, Select } from 'antd';
-import HmisCard from '@/components/ui/HmisCard';
-import AddedServicesPanel from '@/components/opd/AddedServicesPanel';
+import { useMemo, useState } from "react";
+import Image from "next/image";
+import {
+  Button,
+  Checkbox,
+  Col,
+  Input,
+  message,
+  Pagination,
+  Row,
+  Select,
+} from "antd";
+import HmisCard from "@/components/ui/HmisCard";
+import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
 import {
   MOCK_DOCTORS,
   MOCK_SERVICES,
@@ -12,13 +21,13 @@ import {
   formatServiceDateTime,
   paginateServices,
   searchServices,
-} from '@/data/mock-walk-in-services';
+} from "@/data/mock-walk-in-services";
 
 const SERVICE_CATEGORY_OPTIONS = [
-  { value: 'all', label: 'All Category' },
-  { value: 'consultation', label: 'Consultation' },
-  { value: 'laboratory', label: 'Laboratory' },
-  { value: 'radiology', label: 'Radiology' },
+  { value: "all", label: "All Category" },
+  { value: "consultation", label: "Consultation" },
+  { value: "laboratory", label: "Laboratory" },
+  { value: "radiology", label: "Radiology" },
 ];
 
 function createAddedService(service) {
@@ -34,10 +43,10 @@ function createAddedService(service) {
   };
 }
 
-export default function SearchServicesSection({ variant = 'full' }) {
-  const isSidebar = variant === 'sidebar';
-  const [category, setCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+export default function SearchServicesSection({ variant = "full" }) {
+  const isSidebar = variant === "sidebar";
+  const [category, setCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [resultsPage, setResultsPage] = useState(1);
@@ -67,13 +76,17 @@ export default function SearchServicesSection({ variant = 'full' }) {
       return;
     }
 
-    setAddedServices((prev) => prev.filter((row) => row.serviceId !== service.id));
+    setAddedServices((prev) =>
+      prev.filter((row) => row.serviceId !== service.id),
+    );
   };
 
   const handleQuantityChange = (rowId, quantity) => {
     const nextQty = Math.max(1, quantity);
     setAddedServices((prev) =>
-      prev.map((row) => (row.id === rowId ? { ...row, quantity: nextQty } : row)),
+      prev.map((row) =>
+        row.id === rowId ? { ...row, quantity: nextQty } : row,
+      ),
     );
   };
 
@@ -91,12 +104,12 @@ export default function SearchServicesSection({ variant = 'full' }) {
     setAddedServices([]);
     setHasSearched(false);
     setSearchResults([]);
-    setSearchQuery('');
+    setSearchQuery("");
     setResultsPage(1);
   };
 
   const handleSave = () => {
-    message.success('Record saved successfully.');
+    message.success("Record saved successfully.");
     // TODO: wire save walk-in record API
   };
 
@@ -118,7 +131,11 @@ export default function SearchServicesSection({ variant = 'full' }) {
         data-lpignore="true"
         data-1p-ignore="true"
       />
-      <Button type="primary" className="walk-in-search-btn walk-in-services-filter-btn" onClick={handleSearch}>
+      <Button
+        type="primary"
+        className="walk-in-search-btn walk-in-services-filter-btn"
+        onClick={handleSearch}
+      >
         Search
       </Button>
     </div>
@@ -144,7 +161,11 @@ export default function SearchServicesSection({ variant = 'full' }) {
         />
       </Col>
       <Col xs={24} sm={6} md={5}>
-        <Button type="primary" className="walk-in-search-btn w-full" onClick={handleSearch}>
+        <Button
+          type="primary"
+          className="walk-in-search-btn w-full"
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </Col>
@@ -156,21 +177,27 @@ export default function SearchServicesSection({ variant = 'full' }) {
       {pagedResults.length === 0 ? (
         <p className="walk-in-service-results-empty">No services found</p>
       ) : (
-        <ul className="walk-in-service-results-list">
+        <ul className="walk-in-service-results-list hmis-scrollbar">
           {pagedResults.map((service) => {
             const isChecked = addedServiceIds.has(service.id);
 
             return (
               <li
                 key={service.id}
-                className={`walk-in-service-result-item ${isChecked ? 'walk-in-service-result-item--selected' : ''}`}
+                className={`walk-in-service-result-item ${isChecked ? "walk-in-service-result-item--selected" : ""}`}
               >
                 <Checkbox
                   checked={isChecked}
-                  onChange={(e) => handleToggleService(service, e.target.checked)}
+                  onChange={(e) =>
+                    handleToggleService(service, e.target.checked)
+                  }
                 />
-                <span className="walk-in-service-result-name">{service.name}</span>
-                <span className="walk-in-service-result-price">{formatPkr(service.price)}</span>
+                <span className="walk-in-service-result-name">
+                  {service.name}
+                </span>
+                <span className="walk-in-service-result-price">
+                  {formatPkr(service.price)}
+                </span>
               </li>
             );
           })}
@@ -196,11 +223,13 @@ export default function SearchServicesSection({ variant = 'full' }) {
   );
 
   return (
-    <section className={`walk-in-services-section ${isSidebar ? 'walk-in-services-section--sidebar' : ''}`}>
+    <section
+      className={`walk-in-services-section ${isSidebar ? "walk-in-services-section--sidebar" : ""}`}
+    >
       <HmisCard
-        className={`walk-in-services-card ${isSidebar ? 'walk-in-services-card--sidebar' : ''}`}
+        className={`walk-in-services-card ${isSidebar ? "walk-in-services-card--sidebar" : ""}`}
         title="Search Services"
-        headerLayout={isSidebar ? 'stacked' : 'inline'}
+        headerLayout={isSidebar ? "stacked" : "inline"}
         headerExtra={searchFilters}
       >
         {!hasSearched ? (
@@ -217,7 +246,9 @@ export default function SearchServicesSection({ variant = 'full' }) {
         ) : isSidebar ? (
           <div className="walk-in-services-body walk-in-services-body--sidebar">
             <div className="walk-in-services-content walk-in-services-content--stacked">
-              <div className="walk-in-services-content-row">{serviceResultsList}</div>
+              <div className="walk-in-services-content-row">
+                {serviceResultsList}
+              </div>
               <div className="walk-in-services-content-row">
                 <AddedServicesPanel
                   variant="sidebar"
@@ -235,10 +266,10 @@ export default function SearchServicesSection({ variant = 'full' }) {
         ) : (
           <div className="walk-in-services-body">
             <Row gutter={[20, 20]} className="walk-in-services-content">
-              <Col xs={24} xl={10}>
+              <Col xs={24} xl={8}>
                 {serviceResultsList}
               </Col>
-              <Col xs={24} xl={14}>
+              <Col xs={24} xl={16}>
                 <AddedServicesPanel
                   services={addedServices}
                   doctors={MOCK_DOCTORS}

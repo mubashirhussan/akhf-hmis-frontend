@@ -1,8 +1,15 @@
 'use client';
 
+import { useMemo } from 'react';
 import { DeleteOutlined, InfoCircleOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Select, Table } from 'antd';
+import { Button, Select } from 'antd';
+import HmisTable from '@/components/ui/HmisTable';
 import { formatPkr } from '@/data/mock-walk-in-services';
+
+const ADDED_SERVICES_SCROLL_Y = {
+  sidebar: 188,
+  full: 280,
+};
 
 export default function AddedServicesPanel({
   variant = 'full',
@@ -15,112 +22,115 @@ export default function AddedServicesPanel({
   onSave,
 }) {
   const isSidebar = variant === 'sidebar';
+
   const grandTotal = services.reduce(
     (sum, row) => sum + row.price * row.quantity - row.discount,
     0,
   );
 
-  const columns = [
-    {
-      title: 'Sr. #',
-      dataIndex: 'sr',
-      key: 'sr',
-      width: 56,
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: 'Date & Time',
-      dataIndex: 'addedAt',
-      key: 'addedAt',
-      width: 150,
-    },
-    {
-      title: 'Services',
-      dataIndex: 'name',
-      key: 'name',
-      width: isSidebar ? 160 : undefined,
-      ellipsis: !isSidebar,
-    },
-    {
-      title: 'Quantity',
-      key: 'quantity',
-      width: 120,
-      render: (_, record) => (
-        <div className="walk-in-qty-control">
+  const columns = useMemo(
+    () => [
+      {
+        title: 'Sr. #',
+        dataIndex: 'sr',
+        key: 'sr',
+        width: 56,
+        fixed: 'left',
+        render: (_, __, index) => index + 1,
+      },
+      {
+        title: 'Date & Time',
+        dataIndex: 'addedAt',
+        key: 'addedAt',
+        width: 150,
+      },
+      {
+        title: 'Services',
+        dataIndex: 'name',
+        key: 'name',
+        width: isSidebar ? 180 : 220,
+      },
+      {
+        title: 'Quantity',
+        key: 'quantity',
+        width: 120,
+        render: (_, record) => (
+          <div className="walk-in-qty-control">
+            <button
+              type="button"
+              className="walk-in-qty-btn"
+              onClick={() => onQuantityChange(record.id, record.quantity - 1)}
+              disabled={record.quantity <= 1}
+              aria-label="Decrease quantity"
+            >
+              <MinusOutlined />
+            </button>
+            <span className="walk-in-qty-value">{record.quantity}</span>
+            <button
+              type="button"
+              className="walk-in-qty-btn"
+              onClick={() => onQuantityChange(record.id, record.quantity + 1)}
+              aria-label="Increase quantity"
+            >
+              <PlusOutlined />
+            </button>
+          </div>
+        ),
+      },
+      {
+        title: 'Price',
+        key: 'price',
+        width: 100,
+        render: (_, record) => formatPkr(record.price),
+      },
+      {
+        title: 'Discount',
+        key: 'discount',
+        width: 100,
+        render: (_, record) => formatPkr(record.discount),
+      },
+      ...(isSidebar
+        ? []
+        : [
+            {
+              title: 'Doctor',
+              key: 'doctor',
+              width: 140,
+              render: (_, record) => (
+                <Select
+                  className="w-full"
+                  value={record.doctorId}
+                  options={doctors.map((d) => ({ value: d.id, label: d.name }))}
+                  onChange={(value) => onDoctorChange(record.id, value)}
+                />
+              ),
+            },
+          ]),
+      {
+        title: 'Action',
+        key: 'action',
+        width: 72,
+        align: 'center',
+        fixed: 'right',
+        render: (_, record) => (
           <button
             type="button"
-            className="walk-in-qty-btn"
-            onClick={() => onQuantityChange(record.id, record.quantity - 1)}
-            disabled={record.quantity <= 1}
-            aria-label="Decrease quantity"
+            className="walk-in-service-delete-btn"
+            onClick={() => onRemove(record.id)}
+            aria-label="Remove service"
           >
-            <MinusOutlined />
+            <DeleteOutlined />
           </button>
-          <span className="walk-in-qty-value">{record.quantity}</span>
-          <button
-            type="button"
-            className="walk-in-qty-btn"
-            onClick={() => onQuantityChange(record.id, record.quantity + 1)}
-            aria-label="Increase quantity"
-          >
-            <PlusOutlined />
-          </button>
-        </div>
-      ),
-    },
-    {
-      title: 'Price',
-      key: 'price',
-      width: 100,
-      render: (_, record) => formatPkr(record.price),
-    },
-    {
-      title: 'Discount',
-      key: 'discount',
-      width: 100,
-      render: (_, record) => formatPkr(record.discount),
-    },
-    ...(isSidebar
-      ? []
-      : [
-          {
-            title: 'Doctor',
-            key: 'doctor',
-            width: 140,
-            render: (_, record) => (
-              <Select
-                className="w-full"
-                value={record.doctorId}
-                options={doctors.map((d) => ({ value: d.id, label: d.name }))}
-                onChange={(value) => onDoctorChange(record.id, value)}
-              />
-            ),
-          },
-        ]),
-    {
-      title: 'Action',
-      key: 'action',
-      width: 72,
-      align: 'center',
-      render: (_, record) => (
-        <button
-          type="button"
-          className="walk-in-service-delete-btn"
-          onClick={() => onRemove(record.id)}
-          aria-label="Remove service"
-        >
-          <DeleteOutlined />
-        </button>
-      ),
-    },
-  ];
+        ),
+      },
+    ],
+    [isSidebar, doctors, onQuantityChange, onDoctorChange, onRemove],
+  );
 
-  const ADDED_SERVICES_TABLE_SCROLL_Y = 280;
-  const SIDEBAR_ADDED_SERVICES_TABLE_SCROLL_Y = 200;
-
-  const tableScroll = isSidebar
-    ? { x: 640, y: SIDEBAR_ADDED_SERVICES_TABLE_SCROLL_Y }
-    : { x: 900, y: ADDED_SERVICES_TABLE_SCROLL_Y };
+  const tableScroll = useMemo(
+    () => ({ y: isSidebar ? ADDED_SERVICES_SCROLL_Y.sidebar : ADDED_SERVICES_SCROLL_Y.full }),
+    [isSidebar],
+  );
 
   return (
     <div
@@ -128,33 +138,23 @@ export default function AddedServicesPanel({
     >
       <h3 className="walk-in-added-services-title">Added Services</h3>
 
-      <div className="walk-in-added-services-table-wrap">
-      <Table
+      <HmisTable
         className="walk-in-added-services-table"
+        wrapClassName="walk-in-added-services-table-wrap"
         columns={columns}
         dataSource={services}
         rowKey="id"
         pagination={false}
         locale={{ emptyText: 'No services added yet' }}
         scroll={tableScroll}
-        summary={() =>
-          services.length > 0 ? (
-            <Table.Summary fixed>
-              <Table.Summary.Row className="walk-in-added-services-total-row">
-                <Table.Summary.Cell index={0} colSpan={isSidebar ? 4 : 4}>
-                  <strong>Grand Total</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={4} colSpan={isSidebar ? 3 : 4} align="end">
-                  <strong className="walk-in-added-services-grand-total">
-                    {formatPkr(grandTotal)}
-                  </strong>
-                </Table.Summary.Cell>
-              </Table.Summary.Row>
-            </Table.Summary>
-          ) : null
-        }
       />
-      </div>
+
+      {services.length > 0 && (
+        <div className="walk-in-added-services-total-bar">
+          <strong className="walk-in-added-services-total-label">Grand Total</strong>
+          <strong className="walk-in-added-services-grand-total">{formatPkr(grandTotal)}</strong>
+        </div>
+      )}
 
       <div className="walk-in-added-services-note">
         <InfoCircleOutlined className="walk-in-added-services-note-icon" />
