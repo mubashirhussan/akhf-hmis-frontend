@@ -63,7 +63,7 @@ export const MOCK_WALK_IN_PATIENTS = [
 
 export function searchWalkInPatients(patients, searchBy, query) {
   const trimmed = query.trim();
-  if (!trimmed) return [];
+  if (!trimmed) return patients;
 
   const normalizedQuery = trimmed.toLowerCase();
 
