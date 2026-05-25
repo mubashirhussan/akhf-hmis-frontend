@@ -34,7 +34,8 @@ function createAddedService(service) {
   };
 }
 
-export default function SearchServicesSection() {
+export default function SearchServicesSection({ variant = 'full' }) {
+  const isSidebar = variant === 'sidebar';
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
@@ -99,37 +100,102 @@ export default function SearchServicesSection() {
     // TODO: wire save walk-in record API
   };
 
+  const searchFilters = isSidebar ? (
+    <div className="walk-in-services-filters">
+      <Select
+        className="walk-in-services-filter-category"
+        value={category}
+        options={SERVICE_CATEGORY_OPTIONS}
+        onChange={setCategory}
+      />
+      <Input
+        className="walk-in-services-filter-input"
+        placeholder="Search Services"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onPressEnter={handleSearch}
+      />
+      <Button type="primary" className="walk-in-search-btn walk-in-services-filter-btn" onClick={handleSearch}>
+        Search
+      </Button>
+    </div>
+  ) : (
+    <Row gutter={[12, 12]} align="middle" justify="end" wrap>
+      <Col xs={24} sm={8} md={8}>
+        <Select
+          className="w-full"
+          value={category}
+          options={SERVICE_CATEGORY_OPTIONS}
+          onChange={setCategory}
+        />
+      </Col>
+      <Col xs={24} sm={10} md={11}>
+        <Input
+          placeholder="Search Services"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onPressEnter={handleSearch}
+        />
+      </Col>
+      <Col xs={24} sm={6} md={5}>
+        <Button type="primary" className="walk-in-search-btn w-full" onClick={handleSearch}>
+          Search
+        </Button>
+      </Col>
+    </Row>
+  );
+
+  const serviceResultsList = (
+    <div className="walk-in-service-results">
+      {pagedResults.length === 0 ? (
+        <p className="walk-in-service-results-empty">No services found</p>
+      ) : (
+        <ul className="walk-in-service-results-list">
+          {pagedResults.map((service) => {
+            const isChecked = addedServiceIds.has(service.id);
+
+            return (
+              <li
+                key={service.id}
+                className={`walk-in-service-result-item ${isChecked ? 'walk-in-service-result-item--selected' : ''}`}
+              >
+                <Checkbox
+                  checked={isChecked}
+                  onChange={(e) => handleToggleService(service, e.target.checked)}
+                />
+                <span className="walk-in-service-result-name">{service.name}</span>
+                <span className="walk-in-service-result-price">{formatPkr(service.price)}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div className="walk-in-service-results-footer">
+        <span className="walk-in-service-results-count">
+          Showing {pagedResults.length} of {resultsTotal} results
+        </span>
+        {resultsTotal > 0 && (
+          <Pagination
+            size="small"
+            current={resultsPage}
+            total={resultsTotal}
+            pageSize={10}
+            showSizeChanger={false}
+            onChange={setResultsPage}
+          />
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <section className="walk-in-services-section">
+    <section className={`walk-in-services-section ${isSidebar ? 'walk-in-services-section--sidebar' : ''}`}>
       <HmisCard
-        className="walk-in-services-card"
+        className={`walk-in-services-card ${isSidebar ? 'walk-in-services-card--sidebar' : ''}`}
         title="Search Services"
-        headerLayout="inline"
-        headerExtra={
-          <Row gutter={[12, 12]} align="middle" justify="end" wrap>
-            <Col xs={24} sm={8} md={8}>
-              <Select
-                className="w-full"
-                value={category}
-                options={SERVICE_CATEGORY_OPTIONS}
-                onChange={setCategory}
-              />
-            </Col>
-            <Col xs={24} sm={10} md={11}>
-              <Input
-                placeholder="Search Services"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onPressEnter={handleSearch}
-              />
-            </Col>
-            <Col xs={24} sm={6} md={5}>
-              <Button type="primary" className="walk-in-search-btn w-full" onClick={handleSearch}>
-                Search
-              </Button>
-            </Col>
-          </Row>
-        }
+        headerLayout={isSidebar ? 'stacked' : 'inline'}
+        headerExtra={searchFilters}
       >
         {!hasSearched ? (
           <div className="walk-in-services-illustration">
@@ -142,65 +208,42 @@ export default function SearchServicesSection() {
               priority={false}
             />
           </div>
+        ) : isSidebar ? (
+          <div className="walk-in-services-body walk-in-services-body--sidebar">
+            <div className="walk-in-services-content walk-in-services-content--stacked">
+              <div className="walk-in-services-content-row">{serviceResultsList}</div>
+              <div className="walk-in-services-content-row">
+                <AddedServicesPanel
+                  variant="sidebar"
+                  services={addedServices}
+                  doctors={MOCK_DOCTORS}
+                  onQuantityChange={handleQuantityChange}
+                  onDoctorChange={handleDoctorChange}
+                  onRemove={handleRemove}
+                  onCancel={handleCancel}
+                  onSave={handleSave}
+                />
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="walk-in-services-body">
-          <Row gutter={[20, 20]} className="walk-in-services-content">
-            <Col xs={24} xl={10}>
-              <div className="walk-in-service-results">
-                {pagedResults.length === 0 ? (
-                  <p className="walk-in-service-results-empty">No services found</p>
-                ) : (
-                  <ul className="walk-in-service-results-list">
-                    {pagedResults.map((service) => {
-                      const isChecked = addedServiceIds.has(service.id);
-
-                      return (
-                        <li
-                          key={service.id}
-                          className={`walk-in-service-result-item ${isChecked ? 'walk-in-service-result-item--selected' : ''}`}
-                        >
-                          <Checkbox
-                            checked={isChecked}
-                            onChange={(e) => handleToggleService(service, e.target.checked)}
-                          />
-                          <span className="walk-in-service-result-name">{service.name}</span>
-                          <span className="walk-in-service-result-price">{formatPkr(service.price)}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-
-                <div className="walk-in-service-results-footer">
-                  <span className="walk-in-service-results-count">
-                    Showing {pagedResults.length} of {resultsTotal} results
-                  </span>
-                  {resultsTotal > 0 && (
-                    <Pagination
-                      size="small"
-                      current={resultsPage}
-                      total={resultsTotal}
-                      pageSize={10}
-                      showSizeChanger={false}
-                      onChange={setResultsPage}
-                    />
-                  )}
-                </div>
-              </div>
-            </Col>
-
-            <Col xs={24} xl={14}>
-              <AddedServicesPanel
-                services={addedServices}
-                doctors={MOCK_DOCTORS}
-                onQuantityChange={handleQuantityChange}
-                onDoctorChange={handleDoctorChange}
-                onRemove={handleRemove}
-                onCancel={handleCancel}
-                onSave={handleSave}
-              />
-            </Col>
-          </Row>
+            <Row gutter={[20, 20]} className="walk-in-services-content">
+              <Col xs={24} xl={10}>
+                {serviceResultsList}
+              </Col>
+              <Col xs={24} xl={14}>
+                <AddedServicesPanel
+                  services={addedServices}
+                  doctors={MOCK_DOCTORS}
+                  onQuantityChange={handleQuantityChange}
+                  onDoctorChange={handleDoctorChange}
+                  onRemove={handleRemove}
+                  onCancel={handleCancel}
+                  onSave={handleSave}
+                />
+              </Col>
+            </Row>
           </div>
         )}
       </HmisCard>

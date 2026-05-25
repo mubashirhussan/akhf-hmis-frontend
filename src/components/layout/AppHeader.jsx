@@ -26,10 +26,12 @@ function formatTime(date) {
 export default function AppHeader() {
   const pathname = usePathname();
   const breadcrumbs = getBreadcrumbs(pathname);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(null);
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
+    const tick = () => setNow(new Date());
+    tick();
+    const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -62,12 +64,16 @@ export default function AppHeader() {
         <div className="header-datetime flex items-center gap-3 border border-slate-200/80 px-4 py-1.5">
           <span className="flex items-center gap-1.5">
             <AppIcon icon="mdi:calendar-outline" className="header-datetime-icon" />
-            <span className="header-datetime-text">{formatDate(now)}</span>
+            <span className="header-datetime-text header-datetime-text--placeholder">
+              {now ? formatDate(now) : '\u00A0'}
+            </span>
           </span>
           <span className="h-4 w-px bg-slate-200" aria-hidden />
           <span className="flex items-center gap-1.5">
             <AppIcon icon="mdi:clock-outline" className="header-datetime-icon" />
-            <span className="header-datetime-text">{formatTime(now)}</span>
+            <span className="header-datetime-text header-datetime-text--placeholder">
+              {now ? formatTime(now) : '\u00A0'}
+            </span>
           </span>
         </div>
 

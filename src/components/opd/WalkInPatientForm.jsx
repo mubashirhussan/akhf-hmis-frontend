@@ -1,5 +1,6 @@
 'use client';
 
+import AddNewRecordTab from '@/components/opd/AddNewRecordTab';
 import SearchExistingPatientTab from '@/components/opd/SearchExistingPatientTab';
 import HmisTabs from '@/components/ui/HmisTabs';
 
@@ -12,7 +13,7 @@ const tabItems = [
   {
     key: 'add-new',
     label: 'Add New Record',
-    children: 'Add New Record',
+    children: <AddNewRecordTab />,
   },
 ];
 

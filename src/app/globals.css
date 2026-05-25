@@ -124,6 +124,11 @@ body {
   color: #777b87;
 }
 
+.header-datetime-text--placeholder {
+  display: inline-block;
+  min-width: 4.5rem;
+}
+
 .header-datetime-icon {
   width: 15.83px;
   height: 15.44px;
@@ -183,6 +188,266 @@ body {
 
 .hmis-tabs-panel--first-active.hmis-card {
   border-top-left-radius: 0;
+}
+
+/* Add new record tab */
+.walk-in-add-record-layout {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+}
+
+.walk-in-add-record-row {
+  margin: 0 !important;
+}
+
+.walk-in-add-record-form-col {
+  padding-right: 8px;
+}
+
+@media (min-width: 1200px) {
+  .walk-in-add-record-form-col {
+    padding-right: 28px;
+    border-right: 1px solid #e8edf3;
+  }
+
+  .walk-in-add-record-services-col {
+    padding-left: 4px;
+  }
+}
+
+.walk-in-add-record-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.walk-in-add-record-form-row {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.walk-in-add-record-form-row:last-child {
+  margin-bottom: 0;
+}
+
+.walk-in-add-record-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 68px;
+}
+
+.walk-in-add-record-label {
+  display: block;
+  margin: 0;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.walk-in-add-record-control-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.walk-in-add-record-form .walk-in-add-record-control.ant-input,
+.walk-in-add-record-form .walk-in-add-record-control.ant-input-affix-wrapper,
+.walk-in-add-record-form .walk-in-add-record-control.ant-select .ant-select-selector,
+.walk-in-add-record-form .walk-in-add-record-control.ant-picker {
+  min-height: 40px;
+  border-color: #d8dee9;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.walk-in-add-record-form .walk-in-add-record-control.ant-input:hover,
+.walk-in-add-record-form .walk-in-add-record-control.ant-input-affix-wrapper:hover,
+.walk-in-add-record-form .walk-in-add-record-control.ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+.walk-in-add-record-form .walk-in-add-record-control.ant-picker:hover {
+  border-color: #b8c4d4;
+}
+
+.walk-in-add-record-form .walk-in-add-record-control.ant-input:focus,
+.walk-in-add-record-form .walk-in-add-record-control.ant-input-affix-wrapper-focused,
+.walk-in-add-record-form .walk-in-add-record-control.ant-select-focused .ant-select-selector,
+.walk-in-add-record-form .walk-in-add-record-control.ant-picker-focused {
+  border-color: var(--hmis-primary);
+  box-shadow: 0 0 0 3px rgba(2, 107, 177, 0.12);
+}
+
+.walk-in-add-record-radios {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 20px;
+  min-height: 40px;
+  padding: 4px 0;
+}
+
+.walk-in-add-record-radios .ant-radio-wrapper {
+  margin-inline-end: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.walk-in-add-record-radios .ant-radio-inner {
+  width: 16px;
+  height: 16px;
+  border-color: #cbd5e1;
+}
+
+.walk-in-add-record-radios .ant-radio-checked .ant-radio-inner {
+  border-color: var(--hmis-primary);
+  background-color: var(--hmis-primary);
+}
+
+.walk-in-dob-group {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.walk-in-dob-group .walk-in-dob-date.ant-picker {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.walk-in-dob-group .walk-in-dob-age {
+  flex: 0 0 72px;
+  max-width: 72px;
+  text-align: center;
+}
+
+.walk-in-dob-group .walk-in-dob-unit {
+  flex: 0 0 100px;
+  min-width: 100px;
+}
+
+.walk-in-add-record-services-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.walk-in-services-section--sidebar {
+  margin-top: 0;
+  height: 100%;
+}
+
+.walk-in-services-section--sidebar .walk-in-services-card--sidebar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.walk-in-services-section--sidebar .walk-in-services-card--sidebar > :last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.walk-in-services-section--sidebar .walk-in-services-illustration {
+  flex: 1;
+  min-height: 280px;
+}
+
+.walk-in-services-section--sidebar .hmis-card-header--stacked .hmis-card-header-extra {
+  width: 100%;
+}
+
+.walk-in-services-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.walk-in-services-filter-category {
+  flex: 0 0 34%;
+  min-width: 0;
+}
+
+.walk-in-services-filter-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.walk-in-services-filter-btn {
+  flex: 0 0 auto;
+  min-width: 76px;
+}
+
+.walk-in-services-content--stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: auto;
+  margin-top: 4px;
+}
+
+.walk-in-services-content--stacked .walk-in-services-content-row {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.walk-in-services-content--stacked .walk-in-service-results {
+  height: auto;
+  max-height: 240px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.walk-in-added-services--sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 360px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-title,
+.walk-in-added-services--sidebar .walk-in-added-services-note,
+.walk-in-added-services--sidebar .walk-in-added-services-actions {
+  flex-shrink: 0;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-table .ant-spin-nested-loading,
+.walk-in-added-services--sidebar .walk-in-added-services-table .ant-spin-container {
+  height: 100%;
+  min-height: 0;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-table .ant-table {
+  height: 100%;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-table .ant-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.walk-in-added-services--sidebar .walk-in-added-services-table .ant-table-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto !important;
 }
 
 /* Search existing tab */
@@ -576,6 +841,12 @@ body {
   overflow: hidden;
 }
 
+.walk-in-services-section--sidebar .walk-in-services-body--sidebar {
+  max-height: none;
+  height: auto;
+  overflow: visible;
+}
+
 .walk-in-services-content {
   margin-top: 4px;
   height: 100%;
@@ -585,6 +856,20 @@ body {
 .walk-in-services-content > .ant-col {
   height: 100%;
   min-height: 0;
+}
+
+.walk-in-services-section:not(.walk-in-services-section--sidebar) .walk-in-services-content > .ant-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.walk-in-services-section:not(.walk-in-services-section--sidebar)
+  .walk-in-services-content
+  > .ant-col
+  > .walk-in-added-services--full {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 }
 
 .walk-in-service-results {
@@ -674,7 +959,47 @@ body {
   max-height: 100%;
   min-height: 0;
   row-gap: 10px;
-  overflow: visible;
+  overflow: hidden;
+}
+
+.walk-in-added-services--full {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.walk-in-added-services--full .walk-in-added-services-table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+.walk-in-added-services--full .walk-in-added-services-table .ant-spin-nested-loading,
+.walk-in-added-services--full .walk-in-added-services-table .ant-spin-container {
+  height: 100%;
+  min-height: 0;
+}
+
+.walk-in-added-services--full .walk-in-added-services-table .ant-table {
+  height: 100%;
+}
+
+.walk-in-added-services--full .walk-in-added-services-table .ant-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.walk-in-added-services--full .walk-in-added-services-table .ant-table-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto !important;
 }
 
 .walk-in-added-services-title {
