@@ -61,22 +61,27 @@ export const MOCK_WALK_IN_PATIENTS = [
   },
 ];
 
-export function searchWalkInPatients(patients, searchBy, query) {
-  const trimmed = query.trim();
-  if (!trimmed) return patients;
+export function searchWalkInPatients(patients, { registrationNo = '', mobile = '' } = {}) {
+  const regQuery = registrationNo.trim();
+  const mobileQuery = mobile.trim();
 
-  const normalizedQuery = trimmed.toLowerCase();
+  if (!regQuery && !mobileQuery) {
+    return patients;
+  }
+
+  const normalizedReg = regQuery.toLowerCase();
+  const mobileDigits = mobileQuery.replace(/\D/g, '');
 
   return patients.filter((patient) => {
-    if (searchBy === 'mobile') {
-      const mobileDigits = patient.mobile.replace(/\D/g, '');
-      const queryDigits = trimmed.replace(/\D/g, '');
-      return mobileDigits.includes(queryDigits);
-    }
+    const matchesReg =
+      !regQuery ||
+      patient.registrationNo.toLowerCase().includes(normalizedReg) ||
+      patient.displayRegNo.toLowerCase().includes(normalizedReg);
 
-    return (
-      patient.registrationNo.toLowerCase().includes(normalizedQuery) ||
-      patient.displayRegNo.toLowerCase().includes(normalizedQuery)
-    );
+    const patientMobileDigits = patient.mobile.replace(/\D/g, '');
+    const matchesMobile =
+      !mobileQuery || (mobileDigits && patientMobileDigits.includes(mobileDigits));
+
+    return matchesReg && matchesMobile;
   });
 }

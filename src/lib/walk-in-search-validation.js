@@ -44,3 +44,27 @@ export function validateWalkInSearchQuery(searchBy, query) {
 
   return validateRegistrationNumber(query);
 }
+
+export function validateWalkInPatientSearch(registrationNo, mobile) {
+  const reg = registrationNo.trim();
+  const mob = mobile.trim();
+
+  if (!reg && !mob) {
+    return {
+      valid: false,
+      message: 'Enter MR number or mobile number to search',
+    };
+  }
+
+  if (reg) {
+    const regResult = validateRegistrationNumber(reg);
+    if (!regResult.valid) return regResult;
+  }
+
+  if (mob) {
+    const mobileResult = validateMobileNumber(mob);
+    if (!mobileResult.valid) return mobileResult;
+  }
+
+  return { valid: true, message: '' };
+}

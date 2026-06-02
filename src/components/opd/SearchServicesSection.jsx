@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Checkbox, Col, Input, message, Row, Select } from "antd";
-import HmisCard from "@/components/ui/HmisCard";
 import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
 import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
 import {
@@ -139,6 +138,7 @@ export default function SearchServicesSection({ variant = "full" }) {
   const serviceResultsDropdown = (
     <div className="walk-in-service-results-dropdown-wrap">
       <Select
+        size="middle"
         mode="multiple"
         allowClear
         className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
@@ -171,12 +171,14 @@ export default function SearchServicesSection({ variant = "full" }) {
     <div className="walk-in-services-filters">
       <div className="walk-in-services-filters-top">
         <Select
+          size="middle"
           className={`walk-in-services-filter-category ${HMIS_FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
           onChange={setCategory}
         />
         <Input
+          size="middle"
           className={`walk-in-services-filter-input ${HMIS_FIELD_CONTROL_CLASS}`}
           placeholder="Search Services"
           value={searchQuery}
@@ -189,9 +191,10 @@ export default function SearchServicesSection({ variant = "full" }) {
       <div className="walk-in-services-filter-multiselect">{serviceResultsDropdown}</div>
     </div>
   ) : (
-    <Row gutter={[12, 12]} align="middle" className="walk-in-services-filters-grid">
+    <Row gutter={[12, 12]} align="stretch" className="walk-in-services-filters-grid">
       <Col xs={24} md={8} className="walk-in-services-filters-grid-col">
         <Select
+          size="middle"
           className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
@@ -201,12 +204,13 @@ export default function SearchServicesSection({ variant = "full" }) {
       <Col xs={24} md={16} className="walk-in-services-filters-grid-col">
         <Row
           gutter={[12, 12]}
-          align="middle"
+          align="stretch"
           wrap={false}
           className="walk-in-services-filters-grid-right"
         >
           <Col span={10}>
             <Input
+              size="middle"
               className={HMIS_FIELD_CONTROL_CLASS}
               placeholder="Search Services"
               value={searchQuery}
@@ -226,19 +230,24 @@ export default function SearchServicesSection({ variant = "full" }) {
     <section
       className={`walk-in-services-section ${isSidebar ? "walk-in-services-section--sidebar" : ""}`}
     >
-      <HmisCard
-        className={`walk-in-services-card ${isSidebar ? "walk-in-services-card--sidebar" : ""}`}
-        title="Add Services"
-        headerLayout={isSidebar ? "stacked" : "inline"}
-        headerExtra={searchFilters}
+      <div
+        className={`walk-in-services-block ${isSidebar ? "walk-in-services-block--sidebar" : ""}`}
       >
+        <div
+          className={`hmis-section-header ${isSidebar ? "hmis-section-header--stacked" : "hmis-section-header--inline mt-4"}`}
+        >
+          <div className="hmis-section-header-text">
+            <h2 className="hmis-section-title">Add Services</h2>
+          </div>
+          <div className="hmis-section-header-extra">{searchFilters}</div>
+        </div>
         {!hasSearched ? (
           <div className="walk-in-services-illustration">
             <Image
               src="/hmis-base-img.svg"
               alt="Search services illustration"
-              width={320}
-              height={280}
+              width={200}
+              height={175}
               className="walk-in-services-illustration-img"
               priority={false}
             />
@@ -277,7 +286,7 @@ export default function SearchServicesSection({ variant = "full" }) {
             </div>
           </div>
         )}
-      </HmisCard>
+      </div>
     </section>
   );
 }

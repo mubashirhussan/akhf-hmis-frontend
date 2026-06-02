@@ -1,16 +1,15 @@
 'use client';
 
 import { useMemo } from 'react';
-import { DeleteOutlined, InfoCircleOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Select } from 'antd';
 import HmisTable from '@/components/ui/HmisTable';
 import { formatPkr } from '@/data/mock-walk-in-services';
 import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
-
-const ADDED_SERVICES_SCROLL_Y = {
-  sidebar: 188,
-  full: 220,
-};
+import {
+  HMIS_WALK_IN_SERVICES_SIDEBAR_SCROLL_Y,
+  HMIS_WALK_IN_TABLE_BODY_SCROLL_Y,
+} from '@/lib/hmis-table-scroll';
 
 export default function AddedServicesPanel({
   variant = 'full',
@@ -129,7 +128,9 @@ export default function AddedServicesPanel({
   );
 
   const tableScroll = useMemo(
-    () => ({ y: isSidebar ? ADDED_SERVICES_SCROLL_Y.sidebar : ADDED_SERVICES_SCROLL_Y.full }),
+    () => ({
+      y: isSidebar ? HMIS_WALK_IN_SERVICES_SIDEBAR_SCROLL_Y : HMIS_WALK_IN_TABLE_BODY_SCROLL_Y,
+    }),
     [isSidebar],
   );
 
@@ -156,13 +157,6 @@ export default function AddedServicesPanel({
           <strong className="walk-in-added-services-grand-total">{formatPkr(grandTotal)}</strong>
         </div>
       )}
-
-      <div className="walk-in-added-services-note">
-        <InfoCircleOutlined className="walk-in-added-services-note-icon" />
-        <span>
-          Note : You can increase or decrease the quantity using the +/- buttons.
-        </span>
-      </div>
 
       <div className="walk-in-added-services-actions">
         <Button className="walk-in-btn-cancel" onClick={onCancel}>

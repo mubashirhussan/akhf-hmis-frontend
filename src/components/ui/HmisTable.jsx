@@ -5,14 +5,24 @@ import { Table } from 'antd';
 import { useElementWidth } from '@/hooks/useElementWidth';
 import { getTableScrollWidth } from '@/lib/table-utils';
 
+const HEADER_BG = '#ffffff';
+
 function stripFixedColumns(columns = []) {
   return columns.map(({ fixed, ...column }) => column);
+}
+
+function applyColumnAlign(columns = [], defaultAlign = 'left') {
+  return columns.map((column) => ({
+    ...column,
+    align: column.align ?? defaultAlign,
+  }));
 }
 
 export default function HmisTable({
   className = '',
   wrapClassName = '',
   columns,
+  columnAlign = 'left',
   scroll,
   tableLayout,
   ...props
@@ -20,13 +30,18 @@ export default function HmisTable({
   const wrapRef = useRef(null);
   const containerWidth = useElementWidth(wrapRef);
 
+  const columnsWithAlign = useMemo(
+    () => applyColumnAlign(columns, columnAlign),
+    [columns, columnAlign],
+  );
+
   const contentWidth = useMemo(() => {
     if (scroll?.x !== undefined && typeof scroll.x === 'number') {
       return scroll.x;
     }
 
-    return getTableScrollWidth(columns);
-  }, [columns, scroll?.x]);
+    return getTableScrollWidth(columnsWithAlign);
+  }, [columnsWithAlign, scroll?.x]);
 
   const needsHorizontalScroll = useMemo(() => {
     if (scroll?.x === false) return false;
@@ -35,8 +50,11 @@ export default function HmisTable({
   }, [containerWidth, contentWidth, scroll?.x]);
 
   const resolvedColumns = useMemo(
-    () => (needsHorizontalScroll ? columns : stripFixedColumns(columns)),
-    [columns, needsHorizontalScroll],
+    () =>
+      needsHorizontalScroll
+        ? columnsWithAlign
+        : stripFixedColumns(columnsWithAlign),
+    [columnsWithAlign, needsHorizontalScroll],
   );
 
   const tableScroll = useMemo(() => {
@@ -59,6 +77,7 @@ export default function HmisTable({
     <div
       ref={wrapRef}
       className={`hmis-table-wrap hmis-scrollbar ${wrapClassName}`.trim()}
+      style={{ '--hmis-table-header-bg': HEADER_BG }}
     >
       <Table
         className={`hmis-table ${className}`.trim()}

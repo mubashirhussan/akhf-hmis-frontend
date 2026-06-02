@@ -1,296 +1,265 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  Avatar,
-  Button,
-  Col,
-  Descriptions,
-  Empty,
-  Input,
-  message,
-  Row,
-  Select,
-} from 'antd';
-import { FileTextOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
-import AppIcon from '@/components/icons/AppIcon';
+import { Avatar, Button, Input, message, Modal } from 'antd';
+import HmisDetailSection from '@/components/ui/HmisDetailSection';
+import HmisTable from '@/components/ui/HmisTable';
+import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import {
   MOCK_WALK_IN_PATIENTS,
   searchWalkInPatients,
 } from '@/data/mock-walk-in-patients';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
-import HmisCard from '@/components/ui/HmisCard';
 import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
-import { validateWalkInSearchQuery } from '@/lib/walk-in-search-validation';
-
-const SEARCH_BY_OPTIONS = [
-  { value: 'registration', label: 'Registration No' },
-  { value: 'mobile', label: 'Mobile No' },
-];
-
-const SEARCH_PLACEHOLDERS = {
-  registration: 'Enter registration number',
-  mobile: 'Enter mobile number',
-};
-
-function PatientMetric({ label, value }) {
-  return (
-    <div className="walk-in-patient-metric">
-      <span className="walk-in-patient-metric-label">{label}</span>
-      <span className="walk-in-patient-metric-value">{value}</span>
-    </div>
-  );
-}
-
-function PatientListItem({ patient, selected, onSelect }) {
-  const initials = patient.name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(patient)}
-      className={`walk-in-patient-row ${selected ? 'walk-in-patient-row--selected' : ''}`}
-    >
-      <Avatar size={48} className="walk-in-patient-avatar shrink-0">
-        {initials}
-      </Avatar>
-      <div className="walk-in-patient-row-main min-w-0 flex-2">
-        <p className="walk-in-patient-name">{patient.name}</p>
-        <p className="walk-in-patient-reg">{patient.registrationNo}</p>
-      </div>
-      <div className="walk-in-patient-row-stats">
-        <div className="walk-in-patient-gender">
-          <span className="walk-in-patient-gender-icon" aria-hidden>
-            <AppIcon
-              icon={patient.gender === 'Female' ? 'mdi:gender-female' : 'mdi:gender-male'}
-              className="h-4 w-4"
-            />
-          </span>
-          <PatientMetric label="GENDER" value={patient.gender} />
-        </div>
-        <PatientMetric label="AGE" value={patient.ageLabel} />
-        {/* <PatientMetric label="WEIGHT" value={patient.weight} /> */}
-      </div>
-    </button>
-  );
-}
-
-function VisitSummaryCards({ summary }) {
-  const cards = [
-    { key: 'visits', label: 'Total Visits', value: summary.totalVisits, tone: 'default' },
-    { key: 'last', label: 'Last Visit', value: summary.lastVisit, tone: 'default' },
-    { key: 'services', label: 'Total Services', value: summary.totalServices, tone: 'success' },
-    { key: 'charges', label: 'Total Charges', value: summary.totalCharges, tone: 'primary' },
-  ];
-
-  return (
-    <div className="walk-in-visit-summary-grid">
-      {cards.map((card) => (
-        <div key={card.key} className="walk-in-visit-summary-card">
-          <span className="walk-in-visit-summary-label">{card.label}</span>
-          <span className={`walk-in-visit-summary-value walk-in-visit-summary-value--${card.tone}`}>
-            {card.value}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
+import { HMIS_WALK_IN_TABLE_BODY_SCROLL_Y } from '@/lib/hmis-table-scroll';
+import { validateWalkInPatientSearch } from '@/lib/walk-in-search-validation';
 
 function PatientDetailsPanel({ patient }) {
-  const items = [
-    { key: 'reg', label: 'Registration No', children: patient.displayRegNo },
-    { key: 'name', label: 'Patient Name', children: patient.name },
-    { key: 'mobile', label: 'Mobile No', children: patient.mobile },
-    { key: 'cnic', label: 'CNIC', children: patient.cnic },
-    {
-      key: 'ageGender',
-      label: 'Age / Gender',
-      children: `${patient.age} Years / ${patient.gender}`,
-    },
-    { key: 'address', label: 'Address', children: patient.address },
-    { key: 'visit', label: 'Visit Date & Time', children: patient.visitDateTime },
+  const { visitSummary } = patient;
+
+  const patientFields = [
+    { key: 'mr', label: 'MR No', value: patient.registrationNo },
+    { key: 'name', label: 'Patient Name', value: patient.name },
+    { key: 'gender', label: 'Gender', value: patient.gender },
+    { key: 'age', label: 'Age', value: patient.ageLabel },
+    { key: 'mobile', label: 'Mobile No', value: patient.mobile },
+    { key: 'cnic', label: 'CNIC', value: patient.cnic },
+    { key: 'reg', label: 'Registration No', value: patient.displayRegNo },
+    { key: 'visit', label: 'Visit Date & Time', value: patient.visitDateTime },
+    { key: 'address', label: 'Address', value: patient.address, span: 4 },
+  ];
+
+  const visitFields = [
+    { key: 'visits', label: 'Total Visits', value: visitSummary.totalVisits },
+    { key: 'last', label: 'Last Visit', value: visitSummary.lastVisit },
+    { key: 'services', label: 'Total Services', value: visitSummary.totalServices },
+    { key: 'charges', label: 'Total Charges', value: visitSummary.totalCharges },
   ];
 
   return (
-    <>
-      <div className="walk-in-details-panel">
-        <div className="walk-in-panel-header">
-          <UserOutlined className="walk-in-panel-header-icon" />
-          <span className="walk-in-panel-header-title">Patient Details</span>
-        </div>
-        <Descriptions className="walk-in-descriptions" column={1} colon={false} items={items} />
-      </div>
-      <div className="walk-in-panel-header walk-in-panel-header--spaced">
-        <FileTextOutlined className="walk-in-panel-header-icon" />
-        <span className="walk-in-panel-header-title">Visit Summary</span>
-      </div>
-      <VisitSummaryCards summary={patient.visitSummary} />
-    </>
+    <div className="hmis-patient-details">
+      <HmisDetailSection title="Patient Details" fields={patientFields} />
+      <HmisDetailSection
+        title="Visit Summary"
+        fields={visitFields}
+        className="hmis-detail-section--last"
+      />
+    </div>
   );
 }
 
 export default function SearchExistingPatientTab() {
-  const [searchBy, setSearchBy] = useState('registration');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [mrNo, setMrNo] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-
-  const placeholder = SEARCH_PLACEHOLDERS[searchBy];
+  const [isPatientDetailsModalOpen, setIsPatientDetailsModalOpen] = useState(false);
 
   const handleSearch = () => {
-    const validation = validateWalkInSearchQuery(searchBy, searchQuery);
+    const validation = validateWalkInPatientSearch(mrNo, mobileNo);
     if (!validation.valid) {
       message.error(validation.message);
       setHasSearched(false);
       setResults([]);
       setSelectedPatient(null);
+      setIsPatientDetailsModalOpen(false);
       return;
     }
 
-    const matched = searchWalkInPatients(MOCK_WALK_IN_PATIENTS, searchBy, searchQuery);
+    const matched = searchWalkInPatients(MOCK_WALK_IN_PATIENTS, {
+      registrationNo: mrNo,
+      mobile: mobileNo,
+    });
     setResults(matched);
     setHasSearched(true);
     setSelectedPatient(null);
+    setIsPatientDetailsModalOpen(false);
   };
 
-  const handleSearchQueryChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleSearchByChange = (value) => {
-    setSearchBy(value);
-    setSearchQuery('');
-    setHasSearched(false);
+  const handleClear = () => {
+    setMrNo('');
+    setMobileNo('');
     setResults([]);
+    setHasSearched(false);
     setSelectedPatient(null);
+    setIsPatientDetailsModalOpen(false);
   };
 
-  const totalLabel = useMemo(() => {
-    if (!hasSearched) return 'Total : 0';
-    return `Total : ${results.length}`;
+  const handlePatientSelect = (patient) => {
+    setSelectedPatient(patient);
+    setIsPatientDetailsModalOpen(true);
+  };
+
+  const handleClosePatientModal = () => {
+    setIsPatientDetailsModalOpen(false);
+  };
+
+  const patientCountLabel = useMemo(() => {
+    if (!hasSearched) return '0 patients';
+    const count = results.length;
+    return `${count} patient${count === 1 ? '' : 's'}`;
   }, [hasSearched, results.length]);
+
+  const patientColumns = [
+    {
+      title: 'Sr #',
+      key: 'serial',
+      width: 72,
+      align: 'center',
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: 'Picture',
+      key: 'picture',
+      width: 92,
+      align: 'center',
+      render: (_, record) => {
+        const initials = (record.name || '')
+          .split(' ')
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0]?.toUpperCase() ?? '')
+          .join('');
+
+        return (
+          <Avatar
+            src={record.picture}
+            size={32}
+            style={{ backgroundColor: '#E6F1FA', color: '#026BB1', fontSize: 12 }}
+            icon={!record.picture ? <UserOutlined /> : null}
+          >
+            {!record.picture ? initials : null}
+          </Avatar>
+        );
+      },
+    },
+    {
+      title: 'MR No',
+      dataIndex: 'registrationNo',
+      key: 'registrationNo',
+      width: 160,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+      width: 120,
+    },
+    {
+      title: 'Age',
+      dataIndex: 'ageLabel',
+      key: 'ageLabel',
+      width: 120,
+    },
+  ];
+
+  const searchFields = (
+    <section className="walk-in-search-section" aria-label="Search patients">
+      <div className="walk-in-patient-search-bar">
+        <div className="walk-in-patient-search-field">
+          {/* <label className="walk-in-patient-search-label" htmlFor="walk-in-search-mr">
+            MR No
+          </label> */}
+          <Input
+            id="walk-in-search-mr"
+            className={HMIS_FIELD_CONTROL_CLASS}
+            placeholder="e.g. MR-002-26"
+            value={mrNo}
+            onChange={(e) => setMrNo(e.target.value)}
+            onPressEnter={handleSearch}
+            allowClear
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore="true"
+          />
+        </div>
+        <div className="walk-in-patient-search-field">
+          {/* <label className="walk-in-patient-search-label" htmlFor="walk-in-search-mobile">
+            Mobile No
+          </label> */}
+          <Input
+            id="walk-in-search-mobile"
+            className={HMIS_FIELD_CONTROL_CLASS}
+            placeholder="e.g. 03001234567"
+            value={mobileNo}
+            onChange={(e) => setMobileNo(e.target.value)}
+            onPressEnter={handleSearch}
+            allowClear
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore="true"
+          />
+        </div>
+        <div className="walk-in-patient-search-actions">
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            className="walk-in-search-btn"
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
+          {(mrNo || mobileNo || hasSearched) && (
+            <Button type="text" className="walk-in-search-clear-btn" onClick={handleClear}>
+              Clear
+            </Button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 
   return (
     <>
-      <HmisCard
-        className="rounded-tl-none"
-        title="Search Registration"
-        description="Search patient by registration number or mobile number."
+      <section className="walk-in-patients-section">
+        <div className="hmis-section-header hmis-section-header--inline mt-4">
+          <div className="hmis-section-header-text">
+            <h2 className="hmis-section-title">No of Registered Patients</h2>
+            {/* <p className="hmis-section-description">{patientCountLabel}</p> */}
+          </div>
+          <div className="hmis-section-header-extra">{searchFields}</div>
+        </div>
+        <HmisTable
+          className="hmis-table--patient-list"
+          columns={patientColumns}
+          dataSource={results}
+          rowKey="id"
+          columnAlign="left"
+          pagination={false}
+          tableLayout="fixed"
+          scroll={{ y: HMIS_WALK_IN_TABLE_BODY_SCROLL_Y }}
+          locale={{
+            emptyText: hasSearched
+              ? 'No patients found'
+              : 'Search by MR or mobile to view patients',
+          }}
+          onRow={(record) => ({
+            onClick: () => handlePatientSelect(record),
+            className: selectedPatient?.id === record.id ? 'hmis-table-row--selected' : undefined,
+          })}
+        />
+      </section>
+
+      <SearchServicesSection />
+
+      <Modal
+        className="hmis-patient-details-modal"
+        title={null}
+        open={isPatientDetailsModalOpen}
+        onCancel={handleClosePatientModal}
+        footer={null}
+        width={900}
+        centered
+        destroyOnClose
       >
-        <div className="walk-in-search-layout">
-        <Row gutter={[24, 24]} align="stretch" className="walk-in-search-row">
-          <Col xs={24} xl={15}>
-            <section className="walk-in-search-section">
-              <Row gutter={[12, 12]} align="bottom" className="walk-in-search-form">
-                <Col xs={24} sm={8} md={7}>
-                  {/* <label className="walk-in-field-label" htmlFor="walk-in-search-by">
-                    Search By
-                  </label> */}
-                  <Select
-                    id="walk-in-search-by"
-                    className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
-                    value={searchBy}
-                    options={SEARCH_BY_OPTIONS}
-                    onChange={handleSearchByChange}
-                  />
-                </Col>
-                <Col xs={24} sm={10} md={11}>
-                  {/* <label className="walk-in-field-label" htmlFor="walk-in-search-query">
-                    &nbsp;
-                  </label> */}
-                  <div className="walk-in-search-query-field">
-                    <Input
-                      id="walk-in-search-query"
-                      className={HMIS_FIELD_CONTROL_CLASS}
-                      placeholder={placeholder}
-                      value={searchQuery}
-                      onChange={handleSearchQueryChange}
-                      onPressEnter={handleSearch}
-                      autoComplete="off"
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                    />
-                  </div>
-                </Col>
-                <Col xs={24} sm={6} md={6}>
-                  <Button
-                    type="primary"
-                    icon={<SearchOutlined />}
-                    className="walk-in-search-btn w-full"
-                    onClick={handleSearch}
-                  >
-                    Search
-                  </Button>
-                </Col>
-              </Row>
-            </section>
-
-            <section className="walk-in-patient-list-panel">
-              <div className="walk-in-patient-list-header">
-                <div className="flex items-center gap-2">
-                  <UserOutlined className="walk-in-patient-list-header-icon" />
-                  <span className="walk-in-patient-list-header-title">
-                    No of Registered Patients
-                  </span>
-                </div>
-                <span className="walk-in-patient-list-total">{totalLabel}</span>
-              </div>
-
-              <div className="walk-in-patient-list-body hmis-scrollbar">
-                {!hasSearched ? (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Search to view registered patients"
-                    className="py-10"
-                  />
-                ) : results.length === 0 ? (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="No patients found"
-                    className="py-10"
-                  />
-                ) : (
-                  results.map((patient) => (
-                    <PatientListItem
-                      key={patient.id}
-                      patient={patient}
-                      selected={selectedPatient?.id === patient.id}
-                      onSelect={setSelectedPatient}
-                    />
-                  ))
-                )}
-              </div>
-            </section>
-          </Col>
-
-          <Col xs={24} xl={9} className="walk-in-details-col">
-            {selectedPatient ? (
-              <PatientDetailsPanel patient={selectedPatient} />
-            ) : (
-              <div className="walk-in-details-empty">
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={
-                    hasSearched && results.length > 0
-                      ? 'Select a patient to view details'
-                      : 'Patient details will appear here'
-                  }
-                />
-              </div>
-            )}
-          </Col>
-        </Row>
-
-      </div>
-      </HmisCard>
-        <SearchServicesSection />
+        {selectedPatient ? <PatientDetailsPanel patient={selectedPatient} /> : null}
+      </Modal>
     </>
   );
 }

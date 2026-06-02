@@ -7,7 +7,7 @@ const HMIS_PRIMARY_HOVER = "#015a9a";
 const HMIS_PRIMARY_ACTIVE = "#014d85";
 
 const hmisFieldTokens = {
-  controlHeight: 40,
+  controlHeight: 32,
   borderRadius: 8,
   fontSize: 11,
   colorBorder: "#d8dee9",
@@ -15,8 +15,7 @@ const hmisFieldTokens = {
   activeBorderColor: HMIS_PRIMARY,
   colorText: "#000000",
   colorTextPlaceholder: "#6c6c6c",
-  paddingInline: 11,
-  paddingBlock: 8,
+  lineHeight: 1.25,
 };
 
 const hmisTheme = {
