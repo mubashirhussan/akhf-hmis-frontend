@@ -169,21 +169,23 @@ export default function SearchServicesSection({ variant = "full" }) {
 
   const searchFilters = isSidebar ? (
     <div className="walk-in-services-filters">
-      <Select
-        className={`walk-in-services-filter-category ${HMIS_FIELD_CONTROL_CLASS}`}
-        value={category}
-        options={SERVICE_CATEGORY_OPTIONS}
-        onChange={setCategory}
-      />
-      <Input
-        className={`walk-in-services-filter-input ${HMIS_FIELD_CONTROL_CLASS}`}
-        placeholder="Search Services"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        autoComplete="off"
-        data-lpignore="true"
-        data-1p-ignore="true"
-      />
+      <div className="walk-in-services-filters-top">
+        <Select
+          className={`walk-in-services-filter-category ${HMIS_FIELD_CONTROL_CLASS}`}
+          value={category}
+          options={SERVICE_CATEGORY_OPTIONS}
+          onChange={setCategory}
+        />
+        <Input
+          className={`walk-in-services-filter-input ${HMIS_FIELD_CONTROL_CLASS}`}
+          placeholder="Search Services"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          autoComplete="off"
+          data-lpignore="true"
+          data-1p-ignore="true"
+        />
+      </div>
       <div className="walk-in-services-filter-multiselect">{serviceResultsDropdown}</div>
     </div>
   ) : (

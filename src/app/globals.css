@@ -604,8 +604,15 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-services-filters {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.walk-in-services-filters-top {
+  display: flex;
+  align-items: center;
   gap: 10px;
   width: 100%;
 }
