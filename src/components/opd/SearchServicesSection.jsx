@@ -1,17 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import {
-  Button,
-  Checkbox,
-  Col,
-  Input,
-  message,
-  Pagination,
-  Row,
-  Select,
-} from "antd";
+import { Checkbox, Col, Input, message, Row, Select } from "antd";
 import HmisCard from "@/components/ui/HmisCard";
 import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
 import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
@@ -58,28 +49,40 @@ export default function SearchServicesSection({ variant = "full" }) {
     [searchResults, resultsPage],
   );
 
-  const addedServiceIds = useMemo(
-    () => new Set(addedServices.map((s) => s.serviceId)),
-    [addedServices],
-  );
+  useEffect(() => {
+    const query = searchQuery.trim();
 
-  const handleSearch = () => {
-    const matched = searchServices(MOCK_SERVICES, category, searchQuery);
-    setSearchResults(matched);
-    setResultsPage(1);
-    setHasSearched(true);
-  };
-
-  const handleToggleService = (service, checked) => {
-    if (checked) {
-      if (addedServiceIds.has(service.id)) return;
-      setAddedServices((prev) => [...prev, createAddedService(service)]);
+    if (!query) {
+      setHasSearched(false);
+      setSearchResults([]);
+      setResultsPage(1);
       return;
     }
 
-    setAddedServices((prev) =>
-      prev.filter((row) => row.serviceId !== service.id),
-    );
+    const timer = setTimeout(() => {
+      const matched = searchServices(MOCK_SERVICES, category, query);
+      setSearchResults(matched);
+      setResultsPage(1);
+      setHasSearched(true);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [category, searchQuery]);
+
+  const handleSelectedServicesChange = (selectedIds) => {
+    setAddedServices((prev) => {
+      const existingMap = new Map(prev.map((row) => [row.serviceId, row]));
+
+      return selectedIds
+        .map((serviceId) => {
+          const existing = existingMap.get(serviceId);
+          if (existing) return existing;
+
+          const service = MOCK_SERVICES.find((s) => s.id === serviceId);
+          return service ? createAddedService(service) : null;
+        })
+        .filter(Boolean);
+    });
   };
 
   const handleQuantityChange = (rowId, quantity) => {
@@ -114,6 +117,56 @@ export default function SearchServicesSection({ variant = "full" }) {
     // TODO: wire save walk-in record API
   };
 
+  const selectedServiceValues = useMemo(
+    () => addedServices.map((row) => row.serviceId),
+    [addedServices],
+  );
+
+  const selectedServiceSet = useMemo(
+    () => new Set(selectedServiceValues),
+    [selectedServiceValues],
+  );
+
+  const serviceSelectOptions = useMemo(
+    () =>
+      pagedResults.map((service) => ({
+        value: service.id,
+        label: `${service.name} (${formatPkr(service.price)})`,
+      })),
+    [pagedResults],
+  );
+
+  const serviceResultsDropdown = (
+    <div className="walk-in-service-results-dropdown-wrap">
+      <Select
+        mode="multiple"
+        allowClear
+        className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
+        placeholder="Select services"
+        value={selectedServiceValues}
+        options={serviceSelectOptions}
+        onChange={handleSelectedServicesChange}
+        disabled={!hasSearched}
+        maxTagCount={1}
+        maxTagTextLength={26}
+        maxTagPlaceholder={(omittedValues) => `+${omittedValues.length}`}
+        optionRender={(option) => (
+          <div className="walk-in-service-option">
+            <Checkbox
+              checked={selectedServiceSet.has(option.value)}
+              tabIndex={-1}
+              className="walk-in-service-option-checkbox"
+            />
+            <span className="walk-in-service-option-label">{option.label}</span>
+          </div>
+        )}
+      />
+      {/* <p className="walk-in-service-results-count">
+        Showing {pagedResults.length} of {resultsTotal} results
+      </p> */}
+    </div>
+  );
+
   const searchFilters = isSidebar ? (
     <div className="walk-in-services-filters">
       <Select
@@ -127,22 +180,15 @@ export default function SearchServicesSection({ variant = "full" }) {
         placeholder="Search Services"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onPressEnter={handleSearch}
         autoComplete="off"
         data-lpignore="true"
         data-1p-ignore="true"
       />
-      <Button
-        type="primary"
-        className="walk-in-search-btn walk-in-services-filter-btn"
-        onClick={handleSearch}
-      >
-        Search
-      </Button>
+      <div className="walk-in-services-filter-multiselect">{serviceResultsDropdown}</div>
     </div>
   ) : (
-    <Row gutter={[12, 12]} align="middle" justify="end" wrap>
-      <Col xs={24} sm={8} md={8}>
+    <Row gutter={[12, 12]} align="middle" className="walk-in-services-filters-grid">
+      <Col xs={24} md={8} className="walk-in-services-filters-grid-col">
         <Select
           className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
           value={category}
@@ -150,78 +196,28 @@ export default function SearchServicesSection({ variant = "full" }) {
           onChange={setCategory}
         />
       </Col>
-      <Col xs={24} sm={10} md={11}>
-        <Input
-          className={HMIS_FIELD_CONTROL_CLASS}
-          placeholder="Search Services"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onPressEnter={handleSearch}
-          autoComplete="off"
-          data-lpignore="true"
-          data-1p-ignore="true"
-        />
-      </Col>
-      <Col xs={24} sm={6} md={5}>
-        <Button
-          type="primary"
-          className="walk-in-search-btn w-full"
-          onClick={handleSearch}
+      <Col xs={24} md={16} className="walk-in-services-filters-grid-col">
+        <Row
+          gutter={[12, 12]}
+          align="middle"
+          wrap={false}
+          className="walk-in-services-filters-grid-right"
         >
-          Search
-        </Button>
+          <Col span={10}>
+            <Input
+              className={HMIS_FIELD_CONTROL_CLASS}
+              placeholder="Search Services"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+            />
+          </Col>
+          <Col span={14}>{serviceResultsDropdown}</Col>
+        </Row>
       </Col>
     </Row>
-  );
-
-  const serviceResultsList = (
-    <div className="walk-in-service-results">
-      {pagedResults.length === 0 ? (
-        <p className="walk-in-service-results-empty">No services found</p>
-      ) : (
-        <ul className="walk-in-service-results-list hmis-scrollbar">
-          {pagedResults.map((service) => {
-            const isChecked = addedServiceIds.has(service.id);
-
-            return (
-              <li
-                key={service.id}
-                className={`walk-in-service-result-item ${isChecked ? "walk-in-service-result-item--selected" : ""}`}
-              >
-                <Checkbox
-                  checked={isChecked}
-                  onChange={(e) =>
-                    handleToggleService(service, e.target.checked)
-                  }
-                />
-                <span className="walk-in-service-result-name">
-                  {service.name}
-                </span>
-                <span className="walk-in-service-result-price">
-                  {formatPkr(service.price)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      <div className="walk-in-service-results-footer">
-        <span className="walk-in-service-results-count">
-          Showing {pagedResults.length} of {resultsTotal} results
-        </span>
-        {resultsTotal > 0 && (
-          <Pagination
-            size="small"
-            current={resultsPage}
-            total={resultsTotal}
-            pageSize={10}
-            showSizeChanger={false}
-            onChange={setResultsPage}
-          />
-        )}
-      </div>
-    </div>
   );
 
   return (
@@ -249,9 +245,6 @@ export default function SearchServicesSection({ variant = "full" }) {
           <div className="walk-in-services-body walk-in-services-body--sidebar">
             <div className="walk-in-services-content walk-in-services-content--stacked">
               <div className="walk-in-services-content-row">
-                {serviceResultsList}
-              </div>
-              <div className="walk-in-services-content-row">
                 <AddedServicesPanel
                   variant="sidebar"
                   services={addedServices}
@@ -267,11 +260,8 @@ export default function SearchServicesSection({ variant = "full" }) {
           </div>
         ) : (
           <div className="walk-in-services-body">
-            <Row gutter={[20, 20]} className="walk-in-services-content">
-              <Col xs={24} xl={8}>
-                {serviceResultsList}
-              </Col>
-              <Col xs={24} xl={16}>
+            <div className="walk-in-services-content walk-in-services-content--stacked">
+              <div className="walk-in-services-content-row walk-in-services-content-row--full">
                 <AddedServicesPanel
                   services={addedServices}
                   doctors={MOCK_DOCTORS}
@@ -281,8 +271,8 @@ export default function SearchServicesSection({ variant = "full" }) {
                   onCancel={handleCancel}
                   onSave={handleSave}
                 />
-              </Col>
-            </Row>
+              </div>
+            </div>
           </div>
         )}
       </HmisCard>

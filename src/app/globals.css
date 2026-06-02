@@ -605,6 +605,7 @@ body::-webkit-scrollbar-thumb:hover,
 .walk-in-services-filters {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   width: 100%;
 }
@@ -619,6 +620,26 @@ body::-webkit-scrollbar-thumb:hover,
   min-width: 0;
 }
 
+.walk-in-services-filter-multiselect {
+  flex: 1 1 100%;
+}
+
+.walk-in-services-filters-grid {
+  width: 100%;
+}
+
+.walk-in-services-filters-grid-col {
+  min-width: 0;
+}
+
+.walk-in-services-filters-grid-right {
+  width: 100%;
+}
+
+.walk-in-services-filters-grid-right > .ant-col {
+  min-width: 0;
+}
+
 .walk-in-services-filter-btn {
   flex: 0 0 auto;
   min-width: 76px;
@@ -628,13 +649,78 @@ body::-webkit-scrollbar-thumb:hover,
   display: flex;
   flex-direction: column;
   gap: 24px;
-  height: auto;
+  height: 100%;
   margin-top: 4px;
 }
 
 .walk-in-services-content--stacked .walk-in-services-content-row {
   width: 100%;
   flex-shrink: 0;
+}
+
+.walk-in-services-content-row--full {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.walk-in-services-content-row--full .walk-in-added-services--full {
+  width: 100%;
+  height: 100%;
+}
+
+.walk-in-service-results-dropdown-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.walk-in-service-results-dropdown-wrap .ant-select {
+  width: 100%;
+}
+
+.walk-in-service-results-dropdown-wrap .ant-select-multiple .ant-select-selection-overflow {
+  flex-wrap: nowrap !important;
+}
+
+.walk-in-service-results-dropdown-wrap .ant-select-multiple .ant-select-selection-overflow-item {
+  min-width: 0;
+}
+
+.walk-in-service-results-dropdown-wrap
+  .ant-select-multiple
+  .ant-select-selection-overflow-item:not(.ant-select-selection-overflow-item-suffix) {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.walk-in-service-results-dropdown-wrap .ant-select-multiple .ant-select-selection-item {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.walk-in-service-results-dropdown-wrap .ant-select-multiple .ant-select-selection-overflow-item-suffix {
+  flex: 0 0 auto;
+}
+
+.walk-in-service-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.walk-in-service-option-checkbox {
+  pointer-events: none;
+}
+
+.walk-in-service-option-label {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.25;
+  color: #1e293b;
 }
 
 .walk-in-services-content--stacked .walk-in-service-results {
@@ -678,10 +764,51 @@ body::-webkit-scrollbar-thumb:hover,
   flex: 0 0 auto;
 }
 
-/* .hmis-card-header--inline .hmis-card-header-extra {
-  flex: 1 1 320px;
+.hmis-card-header--inline .hmis-card-header-extra {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1 1 560px;
+  min-width: 320px;
+}
+
+.hmis-card-header--inline .hmis-card-header-extra > .ant-row {
+  width: 100%;
+}
+
+/* Search Services header: stable two-column layout (no giant computed gap) */
+.walk-in-services-card .hmis-card-header--inline {
+  display: grid;
+  grid-template-columns: 8fr 16fr;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+
+.walk-in-services-card .hmis-card-header--inline .hmis-card-header-text {
   min-width: 0;
-} */
+}
+
+.walk-in-services-card .hmis-card-header--inline .hmis-card-header-extra {
+  min-width: 0;
+  width: 100%;
+}
+
+.walk-in-services-card .hmis-card-header--inline .hmis-card-header-extra > .ant-row {
+  width: 100%;
+}
+
+@media (max-width: 991px) {
+  .walk-in-services-card .hmis-card-header--inline {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .walk-in-services-card .hmis-card-header--inline .hmis-card-header-extra,
+  .walk-in-services-card .hmis-card-header--inline .hmis-card-header-extra > .ant-row {
+    width: 100%;
+  }
+}
 
 .hmis-card-title {
   margin: 0 0 4px;
@@ -1168,6 +1295,7 @@ body::-webkit-scrollbar-thumb:hover,
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 11px;
   color: #6c6c6c;
+  margin: 0;
 }
 
 .walk-in-added-services {
@@ -1246,7 +1374,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-added-services--full .walk-in-added-services-table-wrap {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   max-height: none;
 }
 
@@ -1351,7 +1480,8 @@ body::-webkit-scrollbar-thumb:hover,
   justify-content: flex-end;
   gap: 10px;
   margin: 0;
-  padding-bottom: 8px;
+  padding-top: 2px;
+  padding-bottom: 6px;
   position: relative;
   z-index: 1;
 }

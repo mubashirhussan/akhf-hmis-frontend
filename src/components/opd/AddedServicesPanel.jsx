@@ -9,7 +9,7 @@ import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
 
 const ADDED_SERVICES_SCROLL_Y = {
   sidebar: 188,
-  full: 280,
+  full: 220,
 };
 
 export default function AddedServicesPanel({
