@@ -226,7 +226,7 @@ export default function SearchServicesSection({ variant = "full" }) {
     >
       <HmisCard
         className={`walk-in-services-card ${isSidebar ? "walk-in-services-card--sidebar" : ""}`}
-        title="Search Services"
+        title="Add Services"
         headerLayout={isSidebar ? "stacked" : "inline"}
         headerExtra={searchFilters}
       >

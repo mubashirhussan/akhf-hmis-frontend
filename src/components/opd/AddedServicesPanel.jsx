@@ -137,7 +137,7 @@ export default function AddedServicesPanel({
     <div
       className={`walk-in-added-services ${isSidebar ? 'walk-in-added-services--sidebar' : 'walk-in-added-services--full'}`}
     >
-      <h3 className="walk-in-added-services-title">Added Services</h3>
+      {/* <h3 className="walk-in-added-services-title">Added Services</h3> */}
 
       <HmisTable
         className="walk-in-added-services-table"

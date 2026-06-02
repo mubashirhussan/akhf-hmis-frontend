@@ -8,6 +8,7 @@ import {
   Descriptions,
   Empty,
   Input,
+  message,
   Row,
   Select,
 } from 'antd';
@@ -137,7 +138,6 @@ function PatientDetailsPanel({ patient }) {
 export default function SearchExistingPatientTab() {
   const [searchBy, setSearchBy] = useState('registration');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchError, setSearchError] = useState('');
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -147,14 +147,13 @@ export default function SearchExistingPatientTab() {
   const handleSearch = () => {
     const validation = validateWalkInSearchQuery(searchBy, searchQuery);
     if (!validation.valid) {
-      setSearchError(validation.message);
+      message.error(validation.message);
       setHasSearched(false);
       setResults([]);
       setSelectedPatient(null);
       return;
     }
 
-    setSearchError('');
     const matched = searchWalkInPatients(MOCK_WALK_IN_PATIENTS, searchBy, searchQuery);
     setResults(matched);
     setHasSearched(true);
@@ -163,25 +162,14 @@ export default function SearchExistingPatientTab() {
 
   const handleSearchQueryChange = (event) => {
     setSearchQuery(event.target.value);
-    if (searchError) {
-      setSearchError('');
-    }
   };
 
   const handleSearchByChange = (value) => {
     setSearchBy(value);
     setSearchQuery('');
-    setSearchError('');
     setHasSearched(false);
     setResults([]);
     setSelectedPatient(null);
-  };
-
-  const handleSearchQueryBlur = () => {
-    if (searchQuery.trim()) {
-      const validation = validateWalkInSearchQuery(searchBy, searchQuery);
-      setSearchError(validation.valid ? '' : validation.message);
-    }
   };
 
   const totalLabel = useMemo(() => {
@@ -214,30 +202,21 @@ export default function SearchExistingPatientTab() {
                   />
                 </Col>
                 <Col xs={24} sm={10} md={11}>
-                  <label className="walk-in-field-label" htmlFor="walk-in-search-query">
+                  {/* <label className="walk-in-field-label" htmlFor="walk-in-search-query">
                     &nbsp;
-                  </label>
+                  </label> */}
                   <div className="walk-in-search-query-field">
                     <Input
                       id="walk-in-search-query"
                       className={HMIS_FIELD_CONTROL_CLASS}
                       placeholder={placeholder}
                       value={searchQuery}
-                      status={searchError ? 'error' : undefined}
                       onChange={handleSearchQueryChange}
-                      onBlur={handleSearchQueryBlur}
                       onPressEnter={handleSearch}
                       autoComplete="off"
                       data-lpignore="true"
                       data-1p-ignore="true"
-                      aria-invalid={Boolean(searchError)}
-                      aria-describedby={searchError ? 'walk-in-search-query-error' : undefined}
                     />
-                    {searchError ? (
-                      <p id="walk-in-search-query-error" className="walk-in-field-error" role="alert">
-                        {searchError}
-                      </p>
-                    ) : null}
                   </div>
                 </Col>
                 <Col xs={24} sm={6} md={6}>
