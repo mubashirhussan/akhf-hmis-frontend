@@ -4,6 +4,8 @@
   --background: #FFFFFF;
   --foreground: #1e293b;
   --hmis-primary: #026BB1;
+  --hmis-error: #ff4d4f;
+  --hmis-error-focus-ring: rgba(255, 77, 79, 0.2);
   --hmis-header-bg: #FFFFFF;
   --hmis-scrollbar-size: 4px;
   --hmis-scrollbar-track: #eef2f6;
@@ -249,6 +251,41 @@ body::-webkit-scrollbar-thumb:hover,
   background: var(--hmis-scrollbar-thumb-hover);
 }
 
+/* Ant Design App — main column only (sidebar stays outside .ant-app) */
+.hmis-app-host.ant-app {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  background: transparent;
+}
+
+/* Sidebar — isolated from .ant-app / form content tokens */
+.hmis-sidebar {
+  flex-shrink: 0;
+  color: #ffffff;
+  background-color: var(--hmis-primary);
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+}
+
+.hmis-sidebar a,
+.hmis-sidebar button {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hmis-sidebar .sidebar-nav-parent.bg-white,
+.hmis-sidebar .sidebar-nav-child.bg-white {
+  color: var(--hmis-primary) !important;
+}
+
 /* Sidebar only — scrollbar fully hidden until hover (Windows needs width: 0) */
 .sidebar-scroll {
   -ms-overflow-style: none;
@@ -416,13 +453,26 @@ body::-webkit-scrollbar-thumb:hover,
 .walk-in-add-record-layout {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
 }
 
 .walk-in-add-record-form {
-  display: flex;
-  flex-direction: column;
+  display: block;
+  width: 100%;
+}
+
+.walk-in-add-record-form.hmis-form-grid {
+  row-gap: 10px;
+  column-gap: 12px;
+}
+
+.walk-in-add-record-form > .hmis-floating-field {
+  margin-top: 6px;
+}
+
+.walk-in-add-record-form > .hmis-dob-age-field--embedded {
+  margin-top: 0;
 }
 
 /* Dynamic form grid — columns via --hmis-form-cols (default 4) */
@@ -448,28 +498,8 @@ body::-webkit-scrollbar-thumb:hover,
   width: 100%;
 }
 
-/* Category row — flex so fields stay one row, left-aligned, equal width (1/5 each) */
-.walk-in-category-fields-row {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 16px;
-  width: 100%;
-  min-width: 0;
-}
-
-.walk-in-category-fields-row .walk-in-category-field-slot {
-  flex: 0 0 calc((100% - 4 * 16px) / 5);
-  width: calc((100% - 4 * 16px) / 5);
-  max-width: calc((100% - 4 * 16px) / 5);
-  min-width: 0;
-  grid-column: unset !important;
-}
-
 .walk-in-add-record-services {
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid #e8edf3;
 }
 
@@ -500,6 +530,13 @@ body::-webkit-scrollbar-thumb:hover,
   color: #94a3b8;
   transform: translateY(-50%);
   pointer-events: none;
+}
+
+.hmis-floating-label-asterisk {
+  margin-left: 2px;
+  color: #ff4d4f;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .hmis-floating-control {
@@ -577,8 +614,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .hmis-dob-age-unit.ant-select {
-  flex: 0.85 1 0;
-  min-width: 72px;
+  flex: 0.9 1 0;
+  min-width: 76px;
   height: var(--hmis-field-height) !important;
   min-height: var(--hmis-field-height) !important;
   max-height: var(--hmis-field-height) !important;
@@ -708,6 +745,10 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 11px !important;
   font-weight: 500 !important;
   line-height: 1.25 !important;
+}
+
+.hmis-field-control.ant-select .ant-select-placeholder {
+  color: #6c6c6c !important;
 }
 
 .hmis-field-control.ant-select-multiple .ant-select-content {
@@ -1915,15 +1956,98 @@ body::-webkit-scrollbar-thumb:hover,
   gap: 8px 16px;
 }
 
-.patient-reg-grid-4.ant-row {
-  width: 100%;
+.patient-reg-section-grid.hmis-form-grid {
+  row-gap: 10px;
+  column-gap: 12px;
 }
 
-.patient-reg-grid-4 > .ant-col .ant-form-item {
-  margin-bottom: 8px;
+.patient-registration-form .patient-reg-section-grid > .hmis-floating-field {
+  margin-top: 6px;
 }
 
-.patient-registration-form .patient-reg-grid-4 .hmis-dob-age-field-inner {
+.patient-registration-form .patient-reg-section-grid .hmis-dob-age-field--embedded {
+  margin-top: 0;
+}
+
+.patient-registration-form .patient-reg-section-grid .hmis-floating-control .ant-form-item {
+  margin-bottom: 0;
+}
+
+.patient-registration-form .patient-reg-section-grid .ant-form-item-explain-error {
+  display: block !important;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--hmis-error);
+}
+
+/* After submit — red border on all flagged missing fields (noStyle Form.Item safe) */
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-floating-label,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-floating-label {
+  color: var(--hmis-error) !important;
+}
+
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-input-status-error,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-select-status-error,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-picker-status-error {
+  border: 2px solid var(--hmis-error) !important;
+  border-color: var(--hmis-error) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-dob-age-field-inner:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-dob-age-field-inner:focus-within {
+  border: 2px solid var(--hmis-error) !important;
+  border-color: var(--hmis-error) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.patient-reg-checkbox-slot {
+  display: flex;
+  align-items: center;
+  min-height: var(--hmis-field-height);
+  margin-top: 6px;
+  padding-top: 7px;
+  box-sizing: border-box;
+}
+
+.patient-reg-checkbox-slot .ant-checkbox-wrapper {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-size: 12px;
+  color: #334155;
+}
+
+.patient-registration-form .patient-reg-radio-field.hmis-floating-field--radios {
+  margin-top: 6px;
+}
+
+.patient-registration-form .patient-reg-section-grid .hmis-dob-age-field-inner {
   min-width: 0;
   height: var(--hmis-field-height);
   min-height: var(--hmis-field-height);
@@ -1951,33 +2075,15 @@ body::-webkit-scrollbar-thumb:hover,
 .patient-registration-form.ant-form-vertical {
   --ant-form-vertical-label-padding: 0 0 4px;
   --ant-form-item-margin-bottom: 8px;
+  --ant-form-label-font-size: 13px;
 }
 
 .patient-registration-form .ant-form-item {
   margin-bottom: 8px !important;
 }
 
-.patient-registration-form .ant-form-item-label > label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #64748b;
-  width: 100%;
-}
-
-.patient-registration-form
-  .ant-form-item-label
-  > label.ant-form-item-required:not(.ant-form-item-required-mark-hidden)::before {
+.patient-registration-form .ant-form-item-label {
   display: none !important;
-}
-
-.patient-reg-label {
-  display: inline;
-}
-
-.patient-reg-label-asterisk {
-  margin-left: 2px;
-  color: #ff4d4f;
-  font-size: 12px;
 }
 
 .patient-registration-collapse.ant-collapse {
@@ -2059,7 +2165,8 @@ body::-webkit-scrollbar-thumb:hover,
   padding-top: 22px;
 }
 
-.patient-reg-radio-row .ant-radio-group {
+.patient-reg-radio-row .ant-radio-group,
+.patient-registration-form .patient-reg-radio-field .ant-radio-group {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 16px;

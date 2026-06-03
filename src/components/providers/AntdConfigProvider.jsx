@@ -59,6 +59,7 @@ const hmisTheme = {
       colorPrimary: HMIS_PRIMARY,
     },
     Form: {
+      labelFontSize: 13,
       verticalLabelPadding: '0 0 4px',
       itemMarginBottom: 8,
     },

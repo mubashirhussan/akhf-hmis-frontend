@@ -14,6 +14,8 @@ export default function HmisFloatingField({
   Col,
   /** @deprecated Use `col` instead */
   colSpan,
+  /** Shows required asterisk on border label */
+  required = false,
 }) {
   const isRadios = variant === 'radios';
   const radioLabel = isRadios && label && !label.endsWith(':') ? `${label} :` : label;
@@ -39,6 +41,11 @@ export default function HmisFloatingField({
         <>
           <label className="hmis-floating-label" htmlFor={htmlFor}>
             {label}
+            {required ? (
+              <span className="hmis-floating-label-asterisk" aria-hidden>
+                *
+              </span>
+            ) : null}
           </label>
           <div className="hmis-floating-control">{children}</div>
         </>

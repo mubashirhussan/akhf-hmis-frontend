@@ -102,7 +102,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
 
   return (
     <aside
-      className={`relative flex h-screen shrink-0 flex-col bg-[var(--hmis-primary)] text-white transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-[256px]'}`}
+      className={`hmis-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--hmis-primary)] text-white transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-[256px]'}`}
     >
       <button
         type="button"

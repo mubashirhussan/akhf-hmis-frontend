@@ -6,12 +6,14 @@ import {
   calculateDobFromAge,
   DOB_AGE_UNITS,
   formatDobDisplay,
+  getMaxAgeForUnit,
 } from '@/lib/dob-from-age';
 
 const UNIT_OPTIONS = [
   { value: DOB_AGE_UNITS.years, label: 'Years' },
   { value: DOB_AGE_UNITS.months, label: 'Months' },
   { value: DOB_AGE_UNITS.days, label: 'Days' },
+  { value: DOB_AGE_UNITS.hours, label: 'Hours' },
 ];
 
 function resolveGridColumn(col) {
@@ -36,6 +38,9 @@ export default function HmisDobAgeField({
   maxAgeYears = 150,
   /** No extra top offset — use with an external label (e.g. Ant Design Form.Item). */
   embedded = false,
+  agePlaceholder = '',
+  /** Id for the age input — enables label association and submit focus. */
+  ageInputId,
 }) {
   const dob = useMemo(() => calculateDobFromAge(age, unit), [age, unit]);
   const dobDisplay = formatDobDisplay(dob);
@@ -57,12 +62,7 @@ export default function HmisDobAgeField({
     }
 
     const parsed = Number.parseInt(digitsOnly, 10);
-    const max =
-      unit === DOB_AGE_UNITS.years
-        ? maxAgeYears
-        : unit === DOB_AGE_UNITS.months
-          ? maxAgeYears * 12
-          : maxAgeYears * 365;
+    const max = getMaxAgeForUnit(unit, maxAgeYears);
 
     emitChange(String(Math.min(parsed, max)), unit);
   };
@@ -92,10 +92,11 @@ export default function HmisDobAgeField({
           {dobDisplay || ''}
         </div>
         <Input
+          id={ageInputId}
           className="hmis-dob-age-age"
           value={age}
           onChange={handleAgeChange}
-          placeholder=""
+          placeholder={agePlaceholder}
           inputMode="numeric"
           autoComplete="off"
           aria-label="Age"

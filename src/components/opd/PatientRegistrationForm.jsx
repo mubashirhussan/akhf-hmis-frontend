@@ -1,21 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Checkbox,
-  Col,
-  Collapse,
-  Form,
-  Input,
-  Radio,
-  Row,
-  Select,
-  message,
-} from 'antd';
+import { App, Button, Checkbox, Collapse, Form, Input, Select } from 'antd';
 import HmisDobAgeField from '@/components/ui/HmisDobAgeField';
+import HmisFormGrid from '@/components/ui/HmisFormGrid';
+import PatientRegField from '@/components/opd/PatientRegField';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
+import {
+  clearPatientRegValidationState,
+  focusFormField,
+  handleFormChangeClearErrors,
+  highlightAllInvalidFields,
+} from '@/lib/hmis-form-validation';
 import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
 
 const controlClass = HMIS_FIELD_CONTROL_CLASS;
@@ -140,8 +137,13 @@ const KIN_RELATION_OPTIONS = [
   { value: 'other', label: 'Other' },
 ];
 
-const REQUIRED_RULE = (message) => [
-  { required: true, message, validateTrigger: 'onSubmit' },
+const REQUIRED_RULE = (msg) => [
+  {
+    required: true,
+    whitespace: true,
+    message: msg,
+    validateTrigger: ['onChange', 'onSubmit'],
+  },
 ];
 
 const dobAgeValidator = (_, value) => {
@@ -152,7 +154,9 @@ const dobAgeValidator = (_, value) => {
   return Promise.resolve();
 };
 
-const dobAgeRules = [{ validator: dobAgeValidator, validateTrigger: 'onSubmit' }];
+const dobAgeRules = [
+  { validator: dobAgeValidator, validateTrigger: ['onChange', 'onSubmit'] },
+];
 
 function DobAgeFormControl({ value, onChange }) {
   return (
@@ -193,24 +197,64 @@ const initialValues = {
 
 const DEFAULT_OPEN_PANELS = ['patient', 'general'];
 
-function renderRequiredMark(label, { required }) {
-  if (!required) {
-    return label;
-  }
+const ALL_PANEL_KEYS = ['patient', 'address', 'kin', 'general'];
 
-  return (
-    <span className="patient-reg-label">
-      {label}
-      <span className="patient-reg-label-asterisk" aria-hidden>
-        *
-      </span>
-    </span>
-  );
-}
+/** Maps form field names to accordion panel keys for expand-on-error. */
+const FIELD_PANEL_MAP = {
+  title: 'patient',
+  firstName: 'patient',
+  lastName: 'patient',
+  dobAge: 'patient',
+  gender: 'patient',
+  cnic: 'patient',
+  contactNo: 'patient',
+  city: 'patient',
+  town: 'patient',
+  guardianRelation: 'patient',
+  guardianFirstName: 'patient',
+  guardianLastName: 'patient',
+  email: 'patient',
+  presentAddress: 'patient',
+  religion: 'address',
+  country: 'address',
+  province: 'address',
+  district: 'address',
+  addressCity: 'address',
+  nationality: 'address',
+  addressEmail: 'address',
+  sameForNextOfKin: 'address',
+  permanentAddress: 'address',
+  kinTitle: 'kin',
+  kinGender: 'kin',
+  kinRelation: 'kin',
+  kinFirstName: 'kin',
+  kinMiddleName: 'kin',
+  kinLastName: 'kin',
+  kinCnic: 'kin',
+  kinContact: 'kin',
+  kinCountry: 'kin',
+  kinProvince: 'kin',
+  kinDistrict: 'kin',
+  kinCity: 'kin',
+  kinAddress1: 'kin',
+  kinAddress2: 'kin',
+  speciality: 'general',
+  doctor: 'general',
+  checkupType: 'general',
+  panelReference: 'general',
+  primaryCategory: 'general',
+  labCategory: 'general',
+  complaint: 'general',
+  complaintOther: 'general',
+  comments: 'general',
+  selectedLab: 'general',
+};
 
 export default function PatientRegistrationForm() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
+  const [pendingSubmitErrors, setPendingSubmitErrors] = useState(null);
   const labCategory = Form.useWatch('labCategory', form);
 
   const isB2bLabCategory = labCategory === 'b2b';
@@ -221,305 +265,254 @@ export default function PatientRegistrationForm() {
         key: 'patient',
         label: 'Patient Information',
         children: (
-          <>
-            <Form.Item name="title" label="Title" className="patient-reg-title-row">
-              <Radio.Group options={TITLE_OPTIONS} />
-            </Form.Item>
+          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+            <PatientRegField name="title" label="Title">
+              <Select className={controlClass} options={TITLE_OPTIONS} />
+            </PatientRegField>
 
-            <Row gutter={[16, 0]} className="patient-reg-grid-4">
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item
-                  name="firstName"
-                  label="First Name"
-                  required
-                  rules={REQUIRED_RULE('First name is required')}
-                >
-                  <Input className={controlClass} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item name="lastName" label="Last Name">
-                  <Input className={controlClass} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item
-                  name="dobAge"
-                  label="DOB / Age"
-                  required
-                  rules={dobAgeRules}
-                >
-                  <DobAgeFormControl />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item name="gender" label="Patient Gender">
-                  <Select className={controlClass} options={GENDER_OPTIONS} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item name="cnic" label="CNIC #">
-                  <Input className={controlClass} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item
-                  name="contactNo"
-                  label="Contact #"
-                  required
-                  rules={REQUIRED_RULE('Contact number is required')}
-                >
-                  <Input className={controlClass} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item name="city" label="City">
-                  <Select className={controlClass} options={CITY_OPTIONS} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} lg={6}>
-                <Form.Item name="town" label="Town">
-                  <Select className={controlClass} options={TOWN_OPTIONS} />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <div className="patient-reg-guardian-box">
-              <Row gutter={[16, 0]} className="patient-reg-grid-4">
-                <Col xs={24} lg={6}>
-                  <Form.Item name="guardianRelation" label="Guardian">
-                    <Radio.Group options={RELATION_OPTIONS} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                  <Form.Item
-                    name="guardianFirstName"
-                    label="Father First Name"
-                    required
-                    rules={REQUIRED_RULE('Father first name is required')}
-                  >
-                    <Input className={controlClass} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                  <Form.Item name="guardianLastName" label="Last Name">
-                    <Input className={controlClass} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                  <Form.Item name="email" label="Email">
-                    <Input className={controlClass} type="email" />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </div>
-
-            <Form.Item name="presentAddress" label="Present Address">
+            <PatientRegField
+              name="firstName"
+              label="First Name"
+              required
+              rules={REQUIRED_RULE('First name is required')}
+              validateTrigger={['onChange', 'onSubmit']}
+            >
               <Input className={controlClass} />
-            </Form.Item>
-          </>
+            </PatientRegField>
+
+            <PatientRegField name="lastName" label="Last Name">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField
+              name="dobAge"
+              label="DOB / Age"
+              required
+              rules={dobAgeRules}
+              validateTrigger={['onChange', 'onSubmit']}
+            >
+              <DobAgeFormControl />
+            </PatientRegField>
+
+            <PatientRegField name="gender" label="Patient Gender">
+              <Select className={controlClass} options={GENDER_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="cnic" label="CNIC #">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField
+              name="contactNo"
+              label="Contact #"
+              required
+              rules={REQUIRED_RULE('Contact number is required')}
+              validateTrigger={['onChange', 'onSubmit']}
+            >
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="city" label="City">
+              <Select className={controlClass} options={CITY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="town" label="Town">
+              <Select className={controlClass} options={TOWN_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="guardianRelation" label="Guardian">
+              <Select className={controlClass} options={RELATION_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField
+              name="guardianFirstName"
+              label="Father First Name"
+              required
+              rules={REQUIRED_RULE('Father first name is required')}
+              validateTrigger={['onChange', 'onSubmit']}
+            >
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="guardianLastName" label="Guardian Last Name">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="email" label="Email">
+              <Input className={controlClass} type="email" />
+            </PatientRegField>
+
+            <PatientRegField name="presentAddress" label="Present Address" col={3}>
+              <Input className={controlClass} />
+            </PatientRegField>
+          </HmisFormGrid>
         ),
       },
       {
         key: 'address',
         label: 'Address Information',
         children: (
-          <Row gutter={[16, 0]} className="patient-reg-grid-4">
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="religion" label="Religion">
-                <Select className={controlClass} options={RELIGION_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="country" label="Country">
-                <Select className={controlClass} options={COUNTRY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="province" label="Province">
-                <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="district" label="District">
-                <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="addressCity" label="City">
-                <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="nationality" label="Nationality">
-                <Select className={controlClass} options={NATIONALITY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="addressEmail" label="Email">
-                <Input className={controlClass} type="email" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6} className="patient-reg-checkbox-col">
-              <Form.Item name="sameForNextOfKin" valuePropName="checked">
+          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+            <PatientRegField name="religion" label="Religion">
+              <Select className={controlClass} options={RELIGION_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="country" label="Country">
+              <Select className={controlClass} options={COUNTRY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="province" label="Province">
+              <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="district" label="District">
+              <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="addressCity" label="City">
+              <Select className={controlClass} options={CITY_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="nationality" label="Nationality">
+              <Select className={controlClass} options={NATIONALITY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="addressEmail" label="Email">
+              <Input className={controlClass} type="email" />
+            </PatientRegField>
+
+            <div className="patient-reg-checkbox-slot">
+              <Form.Item name="sameForNextOfKin" valuePropName="checked" noStyle>
                 <Checkbox>Same for Next of Kin</Checkbox>
               </Form.Item>
-            </Col>
-            <Col xs={24}>
-              <Form.Item name="permanentAddress" label="Permanent Address">
-                <Input.TextArea className={controlClass} rows={2} />
-              </Form.Item>
-            </Col>
-          </Row>
+            </div>
+
+            <PatientRegField name="permanentAddress" label="Permanent Address" col="full">
+              <Input.TextArea className={controlClass} rows={2} />
+            </PatientRegField>
+          </HmisFormGrid>
         ),
       },
       {
         key: 'kin',
         label: 'Next of Kin Information',
         children: (
-          <Row gutter={[16, 0]} className="patient-reg-grid-4">
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinTitle" label="Title">
-                <Select className={controlClass} options={KIN_TITLE_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinGender" label="Gender">
-                <Select className={controlClass} options={KIN_GENDER_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinRelation" label="Relation with patient">
-                <Select className={controlClass} options={KIN_RELATION_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinFirstName" label="First Name">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinMiddleName" label="Middle Name">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinLastName" label="Last Name">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinCnic" label="CNIC #">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinContact" label="Contact #">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinCountry" label="Country">
-                <Select className={controlClass} options={COUNTRY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinProvince" label="Province">
-                <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinDistrict" label="District">
-                <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="kinCity" label="City">
-                <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={12}>
-              <Form.Item name="kinAddress1" label="Address 1">
-                <Input.TextArea className={controlClass} rows={2} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={12}>
-              <Form.Item name="kinAddress2" label="Address 2">
-                <Input.TextArea className={controlClass} rows={2} />
-              </Form.Item>
-            </Col>
-          </Row>
+          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+            <PatientRegField name="kinTitle" label="Title">
+              <Select className={controlClass} options={KIN_TITLE_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="kinGender" label="Gender">
+              <Select className={controlClass} options={KIN_GENDER_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="kinRelation" label="Relation with patient">
+              <Select className={controlClass} options={KIN_RELATION_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="kinFirstName" label="First Name">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="kinMiddleName" label="Middle Name">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="kinLastName" label="Last Name">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="kinCnic" label="CNIC #">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="kinContact" label="Contact #">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="kinCountry" label="Country">
+              <Select className={controlClass} options={COUNTRY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="kinProvince" label="Province">
+              <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="kinDistrict" label="District">
+              <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="kinCity" label="City">
+              <Select className={controlClass} options={CITY_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="kinAddress1" label="Address 1" col={2}>
+              <Input.TextArea className={controlClass} rows={2} />
+            </PatientRegField>
+
+            <PatientRegField name="kinAddress2" label="Address 2" col={2}>
+              <Input.TextArea className={controlClass} rows={2} />
+            </PatientRegField>
+          </HmisFormGrid>
         ),
       },
       {
         key: 'general',
         label: 'General Information',
         children: isB2bLabCategory ? (
-          <Row gutter={[16, 0]} className="patient-reg-grid-4">
-            <Col xs={24}>
-              <Form.Item name="labCategory" label="Lab Partner" className="patient-reg-radio-row">
-                <Radio.Group options={LAB_CATEGORY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item
-                name="selectedLab"
-                label="Select Lab"
-                required
-                rules={REQUIRED_RULE('Please select a lab')}
-              >
-                <Select className={controlClass} options={LAB_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-          </Row>
+          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+            <PatientRegField name="labCategory" label="Lab Partner">
+              <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField
+              name="selectedLab"
+              label="Select Lab"
+              required
+              rules={REQUIRED_RULE('Please select a lab')}
+              validateTrigger={['onChange', 'onSubmit']}
+            >
+              <Select className={controlClass} options={LAB_OPTIONS} allowClear />
+            </PatientRegField>
+          </HmisFormGrid>
         ) : (
-          <Row gutter={[16, 0]} className="patient-reg-grid-4">
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="speciality" label="Speciality/Dept">
-                <Select className={controlClass} options={SPECIALITY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="doctor" label="Doctor">
-                <Select className={controlClass} options={DOCTOR_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="checkupType" label="Checkup Type">
-                <Select className={controlClass} options={CHECKUP_TYPE_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="panelReference" label="Reference #">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item name="primaryCategory" label="Category" className="patient-reg-radio-row">
-                <Radio.Group options={PRIMARY_CATEGORY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item name="labCategory" label="Lab Partner" className="patient-reg-radio-row">
-                <Radio.Group options={LAB_CATEGORY_OPTIONS} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="complaint" label="Complaint">
-                <Select className={controlClass} options={COMPLAINT_OPTIONS} allowClear />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Form.Item name="complaintOther" label="Other">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} lg={12}>
-              <Form.Item name="comments" label="Comments">
-                <Input className={controlClass} />
-              </Form.Item>
-            </Col>
-          </Row>
+          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+            <PatientRegField name="speciality" label="Speciality/Dept">
+              <Select className={controlClass} options={SPECIALITY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="doctor" label="Doctor">
+              <Select className={controlClass} options={DOCTOR_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="checkupType" label="Checkup Type">
+              <Select className={controlClass} options={CHECKUP_TYPE_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="panelReference" label="Reference #">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="primaryCategory" label="Category">
+              <Select className={controlClass} options={PRIMARY_CATEGORY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="labCategory" label="Lab Partner">
+              <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
+            </PatientRegField>
+
+            <PatientRegField name="complaint" label="Complaint">
+              <Select className={controlClass} options={COMPLAINT_OPTIONS} allowClear />
+            </PatientRegField>
+
+            <PatientRegField name="complaintOther" label="Other">
+              <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="comments" label="Comments" col={2}>
+              <Input className={controlClass} />
+            </PatientRegField>
+          </HmisFormGrid>
         ),
       },
     ],
@@ -528,34 +521,78 @@ export default function PatientRegistrationForm() {
 
   const handleClear = () => {
     form.resetFields();
+    setPendingSubmitErrors(null);
+    clearPatientRegValidationState();
     setActivePanels(DEFAULT_OPEN_PANELS);
     message.info('Form cleared');
   };
 
+  useEffect(() => {
+    if (!pendingSubmitErrors?.length) {
+      return undefined;
+    }
+
+    const firstInvalidName = pendingSubmitErrors[0].name;
+    const timer = window.setTimeout(() => {
+      highlightAllInvalidFields(pendingSubmitErrors);
+      if (typeof form.scrollToField === 'function') {
+        form.scrollToField(firstInvalidName, {
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+      focusFormField(form, firstInvalidName);
+      setPendingSubmitErrors(null);
+    }, 50);
+
+    return () => window.clearTimeout(timer);
+  }, [pendingSubmitErrors, activePanels, form]);
+
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      setPendingSubmitErrors(null);
+      clearPatientRegValidationState();
       message.success('Patient registration saved');
       console.info('Patient registration', values);
-    } catch {
+    } catch (error) {
+      const errorFields = error?.errorFields ?? [];
+      if (errorFields.length > 0) {
+        const panelsToOpen = new Set(activePanels);
+        for (const field of errorFields) {
+          const fieldName = Array.isArray(field.name) ? field.name[0] : field.name;
+          const panel = FIELD_PANEL_MAP[fieldName];
+          if (panel) {
+            panelsToOpen.add(panel);
+          }
+        }
+        setActivePanels([...panelsToOpen]);
+        setPendingSubmitErrors(errorFields);
+      } else {
+        setActivePanels(ALL_PANEL_KEYS);
+      }
       message.error('Please complete all required fields');
     }
   };
 
   return (
     <div className="patient-registration-page">
-      {/* <h1 className="patient-registration-title">Patient Registration</h1> */}
       <Form
         form={form}
         layout="vertical"
         className="patient-registration-form"
-        validateTrigger="onSubmit"
-        requiredMark={renderRequiredMark}
+        requiredMark={false}
         scrollToFirstError
         initialValues={initialValues}
         onValuesChange={(changed) => {
-          if ('labCategory' in changed && changed.labCategory === 'b2b') {
-            form.setFieldValue('selectedLab', undefined);
+          handleFormChangeClearErrors(form, changed, (values) => {
+            if ('labCategory' in values && values.labCategory === 'b2b') {
+              form.setFieldValue('selectedLab', undefined);
+            }
+          });
+          const stillHasErrors = form.getFieldsError().some(({ errors }) => errors.length > 0);
+          if (!stillHasErrors) {
+            clearPatientRegValidationState();
           }
         }}
       >
@@ -563,6 +600,7 @@ export default function PatientRegistrationForm() {
           items={collapseItems}
           activeKey={activePanels}
           onChange={setActivePanels}
+          destroyOnHidden={false}
           className="patient-registration-collapse"
           expandIconPlacement="end"
           expandIcon={({ isActive }) =>

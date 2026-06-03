@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono, Inter, Poppins } from "next/font/google";
+import AppProviders from "@/components/providers/AppProviders";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,7 +36,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
