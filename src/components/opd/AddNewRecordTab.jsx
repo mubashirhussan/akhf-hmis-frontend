@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Col, DatePicker, Input, Radio, Row, Select } from "antd";
+import { Input, Radio, Select } from "antd";
+import HmisDobAgeField from "@/components/ui/HmisDobAgeField";
+import HmisFloatingField from "@/components/ui/HmisFloatingField";
+import HmisFormGrid from "@/components/ui/HmisFormGrid";
+import HmisFormGridRow from "@/components/ui/HmisFormGridRow";
+import { DOB_AGE_UNITS } from "@/lib/dob-from-age";
 import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
-import dayjs from "dayjs";
 import SearchServicesSection from "@/components/opd/SearchServicesSection";
-import HmisCard from "@/components/ui/HmisCard";
-
-const FORM_GUTTER = [20, 20];
 
 const TITLE_OPTIONS = [
   { value: "mr", label: "Mr." },
@@ -36,14 +37,12 @@ const RELIGION_OPTIONS = [
 ];
 
 const DEPARTMENT_OPTIONS = [
-  { value: "", label: "Select Dept." },
   { value: "laboratory", label: "Laboratory" },
   { value: "private", label: "Private" },
   { value: "radiology", label: "Radiology" },
 ];
 
 const CONSULTANT_OPTIONS = [
-  { value: "", label: "Select Consultant" },
   { value: "abc", label: "Mr abc" },
   { value: "ali", label: "Mr Ali" },
   { value: "xyz", label: "Mr xyz" },
@@ -66,7 +65,6 @@ const CHECKUP_TYPE_OPTIONS = [
 ];
 
 const INSURER_OPTIONS = [
-  { value: "", label: "Select Party" },
   { value: "ptcl", label: "PTCL" },
   { value: "ssp", label: "SSP" },
   { value: "state-life", label: "State Life" },
@@ -74,295 +72,287 @@ const INSURER_OPTIONS = [
 
 const DESIGNATION_OPTIONS = [{ value: "na", label: "N/A" }];
 
+const LAB_OPTIONS = [
+  { value: "chughtai", label: "Chughtai Lab" },
+  { value: "excel", label: "Excel Lab" },
+  { value: "dr-essa", label: "Dr. Essa Laboratory" },
+  { value: "shaukat", label: "Shaukat Khanum Lab" },
+];
+
 const controlClass = HMIS_FIELD_CONTROL_CLASS;
 
-function FormField({ label, htmlFor, children, className = "" }) {
-  return (
-    <div className={`walk-in-add-record-field ${className}`.trim()}>
-      <label className="walk-in-add-record-label" htmlFor={htmlFor}>
-        {label}
-      </label>
-      <div className="walk-in-add-record-control-wrap">{children}</div>
-    </div>
-  );
-}
-
-export default function AddNewRecordTab() {
+export default function AddNewRecordTab({ formColumns = 4 }) {
   const [title, setTitle] = useState("mr");
   const [relation, setRelation] = useState("so");
   const [category, setCategory] = useState("panel");
-  const [dob, setDob] = useState(null);
+  const [selectedLab, setSelectedLab] = useState(undefined);
+  const [dobAge, setDobAge] = useState({ age: "", unit: DOB_AGE_UNITS.years, dob: null });
+
+  const isB2bCategory = category === "b2b";
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+    setSelectedLab(undefined);
+  };
 
   return (
-    <HmisCard className="walk-in-add-record-layout rounded-tl-none!">
-      <Row gutter={[32, 24]} align="stretch" className="walk-in-add-record-row">
-        <Col xs={24} xl={12} className="walk-in-add-record-form-col">
-          <form
-            className="walk-in-add-record-form"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            {/* Row 1: Title */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24}>
-                <FormField label="Title">
-                  <Radio.Group
-                    options={TITLE_OPTIONS}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="walk-in-add-record-radios"
-                  />
-                </FormField>
-              </Col>
-            </Row>
+    <div className="walk-in-add-record-layout mt-2">
+      <HmisFormGrid
+        as="form"
+        columns={formColumns}
+        className="walk-in-add-record-form"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <HmisFloatingField label="Title" variant="radios">
+          <Radio.Group
+            options={TITLE_OPTIONS}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="walk-in-add-record-radios"
+          />
+        </HmisFloatingField>
 
-            {/* Row 2: Full name, Last name, Contact */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={8}>
-                <FormField label="Full Name" htmlFor="full-name">
-                  <Input
-                    id="full-name"
-                    className={controlClass}
-                    placeholder="Enter Name"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Last Name" htmlFor="last-name">
-                  <Input
-                    id="last-name"
-                    className={controlClass}
-                    placeholder="Enter Last Name"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Contact #" htmlFor="contact">
-                  <Input
-                    id="contact"
-                    className={controlClass}
-                    placeholder="e.g 0356-2356858"
-                  />
-                </FormField>
-              </Col>
-            </Row>
+        <HmisFormGridRow columns={6}>
+          <HmisFloatingField label="Full Name" htmlFor="full-name" col={1}>
+            <Input
+              id="full-name"
+              size="middle"
+              className={controlClass}
+              placeholder="Enter Name"
+            />
+          </HmisFloatingField>
 
-            {/* Row 3: CNIC, DOB, Gender */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={8}>
-                <FormField label="CNIC #" htmlFor="cnic">
-                  <Input
-                    id="cnic"
-                    className={controlClass}
-                    placeholder="e.g 35262-3568845-5"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="DOB">
-                  <DatePicker
-                    className={`w-full ${controlClass}`}
-                    value={dob}
-                    onChange={setDob}
-                    format="DD/MM/YYYY"
-                    placeholder="DD/MM/YYYY"
-                    allowClear
-                    disabledDate={(current) =>
-                      current && current > dayjs().endOf("day")
-                    }
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Gender" htmlFor="gender">
-                  <Select
-                    id="gender"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="male"
-                    options={GENDER_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-            </Row>
+          <HmisFloatingField label="Last Name" htmlFor="last-name" col={1}>
+            <Input
+              id="last-name"
+              size="middle"
+              className={controlClass}
+              placeholder="Enter Last Name"
+            />
+          </HmisFloatingField>
 
-            {/* Row 4: Relation */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24}>
-                <FormField label="Relation">
-                  <Radio.Group
-                    options={RELATION_OPTIONS}
-                    value={relation}
-                    onChange={(e) => setRelation(e.target.value)}
-                    className="walk-in-add-record-radios"
-                  />
-                </FormField>
-              </Col>
-            </Row>
+          <HmisFloatingField label="Contact #" htmlFor="contact" col={1}>
+            <Input
+              id="contact"
+              size="middle"
+              className={controlClass}
+              placeholder="e.g 0356-2356858"
+            />
+          </HmisFloatingField>
 
-            {/* Row 5: First name, Last name, Email */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={8}>
-                <FormField label="First Name" htmlFor="guardian-first">
-                  <Input
-                    id="guardian-first"
-                    className={controlClass}
-                    placeholder="Enter First Name"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Last Name" htmlFor="guardian-last">
-                  <Input
-                    id="guardian-last"
-                    className={controlClass}
-                    placeholder="Enter Last Name"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Email" htmlFor="email">
-                  <Input
-                    id="email"
-                    className={controlClass}
-                    type="email"
-                    placeholder="e.g abcd@gmail.com"
-                  />
-                </FormField>
-              </Col>
-            </Row>
+          <HmisFloatingField label="CNIC #" htmlFor="cnic" col={1}>
+            <Input
+              id="cnic"
+              size="middle"
+              className={controlClass}
+              placeholder="e.g 35262-3568845-5"
+            />
+          </HmisFloatingField>
 
-            {/* Row 6: Address, Religion */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={12}>
-                <FormField label="Address" htmlFor="address">
-                  <Input
-                    id="address"
-                    className={controlClass}
-                    placeholder="Enter Address"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={12}>
-                <FormField label="Religion" htmlFor="religion">
-                  <Select
-                    id="religion"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="islam"
-                    options={RELIGION_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-            </Row>
+          <HmisDobAgeField
+            col={1}
+            age={dobAge.age}
+            unit={dobAge.unit}
+            onChange={setDobAge}
+          />
 
-            {/* Row 7: Department, Consultant, Refer doctor */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={8}>
-                <FormField label="Department" htmlFor="department">
-                  <Select
-                    id="department"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="laboratory"
-                    options={DEPARTMENT_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Consultant" htmlFor="consultant">
-                  <Select
-                    id="consultant"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="abc"
-                    options={CONSULTANT_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Refer Doctor" htmlFor="refer-doctor">
-                  <Input
-                    id="refer-doctor"
-                    className={controlClass}
-                    placeholder="Enter Doc Name"
-                  />
-                </FormField>
-              </Col>
-            </Row>
+          <HmisFloatingField label="Gender" htmlFor="gender" col={1}>
+            <Select
+              id="gender"
+              size="middle"
+              className={`w-full ${controlClass}`}
+              defaultValue="male"
+              options={GENDER_OPTIONS}
+            />
+          </HmisFloatingField>
+        </HmisFormGridRow>
 
-            {/* Row 8: Category, Patient type, Checkup type */}
-            <Row
-              gutter={FORM_GUTTER}
-              align="bottom"
-              className="walk-in-add-record-form-row"
-            >
-              <Col xs={24} sm={8}>
-                <FormField label="Category">
-                  <Radio.Group
-                    options={CATEGORY_OPTIONS}
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="walk-in-add-record-radios"
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Patient Type" htmlFor="patient-type">
-                  <Select
-                    id="patient-type"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="ipd"
-                    options={PATIENT_TYPE_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Checkup Type" htmlFor="checkup-type">
-                  <Select
-                    id="checkup-type"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="emergency"
-                    options={CHECKUP_TYPE_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-            </Row>
+        <HmisFloatingField label="Relation" variant="radios">
+          <Radio.Group
+            options={RELATION_OPTIONS}
+            value={relation}
+            onChange={(e) => setRelation(e.target.value)}
+            className="walk-in-add-record-radios"
+          />
+        </HmisFloatingField>
 
-            {/* Row 9: Insurer, Designation, Reference */}
-            <Row gutter={FORM_GUTTER} className="walk-in-add-record-form-row">
-              <Col xs={24} sm={8}>
-                <FormField label="Insurer" htmlFor="insurer">
-                  <Select
-                    id="insurer"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="ptcl"
-                    options={INSURER_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Designation" htmlFor="designation">
-                  <Select
-                    id="designation"
-                    className={`w-full ${controlClass}`}
-                    defaultValue="na"
-                    options={DESIGNATION_OPTIONS}
-                  />
-                </FormField>
-              </Col>
-              <Col xs={24} sm={8}>
-                <FormField label="Reference #" htmlFor="reference">
-                  <Input
-                    id="reference"
-                    className={controlClass}
-                    placeholder="Enter Reference No"
-                  />
-                </FormField>
-              </Col>
-            </Row>
-          </form>
-        </Col>
+        <HmisFloatingField label="First Name" htmlFor="guardian-first">
+          <Input
+            id="guardian-first"
+            size="middle"
+            className={controlClass}
+            placeholder="Enter First Name"
+          />
+        </HmisFloatingField>
 
-        <Col xs={24} xl={12} className="walk-in-add-record-services-col">
-          <SearchServicesSection variant="sidebar" />
-        </Col>
-      </Row>
-    </HmisCard>
+        <HmisFloatingField label="Last Name" htmlFor="guardian-last">
+          <Input
+            id="guardian-last"
+            size="middle"
+            className={controlClass}
+            placeholder="Enter Last Name"
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Email" htmlFor="email">
+          <Input
+            id="email"
+            size="middle"
+            className={controlClass}
+            type="email"
+            placeholder="e.g abcd@gmail.com"
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Address" htmlFor="address">
+          <Input
+            id="address"
+            size="middle"
+            className={controlClass}
+            placeholder="Enter Address"
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Religion" htmlFor="religion">
+          <Select
+            id="religion"
+            size="middle"
+            className={`w-full ${controlClass}`}
+            defaultValue="islam"
+            options={RELIGION_OPTIONS}
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Department" htmlFor="department">
+          <Select
+            id="department"
+            size="middle"
+            className={`w-full ${controlClass}`}
+            defaultValue="laboratory"
+            options={DEPARTMENT_OPTIONS}
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Consultant" htmlFor="consultant">
+          <Select
+            id="consultant"
+            size="middle"
+            className={`w-full ${controlClass}`}
+            defaultValue="abc"
+            options={CONSULTANT_OPTIONS}
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Refer Doctor" htmlFor="refer-doctor">
+          <Input
+            id="refer-doctor"
+            size="middle"
+            className={controlClass}
+            placeholder="Enter Doc Name"
+          />
+        </HmisFloatingField>
+
+        <HmisFloatingField label="Category" variant="radios">
+          <Radio.Group
+            options={CATEGORY_OPTIONS}
+            value={category}
+            onChange={handleCategoryChange}
+            className="walk-in-add-record-radios"
+          />
+        </HmisFloatingField>
+
+        <div className="walk-in-category-fields-row">
+          {isB2bCategory ? (
+            <HmisFloatingField label="Labs" htmlFor="lab" className="walk-in-category-field-slot">
+              <Select
+                id="lab"
+                size="middle"
+                className={`w-full ${controlClass}`}
+                placeholder="Select LAB"
+                value={selectedLab}
+                onChange={setSelectedLab}
+                options={LAB_OPTIONS}
+                allowClear
+              />
+            </HmisFloatingField>
+          ) : (
+            <>
+              <HmisFloatingField
+                label="Patient Type"
+                htmlFor="patient-type"
+                className="walk-in-category-field-slot"
+              >
+                <Select
+                  id="patient-type"
+                  size="middle"
+                  className={`w-full ${controlClass}`}
+                  defaultValue="ipd"
+                  options={PATIENT_TYPE_OPTIONS}
+                />
+              </HmisFloatingField>
+
+              <HmisFloatingField
+                label="Checkup Type"
+                htmlFor="checkup-type"
+                className="walk-in-category-field-slot"
+              >
+                <Select
+                  id="checkup-type"
+                  size="middle"
+                  className={`w-full ${controlClass}`}
+                  defaultValue="emergency"
+                  options={CHECKUP_TYPE_OPTIONS}
+                />
+              </HmisFloatingField>
+
+              <HmisFloatingField
+                label="Insurer"
+                htmlFor="insurer"
+                className="walk-in-category-field-slot"
+              >
+                <Select
+                  id="insurer"
+                  size="middle"
+                  className={`w-full ${controlClass}`}
+                  defaultValue="ptcl"
+                  options={INSURER_OPTIONS}
+                />
+              </HmisFloatingField>
+
+              <HmisFloatingField
+                label="Designation"
+                htmlFor="designation"
+                className="walk-in-category-field-slot"
+              >
+                <Select
+                  id="designation"
+                  size="middle"
+                  className={`w-full ${controlClass}`}
+                  defaultValue="na"
+                  options={DESIGNATION_OPTIONS}
+                />
+              </HmisFloatingField>
+
+              <HmisFloatingField
+                label="Reference #"
+                htmlFor="reference"
+                className="walk-in-category-field-slot"
+              >
+                <Input
+                  id="reference"
+                  size="middle"
+                  className={controlClass}
+                  placeholder="Enter Reference No"
+                />
+              </HmisFloatingField>
+            </>
+          )}
+        </div>
+      </HmisFormGrid>
+
+      <div className="walk-in-add-record-services">
+        <SearchServicesSection />
+      </div>
+    </div>
   );
 }

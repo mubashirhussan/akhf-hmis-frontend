@@ -217,7 +217,7 @@ export default function SearchExistingPatientTab() {
 
   return (
     <>
-      <section className="walk-in-patients-section">
+      <section className="walk-in-patients-section mt-2">
         <div className="hmis-section-header hmis-section-header--inline mt-4">
           <div className="hmis-section-header-text">
             <h2 className="hmis-section-title">No of Registered Patients</h2>

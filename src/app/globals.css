@@ -383,10 +383,10 @@ body::-webkit-scrollbar-thumb:hover,
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   background: #f5f5f5;
-  padding: 14px 25px;
+  padding: 11px 22px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 100%;
   letter-spacing: 0.04em;
   color: #7d7d7d;
@@ -412,69 +412,228 @@ body::-webkit-scrollbar-thumb:hover,
   border-top-left-radius: 0;
 }
 
-/* Add new record tab */
+/* Add new record tab — stacked layout + floating border labels */
 .walk-in-add-record-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
-}
-
-.walk-in-add-record-row {
-  margin: 0 !important;
-}
-
-.walk-in-add-record-form-col {
-  padding-right: 8px;
-}
-
-@media (min-width: 1200px) {
-  .walk-in-add-record-form-col {
-    padding-right: 28px;
-    border-right: 1px solid #e8edf3;
-  }
-
-  .walk-in-add-record-services-col {
-    padding-left: 4px;
-  }
 }
 
 .walk-in-add-record-form {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-.walk-in-add-record-form-row {
+/* Dynamic form grid — columns via --hmis-form-cols (default 4) */
+.hmis-form-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--hmis-form-cols, 4), minmax(0, 1fr));
+  grid-auto-flow: row;
+  column-gap: 16px;
+  row-gap: 12px;
   width: 100%;
-  margin-bottom: 20px;
 }
 
-.walk-in-add-record-form-row:last-child {
-  margin-bottom: 0;
+.hmis-form-grid > .hmis-floating-field {
+  min-width: 0;
 }
 
-.walk-in-add-record-field {
+.hmis-form-grid-row {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.hmis-form-grid-row > .hmis-form-grid {
+  width: 100%;
+}
+
+/* Category row — flex so fields stay one row, left-aligned, equal width (1/5 each) */
+.walk-in-category-fields-row {
+  grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 68px;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
-.walk-in-add-record-label {
-  display: block;
-  margin: 0;
+.walk-in-category-fields-row .walk-in-category-field-slot {
+  flex: 0 0 calc((100% - 4 * 16px) / 5);
+  width: calc((100% - 4 * 16px) / 5);
+  max-width: calc((100% - 4 * 16px) / 5);
+  min-width: 0;
+  grid-column: unset !important;
+}
+
+.walk-in-add-record-services {
+  padding-top: 16px;
+  border-top: 1px solid #e8edf3;
+}
+
+.walk-in-add-record-services .walk-in-services-section {
+  margin-top: 0;
+}
+
+/* Floating label on field border (space-saving) */
+.hmis-floating-field {
+  position: relative;
+  width: 100%;
+  margin-top: 7px;
+}
+
+.hmis-floating-label {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  z-index: 2;
+  padding: 0 4px;
+  background: #ffffff;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.hmis-floating-control {
+  width: 100%;
+}
+
+.hmis-floating-control > .ant-input,
+.hmis-floating-control > .ant-select,
+.hmis-floating-control > .ant-picker {
+  width: 100%;
+}
+
+/* DOB — read-only date + age + unit (single bordered control) */
+.hmis-dob-age-field {
+  position: relative;
+  width: 100%;
+  margin-top: 7px;
+  min-width: 0;
+}
+
+.hmis-dob-age-field--embedded {
+  margin-top: 0;
+}
+
+.hmis-dob-age-field-inner {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: var(--hmis-field-height);
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  background: #ffffff;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hmis-dob-age-date {
+  flex: 1.15 1 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 3px;
+  border-right: 1px solid #d8dee9;
+  background: #f8fafc;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 11px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: #64748b;
+  white-space: nowrap;
 }
 
-.walk-in-add-record-control-wrap {
+.hmis-dob-age-age.ant-input {
+  flex: 0.55 1 0;
+  min-width: 48px;
+  height: var(--hmis-field-height) !important;
+  min-height: var(--hmis-field-height) !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  border: 0 !important;
+  border-right: 1px solid #d8dee9 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-align: center;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: var(--hmis-field-height) !important;
+  background: #ffffff !important;
+}
+
+.hmis-dob-age-age.ant-input:focus,
+.hmis-dob-age-age.ant-input-focused {
+  box-shadow: none !important;
+}
+
+.hmis-dob-age-unit.ant-select {
+  flex: 0.85 1 0;
+  min-width: 72px;
+  height: var(--hmis-field-height) !important;
+  min-height: var(--hmis-field-height) !important;
+  max-height: var(--hmis-field-height) !important;
+  padding-inline: 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  align-items: center !important;
+}
+
+.hmis-dob-age-unit.ant-select .ant-select-content-value,
+.hmis-dob-age-unit.ant-select .ant-select-placeholder {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+}
+
+.hmis-dob-age-field-inner:focus-within {
+  border-color: var(--hmis-primary) !important;
+  box-shadow: 0 0 0 3px rgba(2, 107, 177, 0.12) !important;
+}
+
+/* Inline radios — label left, options right, no border */
+.hmis-floating-field--radios {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+  min-height: var(--hmis-field-height);
+  padding-top: 7px;
+  box-sizing: border-box;
+}
+
+.hmis-floating-field--radios .hmis-floating-label--inline {
+  position: static;
+  transform: none;
+  padding: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #000000;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.hmis-floating-field--radios .hmis-floating-control {
+  display: flex;
+  align-items: center;
   flex: 1;
+  min-width: 0;
 }
 
 /* Unified field height — must match Ant Design controlHeight (32) */
@@ -608,21 +767,27 @@ body::-webkit-scrollbar-thumb:hover,
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 20px;
-  padding: 4px 0;
+  gap: 6px 18px;
+  padding: 0;
 }
 
 .walk-in-add-record-radios .ant-radio-wrapper {
   margin-inline-end: 0;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #64748b;
 }
 
 .walk-in-add-record-radios .ant-radio-inner {
   width: 16px;
   height: 16px;
-  border-color: #cbd5e1;
+  border-color: #d1d5db;
+  background-color: #e5e7eb;
+}
+
+.walk-in-add-record-radios .ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: #b8c4d4;
 }
 
 .walk-in-add-record-radios .ant-radio-checked .ant-radio-inner {
@@ -630,9 +795,8 @@ body::-webkit-scrollbar-thumb:hover,
   background-color: var(--hmis-primary);
 }
 
-.walk-in-add-record-services-col {
-  display: flex;
-  flex-direction: column;
+.walk-in-add-record-radios .ant-radio-checked + span {
+  color: #334155;
 }
 
 .walk-in-services-section--sidebar {
@@ -1733,4 +1897,209 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-btn-save {
   min-width: 130px;
+}
+
+/* Patient Registration — accordion form */
+.patient-registration-page {
+  padding: 8px 4px 24px;
+  max-width: 100%;
+}
+
+.patient-reg-title-row {
+  margin-bottom: 4px;
+}
+
+.patient-reg-title-row .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.patient-reg-grid-4.ant-row {
+  width: 100%;
+}
+
+.patient-reg-grid-4 > .ant-col .ant-form-item {
+  margin-bottom: 8px;
+}
+
+.patient-registration-form .patient-reg-grid-4 .hmis-dob-age-field-inner {
+  min-width: 0;
+  height: var(--hmis-field-height);
+  min-height: var(--hmis-field-height);
+}
+
+.patient-registration-form .patient-reg-grid-4 .hmis-dob-age-date {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 11px;
+  background: transparent !important;
+}
+
+.patient-registration-form .patient-reg-dob-age .hmis-dob-age-age.ant-input,
+.patient-registration-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select {
+  background: transparent !important;
+}
+
+.patient-registration-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.patient-registration-form.ant-form-vertical {
+  --ant-form-vertical-label-padding: 0 0 4px;
+  --ant-form-item-margin-bottom: 8px;
+}
+
+.patient-registration-form .ant-form-item {
+  margin-bottom: 8px !important;
+}
+
+.patient-registration-form .ant-form-item-label > label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  width: 100%;
+}
+
+.patient-registration-form
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-hidden)::before {
+  display: none !important;
+}
+
+.patient-reg-label {
+  display: inline;
+}
+
+.patient-reg-label-asterisk {
+  margin-left: 2px;
+  color: #ff4d4f;
+  font-size: 12px;
+}
+
+.patient-registration-collapse.ant-collapse {
+  background: transparent;
+  border: none;
+}
+
+.patient-registration-collapse > .ant-collapse-item {
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.patient-registration-collapse > .ant-collapse-item:last-child {
+  margin-bottom: 0;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.patient-registration-collapse > .ant-collapse-item:last-child > .ant-collapse-content {
+  border-bottom: 1px solid #e2e8f0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  padding: 12px 16px !important;
+  font-weight: 600;
+  font-size: 14px;
+  color: #334155;
+  background: #ffffff !important;
+}
+
+.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-title,
+.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-header-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+  order: 0;
+}
+
+.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-expand-icon {
+  order: 1;
+  margin-inline-start: auto !important;
+  margin-inline-end: 0 !important;
+  padding-inline-start: 12px;
+  color: #64748b;
+  transform: none !important;
+}
+
+.patient-registration-collapse .patient-reg-collapse-icon {
+  font-size: 12px;
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.patient-registration-collapse
+  > .ant-collapse-item
+  > .ant-collapse-header:hover
+  .patient-reg-collapse-icon {
+  color: var(--hmis-primary);
+}
+
+.patient-registration-collapse .ant-collapse-content,
+.patient-registration-collapse .ant-collapse-content-box {
+  background: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-content-box {
+  padding: 16px 20px 20px !important;
+}
+
+.patient-reg-checkbox-col .ant-form-item {
+  margin-bottom: 8px;
+  padding-top: 22px;
+}
+
+.patient-reg-radio-row .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  width: 100%;
+}
+
+.patient-reg-guardian-box {
+  margin-top: 0;
+  padding: 0;
+}
+
+.patient-registration-form .patient-reg-dob-age.hmis-dob-age-field {
+  grid-column: unset !important;
+  width: 100%;
+}
+
+.patient-registration-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 8px;
+}
+
+.patient-reg-btn-clear.ant-btn-link {
+  min-width: auto;
+  padding-inline: 8px;
+  height: auto;
+  color: var(--hmis-primary) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.patient-reg-btn-clear.ant-btn-link:hover {
+  color: #025a96 !important;
+  background: transparent !important;
+}
+
+.patient-reg-btn-save {
+  min-width: 140px;
 }

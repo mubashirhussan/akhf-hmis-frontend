@@ -58,6 +58,10 @@ const hmisTheme = {
     Switch: {
       colorPrimary: HMIS_PRIMARY,
     },
+    Form: {
+      verticalLabelPadding: '0 0 4px',
+      itemMarginBottom: 8,
+    },
   },
 };
 
