@@ -61,20 +61,24 @@ export default function AppHeader() {
       </nav>
 
       <div className="flex items-center gap-4">
-        <div className="header-datetime flex items-center gap-3 border border-slate-200/80 px-4 py-1.5">
-          <span className="flex items-center gap-1.5">
-            <AppIcon icon="mdi:calendar-outline" className="header-datetime-icon" />
-            <span className="header-datetime-text header-datetime-text--placeholder">
+        <div className="header-datetime" aria-live="polite">
+          <div className="header-datetime__segment">
+            <span className="header-datetime__icon-wrap" aria-hidden>
+              <AppIcon icon="mdi:calendar-outline" className="header-datetime-icon" />
+            </span>
+            <span className="header-datetime__text header-datetime__text--date">
               {now ? formatDate(now) : '\u00A0'}
             </span>
-          </span>
-          <span className="h-4 w-px bg-slate-200" aria-hidden />
-          <span className="flex items-center gap-1.5">
-            <AppIcon icon="mdi:clock-outline" className="header-datetime-icon" />
-            <span className="header-datetime-text header-datetime-text--placeholder">
+          </div>
+          <span className="header-datetime__divider" aria-hidden />
+          <div className="header-datetime__segment header-datetime__segment--time">
+            <span className="header-datetime__icon-wrap" aria-hidden>
+              <AppIcon icon="mdi:clock-outline" className="header-datetime-icon" />
+            </span>
+            <span className="header-datetime__text header-datetime__text--time">
               {now ? formatTime(now) : '\u00A0'}
             </span>
-          </span>
+          </div>
         </div>
 
         <span className="h-6 w-px bg-slate-200" aria-hidden />
