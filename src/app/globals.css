@@ -2110,28 +2110,23 @@ body::-webkit-scrollbar-thumb:hover,
   max-width: 100%;
 }
 
-.services-billing-search-form .services-billing-search-grid.hmis-form-grid {
-  row-gap: 10px;
-  column-gap: 12px;
+.services-billing-search-layout {
+  margin-bottom: 8px;
 }
 
-.services-billing-search-form .services-billing-search-grid > .hmis-floating-field {
-  grid-column: span 1;
-  max-width: 100%;
-  margin-top: 6px;
-}
-
-.services-billing-search-form .services-billing-search-grid .hmis-floating-control .ant-form-item {
-  margin-bottom: 0;
-}
-
-.services-billing-search-actions {
+.walk-in-add-record-form .services-billing-search-actions {
+  grid-column: 1 / -1;
   display: flex;
   width: 100%;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 18px;
-  margin-bottom: 22px;
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+
+.walk-in-add-record-form .hmis-age-unit-field--no-dob .hmis-dob-age-age.ant-input {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .services-billing-search-btn {

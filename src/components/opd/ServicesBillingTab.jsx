@@ -7,7 +7,7 @@ import {
   EyeOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-import { Button, DatePicker, Form, Input, Space, Tag, Tooltip } from 'antd';
+import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
 import HmisAgeUnitField from '@/components/ui/HmisAgeUnitField';
 import HmisFloatingField from '@/components/ui/HmisFloatingField';
 import HmisFormGrid from '@/components/ui/HmisFormGrid';
@@ -23,6 +23,22 @@ import { HMIS_SERVICES_BILLING_TABLE_SCROLL_Y } from '@/lib/hmis-table-scroll';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const controlClass = HMIS_FIELD_CONTROL_CLASS;
+
+const emptyFilters = {
+  visitNo: '',
+  mrNo: '',
+  patientAge: '',
+  ageUnit: DOB_AGE_UNITS.years,
+  registrationDate: null,
+  cnic: '',
+  mobile: '',
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  relationFirstName: '',
+  relationMiddleName: '',
+  relationLastName: '',
+};
 
 function BillingTag({ value }) {
   const palette =
@@ -48,36 +64,17 @@ function BillingTag({ value }) {
   );
 }
 
-const initialValues = {
-  visitNo: '',
-  mrNo: '',
-  patientAge: '',
-  ageUnit: DOB_AGE_UNITS.years,
-  registrationDate: null,
-  cnic: '',
-  mobile: '',
-  firstName: '',
-  middleName: '',
-  lastName: '',
-  relationFirstName: '',
-  relationMiddleName: '',
-  relationLastName: '',
-};
-
 export default function ServicesBillingTab() {
-  const [form] = Form.useForm();
-  const patientAge = Form.useWatch('patientAge', form);
-  const ageUnit = Form.useWatch('ageUnit', form);
+  const [filters, setFilters] = useState(emptyFilters);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const patchFilter = (patch) => {
+    setFilters((prev) => ({ ...prev, ...patch }));
+  };
+
   const handleSearch = () => {
-    const values = form.getFieldsValue();
-    const matched = searchServicesBillingVisits(MOCK_SERVICES_BILLING_VISITS, {
-      ...values,
-      patientAge: patientAge ?? '',
-      ageUnit: ageUnit ?? DOB_AGE_UNITS.years,
-    });
+    const matched = searchServicesBillingVisits(MOCK_SERVICES_BILLING_VISITS, filters);
     setResults(matched);
     setHasSearched(true);
   };
@@ -145,153 +142,148 @@ export default function ServicesBillingTab() {
 
   return (
     <div className="services-billing-page">
-      <Form
-        form={form}
-        layout="vertical"
-        className="services-billing-search-form"
-        initialValues={initialValues}
-        onFinish={handleSearch}
-      >
-        <HmisFormGrid columns={4} className="services-billing-search-grid">
+      <div className="walk-in-add-record-layout services-billing-search-layout">
+        <HmisFormGrid
+          as="form"
+          columns={4}
+          className="walk-in-add-record-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
           <HmisFloatingField label="Visit #" htmlFor="billing-visit-no">
-            <Form.Item name="visitNo" noStyle>
-              <Input
-                id="billing-visit-no"
-                className={controlClass}
-                placeholder="Enter Visit id"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-visit-no"
+              className={controlClass}
+              value={filters.visitNo}
+              onChange={(e) => patchFilter({ visitNo: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="MR #" htmlFor="billing-mr-no">
-            <Form.Item name="mrNo" noStyle>
-              <Input
-                id="billing-mr-no"
-                className={controlClass}
-                placeholder="Enter MR Number"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-mr-no"
+              className={controlClass}
+              value={filters.mrNo}
+              onChange={(e) => patchFilter({ mrNo: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Patient Age" htmlFor="billing-patient-age">
             <HmisAgeUnitField
+              embedded
+              className="patient-reg-dob-age hmis-age-unit-field--no-dob"
               ageInputId="billing-patient-age"
-              age={patientAge ?? ''}
-              unit={ageUnit ?? DOB_AGE_UNITS.years}
-              onChange={({ age, unit }) => {
-                form.setFieldsValue({ patientAge: age, ageUnit: unit });
-              }}
+              age={filters.patientAge}
+              unit={filters.ageUnit}
+              onChange={({ age, unit }) => patchFilter({ patientAge: age, ageUnit: unit })}
             />
           </HmisFloatingField>
 
-          <HmisFloatingField label="Registration Date">
-            <Form.Item name="registrationDate" noStyle>
-              <DatePicker className={controlClass} style={{ width: '100%' }} format="DD/MM/YYYY" />
-            </Form.Item>
+          <HmisFloatingField label="Registration Date" htmlFor="billing-reg-date">
+            <DatePicker
+              id="billing-reg-date"
+              className={controlClass}
+              value={filters.registrationDate}
+              onChange={(registrationDate) => patchFilter({ registrationDate })}
+              format="DD/MM/YYYY"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="CNIC #" htmlFor="billing-cnic">
-            <Form.Item name="cnic" noStyle>
-              <Input
-                id="billing-cnic"
-                className={controlClass}
-                placeholder="Enter CNIC Number"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-cnic"
+              className={controlClass}
+              value={filters.cnic}
+              onChange={(e) => patchFilter({ cnic: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Mobile #" htmlFor="billing-mobile">
-            <Form.Item name="mobile" noStyle>
-              <Input
-                id="billing-mobile"
-                className={controlClass}
-                placeholder="Enter Mobile Number"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-mobile"
+              className={controlClass}
+              value={filters.mobile}
+              onChange={(e) => patchFilter({ mobile: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="First Name" htmlFor="billing-first-name">
-            <Form.Item name="firstName" noStyle>
-              <Input
-                id="billing-first-name"
-                className={controlClass}
-                placeholder="Enter First Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-first-name"
+              className={controlClass}
+              value={filters.firstName}
+              onChange={(e) => patchFilter({ firstName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Middle Name" htmlFor="billing-middle-name">
-            <Form.Item name="middleName" noStyle>
-              <Input
-                id="billing-middle-name"
-                className={controlClass}
-                placeholder="Enter Middle Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-middle-name"
+              className={controlClass}
+              value={filters.middleName}
+              onChange={(e) => patchFilter({ middleName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Last Name" htmlFor="billing-last-name">
-            <Form.Item name="lastName" noStyle>
-              <Input
-                id="billing-last-name"
-                className={controlClass}
-                placeholder="Enter Last Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-last-name"
+              className={controlClass}
+              value={filters.lastName}
+              onChange={(e) => patchFilter({ lastName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Relation First Name" htmlFor="billing-rel-first">
-            <Form.Item name="relationFirstName" noStyle>
-              <Input
-                id="billing-rel-first"
-                className={controlClass}
-                placeholder="Enter First Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-rel-first"
+              className={controlClass}
+              value={filters.relationFirstName}
+              onChange={(e) => patchFilter({ relationFirstName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Relation Middle Name" htmlFor="billing-rel-middle">
-            <Form.Item name="relationMiddleName" noStyle>
-              <Input
-                id="billing-rel-middle"
-                className={controlClass}
-                placeholder="Enter Middle Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-rel-middle"
+              className={controlClass}
+              value={filters.relationMiddleName}
+              onChange={(e) => patchFilter({ relationMiddleName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
 
           <HmisFloatingField label="Relation Last Name" htmlFor="billing-rel-last">
-            <Form.Item name="relationLastName" noStyle>
-              <Input
-                id="billing-rel-last"
-                className={controlClass}
-                placeholder="Enter Last Name"
-                allowClear
-              />
-            </Form.Item>
+            <Input
+              id="billing-rel-last"
+              className={controlClass}
+              value={filters.relationLastName}
+              onChange={(e) => patchFilter({ relationLastName: e.target.value })}
+              autoComplete="off"
+            />
           </HmisFloatingField>
-        </HmisFormGrid>
 
-        <div className="services-billing-search-actions">
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="walk-in-search-btn services-billing-search-btn"
-            onClick={handleSearch}
-          >
-            Submit
-          </Button>
-        </div>
-      </Form>
+          <div className="services-billing-search-actions">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="walk-in-search-btn services-billing-search-btn"
+            >
+              Submit
+            </Button>
+          </div>
+        </HmisFormGrid>
+      </div>
 
       <section className="services-billing-results" aria-label="Billing search results">
         <HmisTable

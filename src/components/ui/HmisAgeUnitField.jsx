@@ -15,9 +15,19 @@ export default function HmisAgeUnitField({
   onChange,
   ageInputId,
   className = '',
+  /** Match Add New Record — no extra top offset inside HmisFloatingField */
+  embedded = false,
 }) {
   return (
-    <div className={['hmis-dob-age-field hmis-dob-age-field--embedded', className].filter(Boolean).join(' ')}>
+    <div
+      className={[
+        'hmis-dob-age-field',
+        embedded && 'hmis-dob-age-field--embedded',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className="hmis-dob-age-field-inner">
         <Input
           id={ageInputId}
