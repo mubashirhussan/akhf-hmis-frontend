@@ -19,7 +19,6 @@ import {
   SERVICES_BILLING_TYPE_COLORS,
 } from '@/data/mock-services-billing';
 import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
-import { HMIS_SERVICES_BILLING_TABLE_SCROLL_Y } from '@/lib/hmis-table-scroll';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const controlClass = HMIS_FIELD_CONTROL_CLASS;
@@ -116,8 +115,7 @@ export default function ServicesBillingTab() {
       {
         title: 'Actions',
         key: 'actions',
-        width: 132,
-        fixed: 'right',
+        width: 120,
         align: 'center',
         render: () => (
           <Space size={4} className="services-billing-actions-cell">
@@ -157,7 +155,13 @@ export default function ServicesBillingTab() {
               id="billing-visit-no"
               className={controlClass}
               value={filters.visitNo}
-              onChange={(e) => patchFilter({ visitNo: e.target.value })}
+              inputMode="numeric"
+              maxLength={12}
+              placeholder="e.g. 2026"
+              onChange={(e) => {
+                const visitNo = e.target.value.replace(/\D/g, '');
+                patchFilter({ visitNo });
+              }}
               autoComplete="off"
             />
           </HmisFloatingField>
@@ -279,7 +283,7 @@ export default function ServicesBillingTab() {
               htmlType="submit"
               className="walk-in-search-btn services-billing-search-btn"
             >
-              Submit
+              Search
             </Button>
           </div>
         </HmisFormGrid>
@@ -293,7 +297,8 @@ export default function ServicesBillingTab() {
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          scroll={{ x: 1680, y: HMIS_SERVICES_BILLING_TABLE_SCROLL_Y }}
+          scroll={{ x: false }}
+          tableLayout="auto"
           locale={{
             emptyText: hasSearched
               ? 'No visits found'

@@ -62,23 +62,13 @@ export default function AppHeader() {
 
       <div className="flex items-center gap-4">
         <div className="header-datetime" aria-live="polite">
-          <div className="header-datetime__segment">
-            <span className="header-datetime__icon-wrap" aria-hidden>
-              <AppIcon icon="mdi:calendar-outline" className="header-datetime-icon" />
-            </span>
-            <span className="header-datetime__text header-datetime__text--date">
-              {now ? formatDate(now) : '\u00A0'}
-            </span>
-          </div>
+          <span className="header-datetime__text header-datetime__text--date">
+            {now ? formatDate(now) : '\u00A0'}
+          </span>
           <span className="header-datetime__divider" aria-hidden />
-          <div className="header-datetime__segment header-datetime__segment--time">
-            <span className="header-datetime__icon-wrap" aria-hidden>
-              <AppIcon icon="mdi:clock-outline" className="header-datetime-icon" />
-            </span>
-            <span className="header-datetime__text header-datetime__text--time">
-              {now ? formatTime(now) : '\u00A0'}
-            </span>
-          </div>
+          <span className="header-datetime__text header-datetime__text--time">
+            {now ? formatTime(now) : '\u00A0'}
+          </span>
         </div>
 
         <span className="h-6 w-px bg-slate-200" aria-hidden />

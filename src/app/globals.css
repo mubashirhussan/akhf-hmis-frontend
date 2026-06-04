@@ -371,68 +371,36 @@ body::-webkit-scrollbar-thumb:hover,
   color: #94a3b8;
 }
 
-/* Header date/time widget — premium HMIS chip */
+/* Header date/time */
 .header-datetime {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 5px 10px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
 }
 
-.header-datetime__segment {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.header-datetime__icon-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  /* background: #e8f4fc; */
-  color: var(--hmis-primary);
-}
-
 .header-datetime__divider {
   flex-shrink: 0;
   width: 1px;
-  height: 22px;
-  background: linear-gradient(180deg, transparent 0%, #cbd5e1 45%, #cbd5e1 55%, transparent 100%);
+  height: 14px;
+  background: #cbd5e1;
 }
 
 .header-datetime__text {
   display: inline-block;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 1.25;
+  font-size: 11px;
+  line-height: 1.2;
   letter-spacing: 0.02em;
-  color: #1e293b;
+  color: #334155;
   white-space: nowrap;
 }
 
-.header-datetime__text--date {
-  min-width: 10.5rem;
-}
-
 .header-datetime__text--time {
-  min-width: 4.5rem;
-  color: var(--hmis-primary);
-  font-weight: 600;
-}
-
-.header-datetime-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
   color: var(--hmis-primary);
 }
 
@@ -2268,7 +2236,33 @@ body::-webkit-scrollbar-thumb:hover,
 
 .services-billing-results .hmis-table-wrap {
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.hmis-table--billing-results .ant-table-thead > tr > th,
+.hmis-table--billing-results .ant-table-tbody > tr > td {
+  padding: 4px 6px !important;
+}
+
+.hmis-table--billing-results .ant-table-thead > tr > th {
+  font-size: 11px;
+}
+
+.hmis-table--billing-results .ant-table-tbody > tr > td {
+  font-size: 11px;
+}
+
+.hmis-table--billing-results .ant-table-container {
+  overflow: visible !important;
+}
+
+.hmis-table--billing-results .ant-table-content {
+  overflow: visible !important;
+}
+
+.hmis-sidebar--hover-expand {
+  z-index: 40;
+  box-shadow: 4px 0 20px rgba(15, 23, 42, 0.14);
 }
 
 .services-billing-actions-cell .ant-btn-link {
@@ -2287,10 +2281,6 @@ body::-webkit-scrollbar-thumb:hover,
   font-weight: 600 !important;
   line-height: 1.3 !important;
   padding: 2px 10px !important;
-}
-
-.hmis-table--billing-results .ant-table-tbody > tr > td {
-  font-size: 12px;
 }
 
 /* Patient Registration — accordion form */

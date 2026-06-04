@@ -85,7 +85,10 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
 
 export default function AppSidebar({ collapsed, onCollapsedChange }) {
   const pathname = usePathname();
+  const [hovering, setHovering] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState(() => getExpandedKeys(pathname));
+  const isCollapsed = collapsed && !hovering;
+  const isHoverExpanded = collapsed && hovering;
 
   useEffect(() => {
     setExpandedKeys((prev) => {
@@ -102,27 +105,29 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
 
   return (
     <aside
-      className={`hmis-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--hmis-primary)] text-white transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-[256px]'}`}
+      className={`hmis-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--hmis-primary)] text-white transition-[width] duration-200 ${isCollapsed ? 'w-[72px]' : 'w-[256px]'} ${isHoverExpanded ? 'hmis-sidebar--hover-expand' : ''}`}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
     >
       <button
         type="button"
         onClick={() => onCollapsedChange(!collapsed)}
         className="absolute -right-3 top-6 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-[24px] border border-white bg-[#026BB1] p-1.5 text-white transition hover:brightness-110"
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         <AppIcon
-          icon={collapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'}
+          icon={isCollapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'}
           className="h-4 w-4"
         />
       </button>
 
       <div
-        className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${collapsed ? 'justify-center px-2' : 'pr-6'}`}
+        className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${isCollapsed ? 'justify-center px-2' : 'pr-6'}`}
       >
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--hmis-primary)]">
           <AppIcon icon="carbon:user" className="h-5 w-5" />
         </div>
-        {!collapsed && (
+        {!isCollapsed && (
           <div className="min-w-0 flex-1">
             <p className="truncate text-[10px] font-medium uppercase tracking-wide text-white/75">
               UI/UX Designer (IT Dept)
@@ -134,7 +139,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
 
       <nav className="flex flex-1 flex-col overflow-hidden">
         <div className="sidebar-scroll flex-1 overflow-y-auto px-3 py-3">
-          {!collapsed && (
+          {!isCollapsed && (
             <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-white/50">
               Main
             </p>
@@ -145,7 +150,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                 key={item.key}
                 item={item}
                 pathname={pathname}
-                collapsed={collapsed}
+                collapsed={isCollapsed}
                 expandedKeys={expandedKeys}
                 onToggle={toggleExpanded}
               />
@@ -162,7 +167,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                   className="sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
                 >
                   <AppIcon icon={link.icon} />
-                  {!collapsed && <span>{link.label}</span>}
+                  {!isCollapsed && <span>{link.label}</span>}
                 </Link>
               </li>
             ))}

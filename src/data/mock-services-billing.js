@@ -1,7 +1,7 @@
 export const MOCK_SERVICES_BILLING_VISITS = [
   {
     id: '1',
-    visitNo: 'V-2026-1042',
+    visitNo: '20261042',
     regNo: 'REG-000123',
     patientName: 'Ammar Shahid',
     plName: 'AKHF Main Lab',
@@ -37,7 +37,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
   },
   {
     id: '3',
-    visitNo: 'V-2026-1031',
+    visitNo: '20261031',
     regNo: 'REG-000125',
     patientName: 'Hassan Ali',
     plName: 'AKHF Main Lab',
@@ -55,7 +55,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
   },
   {
     id: '4',
-    visitNo: 'V-2026-1025',
+    visitNo: '20261025',
     regNo: 'REG-000126',
     patientName: 'Fatima Noor',
     plName: 'Partner Lab North',
@@ -73,7 +73,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
   },
   {
     id: '5',
-    visitNo: 'V-2026-1019',
+    visitNo: '20261019',
     regNo: 'REG-000127',
     patientName: 'Usman Tariq',
     plName: 'AKHF Main Lab',
@@ -91,7 +91,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
   },
   {
     id: '6',
-    visitNo: 'V-2026-1012',
+    visitNo: '20261012',
     regNo: 'REG-000128',
     patientName: 'Ayesha Malik',
     plName: 'City Diagnostics',

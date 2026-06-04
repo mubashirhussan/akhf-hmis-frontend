@@ -6,7 +6,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import AntdAppHost from '@/components/providers/AntdAppHost';
 
 export default function AppShell({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--background)]">
