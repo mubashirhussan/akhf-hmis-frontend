@@ -301,7 +301,7 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               />
             </HmisFloatingField>
 
-            <HmisFloatingField label="Reference #" htmlFor="reference-no" col={3}>
+            <HmisFloatingField label="Reference #" htmlFor="reference-no">
               <Input id="reference-no" className={controlClass} autoComplete="off" />
             </HmisFloatingField>
           </HmisFormGridRow>

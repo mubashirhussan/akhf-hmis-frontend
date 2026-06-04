@@ -467,7 +467,10 @@ body::-webkit-scrollbar-thumb:hover,
   column-gap: 12px;
 }
 
-.walk-in-add-record-form > .hmis-floating-field {
+.walk-in-add-record-form > .hmis-floating-field,
+.walk-in-add-record-form .hmis-form-grid-row .hmis-floating-field {
+  grid-column: span 1;
+  max-width: 100%;
   margin-top: 6px;
 }
 
@@ -1962,6 +1965,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .patient-registration-form .patient-reg-section-grid > .hmis-floating-field {
+  grid-column: span 1;
+  max-width: 100%;
   margin-top: 6px;
 }
 
@@ -2031,6 +2036,8 @@ body::-webkit-scrollbar-thumb:hover,
 .patient-reg-checkbox-slot {
   display: flex;
   align-items: center;
+  grid-column: span 1;
+  min-width: 0;
   min-height: var(--hmis-field-height);
   margin-top: 6px;
   padding-top: 7px;
@@ -2053,16 +2060,24 @@ body::-webkit-scrollbar-thumb:hover,
   min-height: var(--hmis-field-height);
 }
 
-.patient-registration-form .patient-reg-grid-4 .hmis-dob-age-date {
+.patient-registration-form .patient-reg-dob-age .hmis-dob-age-field-inner,
+.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-field-inner {
+  background: #ffffff;
+}
+
+.patient-registration-form .patient-reg-dob-age .hmis-dob-age-date,
+.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-date {
   flex: 1 1 0;
   min-width: 0;
   font-size: 11px;
-  background: transparent !important;
+  background: #f8fafc;
 }
 
 .patient-registration-form .patient-reg-dob-age .hmis-dob-age-age.ant-input,
-.patient-registration-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select {
-  background: transparent !important;
+.patient-registration-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select,
+.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-age.ant-input,
+.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select {
+  background: #ffffff !important;
 }
 
 .patient-registration-title {

@@ -342,7 +342,7 @@ export default function PatientRegistrationForm() {
               <Input className={controlClass} type="email" />
             </PatientRegField>
 
-            <PatientRegField name="presentAddress" label="Present Address" col={3}>
+            <PatientRegField name="presentAddress" label="Present Address">
               <Input className={controlClass} />
             </PatientRegField>
           </HmisFormGrid>
@@ -446,12 +446,12 @@ export default function PatientRegistrationForm() {
               <Select className={controlClass} options={CITY_OPTIONS} allowClear />
             </PatientRegField>
 
-            <PatientRegField name="kinAddress1" label="Address 1" col={2}>
-              <Input.TextArea className={controlClass} rows={2} />
+            <PatientRegField name="kinAddress1" label="Address 1">
+              <Input className={controlClass} />
             </PatientRegField>
 
-            <PatientRegField name="kinAddress2" label="Address 2" col={2}>
-              <Input.TextArea className={controlClass} rows={2} />
+            <PatientRegField name="kinAddress2" label="Address 2">
+              <Input className={controlClass} />
             </PatientRegField>
           </HmisFormGrid>
         ),
@@ -509,7 +509,7 @@ export default function PatientRegistrationForm() {
               <Input className={controlClass} />
             </PatientRegField>
 
-            <PatientRegField name="comments" label="Comments" col={2}>
+            <PatientRegField name="comments" label="Comments">
               <Input className={controlClass} />
             </PatientRegField>
           </HmisFormGrid>
