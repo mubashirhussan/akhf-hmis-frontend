@@ -601,7 +601,11 @@ export default function PatientRegistrationForm() {
           activeKey={activePanels}
           onChange={setActivePanels}
           destroyOnHidden={false}
-          className="patient-registration-collapse"
+          classNames={{
+            root: 'patient-registration-collapse',
+            header: 'patient-reg-collapse-header',
+            title: 'patient-reg-collapse-title',
+          }}
           expandIconPlacement="end"
           expandIcon={({ isActive }) =>
             isActive ? (

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Checkbox, Col, Input, message, Row, Select } from "antd";
+import { useHmisConfirm } from "@/hooks/useHmisConfirm";
 import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
 import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
 import {
@@ -35,6 +36,7 @@ function createAddedService(service) {
 }
 
 export default function SearchServicesSection({ variant = "full" }) {
+  const { confirmDelete } = useHmisConfirm();
   const isSidebar = variant === "sidebar";
   const [category, setCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,8 +101,13 @@ export default function SearchServicesSection({ variant = "full" }) {
     );
   };
 
-  const handleRemove = (rowId) => {
-    setAddedServices((prev) => prev.filter((row) => row.id !== rowId));
+  const handleRemove = async (rowId) => {
+    const row = addedServices.find((item) => item.id === rowId);
+    const confirmed = await confirmDelete({ itemName: row?.name });
+
+    if (confirmed) {
+      setAddedServices((prev) => prev.filter((item) => item.id !== rowId));
+    }
   };
 
   const handleCancel = () => {

@@ -11,7 +11,6 @@ import {
 } from '@/data/mock-walk-in-patients';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
 import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
-import { HMIS_WALK_IN_TABLE_BODY_SCROLL_Y } from '@/lib/hmis-table-scroll';
 import { validateWalkInPatientSearch } from '@/lib/walk-in-search-validation';
 
 function PatientDetailsPanel({ patient }) {
@@ -233,7 +232,6 @@ export default function SearchExistingPatientTab() {
           columnAlign="left"
           pagination={false}
           tableLayout="fixed"
-          scroll={{ y: HMIS_WALK_IN_TABLE_BODY_SCROLL_Y }}
           locale={{
             emptyText: hasSearched
               ? 'No patients found'

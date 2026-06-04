@@ -4,6 +4,10 @@
   --background: #FFFFFF;
   --foreground: #1e293b;
   --hmis-primary: #026BB1;
+  --hmis-table-header-bg: #026BB1;
+  --hmis-table-header-color: #ffffff;
+  --hmis-table-row-selected-bg: #dbeafe;
+  --hmis-table-row-hover-bg: #f1f5f9;
   --hmis-error: #ff4d4f;
   --hmis-error-focus-ring: rgba(255, 77, 79, 0.2);
   --hmis-header-bg: #FFFFFF;
@@ -1275,9 +1279,12 @@ body::-webkit-scrollbar-thumb:hover,
   cursor: pointer;
 }
 
-.hmis-table-row--selected > td,
-.hmis-table--patient-list .ant-table-tbody > tr:hover > td {
-  background: #f0f7fc !important;
+.hmis-table-row--selected > td {
+  background: var(--hmis-table-row-selected-bg) !important;
+}
+
+.hmis-table--patient-list .ant-table-tbody > tr:hover:not(.hmis-table-row--selected) > td {
+  background: var(--hmis-table-row-hover-bg) !important;
 }
 
 .walk-in-patient-row {
@@ -1294,9 +1301,12 @@ body::-webkit-scrollbar-thumb:hover,
   transition: background-color 0.15s ease;
 }
 
-.walk-in-patient-row:hover,
+.walk-in-patient-row:hover {
+  background: var(--hmis-table-row-hover-bg);
+}
+
 .walk-in-patient-row--selected {
-  background: #f0f7fc;
+  background: var(--hmis-table-row-selected-bg);
 }
 
 .walk-in-patient-row:focus {
@@ -1305,11 +1315,12 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-patient-row:focus-visible {
   outline: none;
-  background: #f0f7fc;
+  background: var(--hmis-table-row-hover-bg);
   box-shadow: inset 0 0 0 1px var(--hmis-primary);
 }
 
 .walk-in-patient-row--selected:focus-visible {
+  background: var(--hmis-table-row-selected-bg);
   box-shadow: inset 0 0 0 1px var(--hmis-primary);
 }
 
@@ -1390,6 +1401,133 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Patient / item detail sections — 4-column label-over-value grid */
+/* Delete confirmation dialog — fully center aligned */
+.hmis-confirm-modal .ant-modal-content {
+  padding: 32px 32px 26px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 28px 56px rgba(15, 23, 42, 0.16) !important;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  text-align: center;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-body-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100%;
+  text-align: center !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-paragraph {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: none !important;
+  text-align: center !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-title {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 0 0 !important;
+  padding: 0 !important;
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  text-align: center !important;
+  color: #0f172a !important;
+  white-space: normal !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-content {
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns {
+  margin-top: 28px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  float: none !important;
+  text-align: center !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn {
+  min-width: 120px;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-default {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-default:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
+}
+
+.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous:hover {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+}
+
+.hmis-confirm-modal .ant-modal-confirm-body > .hmis-confirm-modal__icon-wrap,
+.hmis-confirm-modal .ant-modal-confirm-body .hmis-confirm-modal__icon-wrap {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px !important;
+  border-radius: 50%;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-size: 32px;
+  color: #dc2626 !important;
+  /* box-shadow: 0 8px 20px rgba(220, 38, 38, 0.12); */
+}
+
+.hmis-confirm-modal .ant-modal-confirm-body > .hmis-confirm-modal__icon-wrap .anticon,
+.hmis-confirm-modal .ant-modal-confirm-body .hmis-confirm-modal__icon-wrap .anticon {
+  display: block !important;
+  color: #dc2626 !important;
+}
+
+.hmis-confirm-modal__service-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .hmis-patient-details-modal .ant-modal-content {
   padding: 24px 28px 20px;
   border-radius: 10px;
@@ -1802,12 +1940,37 @@ body::-webkit-scrollbar-thumb:hover,
   flex-shrink: 0;
 }
 
+.ant-table-thead > tr > th {
+  background: var(--hmis-table-header-bg) !important;
+  color: var(--hmis-table-header-color) !important;
+  white-space: nowrap !important;
+}
+
+.ant-table-thead > tr > th .ant-table-column-title {
+  white-space: nowrap !important;
+}
+
+/* HmisTable: body scroll via wrapper (avoids antd extra scrollbar <th>) */
+.hmis-table-wrap--scroll-body .ant-table-container {
+  overflow: hidden;
+}
+
+.hmis-table-wrap--scroll-body .ant-table-container .ant-table-content {
+  max-height: var(--hmis-table-scroll-y);
+  overflow: auto !important;
+}
+
+.hmis-table-wrap--scroll-body .ant-table-thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 .hmis-table .ant-table-thead > tr > th {
-  background: var(--hmis-table-header-bg, #ffffff) !important;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #475569;
+  white-space: nowrap !important;
 }
 
 .hmis-table .ant-table-tbody > tr > td {
@@ -1852,11 +2015,9 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-added-services-table .ant-table-thead > tr > th {
-  background: var(--hmis-table-header-bg, #ffffff) !important;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 600;
   font-size: 11px;
-  color: #000000;
 }
 
 .hmis-table .ant-table-tbody > tr > td,
@@ -1941,6 +2102,70 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-btn-save {
   min-width: 130px;
+}
+
+/* Services Billing — search form + results table */
+.services-billing-page {
+  padding: 4px 4px 24px;
+  max-width: 100%;
+}
+
+.services-billing-search-form .services-billing-search-grid.hmis-form-grid {
+  row-gap: 10px;
+  column-gap: 12px;
+}
+
+.services-billing-search-form .services-billing-search-grid > .hmis-floating-field {
+  grid-column: span 1;
+  max-width: 100%;
+  margin-top: 6px;
+}
+
+.services-billing-search-form .services-billing-search-grid .hmis-floating-control .ant-form-item {
+  margin-bottom: 0;
+}
+
+.services-billing-search-actions {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 18px;
+  margin-bottom: 22px;
+}
+
+.services-billing-search-btn {
+  min-width: 140px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.services-billing-results .hmis-table-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.services-billing-actions-cell .ant-btn-link {
+  color: var(--hmis-primary) !important;
+  padding-inline: 4px;
+}
+
+.services-billing-actions-cell .ant-btn-link:hover {
+  color: var(--hmis-scrollbar-thumb-hover) !important;
+}
+
+.services-billing-tag {
+  margin: 0 !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  padding: 2px 10px !important;
+}
+
+.hmis-table--billing-results .ant-table-tbody > tr > td {
+  font-size: 12px;
 }
 
 /* Patient Registration — accordion form */
@@ -2101,12 +2326,13 @@ body::-webkit-scrollbar-thumb:hover,
   display: none !important;
 }
 
-.patient-registration-collapse.ant-collapse {
+.patient-registration-collapse.ant-collapse,
+.patient-registration-collapse .ant-collapse {
   background: transparent;
   border: none;
 }
 
-.patient-registration-collapse > .ant-collapse-item {
+.patient-registration-collapse .ant-collapse-item {
   margin-bottom: 12px;
   border: 1px solid #e2e8f0 !important;
   border-radius: 8px;
@@ -2114,18 +2340,19 @@ body::-webkit-scrollbar-thumb:hover,
   background: #fff;
 }
 
-.patient-registration-collapse > .ant-collapse-item:last-child {
+.patient-registration-collapse .ant-collapse-item:last-child {
   margin-bottom: 0;
   border-bottom: 1px solid #e2e8f0 !important;
 }
 
-.patient-registration-collapse > .ant-collapse-item:last-child > .ant-collapse-content {
+.patient-registration-collapse .ant-collapse-item:last-child > .ant-collapse-content {
   border-bottom: 1px solid #e2e8f0;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
 
-.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header {
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header,
+.patient-registration-collapse .patient-reg-collapse-header {
   display: flex !important;
   align-items: center !important;
   flex-direction: row !important;
@@ -2134,17 +2361,55 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 14px;
   color: #334155;
   background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
 }
 
-.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-title,
-.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-header-text {
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-header-text,
+.patient-registration-collapse .patient-reg-collapse-header .ant-collapse-title,
+.patient-registration-collapse .patient-reg-collapse-title {
   flex: 1 1 auto;
   min-width: 0;
   text-align: left;
   order: 0;
+  font-weight: 600;
 }
 
-.patient-registration-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-expand-icon {
+/* Closed panels — dark label */
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .ant-collapse-header
+  .ant-collapse-title,
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .ant-collapse-header
+  .ant-collapse-header-text,
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .patient-reg-collapse-header
+  .patient-reg-collapse-title {
+  color: #334155 !important;
+}
+
+/* Open panel — primary bg, white label */
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header {
+  background-color: var(--hmis-primary) !important;
+  border-bottom-color: var(--hmis-primary);
+  color: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-header-text,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item-active .patient-reg-collapse-title {
+  color: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .patient-reg-collapse-header .ant-collapse-expand-icon {
   order: 1;
   margin-inline-start: auto !important;
   margin-inline-end: 0 !important;
@@ -2159,11 +2424,11 @@ body::-webkit-scrollbar-thumb:hover,
   transition: color 0.2s ease;
 }
 
-.patient-registration-collapse
-  > .ant-collapse-item
-  > .ant-collapse-header:hover
-  .patient-reg-collapse-icon {
-  color: var(--hmis-primary);
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .patient-reg-collapse-icon,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .patient-reg-collapse-icon {
+  color: #ffffff !important;
 }
 
 .patient-registration-collapse .ant-collapse-content,

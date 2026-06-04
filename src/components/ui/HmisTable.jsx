@@ -5,8 +5,6 @@ import { Table } from 'antd';
 import { useElementWidth } from '@/hooks/useElementWidth';
 import { getTableScrollWidth } from '@/lib/table-utils';
 
-const HEADER_BG = '#ffffff';
-
 function stripFixedColumns(columns = []) {
   return columns.map(({ fixed, ...column }) => column);
 }
@@ -57,8 +55,11 @@ export default function HmisTable({
     [columnsWithAlign, needsHorizontalScroll],
   );
 
+  const verticalScrollY = scroll?.y;
+
   const tableScroll = useMemo(() => {
     const next = { ...scroll };
+    delete next.y;
 
     if (scroll?.x === false) {
       delete next.x;
@@ -73,16 +74,30 @@ export default function HmisTable({
 
   const resolvedTableLayout = tableLayout ?? (needsHorizontalScroll ? 'fixed' : 'auto');
 
+  const wrapClassNames = [
+    'hmis-table-wrap',
+    'hmis-scrollbar',
+    verticalScrollY != null && 'hmis-table-wrap--scroll-body',
+    wrapClassName,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const wrapStyle =
+    verticalScrollY != null
+      ? {
+          '--hmis-table-scroll-y':
+            typeof verticalScrollY === 'number' ? `${verticalScrollY}px` : verticalScrollY,
+        }
+      : undefined;
+
   return (
-    <div
-      ref={wrapRef}
-      className={`hmis-table-wrap hmis-scrollbar ${wrapClassName}`.trim()}
-      style={{ '--hmis-table-header-bg': HEADER_BG }}
-    >
+    <div ref={wrapRef} className={wrapClassNames} style={wrapStyle}>
       <Table
         className={`hmis-table ${className}`.trim()}
         columns={resolvedColumns}
         scroll={tableScroll}
+        bordered
         tableLayout={resolvedTableLayout}
         {...props}
       />
