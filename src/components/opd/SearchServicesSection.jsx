@@ -249,7 +249,8 @@ export default function SearchServicesSection({ variant = "full" }) {
               width={200}
               height={175}
               className="walk-in-services-illustration-img"
-              priority={false}
+              priority
+              style={{ width: 'auto', height: 'auto' }}
             />
           </div>
         ) : isSidebar ? (

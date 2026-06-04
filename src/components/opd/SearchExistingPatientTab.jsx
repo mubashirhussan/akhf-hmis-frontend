@@ -256,7 +256,7 @@ export default function SearchExistingPatientTab() {
         footer={null}
         width={900}
         centered
-        destroyOnClose
+        destroyOnHidden
       >
         {selectedPatient ? <PatientDetailsPanel patient={selectedPatient} /> : null}
       </Modal>
