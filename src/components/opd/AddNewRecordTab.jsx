@@ -128,7 +128,7 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
           />
         </HmisFloatingField>
 
-        <HmisFloatingField label="Full Name" htmlFor="full-name">
+        <HmisFloatingField label="First Name" htmlFor="full-name">
           <Input id="full-name" className={controlClass} autoComplete="off" />
         </HmisFloatingField>
 

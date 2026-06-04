@@ -326,9 +326,9 @@ export default function PatientRegistrationForm() {
 
             <PatientRegField
               name="guardianFirstName"
-              label="Father First Name"
+              label="Guardian First Name"
               required
-              rules={REQUIRED_RULE('Father first name is required')}
+              rules={REQUIRED_RULE('Gaurdian first name is required')}
               validateTrigger={['onChange', 'onSubmit']}
             >
               <Input className={controlClass} />
