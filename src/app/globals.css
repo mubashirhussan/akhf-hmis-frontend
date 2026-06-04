@@ -769,6 +769,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .hmis-field-control.ant-picker {
+  position: relative;
   height: var(--hmis-field-height) !important;
   min-height: var(--hmis-field-height) !important;
   padding: 0 !important;
@@ -776,17 +777,75 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .hmis-field-control.ant-picker .ant-picker-input {
-  height: 100% !important;
+  display: flex !important;
   align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 6px;
+  width: 100%;
+  height: 100% !important;
+  min-height: var(--hmis-field-height) !important;
+  padding-inline: 11px 10px !important;
+  box-sizing: border-box !important;
 }
 
 .hmis-field-control.ant-picker .ant-picker-input > input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
   height: 100% !important;
-  padding-block: 0 !important;
-  padding-inline: 11px !important;
+  padding: 0 !important;
   line-height: 1.25 !important;
   font-size: 11px !important;
   font-weight: 500 !important;
+}
+
+.hmis-field-control.ant-picker .ant-picker-suffix,
+.hmis-field-control.ant-picker .ant-picker-input .ant-picker-suffix {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.hmis-field-control.ant-picker .ant-picker-suffix .anticon,
+.hmis-field-control.ant-picker .ant-picker-input .ant-picker-suffix .anticon {
+  display: block !important;
+  font-size: 13px !important;
+  color: #94a3b8 !important;
+  line-height: 1 !important;
+}
+
+.hmis-field-control.ant-picker .ant-picker-clear {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Ant Design 6 — suffix sometimes sits on picker root */
+.hmis-field-control.ant-picker > .ant-picker-suffix {
+  position: absolute !important;
+  inset-inline-end: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 1;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  pointer-events: none;
+}
+
+.hmis-field-control.ant-picker > .ant-picker-suffix .anticon {
+  pointer-events: auto;
+}
+
+.hmis-field-control.ant-picker:has(> .ant-picker-suffix) .ant-picker-input {
+  padding-inline-end: 30px !important;
 }
 
 .hmis-field-control.ant-select .ant-select-suffix {
