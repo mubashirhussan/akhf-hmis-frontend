@@ -51,7 +51,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
     dateTimeTo: '16 May 2026, 06:15 PM',
     status: 'Closed',
     patientType: 'B2B',
-    checkupType: 'Follow-up',
+    checkupType: 'Emergency',
   },
   {
     id: '4',
@@ -87,7 +87,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
     dateTimeTo: '14 May 2026, 06:00 PM',
     status: 'Billed',
     patientType: 'Panel',
-    checkupType: 'OPD',
+    checkupType: 'Emergency',
   },
   {
     id: '6',
@@ -105,7 +105,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
     dateTimeTo: '13 May 2026, 03:45 PM',
     status: 'Open',
     patientType: 'General',
-    checkupType: 'Emergency',
+    checkupType: 'OPD',
   },
 ];
 

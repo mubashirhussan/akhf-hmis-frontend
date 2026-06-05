@@ -82,7 +82,7 @@ export default function ServicesBillingTab() {
     () => [
       { title: 'Visit No', dataIndex: 'visitNo', key: 'visitNo', width: 130 },
       { title: 'Reg No', dataIndex: 'regNo', key: 'regNo', width: 120 },
-      { title: 'Patient Name', dataIndex: 'patientName', key: 'patientName', width: 150 },
+      { title: 'PF Name', dataIndex: 'patientName', key: 'patientName', width: 150 },
       { title: 'PL Name', dataIndex: 'plName', key: 'plName', width: 140 },
       { title: 'Relation', dataIndex: 'relation', key: 'relation', width: 88 },
       { title: 'Relation Name', dataIndex: 'relationName', key: 'relationName', width: 150 },
@@ -119,16 +119,16 @@ export default function ServicesBillingTab() {
         align: 'center',
         render: () => (
           <Space size={4} className="services-billing-actions-cell">
-            <Tooltip title="Billing">
+            <Tooltip title="Get Card">
               <Button type="link" size="small" icon={<CreditCardOutlined />} aria-label="Billing" />
             </Tooltip>
             <Tooltip title="View">
               <Button type="link" size="small" icon={<EyeOutlined />} aria-label="View" />
             </Tooltip>
-            <Tooltip title="Edit">
+            <Tooltip title="Refund">
               <Button type="link" size="small" icon={<EditOutlined />} aria-label="Edit" />
             </Tooltip>
-            <Tooltip title="Settings">
+            <Tooltip title="Services">
               <Button type="link" size="small" icon={<SettingOutlined />} aria-label="Settings" />
             </Tooltip>
           </Space>
