@@ -24,6 +24,7 @@ import {
   searchServices,
 } from '@/data/mock-walk-in-services';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -372,12 +373,13 @@ export default function BillingVisitServicesView({ visit, onBack }) {
       <section className="billing-visit-services-table-section" aria-label="Visit services">
         <DataTable
           className="data-table--billing-visit-services"
+          wrapClassName="billing-visit-services-table-wrap"
           columns={columns}
           dataSource={serviceRows}
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          scroll={{ x: false }}
+          scroll={{ x: false, y: BILLING_VISIT_SERVICES_TABLE_SCROLL_Y }}
           locale={{ emptyText: 'No services added for this visit' }}
         />
 

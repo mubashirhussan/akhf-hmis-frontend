@@ -5,3 +5,6 @@ export const WALK_IN_SERVICES_SIDEBAR_SCROLL_Y = 160;
 
 /** Services Billing search results table body height. */
 export const SERVICES_BILLING_TABLE_SCROLL_Y = 480;
+
+/** Billing visit services detail — table body scroll (keeps page fixed). */
+export const BILLING_VISIT_SERVICES_TABLE_SCROLL_Y = 'max(180px, calc(100vh - 530px))';

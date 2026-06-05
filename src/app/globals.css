@@ -361,9 +361,9 @@ body::-webkit-scrollbar-thumb:hover,
 .header-breadcrumb {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 19px;
   line-height: 100%;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
 }
 
 .header-breadcrumb-separator {
@@ -2633,6 +2633,11 @@ body::-webkit-scrollbar-thumb:hover,
 
 .billing-visit-services-table-section {
   margin-bottom: 16px;
+  min-height: 0;
+}
+
+.billing-visit-services-table-wrap {
+  min-height: 0;
 }
 
 .data-table--billing-visit-services .ant-table-thead > tr > th,
