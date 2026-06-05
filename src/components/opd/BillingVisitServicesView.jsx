@@ -28,7 +28,7 @@ import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function BillingVisitServicesView({ visit, onBack }) {
+export default function BillingVisitServicesView({ visit }) {
   const { message } = App.useApp();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
 
@@ -183,22 +183,6 @@ export default function BillingVisitServicesView({ visit, onBack }) {
 
   return (
     <div className="billing-visit-services-page">
-      <div className="billing-visit-services-toolbar">
-        <button type="button" className="billing-visit-services-back" onClick={onBack}>
-          <span className="billing-visit-services-back-icon" aria-hidden>
-            <AppIcon icon="mdi:arrow-left" className="h-[15px] w-[15px]" />
-          </span>
-          <span>Back to search</span>
-        </button>
-
-        <div className="billing-visit-services-visit-chip">
-          <span className="billing-visit-services-visit-label">Visit</span>
-          <span className="billing-visit-services-visit-no">#{visit?.visitNo}</span>
-          <span className="billing-visit-services-visit-divider" aria-hidden />
-          <span className="billing-visit-services-visit-name">{visit?.patientName}</span>
-        </div>
-      </div>
-
       <section className="billing-patient-header-card">
         <div className="billing-patient-header-body">
           <div className="billing-patient-header-main">

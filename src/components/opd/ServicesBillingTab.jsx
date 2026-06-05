@@ -89,13 +89,6 @@ export default function ServicesBillingTab() {
     [pathname, router, searchParams],
   );
 
-  const closeVisitServices = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('visitId');
-    const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
-  }, [pathname, router, searchParams]);
-
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
@@ -198,7 +191,7 @@ export default function ServicesBillingTab() {
   );
 
   if (activeVisit) {
-    return <BillingVisitServicesView visit={activeVisit} onBack={closeVisitServices} />;
+    return <BillingVisitServicesView visit={activeVisit} />;
   }
 
   return (

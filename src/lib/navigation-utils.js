@@ -1,4 +1,5 @@
 import { footerLinks, navigation } from '@/config/navigation-data';
+import { MOCK_SERVICES_BILLING_VISITS } from '@/data/mock-services-billing';
 
 function flattenItems(items, parent = null) {
   const result = [];
@@ -26,7 +27,7 @@ export function findNavItemByHref(href) {
   return allItems.find((item) => normalizePath(item.href) === path) ?? null;
 }
 
-export function getBreadcrumbs(pathname) {
+export function getBreadcrumbs(pathname, searchParams) {
   const item = findNavItemByHref(pathname);
   if (!item) {
     return [{ label: 'Home', href: '/' }];
@@ -38,6 +39,21 @@ export function getBreadcrumbs(pathname) {
     crumbs.unshift({ label: current.label, href: current.href });
     current = current.parent;
   }
+
+  if (normalizePath(pathname) === '/opd/services-billing') {
+    const visitId = searchParams?.get?.('visitId');
+    if (visitId) {
+      const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
+      const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Services';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Services Billing', href: '/opd/services-billing' },
+        { label: visitLabel, href: `/opd/services-billing?visitId=${visitId}` },
+      ];
+    }
+  }
+
   return crumbs;
 }
 

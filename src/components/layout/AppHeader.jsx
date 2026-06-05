@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AppIcon from '@/components/icons/AppIcon';
 import { getBreadcrumbs } from '@/lib/navigation-utils';
@@ -25,7 +25,8 @@ function formatTime(date) {
 
 export default function AppHeader() {
   const pathname = usePathname();
-  const breadcrumbs = getBreadcrumbs(pathname);
+  const searchParams = useSearchParams();
+  const breadcrumbs = getBreadcrumbs(pathname, searchParams);
   const [now, setNow] = useState(null);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function AppHeader() {
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
           return (
-            <span key={crumb.href} className="flex items-center gap-2">
+            <span key={`${crumb.href}-${crumb.label}`} className="flex items-center gap-2">
               {index > 0 && (
                 <AppIcon icon="mdi:chevron-right" className="header-breadcrumb-separator h-[18px] w-[18px]" />
               )}
