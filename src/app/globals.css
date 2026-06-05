@@ -3,18 +3,18 @@
 :root {
   --background: #FFFFFF;
   --foreground: #1e293b;
-  --hmis-primary: #026BB1;
-  --hmis-table-header-bg: #026BB1;
-  --hmis-table-header-color: #ffffff;
-  --hmis-table-row-selected-bg: #dbeafe;
-  --hmis-table-row-hover-bg: #f1f5f9;
-  --hmis-error: #ff4d4f;
-  --hmis-error-focus-ring: rgba(255, 77, 79, 0.2);
-  --hmis-header-bg: #FFFFFF;
-  --hmis-scrollbar-size: 4px;
-  --hmis-scrollbar-track: #eef2f6;
-  --hmis-scrollbar-thumb: var(--hmis-primary);
-  --hmis-scrollbar-thumb-hover: #015a9a;
+  --app-primary: #026BB1;
+  --data-table-header-bg: #026BB1;
+  --data-table-header-color: #ffffff;
+  --data-table-row-selected-bg: #dbeafe;
+  --data-table-row-hover-bg: #f1f5f9;
+  --app-error: #ff4d4f;
+  --app-error-focus-ring: rgba(255, 77, 79, 0.2);
+  --app-header-bg: #FFFFFF;
+  --app-scrollbar-size: 4px;
+  --app-scrollbar-track: #eef2f6;
+  --app-scrollbar-thumb: var(--app-primary);
+  --app-scrollbar-thumb-hover: #015a9a;
 }
 
 @theme inline {
@@ -30,10 +30,10 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Ant Design — use HMIS primary everywhere */
+/* Ant Design — use app primary everywhere */
 .ant-btn-primary:not(:disabled) {
-  background-color: var(--hmis-primary) !important;
-  border-color: var(--hmis-primary) !important;
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 .ant-btn-primary:not(:disabled):hover {
@@ -48,23 +48,23 @@ body {
 
 .ant-radio-checked .ant-radio-inner,
 .ant-radio-indeterminate .ant-radio-inner {
-  border-color: var(--hmis-primary) !important;
-  background-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
+  background-color: var(--app-primary) !important;
 }
 
 .ant-radio-wrapper:hover .ant-radio-inner,
 .ant-radio-checked::after {
-  border-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 .ant-checkbox-wrapper:hover .ant-checkbox-inner {
-  border-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 .ant-checkbox-checked .ant-checkbox-inner,
 .ant-checkbox-indeterminate .ant-checkbox-inner {
-  background-color: var(--hmis-primary) !important;
-  border-color: var(--hmis-primary) !important;
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 /* White checkmark on primary background (::after tick + v6 SVG icon) */
@@ -99,17 +99,17 @@ body {
 
 .ant-select-focused:not(.ant-select-disabled),
 .ant-select-open:not(.ant-select-disabled) {
-  border-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: #e8f4fc !important;
-  color: var(--hmis-primary) !important;
+  color: var(--app-primary) !important;
 }
 
 .ant-picker-focused,
 .ant-picker:hover:not(.ant-picker-disabled) {
-  border-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
 }
 
 .ant-picker-focused {
@@ -120,13 +120,13 @@ body {
 .ant-input-focused,
 .ant-input-affix-wrapper-focused,
 .ant-input-affix-wrapper:focus-within {
-  border-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
   box-shadow: 0 0 0 2px rgba(2, 107, 177, 0.12) !important;
 }
 
 .ant-pagination .ant-pagination-item-active {
-  border-color: var(--hmis-primary) !important;
-  background-color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
+  background-color: var(--app-primary) !important;
 }
 
 .ant-pagination .ant-pagination-item-active a {
@@ -139,15 +139,15 @@ body {
 }
 
 .ant-switch.ant-switch-checked {
-  background: var(--hmis-primary) !important;
+  background: var(--app-primary) !important;
 }
 
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: var(--hmis-primary) !important;
+  color: var(--app-primary) !important;
 }
 
 .ant-tabs .ant-tabs-ink-bar {
-  background: var(--hmis-primary) !important;
+  background: var(--app-primary) !important;
 }
 
 /* Form field placeholders */
@@ -183,31 +183,31 @@ body {
   }
 }
 
-/* Unified HMIS scrollbars (thin primary, no arrow buttons) */
+/* Unified app scrollbars (thin primary, no arrow buttons) */
 html,
 body,
-.hmis-scrollbar:not(.sidebar-scroll),
-.hmis-scrollbar:not(.sidebar-scroll) *,
+.app-scrollbar:not(.sidebar-scroll),
+.app-scrollbar:not(.sidebar-scroll) *,
 .ant-table-body,
 .ant-table-content {
   scrollbar-width: thin;
-  scrollbar-color: var(--hmis-scrollbar-thumb) var(--hmis-scrollbar-track);
+  scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar,
 .ant-table-body::-webkit-scrollbar,
 .ant-table-content::-webkit-scrollbar {
-  width: var(--hmis-scrollbar-size);
-  height: var(--hmis-scrollbar-size);
+  width: var(--app-scrollbar-size);
+  height: var(--app-scrollbar-size);
 }
 
 html::-webkit-scrollbar-button,
 body::-webkit-scrollbar-button,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-button,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-button,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-button,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-button,
 .ant-table-body::-webkit-scrollbar-button,
 .ant-table-content::-webkit-scrollbar-button,
 *::-webkit-scrollbar-button {
@@ -218,8 +218,8 @@ body::-webkit-scrollbar-button,
 
 html::-webkit-scrollbar-corner,
 body::-webkit-scrollbar-corner,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-corner,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-corner,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-corner,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-corner,
 .ant-table-body::-webkit-scrollbar-corner,
 .ant-table-content::-webkit-scrollbar-corner,
 *::-webkit-scrollbar-corner {
@@ -228,35 +228,35 @@ body::-webkit-scrollbar-corner,
 
 html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-track,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-track,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-track,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-track,
 .ant-table-body::-webkit-scrollbar-track,
 .ant-table-content::-webkit-scrollbar-track {
-  background: var(--hmis-scrollbar-track);
+  background: var(--app-scrollbar-track);
   border-radius: 999px;
 }
 
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb,
 .ant-table-body::-webkit-scrollbar-thumb,
 .ant-table-content::-webkit-scrollbar-thumb {
-  background: var(--hmis-scrollbar-thumb);
+  background: var(--app-scrollbar-thumb);
   border-radius: 999px;
 }
 
 html::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover,
-.hmis-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb:hover,
-.hmis-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb:hover,
+.app-scrollbar:not(.sidebar-scroll)::-webkit-scrollbar-thumb:hover,
+.app-scrollbar:not(.sidebar-scroll) *::-webkit-scrollbar-thumb:hover,
 .ant-table-body::-webkit-scrollbar-thumb:hover,
 .ant-table-content::-webkit-scrollbar-thumb:hover {
-  background: var(--hmis-scrollbar-thumb-hover);
+  background: var(--app-scrollbar-thumb-hover);
 }
 
 /* Ant Design App — main column only (sidebar stays outside .ant-app) */
-.hmis-app-host.ant-app {
+.app-host.ant-app {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -272,22 +272,22 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Sidebar — isolated from .ant-app / form content tokens */
-.hmis-sidebar {
+.app-sidebar {
   flex-shrink: 0;
   color: #ffffff;
-  background-color: var(--hmis-primary);
+  background-color: var(--app-primary);
   font-family: var(--font-inter), Inter, system-ui, sans-serif;
 }
 
-.hmis-sidebar a,
-.hmis-sidebar button {
+.app-sidebar a,
+.app-sidebar button {
   color: inherit;
   text-decoration: none;
 }
 
-.hmis-sidebar .sidebar-nav-parent.bg-white,
-.hmis-sidebar .sidebar-nav-child.bg-white {
-  color: var(--hmis-primary) !important;
+.app-sidebar .sidebar-nav-parent.bg-white,
+.app-sidebar .sidebar-nav-child.bg-white {
+  color: var(--app-primary) !important;
 }
 
 /* Sidebar only — scrollbar fully hidden until hover (Windows needs width: 0) */
@@ -309,8 +309,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .sidebar-scroll:hover::-webkit-scrollbar {
-  width: var(--hmis-scrollbar-size);
-  height: var(--hmis-scrollbar-size);
+  width: var(--app-scrollbar-size);
+  height: var(--app-scrollbar-size);
 }
 
 .sidebar-scroll:hover::-webkit-scrollbar-button {
@@ -401,19 +401,19 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .header-datetime__text--time {
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
-/* HMIS surface card */
-.hmis-card {
+/* UI surface card */
+.ui-card {
   /* border-radius: 10px; */
   border: 1px solid #d2d2d2;
   background: #ffffff;
   opacity: 1;
 }
 
-/* HMIS tabs (outside card) */
-.hmis-tabs-nav {
+/* App tabs (outside card) */
+.app-tabs-nav {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -421,7 +421,7 @@ body::-webkit-scrollbar-thumb:hover,
   margin-bottom: -1px;
 }
 
-.hmis-tabs-tab {
+.app-tabs-tab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -441,20 +441,20 @@ body::-webkit-scrollbar-thumb:hover,
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.hmis-tabs-tab:hover:not(.hmis-tabs-tab--active) {
+.app-tabs-tab:hover:not(.app-tabs-tab--active) {
   background: #ebebeb;
 }
 
-.hmis-tabs-tab--active {
+.app-tabs-tab--active {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  background: var(--hmis-primary);
+  background: var(--app-primary);
   color: #ffffff;
   opacity: 1;
   height: auto;
 }
 
-.hmis-tabs-panel--first-active.hmis-card {
+.app-tabs-panel--first-active.ui-card {
   border-top-left-radius: 0;
 }
 
@@ -474,19 +474,19 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* HIPAA-aligned PHI sections (Add New Record, etc.) */
-.walk-in-add-record-form-stack .hmis-phi-form-section {
+.walk-in-add-record-form-stack .phi-form-section {
   margin-bottom: 16px;
 }
 
-.walk-in-add-record-form-stack .hmis-phi-form-section:last-child {
+.walk-in-add-record-form-stack .phi-form-section:last-child {
   margin-bottom: 0;
 }
 
-.hmis-phi-form-section__header {
+.phi-form-section__header {
   margin-bottom: 10px;
 }
 
-.hmis-phi-form-section__title {
+.phi-form-section__title {
   margin: 0;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 14px;
@@ -495,7 +495,7 @@ body::-webkit-scrollbar-thumb:hover,
   line-height: 1.35;
 }
 
-.hmis-phi-form-section__grid.hmis-form-grid {
+.phi-form-section__grid.form-grid {
   row-gap: 10px;
   column-gap: 12px;
 }
@@ -505,42 +505,42 @@ body::-webkit-scrollbar-thumb:hover,
   width: 100%;
 }
 
-.walk-in-add-record-form.hmis-form-grid {
+.walk-in-add-record-form.form-grid {
   row-gap: 10px;
   column-gap: 12px;
 }
 
-.walk-in-add-record-form > .hmis-floating-field,
-.walk-in-add-record-form .hmis-form-grid-row .hmis-floating-field {
+.walk-in-add-record-form > .floating-field,
+.walk-in-add-record-form .form-grid-row .floating-field {
   grid-column: span 1;
   max-width: 100%;
   margin-top: 6px;
 }
 
-.walk-in-add-record-form > .hmis-dob-age-field--embedded {
+.walk-in-add-record-form > .dob-age-field--embedded {
   margin-top: 0;
 }
 
-/* Dynamic form grid — columns via --hmis-form-cols (default 4) */
-.hmis-form-grid {
+/* Dynamic form grid — columns via --form-cols (default 4) */
+.form-grid {
   display: grid;
-  grid-template-columns: repeat(var(--hmis-form-cols, 4), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--form-cols, 4), minmax(0, 1fr));
   grid-auto-flow: row;
   column-gap: 16px;
   row-gap: 12px;
   width: 100%;
 }
 
-.hmis-form-grid > .hmis-floating-field {
+.form-grid > .floating-field {
   min-width: 0;
 }
 
-.hmis-form-grid-row {
+.form-grid-row {
   grid-column: 1 / -1;
   min-width: 0;
 }
 
-.hmis-form-grid-row > .hmis-form-grid {
+.form-grid-row > .form-grid {
   width: 100%;
 }
 
@@ -554,13 +554,13 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Floating label on field border (space-saving) */
-.hmis-floating-field {
+.floating-field {
   position: relative;
   width: 100%;
   margin-top: 7px;
 }
 
-.hmis-floating-label {
+.floating-label {
   position: absolute;
   top: 0;
   left: 10px;
@@ -578,40 +578,40 @@ body::-webkit-scrollbar-thumb:hover,
   pointer-events: none;
 }
 
-.hmis-floating-label-asterisk {
+.floating-label-asterisk {
   margin-left: 2px;
   color: #ff4d4f;
   font-size: 10px;
   font-weight: 600;
 }
 
-.hmis-floating-control {
+.floating-control {
   width: 100%;
 }
 
-.hmis-floating-control > .ant-input,
-.hmis-floating-control > .ant-select,
-.hmis-floating-control > .ant-picker {
+.floating-control > .ant-input,
+.floating-control > .ant-select,
+.floating-control > .ant-picker {
   width: 100%;
 }
 
 /* DOB — read-only date + age + unit (single bordered control) */
-.hmis-dob-age-field {
+.dob-age-field {
   position: relative;
   width: 100%;
   margin-top: 7px;
   min-width: 0;
 }
 
-.hmis-dob-age-field--embedded {
+.dob-age-field--embedded {
   margin-top: 0;
 }
 
-.hmis-dob-age-field-inner {
+.dob-age-field-inner {
   display: flex;
   align-items: stretch;
   width: 100%;
-  min-height: var(--hmis-field-height);
+  min-height: var(--field-height);
   border: 1px solid #d8dee9;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -620,7 +620,7 @@ body::-webkit-scrollbar-thumb:hover,
   box-sizing: border-box;
 }
 
-.hmis-dob-age-date {
+.dob-age-date {
   flex: 1.15 1 0;
   display: flex;
   align-items: center;
@@ -635,11 +635,11 @@ body::-webkit-scrollbar-thumb:hover,
   white-space: nowrap;
 }
 
-.hmis-dob-age-age.ant-input {
+.dob-age-age.ant-input {
   flex: 0.55 1 0;
   min-width: 48px;
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
   margin: 0 !important;
   padding: 0 4px !important;
   border: 0 !important;
@@ -650,21 +650,21 @@ body::-webkit-scrollbar-thumb:hover,
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif !important;
   font-size: 11px !important;
   font-weight: 500 !important;
-  line-height: var(--hmis-field-height) !important;
+  line-height: var(--field-height) !important;
   background: #ffffff !important;
 }
 
-.hmis-dob-age-age.ant-input:focus,
-.hmis-dob-age-age.ant-input-focused {
+.dob-age-age.ant-input:focus,
+.dob-age-age.ant-input-focused {
   box-shadow: none !important;
 }
 
-.hmis-dob-age-unit.ant-select {
+.dob-age-unit.ant-select {
   flex: 0.9 1 0;
   min-width: 76px;
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
-  max-height: var(--hmis-field-height) !important;
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
+  max-height: var(--field-height) !important;
   padding-inline: 8px !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -673,31 +673,31 @@ body::-webkit-scrollbar-thumb:hover,
   align-items: center !important;
 }
 
-.hmis-dob-age-unit.ant-select .ant-select-content-value,
-.hmis-dob-age-unit.ant-select .ant-select-placeholder {
+.dob-age-unit.ant-select .ant-select-content-value,
+.dob-age-unit.ant-select .ant-select-placeholder {
   font-size: 11px !important;
   font-weight: 500 !important;
   color: #334155 !important;
 }
 
-.hmis-dob-age-field-inner:focus-within {
-  border-color: var(--hmis-primary) !important;
+.dob-age-field-inner:focus-within {
+  border-color: var(--app-primary) !important;
   box-shadow: 0 0 0 3px rgba(2, 107, 177, 0.12) !important;
 }
 
 /* Inline radios — label left, options right, no border */
-.hmis-floating-field--radios {
+.floating-field--radios {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
   margin-top: 0;
-  min-height: var(--hmis-field-height);
+  min-height: var(--field-height);
   padding-top: 7px;
   box-sizing: border-box;
 }
 
-.hmis-floating-field--radios .hmis-floating-label--inline {
+.floating-field--radios .floating-label--inline {
   position: static;
   transform: none;
   padding: 0;
@@ -712,7 +712,7 @@ body::-webkit-scrollbar-thumb:hover,
   flex-shrink: 0;
 }
 
-.hmis-floating-field--radios .hmis-floating-control {
+.floating-field--radios .floating-control {
   display: flex;
   align-items: center;
   flex: 1;
@@ -721,13 +721,13 @@ body::-webkit-scrollbar-thumb:hover,
 
 /* Unified field height — must match Ant Design controlHeight (32) */
 :root {
-  --hmis-field-height: 32px;
+  --field-height: 32px;
 }
 
-.hmis-field-control.ant-input,
-.hmis-field-control.ant-input-affix-wrapper,
-.hmis-field-control.ant-select,
-.hmis-field-control.ant-picker {
+.field-control.ant-input,
+.field-control.ant-input-affix-wrapper,
+.field-control.ant-select,
+.field-control.ant-picker {
   border-color: #d8dee9 !important;
   border-radius: 8px !important;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
@@ -737,24 +737,24 @@ body::-webkit-scrollbar-thumb:hover,
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.hmis-field-control.ant-input {
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
+.field-control.ant-input {
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
   padding-block: 0 !important;
   padding-inline: 11px !important;
-  line-height: var(--hmis-field-height) !important;
+  line-height: var(--field-height) !important;
   box-sizing: border-box !important;
 }
 
-.hmis-field-control.ant-input-affix-wrapper {
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
+.field-control.ant-input-affix-wrapper {
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
   padding-inline: 11px !important;
   padding-block: 0 !important;
   box-sizing: border-box !important;
 }
 
-.hmis-field-control.ant-input-affix-wrapper > input.ant-input {
+.field-control.ant-input-affix-wrapper > input.ant-input {
   height: 100% !important;
   padding: 0 !important;
   font-size: 11px !important;
@@ -763,71 +763,71 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Ant Design 6 Select — style root, not legacy .ant-select-selector */
-.hmis-field-control.ant-select {
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
-  max-height: var(--hmis-field-height) !important;
+.field-control.ant-select {
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
+  max-height: var(--field-height) !important;
   align-items: center !important;
   box-sizing: border-box !important;
 }
 
-.hmis-field-control.ant-select:not(.ant-select-multiple) {
+.field-control.ant-select:not(.ant-select-multiple) {
   padding-inline: 11px !important;
 }
 
-.hmis-field-control.ant-select-multiple {
+.field-control.ant-select-multiple {
   padding-block: 0 !important;
   padding-inline: 11px !important;
 }
 
-.hmis-field-control.ant-select .ant-select-content {
+.field-control.ant-select .ant-select-content {
   align-items: center !important;
   min-height: 0 !important;
 }
 
-.hmis-field-control.ant-select .ant-select-placeholder,
-.hmis-field-control.ant-select .ant-select-content-value,
-.hmis-field-control.ant-select .ant-select-input {
+.field-control.ant-select .ant-select-placeholder,
+.field-control.ant-select .ant-select-content-value,
+.field-control.ant-select .ant-select-input {
   font-size: 11px !important;
   font-weight: 500 !important;
   line-height: 1.25 !important;
 }
 
-.hmis-field-control.ant-select .ant-select-placeholder {
+.field-control.ant-select .ant-select-placeholder {
   color: #6c6c6c !important;
 }
 
-.hmis-field-control.ant-select-multiple .ant-select-content {
+.field-control.ant-select-multiple .ant-select-content {
   flex-wrap: nowrap !important;
 }
 
-.hmis-field-control.ant-select-multiple .ant-select-selection-item {
+.field-control.ant-select-multiple .ant-select-selection-item {
   margin-block: 0 !important;
   height: 22px !important;
   line-height: 20px !important;
 }
 
-.hmis-field-control.ant-picker {
+.field-control.ant-picker {
   position: relative;
-  height: var(--hmis-field-height) !important;
-  min-height: var(--hmis-field-height) !important;
+  height: var(--field-height) !important;
+  min-height: var(--field-height) !important;
   padding: 0 !important;
   box-sizing: border-box !important;
 }
 
-.hmis-field-control.ant-picker .ant-picker-input {
+.field-control.ant-picker .ant-picker-input {
   display: flex !important;
   align-items: center !important;
   flex-wrap: nowrap !important;
   gap: 6px;
   width: 100%;
   height: 100% !important;
-  min-height: var(--hmis-field-height) !important;
+  min-height: var(--field-height) !important;
   padding-inline: 11px 10px !important;
   box-sizing: border-box !important;
 }
 
-.hmis-field-control.ant-picker .ant-picker-input > input {
+.field-control.ant-picker .ant-picker-input > input {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   height: 100% !important;
@@ -837,8 +837,8 @@ body::-webkit-scrollbar-thumb:hover,
   font-weight: 500 !important;
 }
 
-.hmis-field-control.ant-picker .ant-picker-suffix,
-.hmis-field-control.ant-picker .ant-picker-input .ant-picker-suffix {
+.field-control.ant-picker .ant-picker-suffix,
+.field-control.ant-picker .ant-picker-input .ant-picker-suffix {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -849,15 +849,15 @@ body::-webkit-scrollbar-thumb:hover,
   line-height: 1 !important;
 }
 
-.hmis-field-control.ant-picker .ant-picker-suffix .anticon,
-.hmis-field-control.ant-picker .ant-picker-input .ant-picker-suffix .anticon {
+.field-control.ant-picker .ant-picker-suffix .anticon,
+.field-control.ant-picker .ant-picker-input .ant-picker-suffix .anticon {
   display: block !important;
   font-size: 13px !important;
   color: #94a3b8 !important;
   line-height: 1 !important;
 }
 
-.hmis-field-control.ant-picker .ant-picker-clear {
+.field-control.ant-picker .ant-picker-clear {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -866,7 +866,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Ant Design 6 — suffix sometimes sits on picker root */
-.hmis-field-control.ant-picker > .ant-picker-suffix {
+.field-control.ant-picker > .ant-picker-suffix {
   position: absolute !important;
   inset-inline-end: 10px !important;
   top: 50% !important;
@@ -879,33 +879,33 @@ body::-webkit-scrollbar-thumb:hover,
   pointer-events: none;
 }
 
-.hmis-field-control.ant-picker > .ant-picker-suffix .anticon {
+.field-control.ant-picker > .ant-picker-suffix .anticon {
   pointer-events: auto;
 }
 
-.hmis-field-control.ant-picker:has(> .ant-picker-suffix) .ant-picker-input {
+.field-control.ant-picker:has(> .ant-picker-suffix) .ant-picker-input {
   padding-inline-end: 30px !important;
 }
 
-.hmis-field-control.ant-select .ant-select-suffix {
+.field-control.ant-select .ant-select-suffix {
   align-self: center !important;
 }
 
-.hmis-field-control.ant-input:hover,
-.hmis-field-control.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
-.hmis-field-control.ant-select:not(.ant-select-disabled):hover,
-.hmis-field-control.ant-picker:hover {
+.field-control.ant-input:hover,
+.field-control.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+.field-control.ant-select:not(.ant-select-disabled):hover,
+.field-control.ant-picker:hover {
   border-color: #b8c4d4 !important;
 }
 
-.hmis-field-control.ant-input:focus,
-.hmis-field-control.ant-input-focused,
-.hmis-field-control.ant-input-affix-wrapper-focused,
-.hmis-field-control.ant-input-affix-wrapper:focus-within,
-.hmis-field-control.ant-select-focused,
-.hmis-field-control.ant-select-open,
-.hmis-field-control.ant-picker-focused {
-  border-color: var(--hmis-primary) !important;
+.field-control.ant-input:focus,
+.field-control.ant-input-focused,
+.field-control.ant-input-affix-wrapper-focused,
+.field-control.ant-input-affix-wrapper:focus-within,
+.field-control.ant-select-focused,
+.field-control.ant-select-open,
+.field-control.ant-picker-focused {
+  border-color: var(--app-primary) !important;
   box-shadow: 0 0 0 3px rgba(2, 107, 177, 0.12) !important;
 }
 
@@ -937,8 +937,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-add-record-radios .ant-radio-checked .ant-radio-inner {
-  border-color: var(--hmis-primary);
-  background-color: var(--hmis-primary);
+  border-color: var(--app-primary);
+  background-color: var(--app-primary);
 }
 
 .walk-in-add-record-radios .ant-radio-checked + span {
@@ -967,7 +967,7 @@ body::-webkit-scrollbar-thumb:hover,
   min-height: 0;
 }
 
-.walk-in-services-section--sidebar .hmis-section-header--stacked .hmis-section-header-extra {
+.walk-in-services-section--sidebar .section-header--stacked .section-header-extra {
   width: 100%;
 }
 
@@ -1142,18 +1142,18 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Section headers (card-less panels) */
-.hmis-card-header,
-.hmis-section-header {
+.ui-card-header,
+.section-header {
   margin-bottom: 16px;
 }
 
-.hmis-card-header--stacked .hmis-card-header-text,
-.hmis-section-header--stacked .hmis-section-header-text {
+.ui-card-header--stacked .ui-card-header-text,
+.section-header--stacked .section-header-text {
   max-width: 100%;
 }
 
-.hmis-card-header--inline,
-.hmis-section-header--inline {
+.ui-card-header--inline,
+.section-header--inline {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -1161,13 +1161,13 @@ body::-webkit-scrollbar-thumb:hover,
   gap: 16px;
 }
 
-.hmis-card-header--inline .hmis-card-header-text,
-.hmis-section-header--inline .hmis-section-header-text {
+.ui-card-header--inline .ui-card-header-text,
+.section-header--inline .section-header-text {
   flex: 0 0 auto;
 }
 
-.hmis-card-header--inline .hmis-card-header-extra,
-.hmis-section-header--inline .hmis-section-header-extra {
+.ui-card-header--inline .ui-card-header-extra,
+.section-header--inline .section-header-extra {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -1175,13 +1175,13 @@ body::-webkit-scrollbar-thumb:hover,
   min-width: 320px;
 }
 
-.hmis-card-header--inline .hmis-card-header-extra > .ant-row,
-.hmis-section-header--inline .hmis-section-header-extra > .ant-row {
+.ui-card-header--inline .ui-card-header-extra > .ant-row,
+.section-header--inline .section-header-extra > .ant-row {
   width: 100%;
 }
 
 /* Search Services header: stable two-column layout (no giant computed gap) */
-.walk-in-services-block .hmis-section-header--inline {
+.walk-in-services-block .section-header--inline {
   display: grid;
   grid-template-columns: 8fr 16fr;
   align-items: center;
@@ -1189,33 +1189,33 @@ body::-webkit-scrollbar-thumb:hover,
   row-gap: 8px;
 }
 
-.walk-in-services-block .hmis-section-header--inline .hmis-section-header-text {
+.walk-in-services-block .section-header--inline .section-header-text {
   min-width: 0;
 }
 
-.walk-in-services-block .hmis-section-header--inline .hmis-section-header-extra {
+.walk-in-services-block .section-header--inline .section-header-extra {
   min-width: 0;
   width: 100%;
 }
 
-.walk-in-services-block .hmis-section-header--inline .hmis-section-header-extra > .ant-row {
+.walk-in-services-block .section-header--inline .section-header-extra > .ant-row {
   width: 100%;
 }
 
 @media (max-width: 991px) {
-  .walk-in-services-block .hmis-section-header--inline {
+  .walk-in-services-block .section-header--inline {
     grid-template-columns: 1fr;
     align-items: stretch;
   }
 
-  .walk-in-services-block .hmis-section-header--inline .hmis-section-header-extra,
-  .walk-in-services-block .hmis-section-header--inline .hmis-section-header-extra > .ant-row {
+  .walk-in-services-block .section-header--inline .section-header-extra,
+  .walk-in-services-block .section-header--inline .section-header-extra > .ant-row {
     width: 100%;
   }
 }
 
-.hmis-card-title,
-.hmis-section-title {
+.ui-card-title,
+.section-title {
   margin: 0 0 4px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 600;
@@ -1226,8 +1226,8 @@ body::-webkit-scrollbar-thumb:hover,
   margin-bottom: 8px;
 }
 
-.hmis-card-description,
-.hmis-section-description {
+.ui-card-description,
+.section-description {
   margin: 0;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 500;
@@ -1237,8 +1237,8 @@ body::-webkit-scrollbar-thumb:hover,
   color: #6c6c6c;
 }
 
-.hmis-card-header--stacked .hmis-card-description,
-.hmis-section-header--stacked .hmis-section-description {
+.ui-card-header--stacked .ui-card-description,
+.section-header--stacked .section-description {
   margin-bottom: 0;
 }
 
@@ -1251,7 +1251,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 /* Registered patients card — title left, search in header extra */
-.walk-in-patients-section .hmis-section-header--inline {
+.walk-in-patients-section .section-header--inline {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(280px, 2.2fr);
   align-items: end;
@@ -1262,11 +1262,11 @@ body::-webkit-scrollbar-thumb:hover,
   border-bottom: 1px solid #eef2f7;
 }
 
-.walk-in-patients-section .hmis-section-header-text {
+.walk-in-patients-section .section-header-text {
   min-width: 0;
 }
 
-.walk-in-patients-section .hmis-section-title {
+.walk-in-patients-section .section-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1276,12 +1276,12 @@ body::-webkit-scrollbar-thumb:hover,
   color: #0f172a;
 }
 
-.walk-in-patients-section .hmis-section-description {
+.walk-in-patients-section .section-description {
   font-size: 12px;
   color: #94a3b8;
 }
 
-.walk-in-patients-section .hmis-section-header-extra {
+.walk-in-patients-section .section-header-extra {
   min-width: 0;
   width: 100%;
 }
@@ -1336,12 +1336,12 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-search-clear-btn:hover {
-  color: var(--hmis-primary) !important;
+  color: var(--app-primary) !important;
   background: #f0f7fc !important;
 }
 
 @media (max-width: 767px) {
-  .walk-in-patients-section .hmis-section-header--inline {
+  .walk-in-patients-section .section-header--inline {
     grid-template-columns: 1fr;
     align-items: stretch;
   }
@@ -1365,24 +1365,24 @@ body::-webkit-scrollbar-thumb:hover,
   }
 }
 
-.hmis-table--patient-list .ant-table {
+.data-table--patient-list .ant-table {
   border: none;
 }
 
-.hmis-table--patient-list .ant-table-container {
+.data-table--patient-list .ant-table-container {
   border-radius: 8px;
 }
 
-.hmis-table--patient-list .ant-table-tbody > tr {
+.data-table--patient-list .ant-table-tbody > tr {
   cursor: pointer;
 }
 
-.hmis-table-row--selected > td {
-  background: var(--hmis-table-row-selected-bg) !important;
+.data-table-row--selected > td {
+  background: var(--data-table-row-selected-bg) !important;
 }
 
-.hmis-table--patient-list .ant-table-tbody > tr:hover:not(.hmis-table-row--selected) > td {
-  background: var(--hmis-table-row-hover-bg) !important;
+.data-table--patient-list .ant-table-tbody > tr:hover:not(.data-table-row--selected) > td {
+  background: var(--data-table-row-hover-bg) !important;
 }
 
 .walk-in-patient-row {
@@ -1400,11 +1400,11 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-patient-row:hover {
-  background: var(--hmis-table-row-hover-bg);
+  background: var(--data-table-row-hover-bg);
 }
 
 .walk-in-patient-row--selected {
-  background: var(--hmis-table-row-selected-bg);
+  background: var(--data-table-row-selected-bg);
 }
 
 .walk-in-patient-row:focus {
@@ -1413,13 +1413,13 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-patient-row:focus-visible {
   outline: none;
-  background: var(--hmis-table-row-hover-bg);
-  box-shadow: inset 0 0 0 1px var(--hmis-primary);
+  background: var(--data-table-row-hover-bg);
+  box-shadow: inset 0 0 0 1px var(--app-primary);
 }
 
 .walk-in-patient-row--selected:focus-visible {
-  background: var(--hmis-table-row-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--hmis-primary);
+  background: var(--data-table-row-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--app-primary);
 }
 
 .walk-in-patient-row:last-child {
@@ -1428,7 +1428,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 .walk-in-patient-avatar.ant-avatar {
   background: #dbeafe;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
   font-weight: 600;
 }
 
@@ -1467,7 +1467,7 @@ body::-webkit-scrollbar-thumb:hover,
   justify-content: center;
   border-radius: 999px;
   background: #e0f2fe;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-patient-metric {
@@ -1500,7 +1500,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 /* Patient / item detail sections — 4-column label-over-value grid */
 /* Delete confirmation dialog — fully center aligned */
-.hmis-confirm-modal .ant-modal-content {
+.confirm-modal .ant-modal-content {
   padding: 32px 32px 26px !important;
   border-radius: 18px !important;
   box-shadow: 0 28px 56px rgba(15, 23, 42, 0.16) !important;
@@ -1508,7 +1508,7 @@ body::-webkit-scrollbar-thumb:hover,
   text-align: center;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-body-wrapper {
+.confirm-modal .ant-modal-confirm-body-wrapper {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -1516,7 +1516,7 @@ body::-webkit-scrollbar-thumb:hover,
   text-align: center !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-body {
+.confirm-modal .ant-modal-confirm-body {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -1526,7 +1526,7 @@ body::-webkit-scrollbar-thumb:hover,
   text-align: center !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-paragraph {
+.confirm-modal .ant-modal-confirm-paragraph {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -1537,7 +1537,7 @@ body::-webkit-scrollbar-thumb:hover,
   text-align: center !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-title {
+.confirm-modal .ant-modal-confirm-title {
   display: block !important;
   width: 100% !important;
   margin: 0 0 0 !important;
@@ -1551,13 +1551,13 @@ body::-webkit-scrollbar-thumb:hover,
   white-space: normal !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-content {
+.confirm-modal .ant-modal-confirm-content {
   width: 100% !important;
   margin: 0 !important;
   text-align: center !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns {
+.confirm-modal .ant-modal-confirm-btns {
   margin-top: 28px !important;
   display: flex !important;
   flex-direction: row !important;
@@ -1568,7 +1568,7 @@ body::-webkit-scrollbar-thumb:hover,
   text-align: center !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn {
+.confirm-modal .ant-modal-confirm-btns .ant-btn {
   min-width: 120px;
   height: 40px;
   border-radius: 10px;
@@ -1576,31 +1576,31 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 14px;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-default {
+.confirm-modal .ant-modal-confirm-btns .ant-btn-default {
   border-color: #e2e8f0;
   background: #f8fafc;
   color: #475569;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-default:hover {
+.confirm-modal .ant-modal-confirm-btns .ant-btn-default:hover {
   border-color: #cbd5e1;
   background: #f1f5f9;
   color: #334155;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous {
+.confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous {
   background: #dc2626 !important;
   border-color: #dc2626 !important;
   box-shadow: 0 6px 16px rgba(220, 38, 38, 0.28);
 }
 
-.hmis-confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous:hover {
+.confirm-modal .ant-modal-confirm-btns .ant-btn-dangerous:hover {
   background: #b91c1c !important;
   border-color: #b91c1c !important;
 }
 
-.hmis-confirm-modal .ant-modal-confirm-body > .hmis-confirm-modal__icon-wrap,
-.hmis-confirm-modal .ant-modal-confirm-body .hmis-confirm-modal__icon-wrap {
+.confirm-modal .ant-modal-confirm-body > .confirm-modal__icon-wrap,
+.confirm-modal .ant-modal-confirm-body .confirm-modal__icon-wrap {
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -1615,83 +1615,83 @@ body::-webkit-scrollbar-thumb:hover,
   /* box-shadow: 0 8px 20px rgba(220, 38, 38, 0.12); */
 }
 
-.hmis-confirm-modal .ant-modal-confirm-body > .hmis-confirm-modal__icon-wrap .anticon,
-.hmis-confirm-modal .ant-modal-confirm-body .hmis-confirm-modal__icon-wrap .anticon {
+.confirm-modal .ant-modal-confirm-body > .confirm-modal__icon-wrap .anticon,
+.confirm-modal .ant-modal-confirm-body .confirm-modal__icon-wrap .anticon {
   display: block !important;
   color: #dc2626 !important;
 }
 
-.hmis-confirm-modal__service-name {
+.confirm-modal__service-name {
   font-weight: 600;
   color: #0f172a;
 }
 
-.hmis-patient-details-modal .ant-modal-content {
+.patient-details-modal .ant-modal-content {
   padding: 24px 28px 20px;
   border-radius: 10px;
 }
 
-.hmis-patient-details-modal .ant-modal-body {
+.patient-details-modal .ant-modal-body {
   padding: 0;
 }
 
-.hmis-patient-details {
+.patient-details {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
 }
 
-.hmis-detail-section {
+.detail-section {
   padding-bottom: 24px;
   margin-bottom: 24px;
   border-bottom: 1px solid #e8ecef;
 }
 
-.hmis-detail-section--last,
-.hmis-detail-section:last-child {
+.detail-section--last,
+.detail-section:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
 }
 
-.hmis-detail-section-title {
+.detail-section-title {
   margin: 0 0 20px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
-.hmis-detail-grid {
+.detail-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: 28px;
   row-gap: 24px;
 }
 
-.hmis-detail-field {
+.detail-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-width: 0;
 }
 
-.hmis-detail-field--span-2 {
+.detail-field--span-2 {
   grid-column: span 2;
 }
 
-.hmis-detail-field--span-4 {
+.detail-field--span-4 {
   grid-column: span 4;
 }
 
-.hmis-detail-label {
+.detail-label {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.3;
   color: #9ca3af;
 }
 
-.hmis-detail-value {
+.detail-value {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
@@ -1700,13 +1700,13 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 @media (max-width: 767px) {
-  .hmis-detail-grid {
+  .detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 20px;
     row-gap: 20px;
   }
 
-  .hmis-detail-field--span-4 {
+  .detail-field--span-4 {
     grid-column: span 2;
   }
 }
@@ -1751,7 +1751,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-panel-header-icon {
-  color: var(--hmis-primary);
+  color: var(--app-primary);
   font-size: 14px;
 }
 
@@ -1821,7 +1821,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-visit-summary-card:nth-child(2) .walk-in-visit-summary-value {
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-visit-summary-label {
@@ -1830,7 +1830,7 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 11px;
   line-height: 100%;
   letter-spacing: 0.04em;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-visit-summary-value {
@@ -1847,7 +1847,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-visit-summary-value--primary {
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 /* Search services section */
@@ -1942,7 +1942,7 @@ body::-webkit-scrollbar-thumb:hover,
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-weight: 600;
   font-size: 11px;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-service-results-empty {
@@ -2003,44 +2003,44 @@ body::-webkit-scrollbar-thumb:hover,
   color: #000000;
 }
 
-/* Responsive tables — use .hmis-table-wrap + HmisTable component */
-.hmis-table-wrap {
+/* Responsive tables — use .data-table-wrap + DataTable component */
+.data-table-wrap {
   width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
 }
 
-.hmis-table-wrap .ant-table-wrapper {
+.data-table-wrap .ant-table-wrapper {
   width: 100%;
   min-width: 0;
 }
 
-.hmis-table .ant-table {
+.data-table .ant-table {
   width: 100%;
   border: 1px solid #d2d2d2;
   border-radius: 6px;
 }
 
-.hmis-table,
-.hmis-table .ant-table-wrapper,
-.hmis-table .ant-table-container {
+.data-table,
+.data-table .ant-table-wrapper,
+.data-table .ant-table-container {
   width: 100%;
 }
 
-.hmis-table .ant-table-container {
+.data-table .ant-table-container {
   border-radius: 10px;
   overflow: hidden;
 }
 
-.hmis-table .ant-table-header,
-.hmis-table .ant-table-summary {
+.data-table .ant-table-header,
+.data-table .ant-table-summary {
   flex-shrink: 0;
 }
 
 .ant-table-thead > tr > th {
-  background: var(--hmis-table-header-bg) !important;
-  color: var(--hmis-table-header-color) !important;
+  background: var(--data-table-header-bg) !important;
+  color: var(--data-table-header-color) !important;
   white-space: nowrap !important;
 }
 
@@ -2048,37 +2048,37 @@ body::-webkit-scrollbar-thumb:hover,
   white-space: nowrap !important;
 }
 
-/* HmisTable: body scroll via wrapper (avoids antd extra scrollbar <th>) */
-.hmis-table-wrap--scroll-body .ant-table-container {
+/* DataTable: body scroll via wrapper (avoids antd extra scrollbar <th>) */
+.data-table-wrap--scroll-body .ant-table-container {
   overflow: hidden;
 }
 
-.hmis-table-wrap--scroll-body .ant-table-container .ant-table-content {
-  max-height: var(--hmis-table-scroll-y);
+.data-table-wrap--scroll-body .ant-table-container .ant-table-content {
+  max-height: var(--data-table-scroll-y);
   overflow: auto !important;
 }
 
-.hmis-table-wrap--scroll-body .ant-table-thead > tr > th {
+.data-table-wrap--scroll-body .ant-table-thead > tr > th {
   position: sticky;
   top: 0;
   z-index: 2;
 }
 
-.hmis-table .ant-table-thead > tr > th {
+.data-table .ant-table-thead > tr > th {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap !important;
 }
 
-.hmis-table .ant-table-tbody > tr > td {
+.data-table .ant-table-tbody > tr > td {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   color: #1e293b;
 }
 
-.hmis-table .ant-table-body {
+.data-table .ant-table-body {
   overflow: auto !important;
 }
 
@@ -2109,7 +2109,7 @@ body::-webkit-scrollbar-thumb:hover,
 .walk-in-added-services-grand-total {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 11px;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-added-services-table .ant-table-thead > tr > th {
@@ -2118,7 +2118,7 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 11px;
 }
 
-.hmis-table .ant-table-tbody > tr > td,
+.data-table .ant-table-tbody > tr > td,
 .walk-in-added-services-table .ant-table-tbody > tr > td {
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 11px;
@@ -2140,7 +2140,7 @@ body::-webkit-scrollbar-thumb:hover,
   border: 1px solid #d2d2d2;
   border-radius: 4px;
   background: #ffffff;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
   cursor: pointer;
 }
 
@@ -2173,7 +2173,7 @@ body::-webkit-scrollbar-thumb:hover,
   padding: 10px 12px;
   font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
   font-size: 11px;
-  color: var(--hmis-primary);
+  color: var(--app-primary);
 }
 
 .walk-in-added-services-note-icon {
@@ -2193,8 +2193,8 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .walk-in-btn-cancel {
-  border-color: var(--hmis-primary) !important;
-  color: var(--hmis-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: var(--app-primary) !important;
   min-width: 110px;
 }
 
@@ -2222,7 +2222,7 @@ body::-webkit-scrollbar-thumb:hover,
   margin-bottom: 14px;
 }
 
-.walk-in-add-record-form .hmis-age-unit-field--no-dob .hmis-dob-age-age.ant-input {
+.walk-in-add-record-form .age-unit-field--no-dob .dob-age-age.ant-input {
   flex: 1 1 0;
   min-width: 0;
 }
@@ -2234,44 +2234,44 @@ body::-webkit-scrollbar-thumb:hover,
   font-size: 14px;
 }
 
-.services-billing-results .hmis-table-wrap {
+.services-billing-results .data-table-wrap {
   border-radius: 10px;
   overflow: visible;
 }
 
-.hmis-table--billing-results .ant-table-thead > tr > th,
-.hmis-table--billing-results .ant-table-tbody > tr > td {
+.data-table--billing-results .ant-table-thead > tr > th,
+.data-table--billing-results .ant-table-tbody > tr > td {
   padding: 4px 6px !important;
 }
 
-.hmis-table--billing-results .ant-table-thead > tr > th {
+.data-table--billing-results .ant-table-thead > tr > th {
   font-size: 11px;
 }
 
-.hmis-table--billing-results .ant-table-tbody > tr > td {
+.data-table--billing-results .ant-table-tbody > tr > td {
   font-size: 11px;
 }
 
-.hmis-table--billing-results .ant-table-container {
+.data-table--billing-results .ant-table-container {
   overflow: visible !important;
 }
 
-.hmis-table--billing-results .ant-table-content {
+.data-table--billing-results .ant-table-content {
   overflow: visible !important;
 }
 
-.hmis-sidebar--hover-expand {
+.app-sidebar--hover-expand {
   z-index: 40;
   box-shadow: 4px 0 20px rgba(15, 23, 42, 0.14);
 }
 
 .services-billing-actions-cell .ant-btn-link {
-  color: var(--hmis-primary) !important;
+  color: var(--app-primary) !important;
   padding-inline: 4px;
 }
 
 .services-billing-actions-cell .ant-btn-link:hover {
-  color: var(--hmis-scrollbar-thumb-hover) !important;
+  color: var(--app-scrollbar-thumb-hover) !important;
 }
 
 .services-billing-tag {
@@ -2299,22 +2299,22 @@ body::-webkit-scrollbar-thumb:hover,
   gap: 8px 16px;
 }
 
-.patient-reg-section-grid.hmis-form-grid {
+.patient-reg-section-grid.form-grid {
   row-gap: 10px;
   column-gap: 12px;
 }
 
-.patient-registration-form .patient-reg-section-grid > .hmis-floating-field {
+.patient-registration-form .patient-reg-section-grid > .floating-field {
   grid-column: span 1;
   max-width: 100%;
   margin-top: 6px;
 }
 
-.patient-registration-form .patient-reg-section-grid .hmis-dob-age-field--embedded {
+.patient-registration-form .patient-reg-section-grid .dob-age-field--embedded {
   margin-top: 0;
 }
 
-.patient-registration-form .patient-reg-section-grid .hmis-floating-control .ant-form-item {
+.patient-registration-form .patient-reg-section-grid .floating-control .ant-form-item {
   margin-bottom: 0;
 }
 
@@ -2323,52 +2323,52 @@ body::-webkit-scrollbar-thumb:hover,
   margin-top: 4px;
   font-size: 11px;
   line-height: 1.25;
-  color: var(--hmis-error);
+  color: var(--app-error);
 }
 
 /* After submit — red border on all flagged missing fields (noStyle Form.Item safe) */
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-floating-label,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-floating-label {
-  color: var(--hmis-error) !important;
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .floating-label,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .floating-label {
+  color: var(--app-error) !important;
 }
 
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-picker:not(.ant-picker-disabled),
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-dob-age-field-inner,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-picker:not(.ant-picker-disabled),
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .dob-age-field-inner,
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-input-status-error,
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-select-status-error,
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-picker-status-error {
-  border: 2px solid var(--hmis-error) !important;
-  border-color: var(--hmis-error) !important;
+  border: 2px solid var(--app-error) !important;
+  border-color: var(--app-error) !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input:focus,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-focused,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper-focused,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-input-affix-wrapper:focus-within,
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select-focused:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-select-open:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-field-control.ant-picker-focused:not(.ant-picker-disabled),
-.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .hmis-dob-age-field-inner:focus-within,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input:focus,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-focused,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper-focused,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-input-affix-wrapper:focus-within,
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select-focused:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-select-open:not(.ant-select-disabled),
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-field-control.ant-picker-focused:not(.ant-picker-disabled),
-.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .hmis-dob-age-field-inner:focus-within {
-  border: 2px solid var(--hmis-error) !important;
-  border-color: var(--hmis-error) !important;
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .dob-age-field-inner:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .dob-age-field-inner:focus-within {
+  border: 2px solid var(--app-error) !important;
+  border-color: var(--app-error) !important;
   box-shadow: none !important;
   outline: none !important;
 }
@@ -2378,7 +2378,7 @@ body::-webkit-scrollbar-thumb:hover,
   align-items: center;
   grid-column: span 1;
   min-width: 0;
-  min-height: var(--hmis-field-height);
+  min-height: var(--field-height);
   margin-top: 6px;
   padding-top: 7px;
   box-sizing: border-box;
@@ -2390,33 +2390,33 @@ body::-webkit-scrollbar-thumb:hover,
   color: #334155;
 }
 
-.patient-registration-form .patient-reg-radio-field.hmis-floating-field--radios {
+.patient-registration-form .patient-reg-radio-field.floating-field--radios {
   margin-top: 6px;
 }
 
-.patient-registration-form .patient-reg-section-grid .hmis-dob-age-field-inner {
+.patient-registration-form .patient-reg-section-grid .dob-age-field-inner {
   min-width: 0;
-  height: var(--hmis-field-height);
-  min-height: var(--hmis-field-height);
+  height: var(--field-height);
+  min-height: var(--field-height);
 }
 
-.patient-registration-form .patient-reg-dob-age .hmis-dob-age-field-inner,
-.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-field-inner {
+.patient-registration-form .patient-reg-dob-age .dob-age-field-inner,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-field-inner {
   background: #ffffff;
 }
 
-.patient-registration-form .patient-reg-dob-age .hmis-dob-age-date,
-.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-date {
+.patient-registration-form .patient-reg-dob-age .dob-age-date,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-date {
   flex: 1 1 0;
   min-width: 0;
   font-size: 11px;
   background: #f8fafc;
 }
 
-.patient-registration-form .patient-reg-dob-age .hmis-dob-age-age.ant-input,
-.patient-registration-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select,
-.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-age.ant-input,
-.walk-in-add-record-form .patient-reg-dob-age .hmis-dob-age-unit.ant-select {
+.patient-registration-form .patient-reg-dob-age .dob-age-age.ant-input,
+.patient-registration-form .patient-reg-dob-age .dob-age-unit.ant-select,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-age.ant-input,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-unit.ant-select {
   background: #ffffff !important;
 }
 
@@ -2511,8 +2511,8 @@ body::-webkit-scrollbar-thumb:hover,
 /* Open panel — primary bg, white label */
 .patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header,
 .patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header {
-  background-color: var(--hmis-primary) !important;
-  border-bottom-color: var(--hmis-primary);
+  background-color: var(--app-primary) !important;
+  border-bottom-color: var(--app-primary);
   color: #ffffff !important;
 }
 
@@ -2573,7 +2573,7 @@ body::-webkit-scrollbar-thumb:hover,
   padding: 0;
 }
 
-.patient-registration-form .patient-reg-dob-age.hmis-dob-age-field {
+.patient-registration-form .patient-reg-dob-age.dob-age-field {
   grid-column: unset !important;
   width: 100%;
 }
@@ -2591,7 +2591,7 @@ body::-webkit-scrollbar-thumb:hover,
   min-width: auto;
   padding-inline: 8px;
   height: auto;
-  color: var(--hmis-primary) !important;
+  color: var(--app-primary) !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;

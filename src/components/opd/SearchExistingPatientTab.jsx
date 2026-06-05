@@ -1,16 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Avatar, Button, Input, message, Modal } from 'antd';
-import HmisDetailSection from '@/components/ui/HmisDetailSection';
-import HmisTable from '@/components/ui/HmisTable';
+import { App, Avatar, Button, Input, Modal } from 'antd';
+import DetailSection from '@/components/ui/DetailSection';
+import DataTable from '@/components/ui/DataTable';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import {
   MOCK_WALK_IN_PATIENTS,
   searchWalkInPatients,
 } from '@/data/mock-walk-in-patients';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
-import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { validateWalkInPatientSearch } from '@/lib/walk-in-search-validation';
 
 function PatientDetailsPanel({ patient }) {
@@ -36,18 +36,19 @@ function PatientDetailsPanel({ patient }) {
   ];
 
   return (
-    <div className="hmis-patient-details">
-      <HmisDetailSection title="Patient Details" fields={patientFields} />
-      <HmisDetailSection
+    <div className="patient-details">
+      <DetailSection title="Patient Details" fields={patientFields} />
+      <DetailSection
         title="Visit Summary"
         fields={visitFields}
-        className="hmis-detail-section--last"
+        className="detail-section--last"
       />
     </div>
   );
 }
 
 export default function SearchExistingPatientTab() {
+  const { message } = App.useApp();
   const [mrNo, setMrNo] = useState('');
   const [mobileNo, setMobileNo] = useState('');
   const [results, setResults] = useState([]);
@@ -167,7 +168,7 @@ export default function SearchExistingPatientTab() {
           </label> */}
           <Input
             id="walk-in-search-mr"
-            className={HMIS_FIELD_CONTROL_CLASS}
+            className={FIELD_CONTROL_CLASS}
             placeholder="e.g. MR-002-26"
             value={mrNo}
             onChange={(e) => setMrNo(e.target.value)}
@@ -184,7 +185,7 @@ export default function SearchExistingPatientTab() {
           </label> */}
           <Input
             id="walk-in-search-mobile"
-            className={HMIS_FIELD_CONTROL_CLASS}
+            className={FIELD_CONTROL_CLASS}
             placeholder="e.g. 03001234567"
             value={mobileNo}
             onChange={(e) => setMobileNo(e.target.value)}
@@ -217,15 +218,15 @@ export default function SearchExistingPatientTab() {
   return (
     <>
       <section className="walk-in-patients-section mt-2">
-        <div className="hmis-section-header hmis-section-header--inline mt-4">
-          <div className="hmis-section-header-text">
-            <h2 className="hmis-section-title">No of Registered Patients</h2>
-            {/* <p className="hmis-section-description">{patientCountLabel}</p> */}
+        <div className="section-header section-header--inline mt-4">
+          <div className="section-header-text">
+            <h2 className="section-title">No of Registered Patients</h2>
+            {/* <p className="section-description">{patientCountLabel}</p> */}
           </div>
-          <div className="hmis-section-header-extra">{searchFields}</div>
+          <div className="section-header-extra">{searchFields}</div>
         </div>
-        <HmisTable
-          className="hmis-table--patient-list"
+        <DataTable
+          className="data-table--patient-list"
           columns={patientColumns}
           dataSource={results}
           rowKey="id"
@@ -239,7 +240,7 @@ export default function SearchExistingPatientTab() {
           }}
           onRow={(record) => ({
             onClick: () => handlePatientSelect(record),
-            className: selectedPatient?.id === record.id ? 'hmis-table-row--selected' : undefined,
+            className: selectedPatient?.id === record.id ? 'data-table-row--selected' : undefined,
           })}
         />
       </section>
@@ -247,7 +248,7 @@ export default function SearchExistingPatientTab() {
       <SearchServicesSection />
 
       <Modal
-        className="hmis-patient-details-modal"
+        className="patient-details-modal"
         title={null}
         open={isPatientDetailsModalOpen}
         onCancel={handleClosePatientModal}

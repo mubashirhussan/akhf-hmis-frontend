@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Checkbox, Col, Input, message, Row, Select } from "antd";
-import { useHmisConfirm } from "@/hooks/useHmisConfirm";
-import { HMIS_FIELD_CONTROL_CLASS } from "@/lib/hmis-field-control";
+import { App, Checkbox, Col, Input, Row, Select } from "antd";
+import { useConfirm } from "@/hooks/useConfirm";
+import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import AddedServicesPanel from "@/components/opd/AddedServicesPanel";
 import {
   MOCK_DOCTORS,
@@ -36,7 +36,8 @@ function createAddedService(service) {
 }
 
 export default function SearchServicesSection({ variant = "full" }) {
-  const { confirmDelete } = useHmisConfirm();
+  const { message } = App.useApp();
+  const { confirmDelete } = useConfirm();
   const isSidebar = variant === "sidebar";
   const [category, setCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -148,7 +149,7 @@ export default function SearchServicesSection({ variant = "full" }) {
         size="middle"
         mode="multiple"
         allowClear
-        className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
+        className={`w-full ${FIELD_CONTROL_CLASS}`}
         placeholder="Select services"
         value={selectedServiceValues}
         options={serviceSelectOptions}
@@ -179,14 +180,14 @@ export default function SearchServicesSection({ variant = "full" }) {
       <div className="walk-in-services-filters-top">
         <Select
           size="middle"
-          className={`walk-in-services-filter-category ${HMIS_FIELD_CONTROL_CLASS}`}
+          className={`walk-in-services-filter-category ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
           onChange={setCategory}
         />
         <Input
           size="middle"
-          className={`walk-in-services-filter-input ${HMIS_FIELD_CONTROL_CLASS}`}
+          className={`walk-in-services-filter-input ${FIELD_CONTROL_CLASS}`}
           placeholder="Search Services"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -202,7 +203,7 @@ export default function SearchServicesSection({ variant = "full" }) {
       <Col xs={24} md={8} className="walk-in-services-filters-grid-col">
         <Select
           size="middle"
-          className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
+          className={`w-full ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
           onChange={setCategory}
@@ -218,7 +219,7 @@ export default function SearchServicesSection({ variant = "full" }) {
           <Col span={10}>
             <Input
               size="middle"
-              className={HMIS_FIELD_CONTROL_CLASS}
+              className={FIELD_CONTROL_CLASS}
               placeholder="Search Services"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -241,12 +242,12 @@ export default function SearchServicesSection({ variant = "full" }) {
         className={`walk-in-services-block ${isSidebar ? "walk-in-services-block--sidebar" : ""}`}
       >
         <div
-          className={`hmis-section-header ${isSidebar ? "hmis-section-header--stacked" : "hmis-section-header--inline mt-4"}`}
+          className={`section-header ${isSidebar ? "section-header--stacked" : "section-header--inline mt-4"}`}
         >
-          <div className="hmis-section-header-text">
-            <h2 className="hmis-section-title">Add Services</h2>
+          <div className="section-header-text">
+            <h2 className="section-title">Add Services</h2>
           </div>
-          <div className="hmis-section-header-extra">{searchFilters}</div>
+          <div className="section-header-extra">{searchFilters}</div>
         </div>
         {!hasSearched ? (
           <div className="walk-in-services-illustration">

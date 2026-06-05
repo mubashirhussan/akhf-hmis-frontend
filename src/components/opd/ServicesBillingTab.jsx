@@ -8,20 +8,20 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
-import HmisAgeUnitField from '@/components/ui/HmisAgeUnitField';
-import HmisFloatingField from '@/components/ui/HmisFloatingField';
-import HmisFormGrid from '@/components/ui/HmisFormGrid';
-import HmisTable from '@/components/ui/HmisTable';
+import AgeUnitField from '@/components/ui/AgeUnitField';
+import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
+import DataTable from '@/components/ui/DataTable';
 import {
   MOCK_SERVICES_BILLING_VISITS,
   searchServicesBillingVisits,
   SERVICES_BILLING_STATUS_COLORS,
   SERVICES_BILLING_TYPE_COLORS,
 } from '@/data/mock-services-billing';
-import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
-const controlClass = HMIS_FIELD_CONTROL_CLASS;
+const controlClass = FIELD_CONTROL_CLASS;
 
 const emptyFilters = {
   visitNo: '',
@@ -141,7 +141,7 @@ export default function ServicesBillingTab() {
   return (
     <div className="services-billing-page">
       <div className="walk-in-add-record-layout services-billing-search-layout">
-        <HmisFormGrid
+        <FormGrid
           as="form"
           columns={4}
           className="walk-in-add-record-form"
@@ -150,7 +150,7 @@ export default function ServicesBillingTab() {
             handleSearch();
           }}
         >
-          <HmisFloatingField label="Visit #" htmlFor="billing-visit-no">
+          <FloatingField label="Visit #" htmlFor="billing-visit-no">
             <Input
               id="billing-visit-no"
               className={controlClass}
@@ -164,9 +164,9 @@ export default function ServicesBillingTab() {
               }}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="MR #" htmlFor="billing-mr-no">
+          <FloatingField label="MR #" htmlFor="billing-mr-no">
             <Input
               id="billing-mr-no"
               className={controlClass}
@@ -174,20 +174,20 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ mrNo: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Patient Age" htmlFor="billing-patient-age">
-            <HmisAgeUnitField
+          <FloatingField label="Patient Age" htmlFor="billing-patient-age">
+            <AgeUnitField
               embedded
-              className="patient-reg-dob-age hmis-age-unit-field--no-dob"
+              className="patient-reg-dob-age age-unit-field--no-dob"
               ageInputId="billing-patient-age"
               age={filters.patientAge}
               unit={filters.ageUnit}
               onChange={({ age, unit }) => patchFilter({ patientAge: age, ageUnit: unit })}
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Registration Date" htmlFor="billing-reg-date">
+          <FloatingField label="Registration Date" htmlFor="billing-reg-date">
             <DatePicker
               id="billing-reg-date"
               className={controlClass}
@@ -195,9 +195,9 @@ export default function ServicesBillingTab() {
               onChange={(registrationDate) => patchFilter({ registrationDate })}
               format="DD/MM/YYYY"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="CNIC #" htmlFor="billing-cnic">
+          <FloatingField label="CNIC #" htmlFor="billing-cnic">
             <Input
               id="billing-cnic"
               className={controlClass}
@@ -205,9 +205,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ cnic: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Mobile #" htmlFor="billing-mobile">
+          <FloatingField label="Mobile #" htmlFor="billing-mobile">
             <Input
               id="billing-mobile"
               className={controlClass}
@@ -215,9 +215,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ mobile: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="First Name" htmlFor="billing-first-name">
+          <FloatingField label="First Name" htmlFor="billing-first-name">
             <Input
               id="billing-first-name"
               className={controlClass}
@@ -225,9 +225,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ firstName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Middle Name" htmlFor="billing-middle-name">
+          <FloatingField label="Middle Name" htmlFor="billing-middle-name">
             <Input
               id="billing-middle-name"
               className={controlClass}
@@ -235,9 +235,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ middleName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Last Name" htmlFor="billing-last-name">
+          <FloatingField label="Last Name" htmlFor="billing-last-name">
             <Input
               id="billing-last-name"
               className={controlClass}
@@ -245,9 +245,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ lastName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Relation First Name" htmlFor="billing-rel-first">
+          <FloatingField label="Relation First Name" htmlFor="billing-rel-first">
             <Input
               id="billing-rel-first"
               className={controlClass}
@@ -255,9 +255,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ relationFirstName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Relation Middle Name" htmlFor="billing-rel-middle">
+          <FloatingField label="Relation Middle Name" htmlFor="billing-rel-middle">
             <Input
               id="billing-rel-middle"
               className={controlClass}
@@ -265,9 +265,9 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ relationMiddleName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Relation Last Name" htmlFor="billing-rel-last">
+          <FloatingField label="Relation Last Name" htmlFor="billing-rel-last">
             <Input
               id="billing-rel-last"
               className={controlClass}
@@ -275,7 +275,7 @@ export default function ServicesBillingTab() {
               onChange={(e) => patchFilter({ relationLastName: e.target.value })}
               autoComplete="off"
             />
-          </HmisFloatingField>
+          </FloatingField>
 
           <div className="services-billing-search-actions">
             <Button
@@ -286,12 +286,12 @@ export default function ServicesBillingTab() {
               Search
             </Button>
           </div>
-        </HmisFormGrid>
+        </FormGrid>
       </div>
 
       <section className="services-billing-results" aria-label="Billing search results">
-        <HmisTable
-          className="hmis-table--billing-results"
+        <DataTable
+          className="data-table--billing-results"
           columns={columns}
           dataSource={results}
           rowKey="id"

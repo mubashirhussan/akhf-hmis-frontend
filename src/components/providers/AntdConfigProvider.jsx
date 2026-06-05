@@ -2,61 +2,61 @@
 
 import { ConfigProvider } from "antd";
 
-const HMIS_PRIMARY = "#026BB1";
-const HMIS_PRIMARY_HOVER = "#015a9a";
-const HMIS_PRIMARY_ACTIVE = "#014d85";
+const APP_PRIMARY = "#026BB1";
+const APP_PRIMARY_HOVER = "#015a9a";
+const APP_PRIMARY_ACTIVE = "#014d85";
 
-const hmisFieldTokens = {
+const fieldTokens = {
   controlHeight: 32,
   borderRadius: 8,
   fontSize: 11,
   colorBorder: "#d8dee9",
   hoverBorderColor: "#b8c4d4",
-  activeBorderColor: HMIS_PRIMARY,
+  activeBorderColor: APP_PRIMARY,
   colorText: "#000000",
   colorTextPlaceholder: "#6c6c6c",
   lineHeight: 1.25,
 };
 
-const hmisTheme = {
+const appTheme = {
   token: {
-    colorPrimary: HMIS_PRIMARY,
-    colorLink: HMIS_PRIMARY,
-    colorInfo: HMIS_PRIMARY,
+    colorPrimary: APP_PRIMARY,
+    colorLink: APP_PRIMARY,
+    colorInfo: APP_PRIMARY,
     colorWhite: "#ffffff",
     borderRadius: 6,
     fontFamily: "var(--font-poppins), Poppins, system-ui, sans-serif",
   },
   components: {
-    Input: hmisFieldTokens,
+    Input: fieldTokens,
     Button: {
-      colorPrimary: HMIS_PRIMARY,
-      colorPrimaryHover: HMIS_PRIMARY_HOVER,
-      colorPrimaryActive: HMIS_PRIMARY_ACTIVE,
+      colorPrimary: APP_PRIMARY,
+      colorPrimaryHover: APP_PRIMARY_HOVER,
+      colorPrimaryActive: APP_PRIMARY_ACTIVE,
       primaryColor: "#ffffff",
     },
     Radio: {
-      colorPrimary: HMIS_PRIMARY,
+      colorPrimary: APP_PRIMARY,
     },
     Checkbox: {
-      colorPrimary: HMIS_PRIMARY,
+      colorPrimary: APP_PRIMARY,
       colorWhite: "#ffffff",
     },
     Select: {
-      ...hmisFieldTokens,
-      colorPrimary: HMIS_PRIMARY,
+      ...fieldTokens,
+      colorPrimary: APP_PRIMARY,
       optionSelectedBg: "#e8f4fc",
-      optionSelectedColor: HMIS_PRIMARY,
+      optionSelectedColor: APP_PRIMARY,
     },
     DatePicker: {
-      ...hmisFieldTokens,
-      colorPrimary: HMIS_PRIMARY,
+      ...fieldTokens,
+      colorPrimary: APP_PRIMARY,
     },
     Pagination: {
-      colorPrimary: HMIS_PRIMARY,
+      colorPrimary: APP_PRIMARY,
     },
     Switch: {
-      colorPrimary: HMIS_PRIMARY,
+      colorPrimary: APP_PRIMARY,
     },
     Form: {
       labelFontSize: 13,
@@ -67,5 +67,5 @@ const hmisTheme = {
 };
 
 export default function AntdConfigProvider({ children }) {
-  return <ConfigProvider theme={hmisTheme}>{children}</ConfigProvider>;
+  return <ConfigProvider theme={appTheme}>{children}</ConfigProvider>;
 }

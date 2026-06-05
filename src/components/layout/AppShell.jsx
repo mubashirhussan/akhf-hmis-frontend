@@ -13,7 +13,7 @@ export default function AppShell({ children }) {
       <AppSidebar collapsed={collapsed} onCollapsedChange={setCollapsed} />
       <AntdAppHost className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <AppHeader />
-        <main className="hmis-scrollbar flex-1 overflow-y-auto p-4">{children}</main>
+        <main className="app-scrollbar flex-1 overflow-y-auto p-4">{children}</main>
       </AntdAppHost>
     </div>
   );

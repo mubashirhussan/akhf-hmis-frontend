@@ -1,4 +1,4 @@
-# HMIS App Structure
+# App Structure
 
 Routes mirror the sidebar defined in `src/config/navigation-data.js`.
 

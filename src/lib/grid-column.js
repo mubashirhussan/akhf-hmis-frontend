@@ -1,4 +1,4 @@
-/** Grid placement for HmisFormGrid / HmisFormGridRow children. */
+/** Grid placement for FormGrid / FormGridRow children. */
 export function resolveGridColumn(col, colStart) {
   if (col === 'full' || col === 0) {
     return { gridColumn: '1 / -1' };

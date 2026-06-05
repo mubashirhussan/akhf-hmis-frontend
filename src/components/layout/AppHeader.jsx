@@ -36,7 +36,7 @@ export default function AppHeader() {
   }, []);
 
   return (
-    <header className="flex min-h-[76px] shrink-0 items-center justify-between border-b border-slate-200/80 bg-[var(--hmis-header-bg)] px-6">
+    <header className="flex min-h-[76px] shrink-0 items-center justify-between border-b border-slate-200/80 bg-[var(--app-header-bg)] px-6">
       <nav aria-label="Breadcrumb" className="flex items-center gap-2">
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
@@ -50,7 +50,7 @@ export default function AppHeader() {
               ) : (
                 <Link
                   href={crumb.href}
-                  className="header-breadcrumb text-[var(--hmis-primary)] hover:underline"
+                  className="header-breadcrumb text-[var(--app-primary)] hover:underline"
                 >
                   {crumb.label}
                 </Link>

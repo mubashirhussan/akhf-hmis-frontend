@@ -1,8 +1,8 @@
 'use client';
 
 import { Form } from 'antd';
-import HmisFloatingField from '@/components/ui/HmisFloatingField';
-import { patientRegFieldId } from '@/lib/hmis-form-validation';
+import FloatingField from '@/components/ui/FloatingField';
+import { patientRegFieldId } from '@/lib/form-validation';
 
 export default function PatientRegField({
   name,
@@ -33,7 +33,7 @@ export default function PatientRegField({
   };
 
   return (
-    <HmisFloatingField
+    <FloatingField
       label={label}
       htmlFor={htmlFor ?? fieldId}
       required={required}
@@ -43,6 +43,6 @@ export default function PatientRegField({
       className={fieldClass}
     >
       <Form.Item {...formItemProps}>{children}</Form.Item>
-    </HmisFloatingField>
+    </FloatingField>
   );
 }

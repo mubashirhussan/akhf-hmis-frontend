@@ -1,7 +1,7 @@
 import WalkInPatientForm from '@/components/opd/WalkInPatientForm';
 
 export const metadata = {
-  title: 'Walk-in Patient | AKHF HMIS',
+  title: 'Walk-in Patient | AKHF',
 };
 
 export default function WalkInPatientPage() {

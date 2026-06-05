@@ -25,7 +25,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "AKHF HMIS",
+  title: "AKHF",
   description: "Al-Khidmat Hospital Management Information System",
 };
 

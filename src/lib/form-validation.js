@@ -67,7 +67,7 @@ function fieldNameToKey(fieldName) {
 function findPatientRegFieldWrap(root, fieldKey) {
   return (
     root.querySelector(`.patient-reg-field--${fieldKey}`) ??
-    document.getElementById(patientRegFieldId(fieldKey))?.closest('.hmis-floating-field')
+    document.getElementById(patientRegFieldId(fieldKey))?.closest('.floating-field')
   );
 }
 
@@ -138,7 +138,7 @@ export function focusFormField(form, fieldName, { rootSelector = PATIENT_REG_FOR
     const control =
       fieldWrap.querySelector(
         `#${patientRegFieldId(fieldKey)}, input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), .ant-select:not(.ant-select-disabled) .ant-select-selector`,
-      ) ?? fieldWrap.querySelector('.hmis-dob-age-age input');
+      ) ?? fieldWrap.querySelector('.dob-age-age input');
     if (focusDomControl(control)) {
       return true;
     }
@@ -154,7 +154,7 @@ export function focusFormField(form, fieldName, { rootSelector = PATIENT_REG_FOR
     const control =
       firstError.querySelector(
         'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), .ant-select:not(.ant-select-disabled) .ant-select-selector',
-      ) ?? firstError.querySelector('.hmis-dob-age-age input');
+      ) ?? firstError.querySelector('.dob-age-age input');
     return focusDomControl(control);
   }
 

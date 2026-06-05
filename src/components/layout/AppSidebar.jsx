@@ -20,7 +20,7 @@ function SidebarLink({ href, active, children, className = '' }) {
   return (
     <Link
       href={href}
-      className={`sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${active ? 'bg-white text-[var(--hmis-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'} ${className}`}
+      className={`sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${active ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'} ${className}`}
     >
       {children}
     </Link>
@@ -39,7 +39,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
         <button
           type="button"
           onClick={() => onToggle(item.key)}
-          className={`sidebar-nav-parent flex w-full items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--hmis-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'}`}
+          className={`sidebar-nav-parent flex w-full items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'}`}
         >
           {item.icon && <AppIcon icon={item.icon} />}
           {!collapsed && (
@@ -60,7 +60,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
                 >
                   <Link
                     href={child.href}
-                    className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${childActive ? 'bg-white text-[var(--hmis-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
+                    className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${childActive ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
                   >
                     {child.label}
                   </Link>
@@ -105,7 +105,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
 
   return (
     <aside
-      className={`hmis-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--hmis-primary)] text-white transition-[width] duration-200 ${isCollapsed ? 'w-[72px]' : 'w-[256px]'} ${isHoverExpanded ? 'hmis-sidebar--hover-expand' : ''}`}
+      className={`app-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--app-primary)] text-white transition-[width] duration-200 ${isCollapsed ? 'w-[72px]' : 'w-[256px]'} ${isHoverExpanded ? 'app-sidebar--hover-expand' : ''}`}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
@@ -124,7 +124,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
       <div
         className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${isCollapsed ? 'justify-center px-2' : 'pr-6'}`}
       >
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--hmis-primary)]">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--app-primary)]">
           <AppIcon icon="carbon:user" className="h-5 w-5" />
         </div>
         {!isCollapsed && (

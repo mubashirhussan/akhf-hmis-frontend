@@ -16,7 +16,7 @@ function applyColumnAlign(columns = [], defaultAlign = 'left') {
   }));
 }
 
-export default function HmisTable({
+export default function DataTable({
   className = '',
   wrapClassName = '',
   columns,
@@ -75,9 +75,9 @@ export default function HmisTable({
   const resolvedTableLayout = tableLayout ?? (needsHorizontalScroll ? 'fixed' : 'auto');
 
   const wrapClassNames = [
-    'hmis-table-wrap',
-    'hmis-scrollbar',
-    verticalScrollY != null && 'hmis-table-wrap--scroll-body',
+    'data-table-wrap',
+    'app-scrollbar',
+    verticalScrollY != null && 'data-table-wrap--scroll-body',
     wrapClassName,
   ]
     .filter(Boolean)
@@ -86,7 +86,7 @@ export default function HmisTable({
   const wrapStyle =
     verticalScrollY != null
       ? {
-          '--hmis-table-scroll-y':
+          '--data-table-scroll-y':
             typeof verticalScrollY === 'number' ? `${verticalScrollY}px` : verticalScrollY,
         }
       : undefined;
@@ -94,7 +94,7 @@ export default function HmisTable({
   return (
     <div ref={wrapRef} className={wrapClassNames} style={wrapStyle}>
       <Table
-        className={`hmis-table ${className}`.trim()}
+        className={`data-table ${className}`.trim()}
         columns={resolvedColumns}
         scroll={tableScroll}
         bordered

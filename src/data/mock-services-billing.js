@@ -19,7 +19,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
   },
   {
     id: '2',
-    visitNo: 'V-2026-1038',
+    visitNo: '20261038',
     regNo: 'REG-000124',
     patientName: 'Sara Khan',
     plName: 'City Diagnostics',

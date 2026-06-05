@@ -1,5 +1,5 @@
 const inputClass =
-  'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-[#6C6C6C] placeholder:font-medium placeholder:text-[11px] placeholder:leading-none placeholder:tracking-[0.04em] focus:border-[var(--hmis-primary)] focus:ring-2 focus:ring-[var(--hmis-primary)]/15';
+  'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-[#6C6C6C] placeholder:font-medium placeholder:text-[11px] placeholder:leading-none placeholder:tracking-[0.04em] focus:border-[var(--app-primary)] focus:ring-2 focus:ring-[var(--app-primary)]/15';
 
 export function TextInput({ className = '', ...props }) {
   return <input className={`${inputClass} ${className}`} {...props} />;
@@ -28,7 +28,7 @@ export function RadioGroup({ name, options, value, onChange }) {
             value={opt.value}
             checked={value === opt.value}
             onChange={() => onChange(opt.value)}
-            className="h-4 w-4 accent-[var(--hmis-primary)]"
+            className="h-4 w-4 accent-[var(--app-primary)]"
           />
           {opt.label}
         </label>
@@ -41,7 +41,7 @@ export function BtnPrimary({ children, className = '', ...props }) {
   return (
     <button
       type="button"
-      className={`rounded-lg bg-[var(--hmis-primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#005a94] ${className}`}
+      className={`rounded-lg bg-[var(--app-primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#005a94] ${className}`}
       {...props}
     >
       {children}
@@ -65,7 +65,7 @@ export function BtnOutline({ children, className = '', ...props }) {
   return (
     <button
       type="button"
-      className={`rounded-lg border border-[var(--hmis-primary)] bg-white px-4 py-2 text-sm font-medium text-[var(--hmis-primary)] transition hover:bg-[var(--hmis-primary)]/5 ${className}`}
+      className={`rounded-lg border border-[var(--app-primary)] bg-white px-4 py-2 text-sm font-medium text-[var(--app-primary)] transition hover:bg-[var(--app-primary)]/5 ${className}`}
       {...props}
     >
       {children}

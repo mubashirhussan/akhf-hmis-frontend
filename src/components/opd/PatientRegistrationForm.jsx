@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Checkbox, Collapse, Form, Input, Select } from 'antd';
-import HmisDobAgeField from '@/components/ui/HmisDobAgeField';
-import HmisFormGrid from '@/components/ui/HmisFormGrid';
+import DobAgeField from '@/components/ui/DobAgeField';
+import FormGrid from '@/components/ui/FormGrid';
 import PatientRegField from '@/components/opd/PatientRegField';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import {
@@ -12,10 +12,10 @@ import {
   focusFormField,
   handleFormChangeClearErrors,
   highlightAllInvalidFields,
-} from '@/lib/hmis-form-validation';
-import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
+} from '@/lib/form-validation';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 
-const controlClass = HMIS_FIELD_CONTROL_CLASS;
+const controlClass = FIELD_CONTROL_CLASS;
 
 const TITLE_OPTIONS = [
   { value: 'mr', label: 'Mr.' },
@@ -160,7 +160,7 @@ const dobAgeRules = [
 
 function DobAgeFormControl({ value, onChange }) {
   return (
-    <HmisDobAgeField
+    <DobAgeField
       embedded
       className="patient-reg-dob-age"
       age={value?.age ?? ''}
@@ -265,7 +265,7 @@ export default function PatientRegistrationForm() {
         key: 'patient',
         label: 'Patient Information',
         children: (
-          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+          <FormGrid columns={4} className="patient-reg-section-grid">
             <PatientRegField name="title" label="Title">
               <Select className={controlClass} options={TITLE_OPTIONS} />
             </PatientRegField>
@@ -345,14 +345,14 @@ export default function PatientRegistrationForm() {
             <PatientRegField name="presentAddress" label="Present Address">
               <Input className={controlClass} />
             </PatientRegField>
-          </HmisFormGrid>
+          </FormGrid>
         ),
       },
       {
         key: 'address',
         label: 'Address Information',
         children: (
-          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+          <FormGrid columns={4} className="patient-reg-section-grid">
             <PatientRegField name="religion" label="Religion">
               <Select className={controlClass} options={RELIGION_OPTIONS} />
             </PatientRegField>
@@ -390,14 +390,14 @@ export default function PatientRegistrationForm() {
             <PatientRegField name="permanentAddress" label="Permanent Address" col="full">
               <Input.TextArea className={controlClass} rows={2} />
             </PatientRegField>
-          </HmisFormGrid>
+          </FormGrid>
         ),
       },
       {
         key: 'kin',
         label: 'Next of Kin Information',
         children: (
-          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+          <FormGrid columns={4} className="patient-reg-section-grid">
             <PatientRegField name="kinTitle" label="Title">
               <Select className={controlClass} options={KIN_TITLE_OPTIONS} />
             </PatientRegField>
@@ -453,14 +453,14 @@ export default function PatientRegistrationForm() {
             <PatientRegField name="kinAddress2" label="Address 2">
               <Input className={controlClass} />
             </PatientRegField>
-          </HmisFormGrid>
+          </FormGrid>
         ),
       },
       {
         key: 'general',
         label: 'General Information',
         children: isB2bLabCategory ? (
-          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+          <FormGrid columns={4} className="patient-reg-section-grid">
             <PatientRegField name="labCategory" label="Lab Partner">
               <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
             </PatientRegField>
@@ -474,9 +474,9 @@ export default function PatientRegistrationForm() {
             >
               <Select className={controlClass} options={LAB_OPTIONS} allowClear />
             </PatientRegField>
-          </HmisFormGrid>
+          </FormGrid>
         ) : (
-          <HmisFormGrid columns={4} className="patient-reg-section-grid">
+          <FormGrid columns={4} className="patient-reg-section-grid">
             <PatientRegField name="speciality" label="Speciality/Dept">
               <Select className={controlClass} options={SPECIALITY_OPTIONS} />
             </PatientRegField>
@@ -512,7 +512,7 @@ export default function PatientRegistrationForm() {
             <PatientRegField name="comments" label="Comments">
               <Input className={controlClass} />
             </PatientRegField>
-          </HmisFormGrid>
+          </FormGrid>
         ),
       },
     ],

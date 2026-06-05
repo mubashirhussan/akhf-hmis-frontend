@@ -9,36 +9,35 @@ const UNIT_OPTIONS = [
   { value: DOB_AGE_UNITS.days, label: 'Days' },
 ];
 
-export default function HmisAgeUnitField({
+export default function AgeUnitField({
   age = '',
   unit = DOB_AGE_UNITS.years,
   onChange,
   ageInputId,
   className = '',
-  /** Match Add New Record — no extra top offset inside HmisFloatingField */
   embedded = false,
 }) {
   return (
     <div
       className={[
-        'hmis-dob-age-field',
-        embedded && 'hmis-dob-age-field--embedded',
+        'dob-age-field',
+        embedded && 'dob-age-field--embedded',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
-      <div className="hmis-dob-age-field-inner">
+      <div className="dob-age-field-inner">
         <Input
           id={ageInputId}
-          className="hmis-dob-age-age hmis-field-control"
+          className="dob-age-age field-control"
           value={age}
           placeholder=""
           inputMode="numeric"
           onChange={(e) => onChange?.({ age: e.target.value, unit })}
         />
         <Select
-          className="hmis-dob-age-unit hmis-field-control"
+          className="dob-age-unit field-control"
           value={unit}
           options={UNIT_OPTIONS}
           onChange={(nextUnit) => onChange?.({ age, unit: nextUnit })}

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import HmisCard from '@/components/ui/HmisCard';
+import UiCard from '@/components/ui/UiCard';
 
-export default function HmisTabs({
+export default function AppTabs({
   items,
   defaultActiveKey,
   activeKey: controlledActiveKey,
@@ -32,16 +32,16 @@ export default function HmisTabs({
 
   const panel = activeItem?.children ?? null;
   const panelClassName = [
-    'hmis-tabs-panel',
+    'app-tabs-panel',
     cardClassName,
-    isFirstTabActive ? 'hmis-tabs-panel--first-active' : '',
+    isFirstTabActive ? 'app-tabs-panel--first-active' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <div className={`hmis-tabs ${className}`.trim()}>
-      <div className="hmis-tabs-nav" role="tablist">
+    <div className={`app-tabs ${className}`.trim()}>
+      <div className="app-tabs-nav" role="tablist">
         {items.map((item) => {
           const isActive = item.key === activeKey;
 
@@ -51,7 +51,7 @@ export default function HmisTabs({
               type="button"
               role="tab"
               aria-selected={isActive}
-              className={`hmis-tabs-tab ${isActive ? 'hmis-tabs-tab--active' : ''}`}
+              className={`app-tabs-tab ${isActive ? 'app-tabs-tab--active' : ''}`}
               onClick={() => setActiveKey(item.key)}
             >
               {item.label}
@@ -61,7 +61,7 @@ export default function HmisTabs({
       </div>
 
       {wrapInCard ? (
-        <HmisCard className={panelClassName}>{panel}</HmisCard>
+        <UiCard className={panelClassName}>{panel}</UiCard>
       ) : (
         <div className={panelClassName}>{panel}</div>
       )}

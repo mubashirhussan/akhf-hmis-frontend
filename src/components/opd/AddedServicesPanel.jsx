@@ -3,13 +3,13 @@
 import { useMemo } from 'react';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Select } from 'antd';
-import HmisTable from '@/components/ui/HmisTable';
+import DataTable from '@/components/ui/DataTable';
 import { formatPkr } from '@/data/mock-walk-in-services';
-import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import {
-  HMIS_WALK_IN_SERVICES_SIDEBAR_SCROLL_Y,
-  HMIS_WALK_IN_TABLE_BODY_SCROLL_Y,
-} from '@/lib/hmis-table-scroll';
+  WALK_IN_SERVICES_SIDEBAR_SCROLL_Y,
+  WALK_IN_TABLE_BODY_SCROLL_Y,
+} from '@/lib/table-scroll';
 
 export default function AddedServicesPanel({
   variant = 'full',
@@ -98,7 +98,7 @@ export default function AddedServicesPanel({
               width: 140,
               render: (_, record) => (
                 <Select
-                  className={`w-full ${HMIS_FIELD_CONTROL_CLASS}`}
+                  className={`w-full ${FIELD_CONTROL_CLASS}`}
                   value={record.doctorId}
                   options={doctors.map((d) => ({ value: d.id, label: d.name }))}
                   onChange={(value) => onDoctorChange(record.id, value)}
@@ -129,7 +129,7 @@ export default function AddedServicesPanel({
 
   const tableScroll = useMemo(
     () => ({
-      y: isSidebar ? HMIS_WALK_IN_SERVICES_SIDEBAR_SCROLL_Y : HMIS_WALK_IN_TABLE_BODY_SCROLL_Y,
+      y: isSidebar ? WALK_IN_SERVICES_SIDEBAR_SCROLL_Y : WALK_IN_TABLE_BODY_SCROLL_Y,
     }),
     [isSidebar],
   );
@@ -140,7 +140,7 @@ export default function AddedServicesPanel({
     >
       {/* <h3 className="walk-in-added-services-title">Added Services</h3> */}
 
-      <HmisTable
+      <DataTable
         className="walk-in-added-services-table"
         wrapClassName="walk-in-added-services-table-wrap"
         columns={columns}

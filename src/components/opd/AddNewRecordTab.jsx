@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import { Input, Select } from 'antd';
-import HmisDobAgeField from '@/components/ui/HmisDobAgeField';
-import HmisFloatingField from '@/components/ui/HmisFloatingField';
-import HmisFormGrid from '@/components/ui/HmisFormGrid';
-import HmisFormGridRow from '@/components/ui/HmisFormGridRow';
+import DobAgeField from '@/components/ui/DobAgeField';
+import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
+import FormGridRow from '@/components/ui/FormGridRow';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
-import { HMIS_FIELD_CONTROL_CLASS } from '@/lib/hmis-field-control';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import SearchServicesSection from '@/components/opd/SearchServicesSection';
 
-const controlClass = HMIS_FIELD_CONTROL_CLASS;
+const controlClass = FIELD_CONTROL_CLASS;
 
 const TITLE_OPTIONS = [
   { value: 'mr', label: 'Mr.' },
@@ -111,13 +111,13 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
 
   return (
     <div className="walk-in-add-record-layout mt-2">
-      <HmisFormGrid
+      <FormGrid
         as="form"
         columns={formColumns}
         className="walk-in-add-record-form"
         onSubmit={(e) => e.preventDefault()}
       >
-        <HmisFloatingField label="Title" htmlFor="title">
+        <FloatingField label="Title" htmlFor="title">
           <Select
             id="title"
             className={controlClass}
@@ -125,27 +125,27 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
             options={TITLE_OPTIONS}
             onChange={setTitle}
           />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="First Name" htmlFor="full-name">
+        <FloatingField label="First Name" htmlFor="full-name">
           <Input id="full-name" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Last Name" htmlFor="last-name">
+        <FloatingField label="Last Name" htmlFor="last-name">
           <Input id="last-name" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="DOB / Age" htmlFor="dob-age">
-          <HmisDobAgeField
+        <FloatingField label="DOB / Age" htmlFor="dob-age">
+          <DobAgeField
             embedded
             className="patient-reg-dob-age"
             age={dobAge.age}
             unit={dobAge.unit}
             onChange={setDobAge}
           />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Gender" htmlFor="gender">
+        <FloatingField label="Gender" htmlFor="gender">
           <Select
             id="gender"
             className={controlClass}
@@ -153,17 +153,17 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
             options={GENDER_OPTIONS}
             onChange={setGender}
           />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Contact #" htmlFor="contact-no">
+        <FloatingField label="Contact #" htmlFor="contact-no">
           <Input id="contact-no" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="CNIC #" htmlFor="cnic">
+        <FloatingField label="CNIC #" htmlFor="cnic">
           <Input id="cnic" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Religion" htmlFor="religion">
+        <FloatingField label="Religion" htmlFor="religion">
           <Select
             id="religion"
             className={controlClass}
@@ -171,9 +171,9 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
             options={RELIGION_OPTIONS}
             onChange={setReligion}
           />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Relation" htmlFor="relation">
+        <FloatingField label="Relation" htmlFor="relation">
           <Select
             id="relation"
             className={controlClass}
@@ -181,26 +181,26 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
             options={RELATION_OPTIONS}
             onChange={setRelation}
           />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Relation First Name" htmlFor="guardian-first-name">
+        <FloatingField label="Relation First Name" htmlFor="guardian-first-name">
           <Input id="guardian-first-name" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Relation Last Name" htmlFor="guardian-last-name">
+        <FloatingField label="Relation Last Name" htmlFor="guardian-last-name">
           <Input id="guardian-last-name" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Email" htmlFor="email">
+        <FloatingField label="Email" htmlFor="email">
           <Input id="email" className={controlClass} type="email" autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFloatingField label="Address" htmlFor="address" col={2}>
+        <FloatingField label="Address" htmlFor="address" col={2}>
           <Input id="address" className={controlClass} autoComplete="off" />
-        </HmisFloatingField>
+        </FloatingField>
 
-        <HmisFormGridRow columns={formColumns}>
-          <HmisFloatingField label="Department" htmlFor="department">
+        <FormGridRow columns={formColumns}>
+          <FloatingField label="Department" htmlFor="department">
             <Select
               id="department"
               className={controlClass}
@@ -208,9 +208,9 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               options={DEPARTMENT_OPTIONS}
               onChange={setDepartment}
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Consultant" htmlFor="consultant">
+          <FloatingField label="Consultant" htmlFor="consultant">
             <Select
               id="consultant"
               className={controlClass}
@@ -218,15 +218,15 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               options={CONSULTANT_OPTIONS}
               onChange={setConsultant}
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Refer Doctor" htmlFor="refer-doctor">
+          <FloatingField label="Refer Doctor" htmlFor="refer-doctor">
             <Input id="refer-doctor" className={controlClass} autoComplete="off" />
-          </HmisFloatingField>
-        </HmisFormGridRow>
+          </FloatingField>
+        </FormGridRow>
 
-        <HmisFormGridRow columns={formColumns}>
-          <HmisFloatingField label="Category" htmlFor="category">
+        <FormGridRow columns={formColumns}>
+          <FloatingField label="Category" htmlFor="category">
             <Select
               id="category"
               className={controlClass}
@@ -234,9 +234,9 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               options={CATEGORY_OPTIONS}
               onChange={handleCategoryChange}
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Patient Type" htmlFor="patient-type">
+          <FloatingField label="Patient Type" htmlFor="patient-type">
             <Select
               id="patient-type"
               className={controlClass}
@@ -244,9 +244,9 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               options={PATIENT_TYPE_OPTIONS}
               onChange={setPatientType}
             />
-          </HmisFloatingField>
+          </FloatingField>
 
-          <HmisFloatingField label="Checkup Type" htmlFor="checkup-type">
+          <FloatingField label="Checkup Type" htmlFor="checkup-type">
             <Select
               id="checkup-type"
               className={controlClass}
@@ -254,12 +254,12 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
               options={CHECKUP_TYPE_OPTIONS}
               onChange={setCheckupType}
             />
-          </HmisFloatingField>
-        </HmisFormGridRow>
+          </FloatingField>
+        </FormGridRow>
 
         {showPanelFields && (
-          <HmisFormGridRow columns={formColumns}>
-            <HmisFloatingField label="Insurer" htmlFor="insurer">
+          <FormGridRow columns={formColumns}>
+            <FloatingField label="Insurer" htmlFor="insurer">
               <Select
                 id="insurer"
                 className={controlClass}
@@ -267,9 +267,9 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
                 options={INSURER_OPTIONS}
                 onChange={setInsurer}
               />
-            </HmisFloatingField>
+            </FloatingField>
 
-            <HmisFloatingField label="Designation" htmlFor="designation">
+            <FloatingField label="Designation" htmlFor="designation">
               <Select
                 id="designation"
                 className={controlClass}
@@ -277,17 +277,17 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
                 options={DESIGNATION_OPTIONS}
                 onChange={setDesignation}
               />
-            </HmisFloatingField>
+            </FloatingField>
 
-            <HmisFloatingField label="Reference #" htmlFor="reference-no">
+            <FloatingField label="Reference #" htmlFor="reference-no">
               <Input id="reference-no" className={controlClass} autoComplete="off" />
-            </HmisFloatingField>
-          </HmisFormGridRow>
+            </FloatingField>
+          </FormGridRow>
         )}
 
         {isB2bCategory && (
-          <HmisFormGridRow columns={formColumns}>
-            <HmisFloatingField label="Select Lab" htmlFor="selected-lab">
+          <FormGridRow columns={formColumns}>
+            <FloatingField label="Select Lab" htmlFor="selected-lab">
               <Select
                 id="selected-lab"
                 className={controlClass}
@@ -297,10 +297,10 @@ export default function AddNewRecordTab({ formColumns = 4 }) {
                 allowClear
                 onChange={setSelectedLab}
               />
-            </HmisFloatingField>
-          </HmisFormGridRow>
+            </FloatingField>
+          </FormGridRow>
         )}
-      </HmisFormGrid>
+      </FormGrid>
 
       <div className="walk-in-add-record-services">
         <SearchServicesSection />

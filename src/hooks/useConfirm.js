@@ -3,16 +3,16 @@
 import { App } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-export function useHmisConfirm() {
+export function useConfirm() {
   const { modal } = App.useApp();
 
   function confirmDelete({ itemName, message, okText = 'Yes, remove' } = {}) {
     const title =
       message ??
       (itemName ? (
-        <span className="hmis-confirm-modal__message">
+        <span className="confirm-modal__message">
           Are you sure you want to remove{' '}
-          <span className="hmis-confirm-modal__service-name">{itemName}</span>?
+          <span className="confirm-modal__service-name">{itemName}</span>?
         </span>
       ) : (
         'Are you sure you want to remove this service?'
@@ -20,10 +20,10 @@ export function useHmisConfirm() {
 
     return new Promise((resolve) => {
       modal.confirm({
-        className: 'hmis-confirm-modal',
+        className: 'confirm-modal',
         centered: true,
         icon: (
-          <div className="hmis-confirm-modal__icon-wrap" aria-hidden>
+          <div className="confirm-modal__icon-wrap" aria-hidden>
             <DeleteOutlined />
           </div>
         ),

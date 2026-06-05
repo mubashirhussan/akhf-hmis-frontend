@@ -2,7 +2,7 @@
 
 import AddNewRecordTab from '@/components/opd/AddNewRecordTab';
 import SearchExistingPatientTab from '@/components/opd/SearchExistingPatientTab';
-import HmisTabs from '@/components/ui/HmisTabs';
+import AppTabs from '@/components/ui/AppTabs';
 
 const tabItems = [
   {
@@ -18,5 +18,5 @@ const tabItems = [
 ];
 
 export default function WalkInPatientForm() {
-  return <HmisTabs defaultActiveKey="search-existing" items={tabItems} />;
+  return <AppTabs defaultActiveKey="search-existing" items={tabItems} />;
 }

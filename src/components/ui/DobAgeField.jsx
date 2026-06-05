@@ -29,17 +29,15 @@ function resolveGridColumn(col) {
   return { gridColumn: `span ${span}` };
 }
 
-export default function HmisDobAgeField({
+export default function DobAgeField({
   age = '',
   unit = DOB_AGE_UNITS.years,
   onChange,
   col = 1,
   className = '',
   maxAgeYears = 150,
-  /** No extra top offset — use with an external label (e.g. Ant Design Form.Item). */
   embedded = false,
   agePlaceholder = '',
-  /** Id for the age input — enables label association and submit focus. */
   ageInputId,
 }) {
   const dob = useMemo(() => calculateDobFromAge(age, unit), [age, unit]);
@@ -74,18 +72,18 @@ export default function HmisDobAgeField({
   return (
     <div
       className={[
-        'hmis-dob-age-field',
-        embedded && 'hmis-dob-age-field--embedded',
+        'dob-age-field',
+        embedded && 'dob-age-field--embedded',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
       style={resolveGridColumn(col)}
     >
-      {!embedded && <span className="hmis-floating-label">DOB</span>}
-      <div className="hmis-dob-age-field-inner">
+      {!embedded && <span className="floating-label">DOB</span>}
+      <div className="dob-age-field-inner">
         <div
-          className="hmis-dob-age-date"
+          className="dob-age-date"
           aria-live="polite"
           title={dobDisplay || 'Date of birth (auto calculated)'}
         >
@@ -93,7 +91,7 @@ export default function HmisDobAgeField({
         </div>
         <Input
           id={ageInputId}
-          className="hmis-dob-age-age"
+          className="dob-age-age"
           value={age}
           onChange={handleAgeChange}
           placeholder={agePlaceholder}
@@ -102,7 +100,7 @@ export default function HmisDobAgeField({
           aria-label="Age"
         />
         <Select
-          className="hmis-dob-age-unit"
+          className="dob-age-unit"
           value={unit}
           options={UNIT_OPTIONS}
           onChange={handleUnitChange}
