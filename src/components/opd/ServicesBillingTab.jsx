@@ -1,16 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import {
-  CreditCardOutlined,
-  EditOutlined,
-  EyeOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
+import { useCallback, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
+import AppIcon from '@/components/icons/AppIcon';
 import AgeUnitField from '@/components/ui/AgeUnitField';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
+import BillingVisitServicesView from '@/components/opd/BillingVisitServicesView';
 import DataTable from '@/components/ui/DataTable';
 import {
   MOCK_SERVICES_BILLING_VISITS,
@@ -22,6 +19,8 @@ import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const controlClass = FIELD_CONTROL_CLASS;
+
+const BILLING_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 const emptyFilters = {
   visitNo: '',
@@ -64,9 +63,38 @@ function BillingTag({ value }) {
 }
 
 export default function ServicesBillingTab() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [filters, setFilters] = useState(emptyFilters);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+
+  const visitId = searchParams.get('visitId');
+  const activeVisit = useMemo(
+    () =>
+      visitId
+        ? (MOCK_SERVICES_BILLING_VISITS.find((visit) => visit.id === visitId) ?? null)
+        : null,
+    [visitId],
+  );
+
+  const openVisitServices = useCallback(
+    (record) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('visitId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams],
+  );
+
+  const closeVisitServices = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('visitId');
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -117,26 +145,61 @@ export default function ServicesBillingTab() {
         key: 'actions',
         width: 120,
         align: 'center',
-        render: () => (
+        render: (_, record) => (
           <Space size={4} className="services-billing-actions-cell">
             <Tooltip title="Get Card">
-              <Button type="link" size="small" icon={<CreditCardOutlined />} aria-label="Billing" />
+              <Button
+                type="link"
+                size="small"
+                icon={
+                  <AppIcon
+                    icon="mdi:card-account-details-outline"
+                    className={BILLING_ACTION_ICON_CLASS}
+                  />
+                }
+                aria-label="Get Card"
+              />
             </Tooltip>
             <Tooltip title="View">
-              <Button type="link" size="small" icon={<EyeOutlined />} aria-label="View" />
+              <Button
+                type="link"
+                size="small"
+                icon={<AppIcon icon="mdi:eye-outline" className={BILLING_ACTION_ICON_CLASS} />}
+                aria-label="View"
+              />
             </Tooltip>
             <Tooltip title="Refund">
-              <Button type="link" size="small" icon={<EditOutlined />} aria-label="Edit" />
+              <Button
+                type="link"
+                size="small"
+                icon={<AppIcon icon="mdi:cash-refund" className={BILLING_ACTION_ICON_CLASS} />}
+                aria-label="Refund"
+              />
             </Tooltip>
             <Tooltip title="Services">
-              <Button type="link" size="small" icon={<SettingOutlined />} aria-label="Settings" />
+              <Button
+                type="link"
+                size="small"
+                icon={
+                  <AppIcon
+                    icon="mdi:clipboard-list-outline"
+                    className={BILLING_ACTION_ICON_CLASS}
+                  />
+                }
+                aria-label="Services"
+                onClick={() => openVisitServices(record)}
+              />
             </Tooltip>
           </Space>
         ),
       },
     ],
-    [],
+    [openVisitServices],
   );
+
+  if (activeVisit) {
+    return <BillingVisitServicesView visit={activeVisit} onBack={closeVisitServices} />;
+  }
 
   return (
     <div className="services-billing-page">

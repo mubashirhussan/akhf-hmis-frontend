@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import ServicesBillingTab from '@/components/opd/ServicesBillingTab';
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function ServicesBillingPage() {
-  return <ServicesBillingTab />;
+  return (
+    <Suspense fallback={null}>
+      <ServicesBillingTab />
+    </Suspense>
+  );
 }
