@@ -1,17 +1,17 @@
-/** MR-002-26 or REG-000123 style registration numbers */
-const REGISTRATION_NO_PATTERN = /^(?:[A-Z]{2,4}-\d{2,6}(?:-\d{2,4})?|REG-\d{4,8})$/i;
+/** MR-002-26 style medical record numbers */
+const MR_NO_PATTERN = /^MR-\d{2,6}(?:-\d{2,4})?$/i;
 
-export function validateRegistrationNumber(value) {
+export function validateMrNumber(value) {
   const trimmed = value.trim();
 
   if (!trimmed) {
     return { valid: true, message: '' };
   }
 
-  if (!REGISTRATION_NO_PATTERN.test(trimmed)) {
+  if (!MR_NO_PATTERN.test(trimmed)) {
     return {
       valid: false,
-      message: 'Invalid registration number. Example: MR-002-26 or REG-000123',
+      message: 'Invalid MR number. Example: MR-002-26',
     };
   }
 
@@ -42,23 +42,23 @@ export function validateWalkInSearchQuery(searchBy, query) {
     return validateMobileNumber(query);
   }
 
-  return validateRegistrationNumber(query);
+  return validateMrNumber(query);
 }
 
-export function validateWalkInPatientSearch(registrationNo, mobile) {
-  const reg = registrationNo.trim();
+export function validateWalkInPatientSearch(mrNo, mobile) {
+  const mr = mrNo.trim();
   const mob = mobile.trim();
 
-  if (!reg && !mob) {
+  if (!mr && !mob) {
     return {
       valid: false,
       message: 'Enter MR number or mobile number to search',
     };
   }
 
-  if (reg) {
-    const regResult = validateRegistrationNumber(reg);
-    if (!regResult.valid) return regResult;
+  if (mr) {
+    const mrResult = validateMrNumber(mr);
+    if (!mrResult.valid) return mrResult;
   }
 
   if (mob) {

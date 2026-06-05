@@ -1,8 +1,7 @@
 export const MOCK_WALK_IN_PATIENTS = [
   {
     id: '1',
-    registrationNo: 'MR-002-26',
-    displayRegNo: 'REG-000123',
+    mrNo: 'MR-002-26',
     name: 'Ammar Shahid',
     mobile: '0300-1234567',
     cnic: '35202-1234567-1',
@@ -21,10 +20,9 @@ export const MOCK_WALK_IN_PATIENTS = [
   },
   {
     id: '2',
-    registrationNo: 'MR-003-41',
-    displayRegNo: 'REG-000124',
+    mrNo: 'MR-003-41',
     name: 'Sara Khan',
-    mobile: '0312-9876543',
+    mobile: '0300-1234567',
     cnic: '35202-9876543-2',
     age: 42,
     ageLabel: '42 years',
@@ -41,10 +39,9 @@ export const MOCK_WALK_IN_PATIENTS = [
   },
   {
     id: '3',
-    registrationNo: 'MR-004-18',
-    displayRegNo: 'REG-000125',
+    mrNo: 'MR-004-18',
     name: 'Hassan Ali',
-    mobile: '0333-5566778',
+    mobile: '0300-1234567',
     cnic: '35202-5566778-3',
     age: 35,
     ageLabel: '35 years',
@@ -61,27 +58,25 @@ export const MOCK_WALK_IN_PATIENTS = [
   },
 ];
 
-export function searchWalkInPatients(patients, { registrationNo = '', mobile = '' } = {}) {
-  const regQuery = registrationNo.trim();
+export function searchWalkInPatients(patients, { mrNo = '', mobile = '' } = {}) {
+  const mrQuery = mrNo.trim();
   const mobileQuery = mobile.trim();
 
-  if (!regQuery && !mobileQuery) {
+  if (!mrQuery && !mobileQuery) {
     return patients;
   }
 
-  const normalizedReg = regQuery.toLowerCase();
+  const normalizedMr = mrQuery.toLowerCase();
   const mobileDigits = mobileQuery.replace(/\D/g, '');
 
   return patients.filter((patient) => {
-    const matchesReg =
-      !regQuery ||
-      patient.registrationNo.toLowerCase().includes(normalizedReg) ||
-      patient.displayRegNo.toLowerCase().includes(normalizedReg);
+    const matchesMr =
+      !mrQuery || patient.mrNo.toLowerCase().includes(normalizedMr);
 
     const patientMobileDigits = patient.mobile.replace(/\D/g, '');
     const matchesMobile =
       !mobileQuery || (mobileDigits && patientMobileDigits.includes(mobileDigits));
 
-    return matchesReg && matchesMobile;
+    return matchesMr && matchesMobile;
   });
 }

@@ -2050,7 +2050,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 /* DataTable: body scroll via wrapper (avoids antd extra scrollbar <th>) */
 .data-table-wrap--scroll-body .ant-table-container {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .data-table-wrap--scroll-body .ant-table-container .ant-table-content {
@@ -2058,10 +2058,23 @@ body::-webkit-scrollbar-thumb:hover,
   overflow: auto !important;
 }
 
+.data-table-wrap--scroll-body .ant-table-thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
 .data-table-wrap--scroll-body .ant-table-thead > tr > th {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
+  background: var(--data-table-header-bg) !important;
+  color: var(--data-table-header-color) !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.data-table-wrap--scroll-body .ant-table-thead > tr > th::before {
+  background: var(--data-table-header-bg) !important;
 }
 
 .data-table .ant-table-thead > tr > th {

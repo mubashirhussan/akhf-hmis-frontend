@@ -17,15 +17,19 @@ function PatientDetailsPanel({ patient }) {
   const { visitSummary } = patient;
 
   const patientFields = [
-    { key: 'mr', label: 'MR No', value: patient.registrationNo },
+    { key: 'mr', label: 'MR No', value: patient.mrNo },
     { key: 'name', label: 'Patient Name', value: patient.name },
     { key: 'gender', label: 'Gender', value: patient.gender },
     { key: 'age', label: 'Age', value: patient.ageLabel },
     { key: 'mobile', label: 'Mobile No', value: patient.mobile },
     { key: 'cnic', label: 'CNIC', value: patient.cnic },
-    { key: 'reg', label: 'Registration No', value: patient.displayRegNo },
-    { key: 'visit', label: 'Visit Date & Time', value: patient.visitDateTime },
-    { key: 'address', label: 'Address', value: patient.address, span: 4 },
+    {
+      key: 'visit',
+      label: 'Visit Date & Time',
+      value: patient.visitDateTime,
+     
+    },
+    { key: 'address', label: 'Address', value: patient.address,  },
   ];
 
   const visitFields = [
@@ -68,7 +72,7 @@ export default function SearchExistingPatientTab() {
     }
 
     const matched = searchWalkInPatients(MOCK_WALK_IN_PATIENTS, {
-      registrationNo: mrNo,
+      mrNo,
       mobile: mobileNo,
     });
     setResults(matched);
@@ -136,14 +140,24 @@ export default function SearchExistingPatientTab() {
     },
     {
       title: 'MR No',
-      dataIndex: 'registrationNo',
-      key: 'registrationNo',
+      dataIndex: 'mrNo',
+      key: 'mrNo',
       width: 160,
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+    },
+     {
+      title: 'Visit Date & Time',
+      dataIndex: 'visitDateTime',
+      key: 'visitDateTime',
+    },
+     {
+      title: 'Mobile No',
+      dataIndex: 'mobile',
+      key: 'mobile',
     },
     {
       title: 'Gender',
