@@ -1,26 +1,33 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import AgeUnitField from '@/components/ui/AgeUnitField';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
+import BillingVisitPaymentView from '@/components/opd/BillingVisitPaymentView';
 import BillingVisitServicesView from '@/components/opd/BillingVisitServicesView';
 import DataTable from '@/components/ui/DataTable';
+import { MOCK_BILLING_VISIT_SERVICE_ROWS } from '@/data/mock-billing-visit-services';
 import {
   MOCK_SERVICES_BILLING_VISITS,
   searchServicesBillingVisits,
   SERVICES_BILLING_STATUS_COLORS,
   SERVICES_BILLING_TYPE_COLORS,
 } from '@/data/mock-services-billing';
+import { BILLING_VIEW_PAYMENT } from '@/lib/billing-navigation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
 const BILLING_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+
+function createDefaultVisitServiceRows() {
+  return MOCK_BILLING_VISIT_SERVICE_ROWS.map((row) => ({ ...row }));
+}
 
 const emptyFilters = {
   visitNo: '',
@@ -70,13 +77,39 @@ export default function ServicesBillingTab() {
   const [filters, setFilters] = useState(emptyFilters);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [visitServiceRowsByVisitId, setVisitServiceRowsByVisitId] = useState({});
 
   const visitId = searchParams.get('visitId');
+  const billingView = searchParams.get('view');
   const activeVisit = useMemo(
     () =>
       visitId
         ? (MOCK_SERVICES_BILLING_VISITS.find((visit) => visit.id === visitId) ?? null)
         : null,
+    [visitId],
+  );
+
+  useEffect(() => {
+    if (!visitId) return;
+
+    setVisitServiceRowsByVisitId((prev) => {
+      if (prev[visitId]) return prev;
+      return { ...prev, [visitId]: createDefaultVisitServiceRows() };
+    });
+  }, [visitId]);
+
+  const visitServiceRows = visitId ? (visitServiceRowsByVisitId[visitId] ?? []) : [];
+
+  const setVisitServiceRows = useCallback(
+    (updater) => {
+      if (!visitId) return;
+
+      setVisitServiceRowsByVisitId((prev) => {
+        const current = prev[visitId] ?? [];
+        const next = typeof updater === 'function' ? updater(current) : updater;
+        return { ...prev, [visitId]: next };
+      });
+    },
     [visitId],
   );
 
@@ -190,8 +223,18 @@ export default function ServicesBillingTab() {
     [openVisitServices],
   );
 
+  if (activeVisit && billingView === BILLING_VIEW_PAYMENT) {
+    return <BillingVisitPaymentView visit={activeVisit} serviceRows={visitServiceRows} />;
+  }
+
   if (activeVisit) {
-    return <BillingVisitServicesView visit={activeVisit} />;
+    return (
+      <BillingVisitServicesView
+        visit={activeVisit}
+        serviceRows={visitServiceRows}
+        setServiceRows={setVisitServiceRows}
+      />
+    );
   }
 
   return (

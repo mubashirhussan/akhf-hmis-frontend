@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { DeleteOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons';
-import { App, Avatar, Button, Checkbox, Input, Select } from 'antd';
-import AppIcon from '@/components/icons/AppIcon';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import { App, Button, Checkbox, Input, Select } from 'antd';
+import BillingPatientHeaderCard from '@/components/opd/BillingPatientHeaderCard';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
@@ -11,7 +12,6 @@ import {
   BILLING_PACKAGE_OPTIONS,
   BILLING_REFERENCE_OPTIONS,
   BILLING_SERVICE_CATEGORY_OPTIONS,
-  MOCK_BILLING_VISIT_SERVICE_ROWS,
   buildBillingPatientSummary,
   calcBillingServicesGrandTotal,
   createBillingServiceRow,
@@ -23,14 +23,27 @@ import {
   paginateServices,
   searchServices,
 } from '@/data/mock-walk-in-services';
+import { useConfirm } from '@/hooks/useConfirm';
+import { BILLING_VIEW_PAYMENT } from '@/lib/billing-navigation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function BillingVisitServicesView({ visit }) {
+export default function BillingVisitServicesView({ visit, serviceRows, setServiceRows }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { message } = App.useApp();
+  const { confirmDelete } = useConfirm();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
+
+  const openPayment = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('visitId', visit.id);
+    params.set('view', BILLING_VIEW_PAYMENT);
+    router.push(`${pathname}?${params.toString()}`);
+  }, [pathname, router, searchParams, visit.id]);
 
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,10 +52,6 @@ export default function BillingVisitServicesView({ visit }) {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [resultsPage] = useState(1);
-  const [serviceRows, setServiceRows] = useState(() =>
-    MOCK_BILLING_VISIT_SERVICE_ROWS.map((row) => ({ ...row })),
-  );
-
   const { items: pagedResults } = useMemo(
     () => paginateServices(searchResults, resultsPage),
     [searchResults, resultsPage],
@@ -109,8 +118,12 @@ export default function BillingVisitServicesView({ visit }) {
     );
   };
 
-  const handleRemove = (rowId) => {
-    setServiceRows((prev) => prev.filter((row) => row.id !== rowId));
+  const handleRemove = async (rowId, serviceName) => {
+    const confirmed = await confirmDelete({ itemName: serviceName });
+
+    if (confirmed) {
+      setServiceRows((prev) => prev.filter((row) => row.id !== rowId));
+    }
   };
 
   const columns = useMemo(
@@ -170,7 +183,7 @@ export default function BillingVisitServicesView({ visit }) {
           <button
             type="button"
             className="walk-in-service-delete-btn"
-            onClick={() => handleRemove(record.id)}
+            onClick={() => handleRemove(record.id, record.serviceName)}
             aria-label="Remove service"
           >
             <DeleteOutlined />
@@ -183,99 +196,7 @@ export default function BillingVisitServicesView({ visit }) {
 
   return (
     <div className="billing-visit-services-page">
-      <section className="billing-patient-header-card">
-        <div className="billing-patient-header-body">
-          <div className="billing-patient-header-main">
-            <Avatar size={64} icon={<UserOutlined />} className="billing-patient-avatar" />
-
-            <div className="billing-patient-header-info">
-              <div className="billing-patient-name-row">
-                <h2 className="billing-patient-name">{patient.displayName}</h2>
-                <span className="billing-patient-relation-inline">
-                  {patient.relationPrefix} {patient.relationName}
-                </span>
-              </div>
-
-              <div className="billing-patient-meta-row">
-                <span className="billing-patient-meta-item">
-                  <AppIcon icon="mdi:account-group-outline" className="billing-patient-meta-icon" />
-                  {patient.ageDetail}
-                </span>
-                <span className="billing-patient-meta-divider" aria-hidden />
-                <span className="billing-patient-meta-item">
-                  <AppIcon icon="mdi:calendar-outline" className="billing-patient-meta-icon" />
-                  {patient.dob}
-                </span>
-                <span className="billing-patient-meta-divider" aria-hidden />
-                <span className="billing-patient-meta-item">
-                  <AppIcon
-                    icon={
-                      patient.gender?.toLowerCase() === 'female'
-                        ? 'mdi:gender-female'
-                        : 'mdi:gender-male'
-                    }
-                    className="billing-patient-meta-icon"
-                  />
-                  {patient.gender}
-                </span>
-              </div>
-
-              <p className="billing-patient-department">{patient.department}</p>
-
-              <div className="billing-patient-id-row">
-                <span className="billing-patient-id-item">
-                  MR # <strong className="billing-patient-id-value">{patient.mrNo}</strong>
-                </span>
-                <span className="billing-patient-meta-divider" aria-hidden />
-                <span className="billing-patient-id-item">
-                  Patient Type{' '}
-                  <strong className="billing-patient-id-value">{patient.patientType}</strong>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="billing-patient-header-side">
-            <Button
-              className="billing-patient-report-btn"
-              icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
-            >
-              Patient Report
-            </Button>
-
-            <div className="billing-patient-doctor-card">
-              <span className="billing-patient-doctor-accent" aria-hidden />
-              <button type="button" className="billing-patient-doctor-handle" aria-label="More options">
-                <AppIcon icon="mdi:dots-grid" className="h-4 w-4" />
-              </button>
-
-              <div className="billing-patient-doctor-avatar-wrap">
-                <Avatar size={40} icon={<UserOutlined />} className="billing-patient-doctor-avatar" />
-                {patient.checkupType === 'Emergency' && (
-                  <span className="billing-patient-doctor-emergency-badge" aria-hidden>
-                    <AppIcon icon="mdi:alert-decagram" className="h-[11px] w-[11px]" />
-                  </span>
-                )}
-              </div>
-
-              <div className="billing-patient-doctor-text">
-                {patient.checkupType === 'Emergency' ? (
-                  <div className="billing-patient-emergency-row">
-                    <span className="billing-patient-emergency-pill">
-                      <AppIcon icon="mdi:alert-decagram" className="h-[10px] w-[10px]" />
-                      Emergency
-                    </span>
-                    <span className="billing-patient-emergency-slash">/Emergency</span>
-                  </div>
-                ) : (
-                  <span className="billing-patient-checkup-pill">{patient.checkupType}</span>
-                )}
-                <p className="billing-patient-doctor-name">{patient.doctor}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <BillingPatientHeaderCard patient={patient} />
 
       <FormGrid columns={5} className="walk-in-add-record-form billing-visit-services-filters">
         <FloatingField label="Category" htmlFor="billing-svc-category">
@@ -288,18 +209,9 @@ export default function BillingVisitServicesView({ visit }) {
           />
         </FloatingField>
 
-        <FloatingField label="Search Services" htmlFor="billing-svc-search">
-          <Input
-            id="billing-svc-search"
-            className={controlClass}
-            placeholder="Search Services here..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoComplete="off"
-          />
-        </FloatingField>
+       
 
-        <FloatingField label="Select Reference" htmlFor="billing-svc-reference">
+        <FloatingField label="Select Refer" htmlFor="billing-svc-reference">
           <Select
             id="billing-svc-reference"
             className={controlClass}
@@ -310,6 +222,7 @@ export default function BillingVisitServicesView({ visit }) {
             onChange={setReference}
           />
         </FloatingField>
+        
 
         <FloatingField label="Select Packages" htmlFor="billing-svc-package">
           <Select
@@ -320,6 +233,16 @@ export default function BillingVisitServicesView({ visit }) {
             allowClear
             options={BILLING_PACKAGE_OPTIONS}
             onChange={setPackageId}
+          />
+        </FloatingField>
+         <FloatingField label="Search Services" htmlFor="billing-svc-search">
+          <Input
+            id="billing-svc-search"
+            className={controlClass}
+            placeholder="Search Services here..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoComplete="off"
           />
         </FloatingField>
 
@@ -376,7 +299,9 @@ export default function BillingVisitServicesView({ visit }) {
       </section>
 
       <div className="billing-visit-services-footer-actions">
-        <Button className="billing-visit-services-payment-btn">Payment</Button>
+        <Button className="billing-visit-services-payment-btn" onClick={openPayment}>
+          Payment
+        </Button>
         <Button
           type="primary"
           className="billing-visit-services-update-btn"

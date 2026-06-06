@@ -15,6 +15,14 @@ function formatDate(date) {
   });
 }
 
+function formatDateCompact(date) {
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
 function formatTime(date) {
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
@@ -37,34 +45,46 @@ export default function AppHeader() {
   }, []);
 
   return (
-    <header className="flex min-h-[76px] shrink-0 items-center justify-between border-b border-slate-200/80 bg-[var(--app-header-bg)] px-6">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2">
-        {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
-          return (
-            <span key={`${crumb.href}-${crumb.label}`} className="flex items-center gap-2">
-              {index > 0 && (
-                <AppIcon icon="mdi:chevron-right" className="header-breadcrumb-separator h-[18px] w-[18px]" />
-              )}
-              {isLast ? (
-                <span className="header-breadcrumb text-slate-800">{crumb.label}</span>
-              ) : (
-                <Link
-                  href={crumb.href}
-                  className="header-breadcrumb text-[var(--app-primary)] hover:underline"
-                >
-                  {crumb.label}
-                </Link>
-              )}
-            </span>
-          );
-        })}
+    <header className="app-header">
+      <nav aria-label="Breadcrumb" className="app-header-breadcrumb-nav">
+        <ol className="app-header-breadcrumb-list">
+          {breadcrumbs.map((crumb, index) => {
+            const isLast = index === breadcrumbs.length - 1;
+
+            return (
+              <li
+                key={`${crumb.href}-${crumb.label}`}
+                className="app-header-breadcrumb-item"
+              >
+                {index > 0 ? (
+                  <AppIcon
+                    icon="mdi:chevron-right"
+                    className="header-breadcrumb-separator"
+                    aria-hidden
+                  />
+                ) : null}
+                {isLast ? (
+                  <span className="header-breadcrumb" aria-current="page">
+                    {crumb.label}
+                  </span>
+                ) : (
+                  <Link href={crumb.href} className="header-breadcrumb">
+                    {crumb.label}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
       </nav>
 
-      <div className="flex items-center gap-4">
+      <div className="app-header-actions">
         <div className="header-datetime" aria-live="polite">
-          <span className="header-datetime__text header-datetime__text--date">
+          <span className="header-datetime__text header-datetime__text--date header-datetime__text--date-full">
             {now ? formatDate(now) : '\u00A0'}
+          </span>
+          <span className="header-datetime__text header-datetime__text--date header-datetime__text--date-compact">
+            {now ? formatDateCompact(now) : '\u00A0'}
           </span>
           <span className="header-datetime__divider" aria-hidden />
           <span className="header-datetime__text header-datetime__text--time">
@@ -72,11 +92,11 @@ export default function AppHeader() {
           </span>
         </div>
 
-        <span className="h-6 w-px bg-slate-200" aria-hidden />
+        <span className="app-header-actions-divider" aria-hidden />
 
         <button
           type="button"
-          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white text-slate-500 shadow-sm hover:bg-slate-50"
+          className="app-header-notifications-btn"
           aria-label="Notifications"
         >
           <AppIcon icon="mdi:bell-outline" className="h-4 w-4" />

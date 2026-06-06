@@ -8,3 +8,6 @@ export const SERVICES_BILLING_TABLE_SCROLL_Y = 480;
 
 /** Billing visit services detail — table body scroll (keeps page fixed). */
 export const BILLING_VISIT_SERVICES_TABLE_SCROLL_Y = 'max(180px, calc(100vh - 500px))';
+
+/** Billing payment history table body scroll. */
+export const BILLING_PAYMENT_HISTORY_TABLE_SCROLL_Y = 'max(160px, calc(100vh - 620px))';

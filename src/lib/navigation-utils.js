@@ -1,5 +1,6 @@
 import { footerLinks, navigation } from '@/config/navigation-data';
 import { MOCK_SERVICES_BILLING_VISITS } from '@/data/mock-services-billing';
+import { BILLING_VIEW_PAYMENT, buildBillingVisitHref } from '@/lib/billing-navigation';
 
 function flattenItems(items, parent = null) {
   const result = [];
@@ -42,15 +43,26 @@ export function getBreadcrumbs(pathname, searchParams) {
 
   if (normalizePath(pathname) === '/opd/services-billing') {
     const visitId = searchParams?.get?.('visitId');
+    const billingView = searchParams?.get?.('view');
+
     if (visitId) {
       const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
       const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Services';
 
-      return [
+      const visitCrumbs = [
         ...crumbs.slice(0, -1),
         { label: 'Services Billing', href: '/opd/services-billing' },
-        { label: visitLabel, href: `/opd/services-billing?visitId=${visitId}` },
+        { label: visitLabel, href: buildBillingVisitHref(visitId) },
       ];
+
+      if (billingView === BILLING_VIEW_PAYMENT) {
+        return [
+          ...visitCrumbs,
+          { label: 'Payment', href: buildBillingVisitHref(visitId, { view: BILLING_VIEW_PAYMENT }) },
+        ];
+      }
+
+      return visitCrumbs;
     }
   }
 
