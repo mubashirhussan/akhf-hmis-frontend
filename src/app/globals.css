@@ -3059,7 +3059,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 .sample-collection-form-footer {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   padding-top: 4px;
 }
 

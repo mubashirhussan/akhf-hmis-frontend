@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Checkbox, Input, Radio, Select } from 'antd';
+import { App, Button, Checkbox, Input, Select } from 'antd';
 import PatientInfoHeaderCard from '@/components/patient/PatientInfoHeaderCard';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
@@ -26,6 +26,8 @@ export default function SampleCollectionFormView({ record }) {
 
   const [filters, setFilters] = useState(createCollectionFilters);
   const [testRows, setTestRows] = useState(() => createSampleCollectionTests(record.id));
+
+  const isSatelliteCenter = filters.collectedAt === 'satellite-center';
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -119,7 +121,7 @@ export default function SampleCollectionFormView({ record }) {
     <div className="sample-collection-form-page">
       <PatientInfoHeaderCard patient={patient} />
 
-      <FormGrid columns={4} className="sample-collection-entry-form">
+      <FormGrid columns={3} className="sample-collection-entry-form">
         <FloatingField label="Test Group" htmlFor="sample-collection-group">
           <Select
             id="sample-collection-group"
@@ -130,11 +132,24 @@ export default function SampleCollectionFormView({ record }) {
           />
         </FloatingField>
 
-        <FloatingField label="Collected at" variant="radios" col={1}>
-          <Radio.Group
+        <FloatingField label="Collected at" htmlFor="sample-collection-collected-at">
+          <Select
+            id="sample-collection-collected-at"
+            className={controlClass}
             value={filters.collectedAt}
-            onChange={(e) => patchFilter({ collectedAt: e.target.value })}
             options={SAMPLE_COLLECTION_SITE_OPTIONS}
+            onChange={(value) => patchFilter({ collectedAt: value })}
+          />
+        </FloatingField>
+
+        <FloatingField label="Location" htmlFor="sample-collection-location">
+          <Select
+            id="sample-collection-location"
+            className={controlClass}
+            value={filters.location}
+            options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
+            disabled={!isSatelliteCenter}
+            onChange={(value) => patchFilter({ location: value })}
           />
         </FloatingField>
 
@@ -148,17 +163,7 @@ export default function SampleCollectionFormView({ record }) {
           />
         </FloatingField>
 
-        <FloatingField label="Location" htmlFor="sample-collection-location">
-          <Select
-            id="sample-collection-location"
-            className={controlClass}
-            value={filters.location}
-            options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
-            onChange={(value) => patchFilter({ location: value })}
-          />
-        </FloatingField>
-
-        <FloatingField label="Clinical Diagnosis" htmlFor="sample-collection-diagnosis" col={2}>
+        <FloatingField label="Clinical Diagnosis" htmlFor="sample-collection-diagnosis">
           <Input.TextArea
             id="sample-collection-diagnosis"
             className={controlClass}
