@@ -1,54 +1,107 @@
 import dayjs from 'dayjs';
 
-export const SAMPLE_COLLECTION_STATUS_OPTIONS = [
-  { value: 'result-entry', label: 'Result Entry' },
+export const LABORATORY_STATUS_OPTIONS = [
   { value: 'sample-collection', label: 'Sample Collection' },
   { value: 'sample-receiving', label: 'Sample Receiving' },
+  { value: 'result-entry', label: 'Result Entry' },
   { value: 'test-conducted', label: 'Test Conducted' },
+  { value: 'undelivered-reports', label: 'Undelivered Reports' },
+  { value: 'delivered-reports', label: 'Delivered Reports' },
 ];
 
-export const SAMPLE_COLLECTION_ALL_OPTION = { value: 'all', label: 'ALL' };
+export const LABORATORY_ALL_OPTION = { value: 'all', label: 'ALL' };
 
-export const SAMPLE_COLLECTION_PATIENT_TYPE_OPTIONS = [
-  SAMPLE_COLLECTION_ALL_OPTION,
+export const LABORATORY_PATIENT_TYPE_OPTIONS = [
+  LABORATORY_ALL_OPTION,
   { value: 'opd', label: 'OPD' },
   { value: 'panel', label: 'Panel' },
   { value: 'general', label: 'General' },
   { value: 'b2b', label: 'B2B' },
 ];
 
-export const SAMPLE_COLLECTION_TEST_GROUP_OPTIONS = [
-  SAMPLE_COLLECTION_ALL_OPTION,
+export const LABORATORY_TEST_GROUP_OPTIONS = [
+  LABORATORY_ALL_OPTION,
   { value: 'hematology', label: 'Hematology' },
   { value: 'biochemistry', label: 'Biochemistry' },
   { value: 'microbiology', label: 'Microbiology' },
   { value: 'serology', label: 'Serology' },
 ];
 
-export const SAMPLE_COLLECTION_TEST_NAME_OPTIONS = [
-  SAMPLE_COLLECTION_ALL_OPTION,
+export const LABORATORY_TEST_NAME_OPTIONS = [
+  LABORATORY_ALL_OPTION,
   { value: 'cbc', label: 'CBC' },
   { value: 'esr', label: 'ESR' },
   { value: 'lft', label: 'LFT' },
   { value: 'urine', label: 'Urine Routine' },
 ];
 
-export const SAMPLE_COLLECTION_SEND_OUT_OPTIONS = [
-  SAMPLE_COLLECTION_ALL_OPTION,
+export const LABORATORY_SEND_OUT_OPTIONS = [
+  LABORATORY_ALL_OPTION,
   { value: 'yes', label: 'Yes' },
   { value: 'no', label: 'No' },
 ];
 
-export const SAMPLE_COLLECTION_DEPARTMENT_COLORS = {
+export const LABORATORY_DEPARTMENT_COLORS = {
   Emergency: { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
   OPD: { bg: '#e8f4fc', color: '#026BB1', border: '#b8d9f0' },
   IPD: { bg: '#ede9fe', color: '#6d28d9', border: '#ddd6fe' },
   Laboratory: { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' },
 };
 
-export const MOCK_SAMPLE_COLLECTION_ROWS = [
+export const LABORATORY_WORKLIST_CONFIG = {
+  'sample-collection': {
+    defaultStatus: 'sample-collection',
+    actionLabel: 'Collect Sample',
+    actionIcon: 'mdi:test-tube',
+    resultsLabel: 'Sample collection results',
+    getActionMessage: (record) =>
+      `Sample collection started for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+  'sample-receiving': {
+    defaultStatus: 'sample-receiving',
+    actionLabel: 'Receive Sample',
+    actionIcon: 'mdi:package-variant-closed',
+    resultsLabel: 'Sample receiving results',
+    getActionMessage: (record) =>
+      `Sample received for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+  'result-entry': {
+    defaultStatus: 'result-entry',
+    actionLabel: 'Enter Result',
+    actionIcon: 'mdi:clipboard-edit-outline',
+    resultsLabel: 'Result entry results',
+    getActionMessage: (record) =>
+      `Result entry opened for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+  'test-conducted': {
+    defaultStatus: 'test-conducted',
+    actionLabel: 'Mark Conducted',
+    actionIcon: 'mdi:check-circle-outline',
+    resultsLabel: 'Test conducted results',
+    getActionMessage: (record) =>
+      `Test marked as conducted for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+  'undelivered-reports': {
+    defaultStatus: 'undelivered-reports',
+    actionLabel: 'Deliver Report',
+    actionIcon: 'mdi:file-send-outline',
+    resultsLabel: 'Undelivered reports results',
+    getActionMessage: (record) =>
+      `Report delivery started for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+  'delivered-reports': {
+    defaultStatus: 'delivered-reports',
+    actionLabel: 'View Report',
+    actionIcon: 'mdi:file-document-outline',
+    resultsLabel: 'Delivered reports results',
+    getActionMessage: (record) =>
+      `Report opened for ${record.patientName} (Lab #${record.labNo}).`,
+  },
+};
+
+export const MOCK_LABORATORY_WORKLIST_ROWS = [
   {
-    id: 'sc-1',
+    id: 'lab-1',
     mrNo: 'AKHD-485968-25',
     patientName: 'Ahmed Gorah',
     relation: 'S/O',
@@ -64,13 +117,13 @@ export const MOCK_SAMPLE_COLLECTION_ROWS = [
     mobile: '03001234567',
     firstName: 'Ahmed',
     lastName: 'Gorah',
-    status: 'result-entry',
+    status: 'sample-collection',
     testGroup: 'hematology',
     testName: 'cbc',
     sendOut: 'no',
   },
   {
-    id: 'sc-2',
+    id: 'lab-2',
     mrNo: 'AKHD-485912-18',
     patientName: 'Sara Khan',
     relation: 'D/O',
@@ -86,13 +139,13 @@ export const MOCK_SAMPLE_COLLECTION_ROWS = [
     mobile: '03129876543',
     firstName: 'Sara',
     lastName: 'Khan',
-    status: 'sample-collection',
+    status: 'sample-receiving',
     testGroup: 'biochemistry',
     testName: 'lft',
     sendOut: 'no',
   },
   {
-    id: 'sc-3',
+    id: 'lab-3',
     mrNo: 'AKHD-485880-11',
     patientName: 'Hassan Ali',
     relation: 'S/O',
@@ -113,7 +166,95 @@ export const MOCK_SAMPLE_COLLECTION_ROWS = [
     testName: 'esr',
     sendOut: 'yes',
   },
+  {
+    id: 'lab-4',
+    mrNo: 'AKHD-485850-09',
+    patientName: 'Fatima Noor',
+    relation: 'W/O',
+    relationName: 'Ahmed Noor',
+    age: '28 y',
+    requestedDate: '15/05/2026 09:05:00 AM',
+    department: 'OPD',
+    patientType: 'OPD',
+    collectedAt: 'Main LAB',
+    labNo: '6610',
+    visitNo: '20261025',
+    cnic: '35202-3344556-4',
+    mobile: '03451234567',
+    firstName: 'Fatima',
+    lastName: 'Noor',
+    status: 'test-conducted',
+    testGroup: 'serology',
+    testName: 'urine',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-5',
+    mrNo: 'AKHD-485820-07',
+    patientName: 'Usman Tariq',
+    relation: 'S/O',
+    relationName: 'Tariq Mahmood',
+    age: '51 y',
+    requestedDate: '14/05/2026 02:40:00 PM',
+    department: 'Emergency',
+    patientType: 'Panel',
+    collectedAt: 'Main LAB',
+    labNo: '6594',
+    visitNo: '20261019',
+    cnic: '35202-7788990-5',
+    mobile: '03217788990',
+    firstName: 'Usman',
+    lastName: 'Tariq',
+    status: 'undelivered-reports',
+    testGroup: 'biochemistry',
+    testName: 'lft',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-6',
+    mrNo: 'AKHD-485790-05',
+    patientName: 'Ayesha Malik',
+    relation: 'D/O',
+    relationName: 'Malik Saeed',
+    age: '33 y',
+    requestedDate: '13/05/2026 11:20:00 AM',
+    department: 'Laboratory',
+    patientType: 'General',
+    collectedAt: 'City LAB',
+    labNo: '6572',
+    visitNo: '20261012',
+    cnic: '35202-1122334-6',
+    mobile: '03035551234',
+    firstName: 'Ayesha',
+    lastName: 'Malik',
+    status: 'delivered-reports',
+    testGroup: 'hematology',
+    testName: 'cbc',
+    sendOut: 'yes',
+  },
 ];
+
+export function createLaboratoryWorklistFilters(defaultStatus = 'result-entry') {
+  return {
+    firstName: '',
+    lastName: '',
+    cnic: '',
+    dateRange: [dayjs('2004-02-22'), dayjs('2004-02-22')],
+    labNo: '',
+    patientType: 'all',
+    mrNo: '',
+    visitNo: '',
+    patientAge: '22',
+    ageUnit: 'years',
+    mobile: '',
+    testNameText: '',
+    status: defaultStatus,
+    testGroup: 'all',
+    testNameOption: 'all',
+    sendOut: 'all',
+    referenceNo: '',
+  };
+}
 
 function normalize(value) {
   return String(value ?? '')
@@ -132,20 +273,19 @@ function matchesDateRange(requestedDate, fromDate, toDate) {
   return true;
 }
 
-export function searchSampleCollectionRows(
+export function searchLaboratoryWorklistRows(
   rows,
   {
     firstName = '',
     lastName = '',
     cnic = '',
-    fromDate = null,
+    dateRange = null,
     labNo = '',
     patientType = 'all',
     mrNo = '',
     visitNo = '',
     mobile = '',
     testNameText = '',
-    toDate = null,
     status = 'result-entry',
     testGroup = 'all',
     testNameOption = 'all',
@@ -153,6 +293,8 @@ export function searchSampleCollectionRows(
     referenceNo = '',
   } = {},
 ) {
+  const fromDate = dateRange?.[0] ?? null;
+  const toDate = dateRange?.[1] ?? null;
   const firstQuery = normalize(firstName);
   const lastQuery = normalize(lastName);
   const cnicQuery = normalize(cnic);
@@ -168,13 +310,13 @@ export function searchSampleCollectionRows(
     lastQuery ||
     cnicQuery ||
     fromDate ||
+    toDate ||
     labQuery ||
     (patientType && patientType !== 'all') ||
     mrQuery ||
     visitQuery ||
     mobileQuery ||
     testNameQuery ||
-    toDate ||
     (status && status !== 'all') ||
     (testGroup && testGroup !== 'all') ||
     (testNameOption && testNameOption !== 'all') ||

@@ -2,51 +2,32 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { App, Button, DatePicker, Input, Select, Tag } from 'antd';
+import { App, Button, Input, Select, Tag } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
+import DateRangeField from '@/components/ui/DateRangeField';
 import DobAgeField from '@/components/ui/DobAgeField';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import {
-  MOCK_SAMPLE_COLLECTION_ROWS,
-  SAMPLE_COLLECTION_DEPARTMENT_COLORS,
-  SAMPLE_COLLECTION_PATIENT_TYPE_OPTIONS,
-  SAMPLE_COLLECTION_SEND_OUT_OPTIONS,
-  SAMPLE_COLLECTION_STATUS_OPTIONS,
-  SAMPLE_COLLECTION_TEST_GROUP_OPTIONS,
-  SAMPLE_COLLECTION_TEST_NAME_OPTIONS,
-  searchSampleCollectionRows,
-} from '@/data/mock-sample-collection';
+  createLaboratoryWorklistFilters,
+  LABORATORY_DEPARTMENT_COLORS,
+  LABORATORY_PATIENT_TYPE_OPTIONS,
+  LABORATORY_SEND_OUT_OPTIONS,
+  LABORATORY_STATUS_OPTIONS,
+  LABORATORY_TEST_GROUP_OPTIONS,
+  LABORATORY_TEST_NAME_OPTIONS,
+  LABORATORY_WORKLIST_CONFIG,
+  MOCK_LABORATORY_WORKLIST_ROWS,
+  searchLaboratoryWorklistRows,
+} from '@/data/mock-laboratory-worklist';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import dayjs from 'dayjs';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-const emptyFilters = {
-  firstName: '',
-  lastName: '',
-  cnic: '',
-  fromDate: dayjs('2004-02-22'),
-  labNo: '',
-  patientType: 'all',
-  mrNo: '',
-  visitNo: '',
-  patientAge: '22',
-  ageUnit: DOB_AGE_UNITS.years,
-  toDate: dayjs('2004-02-22'),
-  mobile: '',
-  testNameText: '',
-  status: 'result-entry',
-  testGroup: 'all',
-  testNameOption: 'all',
-  sendOut: 'all',
-  referenceNo: '',
-};
-
 function DepartmentTag({ value }) {
-  const palette = SAMPLE_COLLECTION_DEPARTMENT_COLORS[value] ?? {
+  const palette = LABORATORY_DEPARTMENT_COLORS[value] ?? {
     bg: '#f1f5f9',
     color: '#475569',
     border: '#cbd5e1',
@@ -67,9 +48,14 @@ function DepartmentTag({ value }) {
   );
 }
 
-export default function SampleCollectionTab() {
+export default function LaboratoryWorklistView({ screen }) {
+  const config = LABORATORY_WORKLIST_CONFIG[screen];
+  const fieldId = (name) => `laboratory-${screen}-${name}`;
   const { message } = App.useApp();
-  const [filters, setFilters] = useState(emptyFilters);
+  const [filters, setFilters] = useState(() => ({
+    ...createLaboratoryWorklistFilters(config?.defaultStatus ?? 'result-entry'),
+    ageUnit: DOB_AGE_UNITS.years,
+  }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -78,16 +64,18 @@ export default function SampleCollectionTab() {
   };
 
   const handleSearch = () => {
-    const matched = searchSampleCollectionRows(MOCK_SAMPLE_COLLECTION_ROWS, filters);
+    const matched = searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, filters);
     setResults(matched);
     setHasSearched(true);
   };
 
-  const handleCollectSample = useCallback(
+  const handleAction = useCallback(
     (record) => {
-      message.success(`Sample collection started for ${record.patientName} (Lab #${record.labNo}).`);
+      if (config) {
+        message.success(config.getActionMessage(record));
+      }
     },
-    [message],
+    [config, message],
   );
 
   const columns = useMemo(
@@ -111,44 +99,48 @@ export default function SampleCollectionTab() {
       {
         title: 'Action',
         key: 'action',
-        width: 140,
+        width: 150,
         align: 'center',
         render: (_, record) => (
           <Button
             type="link"
             size="small"
-            className="sample-collection-action-btn"
+            className="laboratory-worklist-action-btn"
             icon={
               <AppIcon
-                icon="mdi:test-tube"
+                icon={config.actionIcon}
                 className="h-[14px] w-[14px] text-[var(--app-primary)]"
               />
             }
-            onClick={() => handleCollectSample(record)}
+            onClick={() => handleAction(record)}
           >
-            Collect Sample
+            {config.actionLabel}
           </Button>
         ),
       },
     ],
-    [handleCollectSample],
+    [config?.actionIcon, config?.actionLabel, handleAction],
   );
 
+  if (!config) {
+    return null;
+  }
+
   return (
-    <div className="services-billing-page sample-collection-page">
+    <div className="services-billing-page laboratory-worklist-page">
       <div className="walk-in-add-record-layout services-billing-search-layout">
         <FormGrid
           as="form"
-          columns={3}
+          columns={4}
           className="walk-in-add-record-form"
           onSubmit={(e) => {
             e.preventDefault();
             handleSearch();
           }}
         >
-          <FloatingField label="First Name" htmlFor="sc-first-name">
+          <FloatingField label="First Name" htmlFor={fieldId('first-name')}>
             <Input
-              id="sc-first-name"
+              id={fieldId('first-name')}
               className={controlClass}
               value={filters.firstName}
               onChange={(e) => patchFilter({ firstName: e.target.value })}
@@ -156,29 +148,9 @@ export default function SampleCollectionTab() {
             />
           </FloatingField>
 
-          <FloatingField label="MR #" htmlFor="sc-mr-no">
+          <FloatingField label="Last Name" htmlFor={fieldId('last-name')}>
             <Input
-              id="sc-mr-no"
-              className={controlClass}
-              value={filters.mrNo}
-              onChange={(e) => patchFilter({ mrNo: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Status" htmlFor="sc-status">
-            <Select
-              id="sc-status"
-              className={controlClass}
-              value={filters.status}
-              options={SAMPLE_COLLECTION_STATUS_OPTIONS}
-              onChange={(status) => patchFilter({ status })}
-            />
-          </FloatingField>
-
-          <FloatingField label="Last Name" htmlFor="sc-last-name">
-            <Input
-              id="sc-last-name"
+              id={fieldId('last-name')}
               className={controlClass}
               value={filters.lastName}
               onChange={(e) => patchFilter({ lastName: e.target.value })}
@@ -186,29 +158,9 @@ export default function SampleCollectionTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Visit #" htmlFor="sc-visit-no">
+          <FloatingField label="CNIC #" htmlFor={fieldId('cnic')}>
             <Input
-              id="sc-visit-no"
-              className={controlClass}
-              value={filters.visitNo}
-              onChange={(e) => patchFilter({ visitNo: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Test Group" htmlFor="sc-test-group">
-            <Select
-              id="sc-test-group"
-              className={controlClass}
-              value={filters.testGroup}
-              options={SAMPLE_COLLECTION_TEST_GROUP_OPTIONS}
-              onChange={(testGroup) => patchFilter({ testGroup })}
-            />
-          </FloatingField>
-
-          <FloatingField label="CNIC #" htmlFor="sc-cnic">
-            <Input
-              id="sc-cnic"
+              id={fieldId('cnic')}
               className={controlClass}
               value={filters.cnic}
               onChange={(e) => patchFilter({ cnic: e.target.value })}
@@ -216,70 +168,40 @@ export default function SampleCollectionTab() {
             />
           </FloatingField>
 
-          <FloatingField label="DOB" htmlFor="sc-dob-age">
+          <FloatingField label="MR #" htmlFor={fieldId('mr-no')}>
+            <Input
+              id={fieldId('mr-no')}
+              className={controlClass}
+              value={filters.mrNo}
+              onChange={(e) => patchFilter({ mrNo: e.target.value })}
+              autoComplete="off"
+            />
+          </FloatingField>
+
+          <FloatingField label="Visit #" htmlFor={fieldId('visit-no')}>
+            <Input
+              id={fieldId('visit-no')}
+              className={controlClass}
+              value={filters.visitNo}
+              onChange={(e) => patchFilter({ visitNo: e.target.value })}
+              autoComplete="off"
+            />
+          </FloatingField>
+
+          <FloatingField label="DOB" htmlFor={fieldId('dob-age')}>
             <DobAgeField
               embedded
               className="patient-reg-dob-age"
-              ageInputId="sc-dob-age"
+              ageInputId={fieldId('dob-age')}
               age={filters.patientAge}
               unit={filters.ageUnit}
               onChange={({ age, unit }) => patchFilter({ patientAge: age, ageUnit: unit })}
             />
           </FloatingField>
 
-          <FloatingField label="Test Name" htmlFor="sc-test-name-option">
-            <Select
-              id="sc-test-name-option"
-              className={controlClass}
-              value={filters.testNameOption}
-              options={SAMPLE_COLLECTION_TEST_NAME_OPTIONS}
-              onChange={(testNameOption) => patchFilter({ testNameOption })}
-            />
-          </FloatingField>
-
-          <FloatingField label="From Date" htmlFor="sc-from-date">
-            <DatePicker
-              id="sc-from-date"
-              className={controlClass}
-              value={filters.fromDate}
-              onChange={(fromDate) => patchFilter({ fromDate })}
-              format="DD / MM / YYYY"
-            />
-          </FloatingField>
-
-          <FloatingField label="To Date" htmlFor="sc-to-date">
-            <DatePicker
-              id="sc-to-date"
-              className={controlClass}
-              value={filters.toDate}
-              onChange={(toDate) => patchFilter({ toDate })}
-              format="DD / MM / YYYY"
-            />
-          </FloatingField>
-
-          <FloatingField label="Send Out" htmlFor="sc-send-out">
-            <Select
-              id="sc-send-out"
-              className={controlClass}
-              value={filters.sendOut}
-              options={SAMPLE_COLLECTION_SEND_OUT_OPTIONS}
-              onChange={(sendOut) => patchFilter({ sendOut })}
-            />
-          </FloatingField>
-
-          <FloatingField label="Lab #" htmlFor="sc-lab-no">
+          <FloatingField label="Mobile #" htmlFor={fieldId('mobile')}>
             <Input
-              id="sc-lab-no"
-              className={controlClass}
-              value={filters.labNo}
-              onChange={(e) => patchFilter({ labNo: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Mobile #" htmlFor="sc-mobile">
-            <Input
-              id="sc-mobile"
+              id={fieldId('mobile')}
               className={controlClass}
               value={filters.mobile}
               onChange={(e) => patchFilter({ mobile: e.target.value })}
@@ -287,32 +209,90 @@ export default function SampleCollectionTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Reference #" htmlFor="sc-reference">
+          <FloatingField label="Lab #" htmlFor={fieldId('lab-no')}>
             <Input
-              id="sc-reference"
+              id={fieldId('lab-no')}
               className={controlClass}
-              value={filters.referenceNo}
-              onChange={(e) => patchFilter({ referenceNo: e.target.value })}
+              value={filters.labNo}
+              onChange={(e) => patchFilter({ labNo: e.target.value })}
               autoComplete="off"
             />
           </FloatingField>
 
-          <FloatingField label="Patient Type" htmlFor="sc-patient-type">
+          <FloatingField label="From - To Date" htmlFor={fieldId('date-range')}>
+            <DateRangeField
+              id={fieldId('date-range')}
+              value={filters.dateRange}
+              onChange={(dateRange) => patchFilter({ dateRange })}
+            />
+          </FloatingField>
+
+          <FloatingField label="Patient Type" htmlFor={fieldId('patient-type')}>
             <Select
-              id="sc-patient-type"
+              id={fieldId('patient-type')}
               className={controlClass}
               value={filters.patientType}
-              options={SAMPLE_COLLECTION_PATIENT_TYPE_OPTIONS}
+              options={LABORATORY_PATIENT_TYPE_OPTIONS}
               onChange={(patientType) => patchFilter({ patientType })}
             />
           </FloatingField>
 
-          <FloatingField label="Test Name" htmlFor="sc-test-name">
+          <FloatingField label="Status" htmlFor={fieldId('status')}>
+            <Select
+              id={fieldId('status')}
+              className={controlClass}
+              value={filters.status}
+              options={LABORATORY_STATUS_OPTIONS}
+              onChange={(status) => patchFilter({ status })}
+            />
+          </FloatingField>
+
+          <FloatingField label="Test Group" htmlFor={fieldId('test-group')}>
+            <Select
+              id={fieldId('test-group')}
+              className={controlClass}
+              value={filters.testGroup}
+              options={LABORATORY_TEST_GROUP_OPTIONS}
+              onChange={(testGroup) => patchFilter({ testGroup })}
+            />
+          </FloatingField>
+
+          <FloatingField label="Test Name" htmlFor={fieldId('test-name-option')}>
+            <Select
+              id={fieldId('test-name-option')}
+              className={controlClass}
+              value={filters.testNameOption}
+              options={LABORATORY_TEST_NAME_OPTIONS}
+              onChange={(testNameOption) => patchFilter({ testNameOption })}
+            />
+          </FloatingField>
+
+          <FloatingField label="Test Name" htmlFor={fieldId('test-name')}>
             <Input
-              id="sc-test-name"
+              id={fieldId('test-name')}
               className={controlClass}
               value={filters.testNameText}
               onChange={(e) => patchFilter({ testNameText: e.target.value })}
+              autoComplete="off"
+            />
+          </FloatingField>
+
+          <FloatingField label="Send Out" htmlFor={fieldId('send-out')}>
+            <Select
+              id={fieldId('send-out')}
+              className={controlClass}
+              value={filters.sendOut}
+              options={LABORATORY_SEND_OUT_OPTIONS}
+              onChange={(sendOut) => patchFilter({ sendOut })}
+            />
+          </FloatingField>
+
+          <FloatingField label="Reference #" htmlFor={fieldId('reference')}>
+            <Input
+              id={fieldId('reference')}
+              className={controlClass}
+              value={filters.referenceNo}
+              onChange={(e) => patchFilter({ referenceNo: e.target.value })}
               autoComplete="off"
             />
           </FloatingField>
@@ -330,7 +310,7 @@ export default function SampleCollectionTab() {
         </FormGrid>
       </div>
 
-      <section className="services-billing-results" aria-label="Sample collection results">
+      <section className="services-billing-results" aria-label={config.resultsLabel}>
         <DataTable
           className="data-table--billing-results"
           columns={columns}
@@ -343,7 +323,7 @@ export default function SampleCollectionTab() {
           locale={{
             emptyText: hasSearched
               ? 'No records found'
-              : 'Use the search form above to find samples',
+              : 'Use the search form above to find records',
           }}
         />
       </section>
