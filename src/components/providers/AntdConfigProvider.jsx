@@ -9,7 +9,7 @@ const APP_PRIMARY_ACTIVE = "#014d85";
 const fieldTokens = {
   controlHeight: 32,
   borderRadius: 8,
-  fontSize: 11,
+  fontSize: 14,
   colorBorder: "#d8dee9",
   hoverBorderColor: "#b8c4d4",
   activeBorderColor: APP_PRIMARY,
@@ -25,6 +25,7 @@ const appTheme = {
     colorInfo: APP_PRIMARY,
     colorWhite: "#ffffff",
     borderRadius: 6,
+    fontSize: 14,
     fontFamily: "var(--font-poppins), Poppins, system-ui, sans-serif",
   },
   components: {
@@ -54,12 +55,17 @@ const appTheme = {
     },
     Pagination: {
       colorPrimary: APP_PRIMARY,
+      fontSize: 14,
+    },
+    Table: {
+      fontSize: 14,
+      cellFontSize: 14,
     },
     Switch: {
       colorPrimary: APP_PRIMARY,
     },
     Form: {
-      labelFontSize: 13,
+      labelFontSize: 14,
       verticalLabelPadding: '0 0 4px',
       itemMarginBottom: 8,
     },

@@ -130,7 +130,7 @@ export default function SearchExistingPatientTab() {
           <Avatar
             src={record.picture}
             size={32}
-            style={{ backgroundColor: '#E6F1FA', color: '#026BB1', fontSize: 12 }}
+            style={{ backgroundColor: '#E6F1FA', color: '#026BB1', fontSize: 14 }}
             icon={!record.picture ? <UserOutlined /> : null}
           >
             {!record.picture ? initials : null}

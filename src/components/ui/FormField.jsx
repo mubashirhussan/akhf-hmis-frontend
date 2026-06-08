@@ -15,8 +15,8 @@ export default function FormField({
         </label>
       )}
       {children}
-      {hint && !error && <p className="text-[11px] text-slate-400">{hint}</p>}
-      {error && <p className="text-[11px] text-red-500">{error}</p>}
+      {hint && !error && <p className="text-xs text-slate-400">{hint}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }
