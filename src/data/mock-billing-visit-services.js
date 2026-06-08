@@ -92,6 +92,7 @@ export function buildBillingPatientSummary(visit) {
     department: visit?.plName ?? 'TEST TEST',
     mrNo: visit?.mrDisplay ?? `AKHD-${String(visit?.regNo ?? '').replace(/\D/g, '').slice(-6) || '123456'}-01`,
     patientType: visit?.patientType ?? 'General',
+    panelLimit: visit?.panelLimit ?? null,
     doctor: visit?.doctor ?? 'Dr SOHAIL AHMAD',
     checkupType: visit?.checkupType ?? 'Emergency',
   };

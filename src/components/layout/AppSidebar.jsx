@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { footerLinks, navigation } from '@/config/navigation-data';
 import AppIcon from '@/components/icons/AppIcon';
-import { getExpandedKeys, isPathActive } from '@/lib/navigation-utils';
+import { getExpandedKeys, hasActiveDescendant, isPathActive } from '@/lib/navigation-utils';
 
 function NavChevron({ expanded }) {
   return (
@@ -27,10 +27,56 @@ function SidebarLink({ href, active, children, className = '' }) {
   );
 }
 
+function NavChildItem({ item, pathname, expandedKeys, onToggle }) {
+  const hasChildren = Boolean(item.children?.length);
+  const isExpanded = expandedKeys.includes(item.key);
+  const isParentActive = hasChildren && hasActiveDescendant(item, pathname);
+  const isSelfActive = !hasChildren && isPathActive(pathname, item.href);
+
+  if (hasChildren) {
+    return (
+      <li className="relative before:absolute before:-left-4 before:top-5 before:h-px before:w-3 before:bg-white/40">
+        <button
+          type="button"
+          onClick={() => onToggle(item.key)}
+          className={`sidebar-nav-child flex w-full items-center gap-2 rounded-[8px] px-3 py-2.5 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
+        >
+          <span className="flex-1 text-left truncate">{item.label}</span>
+          <NavChevron expanded={isExpanded} />
+        </button>
+        {isExpanded && (
+          <ul className="relative mt-1 ml-3 space-y-0.5 border-l border-white/30 pl-3">
+            {item.children.map((child) => (
+              <NavChildItem
+                key={child.key}
+                item={child}
+                pathname={pathname}
+                expandedKeys={expandedKeys}
+                onToggle={onToggle}
+              />
+            ))}
+          </ul>
+        )}
+      </li>
+    );
+  }
+
+  return (
+    <li className="relative before:absolute before:-left-4 before:top-1/2 before:h-px before:w-3 before:bg-white/40">
+      <Link
+        href={item.href}
+        className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${isSelfActive ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
+      >
+        {item.label}
+      </Link>
+    </li>
+  );
+}
+
 function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
   const hasChildren = Boolean(item.children?.length);
   const isExpanded = expandedKeys.includes(item.key);
-  const isParentActive = hasChildren && item.children.some((c) => isPathActive(pathname, c.href));
+  const isParentActive = hasChildren && hasActiveDescendant(item, pathname);
   const isSelfActive = !hasChildren && isPathActive(pathname, item.href);
 
   if (hasChildren) {
@@ -51,22 +97,15 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
         </button>
         {isExpanded && !collapsed && (
           <ul className="relative mt-1 ml-4 space-y-0.5 border-l border-white/40 pl-4">
-            {item.children.map((child) => {
-              const childActive = isPathActive(pathname, child.href);
-              return (
-                <li
-                  key={child.key}
-                  className="relative before:absolute before:-left-4 before:top-1/2 before:h-px before:w-3 before:bg-white/40"
-                >
-                  <Link
-                    href={child.href}
-                    className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${childActive ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
-                  >
-                    {child.label}
-                  </Link>
-                </li>
-              );
-            })}
+            {item.children.map((child) => (
+              <NavChildItem
+                key={child.key}
+                item={child}
+                pathname={pathname}
+                expandedKeys={expandedKeys}
+                onToggle={onToggle}
+              />
+            ))}
           </ul>
         )}
       </li>

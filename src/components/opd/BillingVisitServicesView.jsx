@@ -37,6 +37,7 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
+  const isPanelPatient = patient.patientType?.toLowerCase() === 'panel';
 
   const openPayment = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());

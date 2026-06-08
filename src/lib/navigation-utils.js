@@ -76,12 +76,27 @@ export function isPathActive(pathname, href) {
   return current === target || current.startsWith(`${target}/`);
 }
 
-export function getExpandedKeys(pathname) {
-  const keys = [];
-  for (const item of navigation) {
-    if (item.children?.some((child) => isPathActive(pathname, child.href))) {
+export function hasActiveDescendant(item, pathname) {
+  if (!item.children?.length) {
+    return isPathActive(pathname, item.href);
+  }
+
+  return item.children.some((child) => hasActiveDescendant(child, pathname));
+}
+
+function collectExpandedKeys(items, pathname, keys) {
+  for (const item of items) {
+    if (!item.children?.length) continue;
+
+    if (item.children.some((child) => hasActiveDescendant(child, pathname))) {
       keys.push(item.key);
+      collectExpandedKeys(item.children, pathname, keys);
     }
   }
+}
+
+export function getExpandedKeys(pathname) {
+  const keys = [];
+  collectExpandedKeys(navigation, pathname, keys);
   return keys;
 }

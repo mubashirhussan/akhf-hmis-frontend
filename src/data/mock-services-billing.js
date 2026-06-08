@@ -33,6 +33,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
     dateTimeTo: '17 May 2026, 02:30 PM',
     status: 'Billed',
     patientType: 'Panel',
+    panelLimit: 50000,
     checkupType: 'Emergency',
   },
   {
@@ -87,6 +88,7 @@ export const MOCK_SERVICES_BILLING_VISITS = [
     dateTimeTo: '14 May 2026, 06:00 PM',
     status: 'Billed',
     patientType: 'Panel',
+    panelLimit: 100000,
     checkupType: 'Emergency',
   },
   {

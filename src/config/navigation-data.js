@@ -30,6 +30,20 @@ export const navigation = [
     ],
   },
   { key: 'ipd', label: 'IPD', href: '/ipd', icon: 'mdi:bed' },
+  {
+    key: 'laboratory',
+    label: 'Laboratory',
+    href: '/laboratory',
+    icon: 'mdi:flask-outline',
+    children: [
+      { key: 'sample-collection', label: 'Sample Collection', href: '/laboratory/sample-collection' },
+      { key: 'sample-receiving', label: 'Sample Receiving', href: '/laboratory/sample-receiving' },
+      { key: 'result-entry', label: 'Result Entry', href: '/laboratory/result-entry' },
+      { key: 'test-conducted', label: 'Test Conducted', href: '/laboratory/test-conducted' },
+      { key: 'undelivered-reports', label: 'Undelivered Reports', href: '/laboratory/undelivered-reports' },
+      { key: 'delivered-reports', label: 'Delivered Reports', href: '/laboratory/delivered-reports' },
+    ],
+  },
   { key: 'service-admin', label: 'Service Admin', href: '/service-admin', icon: 'mdi:account-cog-outline' },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },
   { key: 'discount', label: 'Discount', href: '/discount', icon: 'iconamoon:discount-light' },
@@ -56,7 +70,6 @@ export const navigation = [
   { key: 'certificates', label: 'Certificates', href: '/certificates', icon: 'mdi:certificate-outline' },
   { key: 'radiology', label: 'Radiology', href: '/radiology', icon: 'mdi:radiology-box-outline' },
   { key: 'blood-bank-reps', label: 'Blood Bank Reps', href: '/blood-bank-reps', icon: 'mdi:calendar-month-outline' },
-  { key: 'laboratory', label: 'Laboratory', href: '/laboratory', icon: 'mdi:flask-outline' },
   { key: 'refund', label: 'Refund', href: '/refund', icon: 'mdi:cash-refund' },
   { key: 'quotation', label: 'Quotation', href: '/quotation', icon: 'mdi:file-document-edit-outline' },
 ];
