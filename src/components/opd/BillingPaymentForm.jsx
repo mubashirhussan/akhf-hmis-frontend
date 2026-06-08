@@ -11,9 +11,7 @@ import {
   BILLING_BANK_NAME_OPTIONS,
   BILLING_CARD_SERVICE_OPTIONS,
   BILLING_CARD_TYPE_OPTIONS,
-  BILLING_COMPANY_OPTIONS,
   BILLING_RECEIVABLE_PARTY_OPTIONS,
-  calcBillingMaxPanelAmount,
   calcBillingMaxReceivableAmount,
   calcBillingPaymentBreakdown,
 } from '@/data/mock-billing-payment';
@@ -34,12 +32,13 @@ function PaymentStat({ label, value, tone = 'default' }) {
 export default function BillingPaymentForm({
   totalDiscount = 0,
   netPayable = 0,
-  initialAdvancePayment = 0,
+  advancePayments = [],
+  advancePaymentTotal = 0,
+  panelPayments = [],
+  panelPaymentTotal = 0,
   onReceivePayment,
 }) {
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
-  const [finalBill, setFinalBill] = useState(false);
-  const [notes, setNotes] = useState('');
   const [receivable, setReceivable] = useState(false);
   const [receivableAmount, setReceivableAmount] = useState(null);
   const [receivableParty, setReceivableParty] = useState(undefined);
@@ -53,29 +52,25 @@ export default function BillingPaymentForm({
   const [bankName, setBankName] = useState(undefined);
   const [chequeNumber, setChequeNumber] = useState('');
   const [chequeDate, setChequeDate] = useState(null);
-  const [panelAmount, setPanelAmount] = useState(0);
-  const [company, setCompany] = useState(undefined);
-
   const refundPayment = 0;
 
-  const appliedAdvancePayment = finalBill ? initialAdvancePayment : 0;
+  const appliedAdvancePayment = advancePaymentTotal;
+  const appliedPanelAmount = panelPaymentTotal;
 
   const paymentBreakdown = useMemo(
     () =>
       calcBillingPaymentBreakdown({
         netPayable,
         advancePayment: appliedAdvancePayment,
-        panelAmount,
+        panelAmount: appliedPanelAmount,
         receivableAmount: receivableAmount ?? 0,
         refundPayment,
-        finalBill,
         receivableEnabled: receivable,
       }),
     [
       appliedAdvancePayment,
-      finalBill,
+      appliedPanelAmount,
       netPayable,
-      panelAmount,
       receivable,
       receivableAmount,
       refundPayment,
@@ -84,52 +79,38 @@ export default function BillingPaymentForm({
 
   const { duePayment, appliedReceivable } = paymentBreakdown;
 
+  const maxReceivableAmount = useMemo(
+    () =>
+      calcBillingMaxReceivableAmount({
+        netPayable,
+        advancePayment: appliedAdvancePayment,
+        panelAmount: appliedPanelAmount,
+        refundPayment,
+      }),
+    [appliedAdvancePayment, appliedPanelAmount, netPayable, refundPayment],
+  );
+
+  const isReceivableDisabled = maxReceivableAmount <= 0;
+
   useEffect(() => {
-    if (!finalBill) return;
+    if (!isReceivableDisabled) return;
 
-    const maxPanelAmount = calcBillingMaxPanelAmount({
-      netPayable,
-      advancePayment: initialAdvancePayment,
-      receivableAmount: receivableAmount ?? 0,
-      receivableEnabled: receivable,
-      refundPayment,
-    });
+    setReceivable(false);
+    setReceivableAmount(null);
+    setReceivableParty(undefined);
+  }, [isReceivableDisabled]);
 
-    if (panelAmount > maxPanelAmount) {
-      setPanelAmount(maxPanelAmount);
+  useEffect(() => {
+    if (!receivable || receivableAmount == null) return;
+
+    if (Number(receivableAmount) > maxReceivableAmount) {
+      setReceivableAmount(maxReceivableAmount);
     }
-
-    if (receivableAmount == null) return;
-
-    const maxReceivable = calcBillingMaxReceivableAmount({
-      netPayable,
-      advancePayment: initialAdvancePayment,
-      panelAmount,
-      refundPayment,
-    });
-
-    if (Number(receivableAmount) > maxReceivable) {
-      setReceivableAmount(maxReceivable);
-    }
-  }, [
-    finalBill,
-    initialAdvancePayment,
-    netPayable,
-    panelAmount,
-    receivable,
-    receivableAmount,
-    refundPayment,
-  ]);
-
-  const handleFinalBillChange = (checked) => {
-    setFinalBill(checked);
-
-    if (!checked) {
-      setPanelAmount(0);
-    }
-  };
+  }, [maxReceivableAmount, receivable, receivableAmount]);
 
   const handleReceivableChange = (checked) => {
+    if (checked && isReceivableDisabled) return;
+
     setReceivable(checked);
 
     if (!checked) {
@@ -138,56 +119,18 @@ export default function BillingPaymentForm({
       return;
     }
 
-    if (finalBill && receivableAmount != null) {
-      const maxReceivable = calcBillingMaxReceivableAmount({
-        netPayable,
-        advancePayment: appliedAdvancePayment,
-        panelAmount,
-        refundPayment,
-      });
-      setReceivableAmount(Math.min(Number(receivableAmount), maxReceivable));
+    if (receivableAmount != null) {
+      setReceivableAmount(Math.min(Number(receivableAmount), maxReceivableAmount));
     }
   };
 
   const handleReceivableAmountChange = (value) => {
-    const nextAmount = value ?? 0;
-
-    if (!finalBill) {
-      setReceivableAmount(nextAmount);
+    if (value == null || value === '') {
+      setReceivableAmount(null);
       return;
     }
 
-    const maxReceivable = calcBillingMaxReceivableAmount({
-      netPayable,
-      advancePayment: appliedAdvancePayment,
-      panelAmount,
-      refundPayment,
-    });
-
-    setReceivableAmount(Math.min(nextAmount, maxReceivable));
-  };
-
-  const handlePanelAmountChange = (value) => {
-    const maxPanelAmount = calcBillingMaxPanelAmount({
-      netPayable,
-      advancePayment: appliedAdvancePayment,
-      receivableAmount: receivableAmount ?? 0,
-      receivableEnabled: receivable,
-      refundPayment,
-    });
-    const nextPanelAmount = Math.min(value ?? 0, maxPanelAmount);
-
-    setPanelAmount(nextPanelAmount);
-
-    if (finalBill && receivable && receivableAmount != null) {
-      const maxReceivable = calcBillingMaxReceivableAmount({
-        netPayable,
-        advancePayment: appliedAdvancePayment,
-        panelAmount: nextPanelAmount,
-        refundPayment,
-      });
-      setReceivableAmount(Math.min(Number(receivableAmount), maxReceivable));
-    }
+    setReceivableAmount(Math.min(Math.max(0, Number(value)), maxReceivableAmount));
   };
 
   const collapseItems = [
@@ -359,49 +302,37 @@ export default function BillingPaymentForm({
               <PaymentStat label="Advance Payment" value={formatPkr(appliedAdvancePayment)} />
               <PaymentStat label="Discount" value={formatPkr(totalDiscount)} tone="danger" />
               <PaymentStat label="Refund Payment" value={formatPkr(refundPayment)} />
-              
-                <PaymentStat label="Receivable" value={formatPkr(appliedReceivable)} />
              
+                <PaymentStat label="Receivable" value={formatPkr(appliedReceivable)} />
+           
               <PaymentStat label="Due Payment" value={formatPkr(duePayment)} tone="success" />
             </div>
 
-            <div className="billing-payment-options-row">
+            <div className="billing-payment-receivable-row">
               <Checkbox
                 checked={receivable}
+                disabled={isReceivableDisabled}
                 onChange={(e) => handleReceivableChange(e.target.checked)}
                 className="billing-payment-receivable-check"
               >
                 Receivable
               </Checkbox>
-            </div>
 
-            {receivable && (
-              <FormGrid columns={2} className="">
+              {receivable && (
                 <FloatingField label="Amount" htmlFor="billing-receivable-amount">
                   <InputNumber
                     id="billing-receivable-amount"
                     className={`w-full ${controlClass}`}
                     controls={false}
                     min={0}
+                    max={maxReceivableAmount}
                     value={receivableAmount}
                     onChange={handleReceivableAmountChange}
-                    placeholder="0"
+                    placeholder={`Max ${formatPkr(maxReceivableAmount)}`}
                   />
                 </FloatingField>
-
-                <FloatingField label="Receivable Party" htmlFor="billing-receivable-party">
-                  <Select
-                    id="billing-receivable-party"
-                    className={controlClass}
-                    placeholder="Select party"
-                    value={receivableParty}
-                    allowClear
-                    options={BILLING_RECEIVABLE_PARTY_OPTIONS}
-                    onChange={setReceivableParty}
-                  />
-                </FloatingField>
-              </FormGrid>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -411,17 +342,26 @@ export default function BillingPaymentForm({
             <h3 className="billing-payment-panel-title">Advance Payment</h3>
           </div>
           <div className="billing-payment-panel-body">
-            <FloatingField label="Amount" htmlFor="billing-advance-payment">
-              <InputNumber
-                id="billing-advance-payment"
-                className={`w-full ${controlClass}`}
-                controls={false}
-                min={0}
-                value={appliedAdvancePayment}
-                readOnly
-                placeholder="0"
-              />
-            </FloatingField>
+            {advancePayments.length > 0 ? (
+              <div className="billing-payment-advance-table">
+                {/* <div className="billing-payment-advance-header">
+                  <span>Receipt #</span>
+                  <span>Value</span>
+                </div> */}
+                <ul className="billing-payment-advance-list">
+                  {advancePayments.map((payment) => (
+                    <li key={payment.receiptNo} className="billing-payment-advance-item">
+                      <span className="billing-payment-advance-receipt">{payment.receiptNo}</span>
+                      <span className="billing-payment-advance-value">
+                        {formatPkr(payment.amount)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="billing-payment-advance-empty">No advance payment</p>
+            )}
           </div>
         </div>
 
@@ -430,52 +370,31 @@ export default function BillingPaymentForm({
             <AppIcon icon="mdi:tag-percent-outline" className="billing-payment-panel-icon" />
             <h3 className="billing-payment-panel-title">Panel</h3>
           </div>
-          <div className="billing-payment-panel-body billing-payment-panel-body--stretch">
-            <FormGrid columns={1} className="billing-payment-discount-grid">
-              <FloatingField label="Amount" htmlFor="billing-payment-panel">
-                <InputNumber
-                  id="billing-payment-panel"
-                  className={`w-full ${controlClass}`}
-                  controls={false}
-                  min={0}
-                  value={panelAmount}
-                  onChange={handlePanelAmountChange}
-                  max={netPayable}
-                />
-              </FloatingField>
-
-              <FloatingField label="Company" htmlFor="billing-payment-company">
-                <Select
-                  id="billing-payment-company"
-                  className={controlClass}
-                  placeholder="Select company"
-                  value={company}
-                  allowClear
-                  options={BILLING_COMPANY_OPTIONS}
-                  onChange={setCompany}
-                />
-              </FloatingField>
-            </FormGrid>
+          <div className="billing-payment-panel-body">
+            {panelPayments.length > 0 ? (
+              <div className="billing-payment-advance-table">
+                {/* <div className="billing-payment-advance-header">
+                  <span>Company</span>
+                  <span>Amount</span>
+                </div> */}
+                <ul className="billing-payment-advance-list">
+                  {panelPayments.map((payment) => (
+                    <li
+                      key={`${payment.companyName}-${payment.amount}`}
+                      className="billing-payment-advance-item"
+                    >
+                      <span className="billing-payment-advance-receipt">{payment.companyName}</span>
+                      <span className="billing-payment-advance-value">
+                        {formatPkr(payment.amount)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="billing-payment-advance-empty">No panel payment</p>
+            )}
           </div>
-        </div>
-      </div>
-      <div className="billing-payment-toolbar">
-        <label className="billing-payment-final-bill">
-          <Checkbox checked={finalBill} onChange={(e) => handleFinalBillChange(e.target.checked)} />
-          <span>Final Bill</span>
-        </label>
-
-        <div className="billing-payment-notes-wrap">
-          <FloatingField label="Notes" htmlFor="billing-payment-notes">
-            <Input
-              id="billing-payment-notes"
-              className={controlClass}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Payment notes..."
-              autoComplete="off"
-            />
-          </FloatingField>
         </div>
       </div>
       <Collapse

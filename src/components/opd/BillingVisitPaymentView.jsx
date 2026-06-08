@@ -12,7 +12,11 @@ import {
 } from '@/data/mock-billing-visit-services';
 import {
   buildBillingPaymentServiceTableRows,
+  calcBillingAdvancePaymentTotal,
+  calcBillingPanelPaymentTotal,
   calcBillingServiceDiscountTotal,
+  MOCK_BILLING_ADVANCE_PAYMENTS,
+  MOCK_BILLING_PANEL_PAYMENTS,
 } from '@/data/mock-billing-payment';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { BILLING_PAYMENT_HISTORY_TABLE_SCROLL_Y } from '@/lib/table-scroll';
@@ -75,7 +79,16 @@ export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
   );
 
   const netPayable = grandTotal;
-  const initialAdvancePayment = 0;
+  const advancePayments = MOCK_BILLING_ADVANCE_PAYMENTS;
+  const panelPayments = MOCK_BILLING_PANEL_PAYMENTS;
+  const advancePaymentTotal = useMemo(
+    () => calcBillingAdvancePaymentTotal(advancePayments),
+    [advancePayments],
+  );
+  const panelPaymentTotal = useMemo(
+    () => calcBillingPanelPaymentTotal(panelPayments),
+    [panelPayments],
+  );
 
   const selectedServiceSet = useMemo(
     () => new Set(selectedPaymentServiceIds),
@@ -261,7 +274,10 @@ export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
         <BillingPaymentForm
           totalDiscount={totalDiscount}
           netPayable={netPayable}
-          initialAdvancePayment={initialAdvancePayment}
+          advancePayments={advancePayments}
+          advancePaymentTotal={advancePaymentTotal}
+          panelPayments={panelPayments}
+          panelPaymentTotal={panelPaymentTotal}
           onReceivePayment={handleReceivePayment}
         />
       </div>

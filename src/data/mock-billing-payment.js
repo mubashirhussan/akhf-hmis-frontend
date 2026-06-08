@@ -22,6 +22,17 @@ export const BILLING_COMPANY_OPTIONS = [
   { value: 'panel-b', label: 'Panel Partner B' },
 ];
 
+export const MOCK_BILLING_ADVANCE_PAYMENTS = [
+  { receiptNo: 'ADV-10245', amount: 500 },
+  { receiptNo: 'ADV-10238', amount: 750 },
+  { receiptNo: 'ADV-10192', amount: 250 },
+];
+
+export const MOCK_BILLING_PANEL_PAYMENTS = [
+  { companyName: 'AKHF', amount: 1200 },
+  { companyName: 'Panel Partner A', amount: 450 },
+];
+
 export const BILLING_RECEIVABLE_PARTY_OPTIONS = [
   { value: 'patient', label: 'Patient' },
   { value: 'attendant', label: 'Attendant' },
@@ -41,6 +52,14 @@ export const BILLING_DISCOUNT_FORWARD_TO_OPTIONS = [
   { value: 'manager-billing', label: 'Billing Manager' },
   { value: 'admin-finance', label: 'Finance Admin' },
 ];
+
+export function calcBillingAdvancePaymentTotal(advancePayments = []) {
+  return advancePayments.reduce((sum, payment) => sum + (payment.amount ?? 0), 0);
+}
+
+export function calcBillingPanelPaymentTotal(panelPayments = []) {
+  return panelPayments.reduce((sum, payment) => sum + (payment.amount ?? 0), 0);
+}
 
 export function calcBillingServiceDiscountTotal(rows = []) {
   return rows.reduce(
@@ -63,18 +82,6 @@ export function calcBillingPaymentPatientTotal(rows = [], getPatientAmount) {
   );
 }
 
-export function calcBillingMaxPanelAmount({
-  netPayable = 0,
-  advancePayment = 0,
-  receivableAmount = 0,
-  receivableEnabled = false,
-  refundPayment = 0,
-} = {}) {
-  const appliedReceivable = receivableEnabled ? Math.max(0, receivableAmount) : 0;
-
-  return Math.max(0, netPayable - advancePayment - appliedReceivable - refundPayment);
-}
-
 export function calcBillingMaxReceivableAmount({
   netPayable = 0,
   advancePayment = 0,
@@ -90,13 +97,11 @@ export function calcBillingPaymentBreakdown({
   panelAmount = 0,
   receivableAmount = 0,
   refundPayment = 0,
-  finalBill = false,
   receivableEnabled = false,
 } = {}) {
-  const appliedPanelAmount = finalBill ? Math.max(0, panelAmount) : 0;
-  const appliedAdvancePayment = finalBill ? Math.max(0, advancePayment) : 0;
-  const appliedReceivable =
-    finalBill && receivableEnabled ? Math.max(0, receivableAmount) : 0;
+  const appliedPanelAmount = Math.max(0, panelAmount);
+  const appliedAdvancePayment = Math.max(0, advancePayment);
+  const appliedReceivable = receivableEnabled ? Math.max(0, receivableAmount) : 0;
 
   const duePayment = Math.max(
     0,
