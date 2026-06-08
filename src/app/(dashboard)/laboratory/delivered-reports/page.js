@@ -1,9 +1,9 @@
-import LaboratoryWorklistView from '@/components/laboratory/LaboratoryWorklistView';
+import DeliveredReportsList from '@/components/laboratory/DeliveredReportsList';
 
 export const metadata = {
   title: 'Delivered Reports | AKHF',
 };
 
 export default function DeliveredReportsPage() {
-  return <LaboratoryWorklistView screen="delivered-reports" />;
+  return <DeliveredReportsList />;
 }

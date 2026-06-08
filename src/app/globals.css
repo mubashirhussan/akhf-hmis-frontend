@@ -2669,7 +2669,8 @@ body::-webkit-scrollbar-thumb:hover,
   background: #ffffff;
 }
 
-.billing-patient-info-collapse .billing-patient-header-card {
+.billing-patient-info-collapse .billing-patient-header-card,
+.billing-patient-info-collapse .patient-info-header-card {
   margin-bottom: 0;
   padding: 0;
   border: 0;
@@ -3027,6 +3028,46 @@ body::-webkit-scrollbar-thumb:hover,
   height: 38px;
   font-weight: 600;
   border-radius: 8px;
+}
+
+/* Sample collection form */
+.sample-collection-form-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sample-collection-entry-form.form-grid {
+  margin-bottom: 16px;
+  row-gap: 10px;
+  column-gap: 12px;
+}
+
+.sample-collection-form-table-section {
+  margin-bottom: 18px;
+}
+
+.data-table--sample-collection-tests .ant-table-thead > tr > th,
+.data-table--sample-collection-tests .ant-table-tbody > tr > td {
+  font-size: var(--font-size-base);
+}
+
+.data-table--sample-collection-tests .ant-table-thead > tr > th .ant-checkbox-wrapper {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.sample-collection-form-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.sample-collection-save-btn {
+  min-width: 140px;
+  height: 40px;
+  font-weight: 600;
+  border-radius: 999px;
 }
 
 /* Billing visit payment */

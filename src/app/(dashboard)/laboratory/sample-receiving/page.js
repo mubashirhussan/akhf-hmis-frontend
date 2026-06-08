@@ -1,9 +1,9 @@
-import LaboratoryWorklistView from '@/components/laboratory/LaboratoryWorklistView';
+import SampleReceivingList from '@/components/laboratory/SampleReceivingList';
 
 export const metadata = {
   title: 'Sample Receiving | AKHF',
 };
 
 export default function SampleReceivingPage() {
-  return <LaboratoryWorklistView screen="sample-receiving" />;
+  return <SampleReceivingList />;
 }

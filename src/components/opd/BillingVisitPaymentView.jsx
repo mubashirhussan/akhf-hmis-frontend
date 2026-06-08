@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Checkbox, Collapse, InputNumber } from 'antd';
-import BillingPatientHeaderCard from '@/components/opd/BillingPatientHeaderCard';
+import PatientInfoHeaderCard from '@/components/patient/PatientInfoHeaderCard';
 import BillingPaymentForm from '@/components/opd/BillingPaymentForm';
 import DataTable from '@/components/ui/DataTable';
 import {
@@ -240,7 +240,7 @@ export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
                 <span className="billing-patient-info-collapse-title">Patient Info</span>
               </span>
             ),
-            children: <BillingPatientHeaderCard patient={patient} />,
+            children: <PatientInfoHeaderCard patient={patient} />,
           },
         ]}
       />

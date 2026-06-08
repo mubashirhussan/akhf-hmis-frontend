@@ -1,9 +1,9 @@
-import LaboratoryWorklistView from '@/components/laboratory/LaboratoryWorklistView';
+import ResultEntryList from '@/components/laboratory/ResultEntryList';
 
 export const metadata = {
   title: 'Result Entry | AKHF',
 };
 
 export default function ResultEntryPage() {
-  return <LaboratoryWorklistView screen="result-entry" />;
+  return <ResultEntryList />;
 }

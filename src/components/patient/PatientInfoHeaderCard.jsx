@@ -4,9 +4,9 @@ import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 
-export default function BillingPatientHeaderCard({ patient }) {
+export default function PatientInfoHeaderCard({ patient }) {
   return (
-    <section className="billing-patient-header-card">
+    <section className="billing-patient-header-card patient-info-header-card">
       <div className="billing-patient-header-body">
         <div className="billing-patient-header-main">
           <Avatar size={64} icon={<UserOutlined />} className="billing-patient-avatar" />

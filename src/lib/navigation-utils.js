@@ -1,6 +1,8 @@
 import { footerLinks, navigation } from '@/config/navigation-data';
+import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/data/mock-laboratory-worklist';
 import { MOCK_SERVICES_BILLING_VISITS } from '@/data/mock-services-billing';
 import { BILLING_VIEW_PAYMENT, buildBillingVisitHref } from '@/lib/billing-navigation';
+import { buildSampleCollectionHref } from '@/lib/laboratory-navigation';
 
 function flattenItems(items, parent = null) {
   const result = [];
@@ -39,6 +41,21 @@ export function getBreadcrumbs(pathname, searchParams) {
   while (current) {
     crumbs.unshift({ label: current.label, href: current.href });
     current = current.parent;
+  }
+
+  if (normalizePath(pathname) === '/laboratory/sample-collection') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+      const recordLabel = record ? `Lab #${record.labNo}` : 'Collect Sample';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Sample Collection', href: '/laboratory/sample-collection' },
+        { label: recordLabel, href: buildSampleCollectionHref(recordId) },
+      ];
+    }
   }
 
   if (normalizePath(pathname) === '/opd/services-billing') {

@@ -48,57 +48,6 @@ export const LABORATORY_DEPARTMENT_COLORS = {
   Laboratory: { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' },
 };
 
-export const LABORATORY_WORKLIST_CONFIG = {
-  'sample-collection': {
-    defaultStatus: 'sample-collection',
-    actionLabel: 'Collect Sample',
-    actionIcon: 'mdi:test-tube',
-    resultsLabel: 'Sample collection results',
-    getActionMessage: (record) =>
-      `Sample collection started for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-  'sample-receiving': {
-    defaultStatus: 'sample-receiving',
-    actionLabel: 'Receive Sample',
-    actionIcon: 'mdi:package-variant-closed',
-    resultsLabel: 'Sample receiving results',
-    getActionMessage: (record) =>
-      `Sample received for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-  'result-entry': {
-    defaultStatus: 'result-entry',
-    actionLabel: 'Enter Result',
-    actionIcon: 'mdi:clipboard-edit-outline',
-    resultsLabel: 'Result entry results',
-    getActionMessage: (record) =>
-      `Result entry opened for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-  'test-conducted': {
-    defaultStatus: 'test-conducted',
-    actionLabel: 'Mark Conducted',
-    actionIcon: 'mdi:check-circle-outline',
-    resultsLabel: 'Test conducted results',
-    getActionMessage: (record) =>
-      `Test marked as conducted for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-  'undelivered-reports': {
-    defaultStatus: 'undelivered-reports',
-    actionLabel: 'Deliver Report',
-    actionIcon: 'mdi:file-send-outline',
-    resultsLabel: 'Undelivered reports results',
-    getActionMessage: (record) =>
-      `Report delivery started for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-  'delivered-reports': {
-    defaultStatus: 'delivered-reports',
-    actionLabel: 'View Report',
-    actionIcon: 'mdi:file-document-outline',
-    resultsLabel: 'Delivered reports results',
-    getActionMessage: (record) =>
-      `Report opened for ${record.patientName} (Lab #${record.labNo}).`,
-  },
-};
-
 export const MOCK_LABORATORY_WORKLIST_ROWS = [
   {
     id: 'lab-1',
@@ -117,6 +66,12 @@ export const MOCK_LABORATORY_WORKLIST_ROWS = [
     mobile: '03001234567',
     firstName: 'Ahmed',
     lastName: 'Gorah',
+    gender: 'Male',
+    dob: 'May 22, 2004',
+    ageDetail: '22 Years 0M 5D',
+    doctor: 'Dr SOHAIL AHMAD',
+    testDisplay: 'TEST TEST',
+    checkupType: 'Emergency',
     status: 'sample-collection',
     testGroup: 'hematology',
     testName: 'cbc',

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { App, Button, Checkbox, Input, Select } from 'antd';
-import BillingPatientHeaderCard from '@/components/opd/BillingPatientHeaderCard';
+import PatientInfoHeaderCard from '@/components/patient/PatientInfoHeaderCard';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
@@ -197,7 +197,7 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
 
   return (
     <div className="billing-visit-services-page">
-      <BillingPatientHeaderCard patient={patient} />
+      <PatientInfoHeaderCard patient={patient} />
 
       <FormGrid columns={5} className="walk-in-add-record-form billing-visit-services-filters">
         <FloatingField label="Category" htmlFor="billing-svc-category">

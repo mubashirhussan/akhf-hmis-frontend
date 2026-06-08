@@ -77,26 +77,7 @@ export const MOCK_BILLING_VISIT_SERVICE_ROWS = [
   },
 ];
 
-export function buildBillingPatientSummary(visit) {
-  const nameParts = String(visit?.patientName ?? '').trim().split(/\s+/);
-  const firstName = nameParts[0] ?? 'Patient';
-
-  return {
-    displayName: `Mr. ${firstName}`,
-    relationPrefix: visit?.relation ?? 'S/O',
-    relationName: visit?.relationName ?? 'ABC',
-    relationLine: `${visit?.relation ?? 'S/O'} ${visit?.relationName ?? ''}`.trim(),
-    ageDetail: visit?.ageDetail ?? visit?.age ?? '22 Years 0M 5D',
-    dob: visit?.dob ?? 'May 22, 2004',
-    gender: visit?.gender ?? 'Male',
-    department: visit?.plName ?? 'TEST TEST',
-    mrNo: visit?.mrDisplay ?? `AKHD-${String(visit?.regNo ?? '').replace(/\D/g, '').slice(-6) || '123456'}-01`,
-    patientType: visit?.patientType ?? 'General',
-    panelLimit: visit?.panelLimit ?? null,
-    doctor: visit?.doctor ?? 'Dr SOHAIL AHMAD',
-    checkupType: visit?.checkupType ?? 'Emergency',
-  };
-}
+export { buildPatientInfoSummary as buildBillingPatientSummary } from '@/lib/patient-info';
 
 export function calcBillingServicesGrandTotal(rows = []) {
   return rows.reduce((sum, row) => sum + (row.panelAmount ?? row.charges ?? 0) * (row.qty ?? 1), 0);
