@@ -14,6 +14,7 @@ export const navigation = [
       { key: 'patient-registration', label: 'Patient Registration', href: '/opd/patient-registration' },
       { key: 'walk-in-patient', label: 'Walk-in patient', href: '/opd/walk-in-patient' },
       { key: 'advance-payment', label: 'Advance Payment', href: '/opd/advance-payment' },
+      { key: 'opd-payment', label: 'Payment', href: '/opd/payment' },
       { key: 'update-dept-consultant', label: 'Update Dept & Consultant', href: '/opd/update-dept-consultant' },
       { key: 'birth-certificate', label: 'Birth Certificate form', href: '/opd/birth-certificate' },
       { key: 'duplicate-opd-slip', label: 'Duplicate OPD Slip Rep', href: '/opd/duplicate-opd-slip' },

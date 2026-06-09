@@ -1,7 +1,7 @@
 import { footerLinks, navigation } from '@/config/navigation-data';
 import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/data/mock-laboratory-worklist';
 import { MOCK_SERVICES_BILLING_VISITS } from '@/data/mock-services-billing';
-import { BILLING_VIEW_PAYMENT, buildBillingVisitHref } from '@/lib/billing-navigation';
+import { buildBillingVisitHref, buildOpdPaymentHref } from '@/lib/billing-navigation';
 import { buildSampleCollectionHref } from '@/lib/laboratory-navigation';
 
 function flattenItems(items, parent = null) {
@@ -60,26 +60,31 @@ export function getBreadcrumbs(pathname, searchParams) {
 
   if (normalizePath(pathname) === '/opd/services-billing') {
     const visitId = searchParams?.get?.('visitId');
-    const billingView = searchParams?.get?.('view');
 
     if (visitId) {
       const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
       const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Services';
 
-      const visitCrumbs = [
+      return [
         ...crumbs.slice(0, -1),
         { label: 'Services Billing', href: '/opd/services-billing' },
         { label: visitLabel, href: buildBillingVisitHref(visitId) },
       ];
+    }
+  }
 
-      if (billingView === BILLING_VIEW_PAYMENT) {
-        return [
-          ...visitCrumbs,
-          { label: 'Payment', href: buildBillingVisitHref(visitId, { view: BILLING_VIEW_PAYMENT }) },
-        ];
-      }
+  if (normalizePath(pathname) === '/opd/payment') {
+    const visitId = searchParams?.get?.('visitId');
 
-      return visitCrumbs;
+    if (visitId) {
+      const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
+      const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Payment';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Payment', href: '/opd/payment' },
+        { label: visitLabel, href: buildOpdPaymentHref(visitId) },
+      ];
     }
   }
 

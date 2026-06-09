@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { App, Button, Checkbox, Input, Select } from 'antd';
 import PatientInfoHeaderCard from '@/components/patient/PatientInfoHeaderCard';
@@ -24,7 +24,7 @@ import {
   searchServices,
 } from '@/data/mock-walk-in-services';
 import { useConfirm } from '@/hooks/useConfirm';
-import { BILLING_VIEW_PAYMENT } from '@/lib/billing-navigation';
+import { buildOpdPaymentHref } from '@/lib/billing-navigation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
@@ -32,19 +32,14 @@ const controlClass = FIELD_CONTROL_CLASS;
 
 export default function BillingVisitServicesView({ visit, serviceRows, setServiceRows }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
   const isPanelPatient = patient.patientType?.toLowerCase() === 'panel';
 
   const openPayment = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('visitId', visit.id);
-    params.set('view', BILLING_VIEW_PAYMENT);
-    router.push(`${pathname}?${params.toString()}`);
-  }, [pathname, router, searchParams, visit.id]);
+    router.push(buildOpdPaymentHref(visit.id));
+  }, [router, visit.id]);
 
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');

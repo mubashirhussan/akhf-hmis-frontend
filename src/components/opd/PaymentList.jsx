@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import AgeUnitField from '@/components/ui/AgeUnitField';
+import BillingVisitPaymentView from '@/components/opd/BillingVisitPaymentView';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
-import BillingVisitServicesView from '@/components/opd/BillingVisitServicesView';
 import DataTable from '@/components/ui/DataTable';
 import { MOCK_BILLING_VISIT_SERVICE_ROWS } from '@/data/mock-billing-visit-services';
 import {
@@ -16,12 +16,13 @@ import {
   SERVICES_BILLING_STATUS_COLORS,
   SERVICES_BILLING_TYPE_COLORS,
 } from '@/data/mock-services-billing';
+import { buildOpdPaymentHref } from '@/lib/billing-navigation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-const BILLING_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+const PAYMENT_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 function createDefaultVisitServiceRows() {
   return MOCK_BILLING_VISIT_SERVICE_ROWS.map((row) => ({ ...row }));
@@ -67,9 +68,8 @@ function BillingTag({ value }) {
   );
 }
 
-export default function ServicesBillingTab() {
+export default function PaymentList() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [filters, setFilters] = useState(emptyFilters);
@@ -97,26 +97,11 @@ export default function ServicesBillingTab() {
 
   const visitServiceRows = visitId ? (visitServiceRowsByVisitId[visitId] ?? []) : [];
 
-  const setVisitServiceRows = useCallback(
-    (updater) => {
-      if (!visitId) return;
-
-      setVisitServiceRowsByVisitId((prev) => {
-        const current = prev[visitId] ?? [];
-        const next = typeof updater === 'function' ? updater(current) : updater;
-        return { ...prev, [visitId]: next };
-      });
-    },
-    [visitId],
-  );
-
-  const openVisitServices = useCallback(
+  const openVisitPayment = useCallback(
     (record) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('visitId', record.id);
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(buildOpdPaymentHref(record.id));
     },
-    [pathname, router, searchParams],
+    [router],
   );
 
   const patchFilter = (patch) => {
@@ -166,72 +151,37 @@ export default function ServicesBillingTab() {
       {
         title: 'Actions',
         key: 'actions',
-        width: 120,
+        width: 80,
         align: 'center',
         render: (_, record) => (
           <Space size={4} className="services-billing-actions-cell">
-            <Tooltip title="Get Card">
+            <Tooltip title="Payment">
               <Button
                 type="link"
                 size="small"
                 icon={
                   <AppIcon
-                    icon="mdi:card-account-details-outline"
-                    className={BILLING_ACTION_ICON_CLASS}
+                    icon="mdi:credit-card-outline"
+                    className={PAYMENT_ACTION_ICON_CLASS}
                   />
                 }
-                aria-label="Get Card"
-              />
-            </Tooltip>
-            <Tooltip title="View">
-              <Button
-                type="link"
-                size="small"
-                icon={<AppIcon icon="mdi:eye-outline" className={BILLING_ACTION_ICON_CLASS} />}
-                aria-label="View"
-              />
-            </Tooltip>
-            <Tooltip title="Refund">
-              <Button
-                type="link"
-                size="small"
-                icon={<AppIcon icon="mdi:cash-refund" className={BILLING_ACTION_ICON_CLASS} />}
-                aria-label="Refund"
-              />
-            </Tooltip>
-            <Tooltip title="Services">
-              <Button
-                type="link"
-                size="small"
-                icon={
-                  <AppIcon
-                    icon="mdi:clipboard-list-outline"
-                    className={BILLING_ACTION_ICON_CLASS}
-                  />
-                }
-                aria-label="Services"
-                onClick={() => openVisitServices(record)}
+                aria-label="Payment"
+                onClick={() => openVisitPayment(record)}
               />
             </Tooltip>
           </Space>
         ),
       },
     ],
-    [openVisitServices],
+    [openVisitPayment],
   );
 
   if (activeVisit) {
-    return (
-      <BillingVisitServicesView
-        visit={activeVisit}
-        serviceRows={visitServiceRows}
-        setServiceRows={setVisitServiceRows}
-      />
-    );
+    return <BillingVisitPaymentView visit={activeVisit} serviceRows={visitServiceRows} />;
   }
 
   return (
-    <div className="services-billing-page">
+    <div className="services-billing-page opd-payment-page">
       <div className="walk-in-add-record-layout services-billing-search-layout">
         <FormGrid
           as="form"
@@ -242,9 +192,9 @@ export default function ServicesBillingTab() {
             handleSearch();
           }}
         >
-          <FloatingField label="Visit #" htmlFor="billing-visit-no">
+          <FloatingField label="Visit #" htmlFor="payment-visit-no">
             <Input
-              id="billing-visit-no"
+              id="payment-visit-no"
               className={controlClass}
               value={filters.visitNo}
               inputMode="numeric"
@@ -258,9 +208,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="MR #" htmlFor="billing-mr-no">
+          <FloatingField label="MR #" htmlFor="payment-mr-no">
             <Input
-              id="billing-mr-no"
+              id="payment-mr-no"
               className={controlClass}
               value={filters.mrNo}
               onChange={(e) => patchFilter({ mrNo: e.target.value })}
@@ -268,20 +218,20 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Patient Age" htmlFor="billing-patient-age">
+          <FloatingField label="Patient Age" htmlFor="payment-patient-age">
             <AgeUnitField
               embedded
               className="patient-reg-dob-age age-unit-field--no-dob"
-              ageInputId="billing-patient-age"
+              ageInputId="payment-patient-age"
               age={filters.patientAge}
               unit={filters.ageUnit}
               onChange={({ age, unit }) => patchFilter({ patientAge: age, ageUnit: unit })}
             />
           </FloatingField>
 
-          <FloatingField label="Registration Date" htmlFor="billing-reg-date">
+          <FloatingField label="Registration Date" htmlFor="payment-reg-date">
             <DatePicker
-              id="billing-reg-date"
+              id="payment-reg-date"
               className={controlClass}
               value={filters.registrationDate}
               onChange={(registrationDate) => patchFilter({ registrationDate })}
@@ -289,9 +239,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="CNIC #" htmlFor="billing-cnic">
+          <FloatingField label="CNIC #" htmlFor="payment-cnic">
             <Input
-              id="billing-cnic"
+              id="payment-cnic"
               className={controlClass}
               value={filters.cnic}
               onChange={(e) => patchFilter({ cnic: e.target.value })}
@@ -299,9 +249,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Mobile #" htmlFor="billing-mobile">
+          <FloatingField label="Mobile #" htmlFor="payment-mobile">
             <Input
-              id="billing-mobile"
+              id="payment-mobile"
               className={controlClass}
               value={filters.mobile}
               onChange={(e) => patchFilter({ mobile: e.target.value })}
@@ -309,9 +259,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="First Name" htmlFor="billing-first-name">
+          <FloatingField label="First Name" htmlFor="payment-first-name">
             <Input
-              id="billing-first-name"
+              id="payment-first-name"
               className={controlClass}
               value={filters.firstName}
               onChange={(e) => patchFilter({ firstName: e.target.value })}
@@ -319,9 +269,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Middle Name" htmlFor="billing-middle-name">
+          <FloatingField label="Middle Name" htmlFor="payment-middle-name">
             <Input
-              id="billing-middle-name"
+              id="payment-middle-name"
               className={controlClass}
               value={filters.middleName}
               onChange={(e) => patchFilter({ middleName: e.target.value })}
@@ -329,9 +279,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Last Name" htmlFor="billing-last-name">
+          <FloatingField label="Last Name" htmlFor="payment-last-name">
             <Input
-              id="billing-last-name"
+              id="payment-last-name"
               className={controlClass}
               value={filters.lastName}
               onChange={(e) => patchFilter({ lastName: e.target.value })}
@@ -339,9 +289,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Relation First Name" htmlFor="billing-rel-first">
+          <FloatingField label="Relation First Name" htmlFor="payment-rel-first">
             <Input
-              id="billing-rel-first"
+              id="payment-rel-first"
               className={controlClass}
               value={filters.relationFirstName}
               onChange={(e) => patchFilter({ relationFirstName: e.target.value })}
@@ -349,9 +299,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Relation Middle Name" htmlFor="billing-rel-middle">
+          <FloatingField label="Relation Middle Name" htmlFor="payment-rel-middle">
             <Input
-              id="billing-rel-middle"
+              id="payment-rel-middle"
               className={controlClass}
               value={filters.relationMiddleName}
               onChange={(e) => patchFilter({ relationMiddleName: e.target.value })}
@@ -359,9 +309,9 @@ export default function ServicesBillingTab() {
             />
           </FloatingField>
 
-          <FloatingField label="Relation Last Name" htmlFor="billing-rel-last">
+          <FloatingField label="Relation Last Name" htmlFor="payment-rel-last">
             <Input
-              id="billing-rel-last"
+              id="payment-rel-last"
               className={controlClass}
               value={filters.relationLastName}
               onChange={(e) => patchFilter({ relationLastName: e.target.value })}
@@ -381,7 +331,7 @@ export default function ServicesBillingTab() {
         </FormGrid>
       </div>
 
-      <section className="services-billing-results" aria-label="Billing search results">
+      <section className="services-billing-results" aria-label="Payment search results">
         <DataTable
           className="data-table--billing-results"
           columns={columns}
@@ -394,7 +344,7 @@ export default function ServicesBillingTab() {
           locale={{
             emptyText: hasSearched
               ? 'No visits found'
-              : 'Use the search form above to find visits',
+              : 'Use the search form above to find visits for payment',
           }}
         />
       </section>

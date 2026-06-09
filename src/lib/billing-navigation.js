@@ -1,9 +1,11 @@
-export const BILLING_VIEW_PAYMENT = 'payment';
+export const OPD_PAYMENT_PATH = '/opd/payment';
 
-export function buildBillingVisitHref(visitId, { view } = {}) {
+export function buildBillingVisitHref(visitId) {
   const params = new URLSearchParams({ visitId });
-  if (view) {
-    params.set('view', view);
-  }
   return `/opd/services-billing?${params.toString()}`;
+}
+
+export function buildOpdPaymentHref(visitId) {
+  const params = new URLSearchParams({ visitId });
+  return `${OPD_PAYMENT_PATH}?${params.toString()}`;
 }
