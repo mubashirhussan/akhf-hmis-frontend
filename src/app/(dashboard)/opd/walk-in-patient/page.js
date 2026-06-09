@@ -1,4 +1,4 @@
-import WalkInPatientForm from '@/components/opd/WalkInPatientForm';
+import WalkInPatientForm from '@/features/opd/pages/walk-in-patient/WalkInPatientPage';
 
 export const metadata = {
   title: 'Walk-in Patient | AKHF',

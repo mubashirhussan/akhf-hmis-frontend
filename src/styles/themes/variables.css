@@ -1,0 +1,6 @@
+/* Design tokens — extend or split from globals.css as modules grow. */
+:root {
+  --app-primary: #026BB1;
+  --background: #FFFFFF;
+  --foreground: #1e293b;
+}

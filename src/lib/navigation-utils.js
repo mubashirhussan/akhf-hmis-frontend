@@ -1,8 +1,8 @@
-import { footerLinks, navigation } from '@/config/navigation-data';
-import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/data/mock-laboratory-worklist';
-import { MOCK_SERVICES_BILLING_VISITS } from '@/data/mock-services-billing';
-import { buildBillingVisitHref, buildOpdPaymentHref } from '@/lib/billing-navigation';
-import { buildSampleCollectionHref } from '@/lib/laboratory-navigation';
+import { footerLinks, navigation } from '@/config/navigation';
+import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/features/laboratory/api/mock-laboratory-worklist';
+import { MOCK_SERVICES_BILLING_VISITS } from '@/features/billing/api/mock-services-billing';
+import { buildBillingVisitHref, buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
+import { buildSampleCollectionHref } from '@/features/laboratory/utils/laboratory-navigation';
 
 function flattenItems(items, parent = null) {
   const result = [];

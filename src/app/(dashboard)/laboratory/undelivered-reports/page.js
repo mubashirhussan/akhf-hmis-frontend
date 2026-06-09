@@ -1,4 +1,4 @@
-import UndeliveredReportsList from '@/components/laboratory/UndeliveredReportsList';
+import UndeliveredReportsList from '@/features/laboratory/pages/undelivered-reports/UndeliveredReportsPage';
 
 export const metadata = {
   title: 'Undelivered Reports | AKHF',

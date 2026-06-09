@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import PaymentList from '@/components/opd/PaymentList';
+import PaymentList from '@/features/billing/pages/payment/PaymentListPage';
 
 export const metadata = {
   title: 'Payment | AKHF',

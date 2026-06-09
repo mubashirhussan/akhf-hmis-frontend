@@ -1,44 +1,31 @@
-# App Structure
+# App routing layer
 
-Routes mirror the sidebar defined in `src/config/navigation-data.js`.
+Routes mirror the sidebar defined in `src/config/navigation.js`.
 
-## How routing works
+## Layout
 
-| URL | Source |
-|-----|--------|
-| `/` | `(dashboard)/page.js` |
-| `/dashboard`, `/opd/walk-in-patient`, etc. | `(dashboard)/[...path]/page.js` |
+- `app/(dashboard)/` — authenticated shell (`AppShell`)
+- `app/(auth)/` — login and forgot-password
+- `app/(dashboard)/[...path]/` — catch-all placeholder for unbuilt modules
 
-Add or change a module in **one place** (`navigation-data.js`). The catch-all route renders a placeholder until you replace it with real screens.
+## Feature pages
 
-## Folder layout
+Business UI lives in `src/features/*/pages/`. Route files here are thin shells that import feature pages.
+
+Add or change a module in **one place** (`navigation.js`). The catch-all route renders a placeholder until you replace it with real screens.
+
+## Folder map
 
 ```
 src/
-├── config/
-│   └── navigation-data.js # Sidebar modules + hrefs (single source of truth)
-├── lib/
-│   └── navigation-utils.js
-├── components/
-│   ├── icons/
-│   │   └── AppIcon.jsx      # Iconify wrapper (no custom SVGs)
-│   └── layout/
-│       ├── AppShell.jsx
-│       ├── AppSidebar.jsx
-│       ├── AppHeader.jsx
-│       └── ModulePlaceholder.jsx
-└── app/
-    └── (dashboard)/       # App shell (sidebar + header)
-        ├── layout.js
-        ├── page.js        # Home
-        └── [...path]/     # All module routes (not home)
-            └── page.js
+├── app/                    # Routing only
+├── features/               # Business logic (opd, billing, laboratory, patient, …)
+├── components/             # Shared UI (ui, layout, feedback, providers)
+├── config/                 # navigation, routes, env, permissions
+├── services/               # API client layer (stubs)
+├── store/                  # Global state (stubs)
+├── hooks/                  # Global hooks
+├── lib/                    # Pure helpers
+├── styles/                 # Design system (globals.css + themes)
+└── assets/                 # Static assets
 ```
-
-## Example: OPD → Walk-in patient
-
-- Config: `{ href: '/opd/walk-in-patient', label: 'Walk-in patient' }`
-- URL: `/opd/walk-in-patient`
-- Breadcrumb: OPD › Walk-in patient
-
-To build the real page, replace the placeholder by adding `src/app/(dashboard)/opd/walk-in-patient/page.js` (optional — overrides catch-all) or edit the catch-all to load feature components.

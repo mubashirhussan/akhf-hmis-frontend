@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { footerLinks, navigation } from '@/config/navigation-data';
+import { footerLinks, navigation } from '@/config/navigation';
 import AppIcon from '@/components/icons/AppIcon';
 import { getExpandedKeys, hasActiveDescendant, isPathActive } from '@/lib/navigation-utils';
 

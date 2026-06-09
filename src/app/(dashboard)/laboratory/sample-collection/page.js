@@ -1,4 +1,4 @@
-import SampleCollectionList from '@/components/laboratory/SampleCollectionList';
+import SampleCollectionList from '@/features/laboratory/pages/sample-collection/SampleCollectionPage';
 
 export const metadata = {
   title: 'Sample Collection | AKHF',
