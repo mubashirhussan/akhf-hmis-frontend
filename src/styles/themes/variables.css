@@ -1,6 +1,36 @@
-/* Design tokens — extend or split from globals.css as modules grow. */
 :root {
-  --app-primary: #026BB1;
-  --background: #FFFFFF;
+  /* Standard HMIS typography scale (14px base — Ant Design default) */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --line-height-base: 1.5;
+  --line-height-tight: 1.25;
+
+  --background: #ffffff;
   --foreground: #1e293b;
+  --app-primary: #026bb1;
+  --data-table-header-bg: #026bb1;
+  --data-table-header-color: #ffffff;
+  --data-table-row-selected-bg: #dbeafe;
+  --data-table-row-hover-bg: #f1f5f9;
+  --app-error: #ff4d4f;
+  --app-error-focus-ring: rgba(255, 77, 79, 0.2);
+  --app-header-bg: #ffffff;
+  --app-scrollbar-size: 4px;
+  --app-scrollbar-track: #eef2f6;
+  --app-scrollbar-thumb: var(--app-primary);
+  --app-scrollbar-thumb-hover: #015a9a;
+
+  /* Unified field height — must match Ant Design controlHeight (32) */
+  --field-height: 32px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }

@@ -1,1 +1,8 @@
-/* Dark theme overrides — enable when theme switching is added. */
+/* Dark theme — enable via [data-theme="dark"] on <html> when theme switching is added */
+[data-theme='dark'] {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --app-header-bg: #1e293b;
+  --data-table-row-hover-bg: #1e293b;
+  --data-table-row-selected-bg: #1e3a5f;
+}

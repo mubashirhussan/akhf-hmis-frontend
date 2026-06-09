@@ -26,6 +26,7 @@ src/
 ├── store/                  # Global state (stubs)
 ├── hooks/                  # Global hooks
 ├── lib/                    # Pure helpers
-├── styles/                 # Design system (globals.css + themes)
+├── styles/                 # Design system (globals → tailwind, antd, layout, utilities, themes)
+│   └── features/*/styles/  # Feature + page-level CSS (imported via globals.css)
 └── assets/                 # Static assets
 ```

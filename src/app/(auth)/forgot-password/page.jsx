@@ -5,7 +5,7 @@ import { Button, Card, Form, Input, Typography } from 'antd';
 
 export default function ForgotPasswordPage() {
   return (
-    <Card>
+    <Card className="auth-card">
       <Typography.Title level={3} className="!mb-2 text-center">
         Forgot password
       </Typography.Title>

@@ -1,0 +1,320 @@
+/* OPD walk-in & patient registration */
+
+.patient-registration-page {
+  padding: 8px 4px 24px;
+  max-width: 100%;
+}
+
+.patient-reg-title-row {
+  margin-bottom: 4px;
+}
+
+.patient-reg-title-row .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.patient-reg-section-grid.form-grid {
+  row-gap: 10px;
+  column-gap: 12px;
+}
+
+.patient-registration-form .patient-reg-section-grid > .floating-field {
+  grid-column: span 1;
+  max-width: 100%;
+  margin-top: 6px;
+}
+
+.patient-registration-form .patient-reg-section-grid .dob-age-field--embedded {
+  margin-top: 0;
+}
+
+.patient-registration-form .patient-reg-section-grid .floating-control .ant-form-item {
+  margin-bottom: 0;
+}
+
+.patient-registration-form .patient-reg-section-grid .ant-form-item-explain-error {
+  display: block !important;
+  margin-top: 4px;
+  font-size: var(--font-size-base);
+  line-height: 1.25;
+  color: var(--app-error);
+}
+
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .floating-label,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .floating-label {
+  color: var(--app-error) !important;
+}
+
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-picker:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .dob-age-field-inner,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-input-status-error,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-select-status-error,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-picker-status-error {
+  border: 2px solid var(--app-error) !important;
+  border-color: var(--app-error) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .dob-age-field-inner:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input:focus,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper-focused,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-input-affix-wrapper:focus-within,
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select-focused:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select-open:not(.ant-select-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-picker-focused:not(.ant-picker-disabled),
+.patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .dob-age-field-inner:focus-within {
+  border: 2px solid var(--app-error) !important;
+  border-color: var(--app-error) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.patient-reg-checkbox-slot {
+  display: flex;
+  align-items: center;
+  grid-column: span 1;
+  min-width: 0;
+  min-height: var(--field-height);
+  margin-top: 6px;
+  padding-top: 7px;
+  box-sizing: border-box;
+}
+
+.patient-reg-checkbox-slot .ant-checkbox-wrapper {
+  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-size: var(--font-size-xs);
+  color: #334155;
+}
+
+.patient-registration-form .patient-reg-radio-field.floating-field--radios {
+  margin-top: 6px;
+}
+
+.patient-registration-form .patient-reg-section-grid .dob-age-field-inner {
+  min-width: 0;
+  height: var(--field-height);
+  min-height: var(--field-height);
+}
+
+.patient-registration-form .patient-reg-dob-age .dob-age-field-inner,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-field-inner {
+  background: #ffffff;
+}
+
+.patient-registration-form .patient-reg-dob-age .dob-age-date,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-date {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: var(--font-size-base);
+  background: #f8fafc;
+}
+
+.patient-registration-form .patient-reg-dob-age .dob-age-age.ant-input,
+.patient-registration-form .patient-reg-dob-age .dob-age-unit.ant-select,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-age.ant-input,
+.walk-in-add-record-form .patient-reg-dob-age .dob-age-unit.ant-select {
+  background: #ffffff !important;
+}
+
+.patient-registration-title {
+  margin: 0 0 16px;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.patient-registration-form.ant-form-vertical {
+  --ant-form-vertical-label-padding: 0 0 4px;
+  --ant-form-item-margin-bottom: 8px;
+  --ant-form-label-font-size: var(--font-size-base);
+}
+
+.patient-registration-form .ant-form-item {
+  margin-bottom: 8px !important;
+}
+
+.patient-registration-form .ant-form-item-label {
+  display: none !important;
+}
+
+.patient-registration-collapse.ant-collapse,
+.patient-registration-collapse .ant-collapse {
+  background: transparent;
+  border: none;
+}
+
+.patient-registration-collapse .ant-collapse-item {
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.patient-registration-collapse .ant-collapse-item:last-child {
+  margin-bottom: 0;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.patient-registration-collapse .ant-collapse-item:last-child > .ant-collapse-content {
+  border-bottom: 1px solid #e2e8f0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header,
+.patient-registration-collapse .patient-reg-collapse-header {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  padding: 12px 16px !important;
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: #334155;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-header-text,
+.patient-registration-collapse .patient-reg-collapse-header .ant-collapse-title,
+.patient-registration-collapse .patient-reg-collapse-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+  order: 0;
+  font-weight: 600;
+}
+
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .ant-collapse-header
+  .ant-collapse-title,
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .ant-collapse-header
+  .ant-collapse-header-text,
+.patient-registration-collapse
+  .ant-collapse-item:not(.ant-collapse-item-active)
+  > .patient-reg-collapse-header
+  .patient-reg-collapse-title {
+  color: #334155 !important;
+}
+
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header {
+  background-color: var(--app-primary) !important;
+  border-bottom-color: var(--app-primary);
+  color: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-header-text,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .ant-collapse-title,
+.patient-registration-collapse .ant-collapse-item-active .patient-reg-collapse-title {
+  color: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-item > .ant-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .patient-reg-collapse-header .ant-collapse-expand-icon {
+  order: 1;
+  margin-inline-start: auto !important;
+  margin-inline-end: 0 !important;
+  padding-inline-start: 12px;
+  color: #64748b;
+  transform: none !important;
+}
+
+.patient-registration-collapse .patient-reg-collapse-icon {
+  font-size: var(--font-size-xs);
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .ant-collapse-expand-icon,
+.patient-registration-collapse .ant-collapse-item-active > .ant-collapse-header .patient-reg-collapse-icon,
+.patient-registration-collapse .ant-collapse-item-active > .patient-reg-collapse-header .patient-reg-collapse-icon {
+  color: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-content,
+.patient-registration-collapse .ant-collapse-content-box {
+  background: #ffffff !important;
+}
+
+.patient-registration-collapse .ant-collapse-content-box {
+  padding: 16px 20px 20px !important;
+}
+
+.patient-reg-checkbox-col .ant-form-item {
+  margin-bottom: 8px;
+  padding-top: 22px;
+}
+
+.patient-reg-radio-row .ant-radio-group,
+.patient-registration-form .patient-reg-radio-field .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  width: 100%;
+}
+
+.patient-reg-guardian-box {
+  margin-top: 0;
+  padding: 0;
+}
+
+.patient-registration-form .patient-reg-dob-age.dob-age-field {
+  grid-column: unset !important;
+  width: 100%;
+}
+
+.patient-registration-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 8px;
+}
+
+.patient-reg-btn-clear.ant-btn-link {
+  min-width: auto;
+  padding-inline: 8px;
+  height: auto;
+  color: var(--app-primary) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.patient-reg-btn-clear.ant-btn-link:hover {
+  color: #025a96 !important;
+  background: transparent !important;
+}
+
+.patient-reg-btn-save {
+  min-width: 140px;
+}

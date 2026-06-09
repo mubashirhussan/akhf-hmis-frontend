@@ -5,7 +5,7 @@ import { Button, Card, Form, Input, Typography } from 'antd';
 
 export default function LoginPage() {
   return (
-    <Card>
+    <Card className="auth-card">
       <Typography.Title level={3} className="!mb-6 text-center">
         Sign in to AKHF
       </Typography.Title>
