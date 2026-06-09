@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
 }
 
 .walk-in-add-record-form-stack {
@@ -63,7 +63,7 @@
 
 .walk-in-add-record-radios .ant-radio-wrapper {
   margin-inline-end: 0;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   font-weight: 500;
   color: #64748b;
@@ -258,7 +258,7 @@
 }
 
 .walk-in-service-option-label {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: 1.25;
   color: #1e293b;
@@ -280,7 +280,7 @@
 }
 
 .walk-in-search-layout {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
 }
 
 .walk-in-services-block .section-header--inline {
@@ -380,7 +380,7 @@
 .walk-in-patient-search-label {
   display: block;
   margin-bottom: 6px;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -596,7 +596,7 @@
 }
 
 .walk-in-panel-header-title {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-base);
   line-height: 100%;
@@ -665,7 +665,7 @@
 }
 
 .walk-in-visit-summary-label {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 500;
   font-size: var(--font-size-xs);
   line-height: var(--line-height-tight);
@@ -674,7 +674,7 @@
 }
 
 .walk-in-visit-summary-value {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-base);
   line-height: 100%;
@@ -767,7 +767,7 @@
 .walk-in-service-result-name {
   flex: 1;
   min-width: 0;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 500;
   font-size: var(--font-size-xs);
   color: #000000;
@@ -778,7 +778,7 @@
   border-radius: 6px;
   background: #eef6fc;
   padding: 4px 10px;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-base);
   color: var(--app-primary);
@@ -807,7 +807,7 @@
 }
 
 .walk-in-service-results-count {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: #6c6c6c;
   margin: 0;
@@ -833,7 +833,7 @@
 
 .walk-in-added-services-title {
   margin: 0;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-base);
   line-height: 100%;
@@ -860,26 +860,26 @@
 }
 
 .walk-in-added-services-total-label {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: #000000;
 }
 
 .walk-in-added-services-grand-total {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--app-primary);
 }
 
 .walk-in-added-services-table .ant-table-thead > tr > th {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-base);
 }
 
 .data-table .ant-table-tbody > tr > td,
 .walk-in-added-services-table .ant-table-tbody > tr > td {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: #000000;
 }
@@ -930,7 +930,7 @@
   border-radius: 8px;
   background: #eef6fc;
   padding: 10px 12px;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--app-primary);
 }

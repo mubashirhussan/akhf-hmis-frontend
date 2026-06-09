@@ -10,7 +10,7 @@
 }
 
 .patient-details {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
 }
 
 .detail-section {
@@ -28,7 +28,7 @@
 
 .detail-section-title {
   margin: 0 0 20px;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   font-weight: 600;
   line-height: 1.2;

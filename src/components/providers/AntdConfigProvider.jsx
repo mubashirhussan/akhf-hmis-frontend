@@ -26,7 +26,7 @@ const appTheme = {
     colorWhite: "#ffffff",
     borderRadius: 6,
     fontSize: 14,
-    fontFamily: "var(--font-poppins), Poppins, system-ui, sans-serif",
+    fontFamily: 'var(--font-family)',
   },
   components: {
     Input: fieldTokens,

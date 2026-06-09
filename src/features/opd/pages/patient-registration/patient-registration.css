@@ -100,7 +100,7 @@
 }
 
 .patient-reg-checkbox-slot .ant-checkbox-wrapper {
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-xs);
   color: #334155;
 }

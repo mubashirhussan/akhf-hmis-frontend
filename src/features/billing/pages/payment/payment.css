@@ -4,7 +4,7 @@
 .billing-visit-payment-page {
   padding: 4px 4px 24px;
   max-width: 100%;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
 }
 
 .billing-payment-services-bar {
@@ -154,7 +154,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size-xs);
   font-weight: 600;
   line-height: 1.25;

@@ -90,7 +90,7 @@ body::-webkit-scrollbar-thumb:hover,
   flex-shrink: 0;
   color: #ffffff;
   background-color: var(--app-primary);
-  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-family: var(--font-family);
 }
 
 .app-sidebar a,
@@ -146,7 +146,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .sidebar-nav-parent {
-  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 500;
   font-size: var(--font-size-base);
   line-height: 20px;
@@ -154,7 +154,7 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 .sidebar-nav-child {
-  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 500;
   font-size: var(--font-size-sm);
   line-height: 18px;
@@ -259,7 +259,7 @@ body::-webkit-scrollbar-thumb:hover,
   overflow: hidden;
   min-width: 0;
   max-width: 100%;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 500;
   font-size: var(--font-size-lg);
   line-height: 1.2;
@@ -308,7 +308,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 .header-datetime__text {
   display: inline-block;
-  font-family: var(--font-poppins), Poppins, system-ui, sans-serif;
+  font-family: var(--font-family);
   font-weight: 600;
   font-size: var(--font-size-xs);
   line-height: 1.2;
