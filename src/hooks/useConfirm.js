@@ -30,7 +30,7 @@ export function useConfirm() {
         title,
         closable: true,
         closeIcon: true,
-        maskClosable: false,
+        mask: { closable: false },
         width: 440,
         okText,
         cancelText: 'Cancel',

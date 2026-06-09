@@ -15,7 +15,7 @@ export default function AppShell({ children }) {
         <Suspense fallback={<div className="app-header app-header--fallback" aria-hidden />}>
           <AppHeader />
         </Suspense>
-        <main className="app-scrollbar flex-1 overflow-y-auto p-4">{children}</main>
+        <main className="app-scrollbar min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4">{children}</main>
       </AntdAppHost>
     </div>
   );

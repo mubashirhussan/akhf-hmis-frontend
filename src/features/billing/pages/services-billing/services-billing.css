@@ -3,6 +3,7 @@
 .services-billing-page {
   padding: 4px 4px 24px;
   max-width: 100%;
+  min-width: 0;
 }
 
 .services-billing-search-layout {
@@ -28,7 +29,6 @@
 
 .services-billing-results .data-table-wrap {
   border-radius: 10px;
-  overflow: visible;
 }
 
 .services-billing-actions-cell .ant-btn-link {

@@ -774,12 +774,26 @@
   font-size: var(--font-size-base);
 }
 
+.data-table--billing-results .ant-table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
 .data-table--billing-results .ant-table-container {
-  overflow: visible !important;
+  overflow: hidden;
 }
 
 .data-table--billing-results .ant-table-content {
-  overflow: visible !important;
+  overflow: hidden !important;
+}
+
+.data-table--billing-results .ant-table-thead > tr > th {
+  white-space: normal !important;
+}
+
+.data-table--billing-results .ant-table-tbody > tr > td {
+  white-space: normal;
+  word-break: break-word;
 }
 
 .data-table--billing-visit-services .ant-table-thead > tr > th,
