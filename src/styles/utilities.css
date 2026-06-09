@@ -686,6 +686,7 @@
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .data-table-wrap .ant-table-wrapper {
@@ -694,9 +695,10 @@
 }
 
 .data-table .ant-table {
-  width: 100%;
+  width: 100% !important;
+  table-layout: auto !important;
   border: 1px solid #d2d2d2;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 .data-table,
@@ -708,6 +710,10 @@
 .data-table .ant-table-container {
   border-radius: 10px;
   overflow: hidden;
+}
+
+.data-table .ant-table-content {
+  overflow: hidden !important;
 }
 
 .data-table .ant-table-header,
@@ -745,9 +751,15 @@
 
 .data-table .ant-table-thead > tr > th {
   font-family: var(--font-family);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  white-space: nowrap !important;
+  white-space: normal !important;
+  padding: 4px 6px !important;
+}
+
+.data-table .ant-table-thead > tr > th .ant-checkbox-wrapper {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .data-table .ant-table-tbody > tr > td {
@@ -755,67 +767,13 @@
   font-size: var(--font-size-base);
   font-weight: 500;
   color: #1e293b;
-}
-
-.data-table .ant-table-body {
-  overflow: auto !important;
-}
-
-.data-table--billing-results .ant-table-thead > tr > th,
-.data-table--billing-results .ant-table-tbody > tr > td {
   padding: 4px 6px !important;
-}
-
-.data-table--billing-results .ant-table-thead > tr > th {
-  font-size: var(--font-size-base);
-}
-
-.data-table--billing-results .ant-table-tbody > tr > td {
-  font-size: var(--font-size-base);
-}
-
-.data-table--billing-results .ant-table {
-  width: 100% !important;
-  table-layout: auto !important;
-}
-
-.data-table--billing-results .ant-table-container {
-  overflow: hidden;
-}
-
-.data-table--billing-results .ant-table-content {
-  overflow: hidden !important;
-}
-
-.data-table--billing-results .ant-table-thead > tr > th {
-  white-space: normal !important;
-}
-
-.data-table--billing-results .ant-table-tbody > tr > td {
   white-space: normal;
   word-break: break-word;
 }
 
-.data-table--billing-visit-services .ant-table-thead > tr > th,
-.data-table--billing-visit-services .ant-table-tbody > tr > td {
-  padding: 6px 8px !important;
-  font-size: var(--font-size-base);
-}
-
-.data-table--sample-collection-tests .ant-table-thead > tr > th,
-.data-table--sample-collection-tests .ant-table-tbody > tr > td {
-  font-size: var(--font-size-base);
-}
-
-.data-table--sample-collection-tests .ant-table-thead > tr > th .ant-checkbox-wrapper {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.data-table--billing-payment-services .ant-table-thead > tr > th,
-.data-table--billing-payment-services .ant-table-tbody > tr > td {
-  padding: 8px 10px !important;
-  font-size: var(--font-size-base);
+.data-table .ant-table-body {
+  overflow: auto !important;
 }
 
 .app-modal-root .ant-modal-container,

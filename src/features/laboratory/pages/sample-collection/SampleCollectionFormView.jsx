@@ -192,14 +192,11 @@ export default function SampleCollectionFormView({ record }) {
 
       <section className="sample-collection-form-table-section" aria-label="Tests for collection">
         <DataTable
-          className="data-table--sample-collection-tests"
           columns={columns}
           dataSource={testRows}
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          scroll={{ x: false }}
-          tableLayout="auto"
           locale={{ emptyText: 'No tests available for collection' }}
         />
       </section>

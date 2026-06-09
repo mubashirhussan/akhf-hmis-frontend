@@ -92,14 +92,11 @@ export default function UndeliveredReportsList() {
 
       <section className="services-billing-results" aria-label="Undelivered reports results">
         <DataTable
-          className="data-table--billing-results"
           columns={columns}
           dataSource={results}
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          scroll={{ x: false }}
-          tableLayout="auto"
           locale={{
             emptyText: hasSearched
               ? 'No records found'

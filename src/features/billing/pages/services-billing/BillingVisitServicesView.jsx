@@ -275,7 +275,6 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
 
       <section className="billing-visit-services-table-section" aria-label="Visit services">
         <DataTable
-          className="data-table--billing-visit-services"
           wrapClassName="billing-visit-services-table-wrap"
           columns={columns}
           dataSource={serviceRows}

@@ -871,19 +871,6 @@
   color: var(--app-primary);
 }
 
-.walk-in-added-services-table .ant-table-thead > tr > th {
-  font-family: var(--font-family);
-  font-weight: 600;
-  font-size: var(--font-size-base);
-}
-
-.data-table .ant-table-tbody > tr > td,
-.walk-in-added-services-table .ant-table-tbody > tr > td {
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  color: #000000;
-}
-
 .walk-in-qty-control {
   display: inline-flex;
   align-items: center;

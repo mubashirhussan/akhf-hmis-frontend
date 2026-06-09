@@ -27,10 +27,6 @@
   font-size: var(--font-size-base);
 }
 
-.services-billing-results .data-table-wrap {
-  border-radius: 10px;
-}
-
 .services-billing-actions-cell .ant-btn-link {
   color: var(--app-primary) !important;
   padding-inline: 4px;

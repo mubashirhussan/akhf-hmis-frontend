@@ -24,8 +24,8 @@ export default function DataTable({
   wrapClassName = '',
   columns,
   columnAlign = 'left',
-  scroll,
-  tableLayout,
+  scroll = { x: false },
+  tableLayout = 'auto',
   ...props
 }) {
   const wrapRef = useRef(null);

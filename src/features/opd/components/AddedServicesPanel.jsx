@@ -141,7 +141,6 @@ export default function AddedServicesPanel({
       {/* <h3 className="walk-in-added-services-title">Added Services</h3> */}
 
       <DataTable
-        className="walk-in-added-services-table"
         wrapClassName="walk-in-added-services-table-wrap"
         columns={columns}
         dataSource={services}

@@ -246,7 +246,6 @@ export default function SearchExistingPatientTab() {
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          tableLayout="fixed"
           locale={{
             emptyText: hasSearched
               ? 'No patients found'

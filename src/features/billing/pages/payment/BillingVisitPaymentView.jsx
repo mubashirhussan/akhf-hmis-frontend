@@ -257,13 +257,11 @@ export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
 
       <section className="billing-payment-services-table-section" aria-label="Payment services">
         <DataTable
-          className="data-table--billing-payment-services"
           wrapClassName="billing-payment-services-table-wrap"
           columns={paymentTableColumns}
           dataSource={paymentTableRows}
           rowKey="id"
           columnAlign="left"
-          tableLayout="fixed"
           pagination={false}
           scroll={{ x: false, y: BILLING_PAYMENT_HISTORY_TABLE_SCROLL_Y }}
           locale={{ emptyText: 'No services for this visit' }}
