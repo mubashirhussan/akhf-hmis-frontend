@@ -18,6 +18,13 @@ export const LABORATORY_PATIENT_TYPE_OPTIONS = [
   { value: 'general', label: 'General' },
   { value: 'b2b', label: 'B2B' },
 ];
+export const CENTER_TYPE_OPTIONS = [
+  LABORATORY_ALL_OPTION,
+  { value: 'mainlab', label: 'Main Lab' },
+  { value: 'johartown', label: 'Johar Town' },
+  { value: 'gulberg', label: 'Gulberg' },
+  { value: 'wapdatown', label: 'Wapda Town' },
+];
 
 export const LABORATORY_TEST_GROUP_OPTIONS = [
   LABORATORY_ALL_OPTION,

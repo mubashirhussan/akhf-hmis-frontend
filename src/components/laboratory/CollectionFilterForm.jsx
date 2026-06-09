@@ -7,6 +7,7 @@ import DobAgeField from '@/components/ui/DobAgeField';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import {
+  CENTER_TYPE_OPTIONS,
   LABORATORY_PATIENT_TYPE_OPTIONS,
   LABORATORY_SEND_OUT_OPTIONS,
   LABORATORY_STATUS_OPTIONS,
@@ -31,7 +32,7 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
           onSubmit();
         }}
       >
-        <FloatingField label="First Name" htmlFor={fieldId('first-name')}>
+           <FloatingField label="First Name" htmlFor={fieldId('first-name')}>
           <Input
             id={fieldId('first-name')}
             className={controlClass}
@@ -40,28 +41,7 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
             autoComplete="off"
           />
         </FloatingField>
-
-        <FloatingField label="Last Name" htmlFor={fieldId('last-name')}>
-          <Input
-            id={fieldId('last-name')}
-            className={controlClass}
-            value={filters.lastName}
-            onChange={(e) => onPatchFilter({ lastName: e.target.value })}
-            autoComplete="off"
-          />
-        </FloatingField>
-
-        <FloatingField label="CNIC #" htmlFor={fieldId('cnic')}>
-          <Input
-            id={fieldId('cnic')}
-            className={controlClass}
-            value={filters.cnic}
-            onChange={(e) => onPatchFilter({ cnic: e.target.value })}
-            autoComplete="off"
-          />
-        </FloatingField>
-
-        <FloatingField label="MR #" htmlFor={fieldId('mr-no')}>
+         <FloatingField label="MR #" htmlFor={fieldId('mr-no')}>
           <Input
             id={fieldId('mr-no')}
             className={controlClass}
@@ -70,17 +50,17 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
             autoComplete="off"
           />
         </FloatingField>
+     
 
-        <FloatingField label="Visit #" htmlFor={fieldId('visit-no')}>
-          <Input
-            id={fieldId('visit-no')}
-            className={controlClass}
-            value={filters.visitNo}
-            onChange={(e) => onPatchFilter({ visitNo: e.target.value })}
-            autoComplete="off"
-          />
-        </FloatingField>
+      
 
+      
+  
+       
+
+        
+      
+ 
         <FloatingField label="DOB" htmlFor={fieldId('dob-age')}>
           <DobAgeField
             embedded
@@ -91,17 +71,65 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
             onChange={({ age, unit }) => onPatchFilter({ patientAge: age, ageUnit: unit })}
           />
         </FloatingField>
-
-        <FloatingField label="Mobile #" htmlFor={fieldId('mobile')}>
-          <Input
-            id={fieldId('mobile')}
+       <FloatingField label="Status" htmlFor={fieldId('status')}>
+          <Select
+            id={fieldId('status')}
             className={controlClass}
-            value={filters.mobile}
-            onChange={(e) => onPatchFilter({ mobile: e.target.value })}
+            value={filters.status}
+            options={LABORATORY_STATUS_OPTIONS}
+            onChange={(status) => onPatchFilter({ status })}
+          />
+        </FloatingField>
+  <FloatingField label="Last Name" htmlFor={fieldId('last-name')}>
+          <Input
+            id={fieldId('last-name')}
+            className={controlClass}
+            value={filters.lastName}
+            onChange={(e) => onPatchFilter({ lastName: e.target.value })}
             autoComplete="off"
           />
         </FloatingField>
+       <FloatingField label="Visit #" htmlFor={fieldId('visit-no')}>
+          <Input
+            id={fieldId('visit-no')}
+            className={controlClass}
+            value={filters.visitNo}
+            onChange={(e) => onPatchFilter({ visitNo: e.target.value })}
+            autoComplete="off"
+          />
+        </FloatingField>
+   <FloatingField label="From - To Date" htmlFor={fieldId('date-range')}>
+          <DateRangeField
+            id={fieldId('date-range')}
+            value={filters.dateRange}
+            onChange={(dateRange) => onPatchFilter({ dateRange })}
+          />
+        </FloatingField>
+       
 
+          <FloatingField label="Center " htmlFor={fieldId('department-type')}>
+          <Select
+            id={fieldId('department-type')}
+            className={controlClass}
+            value={filters.departmentType}
+            options={CENTER_TYPE_OPTIONS}
+            onChange={(departmentType) => onPatchFilter({ departmentType })}
+          />
+        </FloatingField>
+       
+
+        
+     
+  <FloatingField label="CNIC #" htmlFor={fieldId('cnic')}>
+          <Input
+            id={fieldId('cnic')}
+            className={controlClass}
+            value={filters.cnic}
+            onChange={(e) => onPatchFilter({ cnic: e.target.value })}
+            autoComplete="off"
+          />
+        </FloatingField>
+        
         <FloatingField label="Lab #" htmlFor={fieldId('lab-no')}>
           <Input
             id={fieldId('lab-no')}
@@ -109,34 +137,6 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
             value={filters.labNo}
             onChange={(e) => onPatchFilter({ labNo: e.target.value })}
             autoComplete="off"
-          />
-        </FloatingField>
-
-        <FloatingField label="From - To Date" htmlFor={fieldId('date-range')}>
-          <DateRangeField
-            id={fieldId('date-range')}
-            value={filters.dateRange}
-            onChange={(dateRange) => onPatchFilter({ dateRange })}
-          />
-        </FloatingField>
-
-        <FloatingField label="Patient Type" htmlFor={fieldId('patient-type')}>
-          <Select
-            id={fieldId('patient-type')}
-            className={controlClass}
-            value={filters.patientType}
-            options={LABORATORY_PATIENT_TYPE_OPTIONS}
-            onChange={(patientType) => onPatchFilter({ patientType })}
-          />
-        </FloatingField>
-
-        <FloatingField label="Status" htmlFor={fieldId('status')}>
-          <Select
-            id={fieldId('status')}
-            className={controlClass}
-            value={filters.status}
-            options={LABORATORY_STATUS_OPTIONS}
-            onChange={(status) => onPatchFilter({ status })}
           />
         </FloatingField>
 
@@ -150,16 +150,33 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
           />
         </FloatingField>
 
-        <FloatingField label="Test Name" htmlFor={fieldId('test-name-option')}>
+        <FloatingField label="Patient Type" htmlFor={fieldId('patient-type')}>
           <Select
-            id={fieldId('test-name-option')}
+            id={fieldId('patient-type')}
             className={controlClass}
-            value={filters.testNameOption}
-            options={LABORATORY_TEST_NAME_OPTIONS}
-            onChange={(testNameOption) => onPatchFilter({ testNameOption })}
+            value={filters.patientType}
+            options={LABORATORY_PATIENT_TYPE_OPTIONS}
+            onChange={(patientType) => onPatchFilter({ patientType })}
           />
         </FloatingField>
-
+ <FloatingField label="Mobile #" htmlFor={fieldId('mobile')}>
+          <Input
+            id={fieldId('mobile')}
+            className={controlClass}
+            value={filters.mobile}
+            onChange={(e) => onPatchFilter({ mobile: e.target.value })}
+            autoComplete="off"
+          />
+        </FloatingField>
+         <FloatingField label="Reference #" htmlFor={fieldId('reference')}>
+          <Input
+            id={fieldId('reference')}
+            className={controlClass}
+            value={filters.referenceNo}
+            onChange={(e) => onPatchFilter({ referenceNo: e.target.value })}
+            autoComplete="off"
+          />
+        </FloatingField>
         <FloatingField label="Test Name" htmlFor={fieldId('test-name')}>
           <Input
             id={fieldId('test-name')}
@@ -180,15 +197,7 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
           />
         </FloatingField>
 
-        <FloatingField label="Reference #" htmlFor={fieldId('reference')}>
-          <Input
-            id={fieldId('reference')}
-            className={controlClass}
-            value={filters.referenceNo}
-            onChange={(e) => onPatchFilter({ referenceNo: e.target.value })}
-            autoComplete="off"
-          />
-        </FloatingField>
+       
 
         <div className="services-billing-search-actions">
           <Button

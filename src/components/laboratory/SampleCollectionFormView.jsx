@@ -121,7 +121,7 @@ export default function SampleCollectionFormView({ record }) {
     <div className="sample-collection-form-page">
       <PatientInfoHeaderCard patient={patient} />
 
-      <FormGrid columns={3} className="sample-collection-entry-form">
+      <FormGrid columns={4} className="sample-collection-entry-form">
         <FloatingField label="Test Group" htmlFor="sample-collection-group">
           <Select
             id="sample-collection-group"
@@ -142,16 +142,7 @@ export default function SampleCollectionFormView({ record }) {
           />
         </FloatingField>
 
-        <FloatingField label="Location" htmlFor="sample-collection-location">
-          <Select
-            id="sample-collection-location"
-            className={controlClass}
-            value={filters.location}
-            options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
-            disabled={!isSatelliteCenter}
-            onChange={(value) => patchFilter({ location: value })}
-          />
-        </FloatingField>
+     
 
         <FloatingField label="Bar Code" htmlFor="sample-collection-barcode">
           <Input
@@ -162,18 +153,7 @@ export default function SampleCollectionFormView({ record }) {
             autoComplete="off"
           />
         </FloatingField>
-
-        <FloatingField label="Clinical Diagnosis" htmlFor="sample-collection-diagnosis">
-          <Input.TextArea
-            id="sample-collection-diagnosis"
-            className={controlClass}
-            rows={3}
-            value={filters.clinicalDiagnosis}
-            onChange={(e) => patchFilter({ clinicalDiagnosis: e.target.value })}
-          />
-        </FloatingField>
-
-        <FloatingField label="Select Printer Location" htmlFor="sample-collection-printer">
+  <FloatingField label="Select Printer Location" htmlFor="sample-collection-printer">
           <Select
             id="sample-collection-printer"
             className={controlClass}
@@ -182,6 +162,32 @@ export default function SampleCollectionFormView({ record }) {
             onChange={(value) => patchFilter({ printerLocation: value })}
           />
         </FloatingField>
+        <FloatingField label="Clinical Diagnosis" htmlFor="sample-collection-diagnosis">
+          <Input.TextArea
+            id="sample-collection-diagnosis"
+            className={controlClass}
+            rows={4}
+            value={filters.clinicalDiagnosis}
+            onChange={(e) => patchFilter({ clinicalDiagnosis: e.target.value })}
+          />
+        </FloatingField>
+        {
+          isSatelliteCenter&& (
+  <FloatingField label="Location" htmlFor="sample-collection-location">
+          <Select
+            id="sample-collection-location"
+            className={controlClass}
+            value={filters.location}
+            options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
+         
+
+            onChange={(value) => patchFilter({ location: value })}
+          />
+        </FloatingField>
+          )
+        }
+ 
+      
       </FormGrid>
 
       <section className="sample-collection-form-table-section" aria-label="Tests for collection">
