@@ -30,12 +30,3 @@ Feature CSS lives under `src/features/*/styles/` and page folders:
 - `features/auth/styles/login.css`
 
 All feature styles are pulled in through `globals.css` import chain.
-
-## Re-splitting
-
-If you add large blocks to feature CSS files, run:
-
-```bash
-node scripts/split-globals-css.mjs
-node scripts/split-feature-styles.mjs
-```

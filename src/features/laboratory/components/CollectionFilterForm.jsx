@@ -107,7 +107,7 @@ export default function CollectionFilterForm({ idPrefix, filters, onPatchFilter,
         </FloatingField>
        
 
-          <FloatingField label="Center " htmlFor={fieldId('department-type')}>
+          <FloatingField label="Center" htmlFor={fieldId('department-type')}>
           <Select
             id={fieldId('department-type')}
             className={controlClass}

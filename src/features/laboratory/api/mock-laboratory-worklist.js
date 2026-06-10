@@ -214,6 +214,7 @@ export function createLaboratoryWorklistFilters(defaultStatus = 'result-entry') 
     testGroup: 'all',
     testNameOption: 'all',
     sendOut: 'all',
+    departmentType: 'all',
     referenceNo: '',
   };
 }
