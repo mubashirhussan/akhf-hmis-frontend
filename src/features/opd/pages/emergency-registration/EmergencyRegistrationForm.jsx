@@ -42,7 +42,7 @@ const DEPARTMENT_OPTIONS = [
   { value: "ward", label: "Ward" },
 ];
 
-const DEPARTMENT_TYPE_OPTIONS = [
+const DOCTOR_OPTIONS = [
   { value: "emergency", label: "Emergency" },
   { value: "general", label: "General" },
   { value: "surgical", label: "Surgical" },
@@ -54,7 +54,7 @@ const initialValues = {
   arrivalStatus: "ambulatory",
   patientCondition: "stable",
   department: "emergency",
-  departmentType: "emergency",
+  doctor: "emergency",
 };
 
 const requiredRule = (msg) => [
@@ -93,7 +93,7 @@ export default function EmergencyRegistrationForm() {
   return (
     <div className="min-h-screen p-6">
       <Form form={form} initialValues={initialValues} layout="vertical">
-        <div className="bg-white rounded-lg shadow-sm px-5 py-4 mb-4">
+        <div className="bg-white rounded-lg border border-gray-200 px-5 py-4 mb-4">
           <div className="flex items-end gap-4">
             <div className="flex-1">
               <FormGrid columns={5}>
@@ -125,7 +125,7 @@ export default function EmergencyRegistrationForm() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="bg-[#026BB1] text-white flex items-center gap-2 px-5 py-2.5">
             <UserBoldIcon className="text-base" height="1.25em" />
             <span className="text-sm font-semibold tracking-wide">
@@ -196,8 +196,8 @@ export default function EmergencyRegistrationForm() {
                 <Select className={ctrl} options={DEPARTMENT_OPTIONS} />
               </EmergencyRegField>
 
-              <EmergencyRegField name="departmentType" label="Department Type">
-                <Select className={ctrl} options={DEPARTMENT_TYPE_OPTIONS} />
+              <EmergencyRegField name="doctor" label="Doctor">
+                <Select className={ctrl} options={DOCTOR_OPTIONS} />
               </EmergencyRegField>
 
               <EmergencyRegField name="arrivalStatus" label="Arrival Status">
@@ -217,15 +217,15 @@ export default function EmergencyRegistrationForm() {
                 col="full"
               >
                 <Input.TextArea
-                  className={`h-40!  pl-4! pt-3! ${ctrl}`}
-                  placeholder="Enter here..."
+                  className={` pl-4! pt-3! ${ctrl}`}
+                  placeholder="Enter here..." rows={3}
                 />
               </EmergencyRegField>
             </FormGrid>
           </div>
         </div>
 
-        <div className="flex justify-center gap-4 mt-6">
+        <div className="flex justify-end gap-4 mt-6">
           <Button
             onClick={() => form.resetFields()}
             className="!border-[#026BB1] !text-[#026BB1] !bg-white !rounded-md !h-10.5 !px-8 !font-medium !text-sm"
