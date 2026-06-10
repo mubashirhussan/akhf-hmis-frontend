@@ -6,6 +6,11 @@ export function patientRegFieldId(name) {
   return `patient-reg-${key}`;
 }
 
+export function emergencyRegFieldId(name) {
+  const key = Array.isArray(name) ? name.join('-') : String(name);
+  return `emergency-reg-${key}`;
+}
+
 /** Resolves the patient registration <form> element (Ant Design Form ref is not a DOM node). */
 export function resolvePatientRegFormRoot(rootOrSelector = PATIENT_REG_FORM_SELECTOR) {
   if (typeof rootOrSelector === 'string') {
