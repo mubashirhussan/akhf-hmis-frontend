@@ -1,8 +1,7 @@
 "use client";
 
 import { Form, Input, Select, Button } from "antd";
-import UserBoldIcon from "@iconify-react/solar/user-bold";
-import SearchIcon from "@iconify-react/material-symbols/search";
+import AppIcon from "@/components/icons/AppIcon";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import FormGrid from "@/components/ui/FormGrid";
 import EmergencyRegField from "@/features/opd/components/EmergencyRegField";
@@ -109,7 +108,7 @@ export default function EmergencyRegistrationForm() {
                 </EmergencyRegField>
 
                 <Button
-                  icon={<SearchIcon height="1.5em" />}
+                  icon={<AppIcon icon="material-symbols:search" className="h-[1.5em] w-[1.5em]" />}
                   className="!bg-[#026BB1] !border-[#026BB1] !text-white !rounded-md !h-7.75 w-24 relative top-1.75 !font-medium text-sm! shrink-0 mb-[1px]"
                   onClick={() =>
                     console.log(
@@ -127,7 +126,7 @@ export default function EmergencyRegistrationForm() {
 
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="bg-[#026BB1] text-white flex items-center gap-2 px-5 py-2.5">
-            <UserBoldIcon className="text-base" height="1.25em" />
+            <AppIcon icon="solar:user-bold" className="h-[1.25em] w-[1.25em] text-base" />
             <span className="text-sm font-semibold tracking-wide">
               Patient Information
             </span>
@@ -214,7 +213,7 @@ export default function EmergencyRegistrationForm() {
               <EmergencyRegField
                 name="admittedDiagnosis"
                 label="Admitted Diagnosis"
-                col="full"
+                col={2}
               >
                 <Input.TextArea
                   className={` pl-4! pt-3! ${ctrl}`}
