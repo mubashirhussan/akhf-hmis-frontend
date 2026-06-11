@@ -11,3 +11,6 @@ export const BILLING_VISIT_SERVICES_TABLE_SCROLL_Y = 'max(180px, calc(100vh - 50
 
 /** Billing payment history table body scroll. */
 export const BILLING_PAYMENT_HISTORY_TABLE_SCROLL_Y = 'max(160px, calc(100vh - 620px))';
+
+/** Result entry — delete saved components modal table body scroll. */
+export const RESULT_ENTRY_DELETE_MODAL_TABLE_SCROLL_Y = 'max(180px, calc(100vh - 320px))';

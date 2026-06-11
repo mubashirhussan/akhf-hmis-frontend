@@ -19,6 +19,7 @@ export default function AppModal({
   centered = true,
   destroyOnHidden = true,
   showCloseButton = true,
+  rootClassName = '',
   ...modalProps
 }) {
   const titleContent =
@@ -27,7 +28,7 @@ export default function AppModal({
   return (
     <Modal
       className={['app-modal', className].filter(Boolean).join(' ')}
-      rootClassName="app-modal-root"
+      rootClassName={['app-modal-root', rootClassName].filter(Boolean).join(' ')}
       open={open}
       onCancel={onClose}
       footer={null}

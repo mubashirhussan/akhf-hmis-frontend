@@ -71,6 +71,27 @@
   background: #e8f4fc;
 }
 
+.result-entry-selection-card--finalized {
+  background: #f1f5f9;
+}
+
+.result-entry-selection-card--finalized.result-entry-selection-card--active {
+  background: #e8f4fc;
+}
+
+.result-entry-selection-status {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .result-entry-selection-title {
   margin: 0 0 4px;
   font-size: var(--font-size-sm);
@@ -97,11 +118,29 @@
 }
 
 .result-entry-form-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 0;
   text-align: center;
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: #000000;
+}
+
+.result-entry-form-finalized-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .result-entry-section {
@@ -151,8 +190,8 @@
   padding: 8px 14px;
 }
 
-.result-entry-fields-column .result-entry-field-row:nth-child(even) {
-  background: #f3f6f9;
+.result-entry-fields-column .result-entry-field-row.result-entry-field-row--saved {
+  background: #e8f4fc;
 }
 
 .result-entry-field-label {
@@ -216,6 +255,7 @@
 .result-entry-form-footer {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
   padding-top: 14px;
@@ -224,6 +264,107 @@
 
 .result-entry-action-btn.ant-btn-primary {
   min-width: 140px;
+  height: 40px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.result-entry-view-report-btn.billing-patient-report-btn {
+  min-width: 140px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-entry-delete-modal-root .app-modal-container,
+.result-entry-delete-modal-root .ant-modal-container {
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-entry-delete-modal-root .ant-modal-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-entry-delete-modal-root .app-modal-footer {
+  flex-shrink: 0;
+}
+
+.result-entry-delete-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 20px 8px !important;
+}
+
+.result-entry-delete-modal-table-wrap {
+  margin: 0;
+  min-height: 0;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table,
+.result-entry-delete-modal-table-wrap .ant-table-container,
+.result-entry-delete-modal-table-wrap .ant-table-content {
+  border: none !important;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table-thead > tr > th {
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0 8px 10px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.result-entry-delete-modal-table-wrap.data-table-wrap--scroll-body .ant-table-thead > tr > th {
+  background: #ffffff !important;
+  color: #94a3b8 !important;
+  box-shadow: inset 0 -1px 0 #e2e8f0;
+}
+
+.result-entry-delete-modal-table-wrap.data-table-wrap--scroll-body .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table-tbody > tr > td {
+  padding: 12px 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: transparent !important;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+.result-entry-delete-modal-table-wrap .ant-table-cell {
+  border-inline-end: none !important;
+}
+
+.result-entry-delete-modal-empty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: #64748b;
+}
+
+.result-entry-delete-modal-close-btn,
+.result-entry-delete-modal-delete-btn {
+  min-width: 120px;
   height: 40px;
   font-weight: 600;
   border-radius: 999px;

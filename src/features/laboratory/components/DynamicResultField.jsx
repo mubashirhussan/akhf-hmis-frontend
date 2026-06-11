@@ -5,11 +5,12 @@ import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function DynamicResultField({ field, value, onChange, id }) {
+export default function DynamicResultField({ field, value, onChange, id, disabled = false }) {
   const commonProps = {
     id,
     className: controlClass,
     value: value ?? '',
+    disabled,
     onChange: (nextValue) => onChange(nextValue),
   };
 

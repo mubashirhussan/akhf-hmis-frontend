@@ -1,9 +1,24 @@
+export const RESULT_ENTRY_ALL_TEST_GROUP = 'all';
+
 export const RESULT_ENTRY_TEST_GROUP_OPTIONS = [
   { value: 'blood-bank', label: 'Blood Bank' },
   { value: 'hematology', label: 'Hematology' },
   { value: 'biochemistry', label: 'Biochemistry' },
   { value: 'serology', label: 'Serology' },
 ];
+
+export const RESULT_ENTRY_TEST_GROUP_FILTER_OPTIONS = [
+  { value: RESULT_ENTRY_ALL_TEST_GROUP, label: 'ALL' },
+  ...RESULT_ENTRY_TEST_GROUP_OPTIONS,
+];
+
+export function filterResultEntryTestsByGroup(tests, testGroup = RESULT_ENTRY_ALL_TEST_GROUP) {
+  if (!testGroup || testGroup === RESULT_ENTRY_ALL_TEST_GROUP) {
+    return tests;
+  }
+
+  return tests.filter((test) => test.testGroup === testGroup);
+}
 
 export const RESULT_ENTRY_TESTS_BY_GROUP = {
   'blood-bank': [
@@ -375,6 +390,12 @@ export function createResultEntryTestsForRecord(record) {
   });
 }
 
+export function getFilledResultEntryFieldKeys(fieldValues = {}) {
+  return Object.entries(fieldValues)
+    .filter(([, value]) => String(value ?? '').trim() !== '')
+    .map(([key]) => key);
+}
+
 export function createResultEntryTestDraft(testKey) {
   const schema = getResultEntryFieldSchema(testKey);
   const reportTemplates = getResultEntryReportTemplates(testKey);
@@ -385,6 +406,8 @@ export function createResultEntryTestDraft(testKey) {
     remarks: schema?.defaultRemarks ?? '',
     selectedTemplateId: defaultTemplate?.value ?? '',
     templateContent: defaultTemplate?.content ?? '',
+    savedFieldKeys: [],
+    finalized: false,
   };
 }
 

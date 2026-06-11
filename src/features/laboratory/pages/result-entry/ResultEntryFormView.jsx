@@ -1,34 +1,44 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Collapse, Input, Select } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
+import DeleteSavedComponentsModal from '@/features/laboratory/pages/result-entry/DeleteSavedComponentsModal';
 import './result-entry.css';
 import PatientInfoHeaderCard from '@/features/patient/components/PatientInfoHeaderCard';
 import {
   createResultEntryFieldValues,
   createResultEntryTestDrafts,
   createResultEntryTestsForRecord,
+  getFilledResultEntryFieldKeys,
   getResultEntryFieldSchema,
   getResultEntryReportTemplates,
+  filterResultEntryTestsByGroup,
   resolveResultEntryTest,
-  RESULT_ENTRY_TEST_GROUP_OPTIONS,
+  RESULT_ENTRY_ALL_TEST_GROUP,
+  RESULT_ENTRY_TEST_GROUP_FILTER_OPTIONS,
 } from '@/features/laboratory/api/mock-result-entry';
 import { buildPatientInfoSummary } from '@/features/patient/utils/patient-info';
-import { useConfirm } from '@/hooks/useConfirm';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-function ResultEntryFieldRow({ field, value, onChange, idPrefix }) {
+function ResultEntryFieldRow({ field, value, onChange, idPrefix, highlighted = false, disabled = false }) {
   const fieldId = `${idPrefix}-${field.key}`;
 
   return (
-    <div className="result-entry-field-row">
+    <div
+      className={[
+        'result-entry-field-row',
+        highlighted ? 'result-entry-field-row--saved' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <label className="result-entry-field-label" htmlFor={fieldId}>
         {field.label}
       </label>
@@ -37,6 +47,7 @@ function ResultEntryFieldRow({ field, value, onChange, idPrefix }) {
           id={fieldId}
           field={field}
           value={value}
+          disabled={disabled}
           onChange={onChange}
         />
       </div>
@@ -47,13 +58,14 @@ function ResultEntryFieldRow({ field, value, onChange, idPrefix }) {
 
 export default function ResultEntryFormView({ record }) {
   const { message } = App.useApp();
-  const { confirmDelete } = useConfirm();
+  const reportSectionRef = useRef(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const patient = useMemo(() => buildPatientInfoSummary(record), [record]);
   const initialSelection = useMemo(() => resolveResultEntryTest(record), [record]);
   const recordTests = useMemo(() => createResultEntryTestsForRecord(record), [record]);
 
-  const [testGroup, setTestGroup] = useState(initialSelection.testGroup);
+  const [testGroup, setTestGroup] = useState(RESULT_ENTRY_ALL_TEST_GROUP);
   const [activeTestKey, setActiveTestKey] = useState(initialSelection.testKey);
   const [testDrafts, setTestDrafts] = useState(() => createResultEntryTestDrafts(record));
 
@@ -71,39 +83,42 @@ export default function ResultEntryFormView({ record }) {
     remarks: schema?.defaultRemarks ?? '',
     selectedTemplateId: reportTemplates[0]?.value ?? '',
     templateContent: reportTemplates[0]?.content ?? '',
+    savedFieldKeys: [],
+    finalized: false,
   };
 
-  const { fieldValues, remarks, selectedTemplateId, templateContent } = currentDraft;
+  const { fieldValues, remarks, selectedTemplateId, templateContent, savedFieldKeys, finalized } =
+    currentDraft;
+  const isCurrentTestFinalized = Boolean(finalized);
+  const savedFieldKeySet = useMemo(() => new Set(savedFieldKeys ?? []), [savedFieldKeys]);
+
+  const visibleTests = useMemo(
+    () => filterResultEntryTestsByGroup(recordTests, testGroup),
+    [recordTests, testGroup],
+  );
 
   const testNameOptions = useMemo(
-    () =>
-      recordTests
-        .filter((test) => test.testGroup === testGroup)
-        .map((test) => ({ value: test.testKey, label: test.label })),
-    [recordTests, testGroup],
+    () => visibleTests.map((test) => ({ value: test.testKey, label: test.label })),
+    [visibleTests],
   );
 
   const handleTestGroupChange = useCallback(
     (value) => {
       setTestGroup(value);
-      const nextTest = recordTests.find((test) => test.testGroup === value);
-      if (nextTest) {
-        setActiveTestKey(nextTest.testKey);
+
+      const nextVisibleTests = filterResultEntryTestsByGroup(recordTests, value);
+      const isActiveTestVisible = nextVisibleTests.some((test) => test.testKey === activeTestKey);
+
+      if (!isActiveTestVisible && nextVisibleTests.length) {
+        setActiveTestKey(nextVisibleTests[0].testKey);
       }
     },
-    [recordTests],
+    [activeTestKey, recordTests],
   );
 
-  const handleSelectTest = useCallback(
-    (testKey) => {
-      const test = recordTests.find((item) => item.testKey === testKey);
-      setActiveTestKey(testKey);
-      if (test) {
-        setTestGroup(test.testGroup);
-      }
-    },
-    [recordTests],
-  );
+  const handleSelectTest = useCallback((testKey) => {
+    setActiveTestKey(testKey);
+  }, []);
 
   const handleTestNameChange = useCallback(
     (testKey) => {
@@ -154,34 +169,87 @@ export default function ResultEntryFormView({ record }) {
 
   const handleSave = useCallback(
     (finalize = false) => {
+      if (isCurrentTestFinalized) {
+        message.warning('This test is already finalized and cannot be edited.');
+        return;
+      }
+
+      const filledFieldKeys = getFilledResultEntryFieldKeys(fieldValues);
+
+      patchCurrentDraft({
+        savedFieldKeys: filledFieldKeys,
+        ...(finalize ? { finalized: true } : {}),
+      });
+
       const action = finalize ? 'finalized' : 'saved';
       message.success(
         `Result ${action} for ${record.patientName} (${schema?.title ?? 'Test'}, Lab #${record.labNo}).`,
       );
     },
-    [message, record.labNo, record.patientName, schema?.title],
+    [
+      fieldValues,
+      isCurrentTestFinalized,
+      message,
+      patchCurrentDraft,
+      record.labNo,
+      record.patientName,
+      schema?.title,
+    ],
   );
 
-  const handleDeleteSavedComponents = useCallback(async () => {
-    if (!schema) return;
+  const handleViewReport = useCallback(() => {
+    reportSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    message.info(`Report section opened for ${schema?.title ?? 'selected test'}.`);
+  }, [message, schema?.title]);
 
-    const confirmed = await confirmDelete({
-      message: (
-        <span className="confirm-modal__message">
-          Are you sure you want to delete saved components for{' '}
-          <span className="confirm-modal__service-name">{schema.title}</span>?
-        </span>
-      ),
-      okText: 'Yes, delete',
-    });
+  const savedParameters = useMemo(() => {
+    if (!schema) return [];
 
-    if (!confirmed) return;
+    const fieldMap = new Map();
+    for (const section of schema.sections) {
+      for (const field of section.fields) {
+        fieldMap.set(field.key, field);
+      }
+    }
 
-    patchCurrentDraft({
-      fieldValues: createResultEntryFieldValues(schema),
-    });
-    message.info('Saved component values cleared.');
-  }, [confirmDelete, message, patchCurrentDraft, schema]);
+    return (savedFieldKeys ?? [])
+      .map((key) => ({
+        key,
+        label: fieldMap.get(key)?.label ?? key,
+        value: fieldValues[key],
+      }))
+      .filter((parameter) => String(parameter.value ?? '').trim() !== '');
+  }, [fieldValues, savedFieldKeys, schema]);
+
+  const handleOpenDeleteModal = useCallback(() => {
+    if (!savedParameters.length) {
+      message.warning('No saved parameters to delete. Save results first.');
+      return;
+    }
+
+    setIsDeleteModalOpen(true);
+  }, [message, savedParameters.length]);
+
+  const handleDeleteSelectedParameters = useCallback(
+    (selectedKeys) => {
+      const keysToDelete = new Set(selectedKeys);
+      const nextFieldValues = { ...fieldValues };
+
+      for (const key of keysToDelete) {
+        nextFieldValues[key] = '';
+      }
+
+      patchCurrentDraft({
+        fieldValues: nextFieldValues,
+        savedFieldKeys: (savedFieldKeys ?? []).filter((key) => !keysToDelete.has(key)),
+      });
+
+      message.success(
+        `${selectedKeys.length} saved parameter${selectedKeys.length === 1 ? '' : 's'} deleted.`,
+      );
+    },
+    [fieldValues, patchCurrentDraft, savedFieldKeys, message],
+  );
 
   const sectionColumns = useMemo(() => {
     if (!schema) return [];
@@ -234,28 +302,21 @@ export default function ResultEntryFormView({ record }) {
                   id="result-entry-test-group"
                   className={controlClass}
                   value={testGroup}
-                  options={RESULT_ENTRY_TEST_GROUP_OPTIONS}
+                  options={RESULT_ENTRY_TEST_GROUP_FILTER_OPTIONS}
                   onChange={handleTestGroupChange}
                 />
               </FloatingField>
 
-              <FloatingField label="Test Name" htmlFor="result-entry-test-name">
-                <Select
-                  id="result-entry-test-name"
-                  className={controlClass}
-                  value={activeTestKey}
-                  options={testNameOptions}
-                  onChange={handleTestNameChange}
-                />
-              </FloatingField>
+            
             </FormGrid>
           </section>
 
           <section className="result-entry-sidebar-tests" aria-label="Ordered tests">
             <h3 className="result-entry-sidebar-tests-label">Tests</h3>
             <div className="result-entry-test-list" role="list">
-            {recordTests.map((test) => {
+            {visibleTests.map((test) => {
               const isActive = test.testKey === activeTestKey;
+              const isFinalized = Boolean(testDrafts[test.testKey]?.finalized);
 
               return (
                 <button
@@ -265,6 +326,7 @@ export default function ResultEntryFormView({ record }) {
                   className={[
                     'result-entry-selection-card',
                     isActive ? 'result-entry-selection-card--active' : '',
+                    isFinalized ? 'result-entry-selection-card--finalized' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -273,6 +335,9 @@ export default function ResultEntryFormView({ record }) {
                 >
                   <p className="result-entry-selection-title">{test.label}</p>
                   <p className="result-entry-selection-lab">Lab # {test.labNo}</p>
+                  {isFinalized ? (
+                    <span className="result-entry-selection-status">Finalized</span>
+                  ) : null}
                 </button>
               );
             })}
@@ -281,7 +346,12 @@ export default function ResultEntryFormView({ record }) {
         </aside>
 
         <div className="result-entry-main">
-          <h2 className="result-entry-form-title">{schema?.title ?? 'Enter Result'}</h2>
+          <h2 className="result-entry-form-title">
+            {schema?.title ?? 'Enter Result'}
+            {isCurrentTestFinalized ? (
+              <span className="result-entry-form-finalized-badge">Finalized</span>
+            ) : null}
+          </h2>
 
           {sectionColumns.map((section) => (
             <section
@@ -300,6 +370,8 @@ export default function ResultEntryFormView({ record }) {
                       key={field.key}
                       field={field}
                       value={fieldValues[field.key]}
+                      highlighted={savedFieldKeySet.has(field.key)}
+                      disabled={isCurrentTestFinalized}
                       onChange={(value) => patchFieldValue(field.key, value)}
                       idPrefix="result-entry"
                     />
@@ -312,6 +384,8 @@ export default function ResultEntryFormView({ record }) {
                       key={field.key}
                       field={field}
                       value={fieldValues[field.key]}
+                      highlighted={savedFieldKeySet.has(field.key)}
+                      disabled={isCurrentTestFinalized}
                       onChange={(value) => patchFieldValue(field.key, value)}
                       idPrefix="result-entry"
                     />
@@ -329,12 +403,17 @@ export default function ResultEntryFormView({ record }) {
                 className={controlClass}
                 rows={4}
                 value={remarks}
+                disabled={isCurrentTestFinalized}
                 onChange={(event) => patchCurrentDraft({ remarks: event.target.value })}
               />
             </FloatingField>
           </section>
 
-          <section className="result-entry-report-section" aria-label="Report templates">
+          <section
+            ref={reportSectionRef}
+            className="result-entry-report-section"
+            aria-label="Report templates"
+          >
             <h3 className="result-entry-block-label">Report</h3>
 
             <FormGrid columns={1} className="result-entry-report-form">
@@ -345,6 +424,7 @@ export default function ResultEntryFormView({ record }) {
                   value={selectedTemplateId || undefined}
                   options={reportTemplates}
                   placeholder="Select template"
+                  disabled={isCurrentTestFinalized}
                   onChange={handleTemplateChange}
                 />
               </FloatingField>
@@ -355,6 +435,7 @@ export default function ResultEntryFormView({ record }) {
                   className={controlClass}
                   rows={4}
                   value={templateContent}
+                  disabled={isCurrentTestFinalized}
                   onChange={(event) => patchCurrentDraft({ templateContent: event.target.value })}
                   placeholder="Report template content"
                 />
@@ -363,10 +444,27 @@ export default function ResultEntryFormView({ record }) {
           </section>
 
           <div className="result-entry-form-footer">
-            <Button type="primary" className="result-entry-action-btn" onClick={() => handleSave(false)}>
+            <Button
+              className="billing-patient-report-btn result-entry-action-btn result-entry-view-report-btn"
+              icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
+              onClick={handleViewReport}
+            >
+              View Report
+            </Button>
+            <Button
+              type="primary"
+              className="result-entry-action-btn"
+              disabled={isCurrentTestFinalized}
+              onClick={() => handleSave(false)}
+            >
               Save
             </Button>
-            <Button type="primary" className="result-entry-action-btn" onClick={() => handleSave(true)}>
+            <Button
+              type="primary"
+              className="result-entry-action-btn"
+              disabled={isCurrentTestFinalized}
+              onClick={() => handleSave(true)}
+            >
               Final
             </Button>
             <Button
@@ -374,13 +472,22 @@ export default function ResultEntryFormView({ record }) {
               danger
               className="result-entry-action-btn result-entry-action-btn--danger"
               icon={<AppIcon icon="mdi:delete-outline" className="h-4 w-4" />}
-              onClick={handleDeleteSavedComponents}
+              disabled={isCurrentTestFinalized}
+              onClick={handleOpenDeleteModal}
             >
               Delete saved Components
             </Button>
           </div>
         </div>
       </div>
+
+      <DeleteSavedComponentsModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        testTitle={schema?.title}
+        savedParameters={savedParameters}
+        onDeleteSelected={handleDeleteSelectedParameters}
+      />
     </div>
   );
 }
