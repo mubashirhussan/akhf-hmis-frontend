@@ -215,7 +215,7 @@ body::-webkit-scrollbar-thumb:hover,
   gap: 6px;
   flex: 0 0 auto;
   min-width: 0;
-  max-width: min(100%, 240px);
+  /* max-width: min(100%, 240px); */
 }
 
 .app-header-actions {

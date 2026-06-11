@@ -2,7 +2,10 @@ import { footerLinks, navigation } from '@/config/navigation';
 import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/features/laboratory/api/mock-laboratory-worklist';
 import { MOCK_SERVICES_BILLING_VISITS } from '@/features/billing/api/mock-services-billing';
 import { buildBillingVisitHref, buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
-import { buildSampleCollectionHref } from '@/features/laboratory/utils/laboratory-navigation';
+import {
+  buildResultEntryHref,
+  buildSampleCollectionHref,
+} from '@/features/laboratory/utils/laboratory-navigation';
 
 function flattenItems(items, parent = null) {
   const result = [];
@@ -54,6 +57,21 @@ export function getBreadcrumbs(pathname, searchParams) {
         ...crumbs.slice(0, -1),
         { label: 'Sample Collection', href: '/laboratory/sample-collection' },
         { label: recordLabel, href: buildSampleCollectionHref(recordId) },
+      ];
+    }
+  }
+
+  if (normalizePath(pathname) === '/laboratory/result-entry') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+      const recordLabel = record ? `Lab #${record.labNo}` : 'Enter Result';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Result Entry', href: '/laboratory/result-entry' },
+        { label: recordLabel, href: buildResultEntryHref(recordId) },
       ];
     }
   }

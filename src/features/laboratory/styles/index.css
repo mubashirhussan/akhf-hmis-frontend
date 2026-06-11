@@ -1,3 +1,4 @@
 /* Laboratory feature styles */
 @import "./worklist.css";
 @import "../pages/sample-collection/sample-collection.css";
+@import "../pages/result-entry/result-entry.css";

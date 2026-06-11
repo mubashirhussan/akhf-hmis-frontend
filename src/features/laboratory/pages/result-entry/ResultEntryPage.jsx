@@ -1,10 +1,12 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import ResultEntryFormView from '@/features/laboratory/pages/result-entry/ResultEntryFormView';
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
@@ -14,13 +16,25 @@ import {
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function ResultEntryList() {
-  const { message } = App.useApp();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const recordId = searchParams.get('recordId');
+
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('result-entry'),
     ageUnit: DOB_AGE_UNITS.years,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+
+  const activeRecord = useMemo(
+    () =>
+      recordId
+        ? (MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId) ?? null)
+        : null,
+    [recordId],
+  );
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -31,11 +45,13 @@ export default function ResultEntryList() {
     setHasSearched(true);
   };
 
-  const handleEnterResult = useCallback(
+  const openResultEntryForm = useCallback(
     (record) => {
-      message.success(`Result entry opened for ${record.patientName} (Lab #${record.labNo}).`);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('recordId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
     },
-    [message],
+    [pathname, router, searchParams],
   );
 
   const columns = useMemo(
@@ -71,15 +87,19 @@ export default function ResultEntryList() {
                 className="h-[14px] w-[14px] text-[var(--app-primary)]"
               />
             }
-            onClick={() => handleEnterResult(record)}
+            onClick={() => openResultEntryForm(record)}
           >
             Enter Result
           </Button>
         ),
       },
     ],
-    [handleEnterResult],
+    [openResultEntryForm],
   );
+
+  if (activeRecord) {
+    return <ResultEntryFormView record={activeRecord} />;
+  }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">

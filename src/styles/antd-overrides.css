@@ -1,18 +1,33 @@
 /* Ant Design global overrides */
 
-.ant-btn-primary:not(:disabled) {
+.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) {
   background-color: var(--app-primary) !important;
   border-color: var(--app-primary) !important;
 }
 
-.ant-btn-primary:not(:disabled):hover {
+.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):hover {
   background-color: #015a9a !important;
   border-color: #015a9a !important;
 }
 
-.ant-btn-primary:not(:disabled):active {
+.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):active {
   background-color: #014d85 !important;
   border-color: #014d85 !important;
+}
+
+.ant-btn-primary.ant-btn-dangerous:not(:disabled) {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.ant-btn-primary.ant-btn-dangerous:not(:disabled):hover {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
+}
+
+.ant-btn-primary.ant-btn-dangerous:not(:disabled):active {
+  background-color: #991b1b !important;
+  border-color: #991b1b !important;
 }
 
 .ant-radio-checked .ant-radio-inner,

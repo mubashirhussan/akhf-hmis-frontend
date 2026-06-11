@@ -128,6 +128,7 @@
 }
 
 .floating-control > .ant-input,
+.floating-control > .ant-input-affix-wrapper,
 .floating-control > .ant-select,
 .floating-control > .ant-picker,
 .floating-control > .ant-input-number {
@@ -270,7 +271,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.field-control.ant-input {
+.field-control.ant-input:not(textarea) {
   height: var(--field-height) !important;
   min-height: var(--field-height) !important;
   padding-block: 0 !important;
@@ -279,7 +280,25 @@
   box-sizing: border-box !important;
 }
 
-.field-control.ant-input-affix-wrapper {
+.field-control.ant-input-textarea-affix-wrapper {
+  height: auto !important;
+  min-height: unset !important;
+  max-height: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  align-items: stretch !important;
+}
+
+.field-control.ant-input-textarea-affix-wrapper > textarea.ant-input,
+textarea.field-control.ant-input {
+  padding-block: 8px !important;
+  padding-inline: 11px !important;
+  line-height: 1.45 !important;
+  resize: vertical !important;
+  box-sizing: border-box !important;
+}
+
+.field-control.ant-input-affix-wrapper:not(.ant-input-textarea-affix-wrapper) {
   height: var(--field-height) !important;
   min-height: var(--field-height) !important;
   padding-inline: 11px !important;

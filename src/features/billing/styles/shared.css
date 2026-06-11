@@ -23,7 +23,7 @@
 
 .billing-patient-info-collapse .ant-collapse-item > .ant-collapse-header {
   padding: 12px 16px !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
+  /* background: linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%); */
   align-items: center !important;
   min-height: 52px;
 }
