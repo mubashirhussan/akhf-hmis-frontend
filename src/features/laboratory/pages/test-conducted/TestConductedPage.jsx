@@ -8,19 +8,24 @@ import CollectionFilterForm from '@/features/laboratory/components/CollectionFil
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
+  getDefaultLaboratoryWorklistResults,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
+
+const TEST_CONDUCTED_STATUS = 'test-conducted';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function TestConductedList() {
   const { message } = App.useApp();
   const [filters, setFilters] = useState(() => ({
-    ...createLaboratoryWorklistFilters('test-conducted'),
+    ...createLaboratoryWorklistFilters(TEST_CONDUCTED_STATUS),
     ageUnit: DOB_AGE_UNITS.years,
   }));
-  const [results, setResults] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [results, setResults] = useState(() =>
+    getDefaultLaboratoryWorklistResults(MOCK_LABORATORY_WORKLIST_ROWS, TEST_CONDUCTED_STATUS),
+  );
+  const [hasSearched, setHasSearched] = useState(true);
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -65,15 +70,15 @@ export default function TestConductedList() {
           <Button
             type="link"
             size="small"
-            icon={
-              <AppIcon
-                icon="mdi:check-circle-outline"
-                className="h-[14px] w-[14px] text-[var(--app-primary)]"
-              />
-            }
+            // icon={
+            //   <AppIcon
+            //     icon="mdi:check-circle-outline"
+            //     className="h-[14px] w-[14px] text-[var(--app-primary)]"
+            //   />
+            // }
             onClick={() => handleMarkConducted(record)}
           >
-            Mark Conducted
+            Ready for Approval
           </Button>
         ),
       },
