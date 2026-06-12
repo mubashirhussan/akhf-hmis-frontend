@@ -6,8 +6,6 @@
   --test-conducted-saved-accent: #9d174d;
   --test-conducted-verified-bg: #d1e7dd;
   --test-conducted-verified-accent: #0f5132;
-  --test-conducted-final-btn-bg: #15803d;
-  --test-conducted-final-btn-hover: #166534;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -124,14 +122,29 @@
   border-radius: 10px;
 }
 
+.test-conducted-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.test-conducted-main-header .ant-btn {
+  min-width: 138px;
+  flex-shrink: 0;
+}
+
 .test-conducted-form-title {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1;
   flex-wrap: wrap;
   gap: 8px;
   margin: 0;
-  text-align: center;
+  min-width: 0;
+  text-align: left;
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: #000000;
@@ -291,20 +304,23 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.test-conducted-action-btn.ant-btn-primary {
-  min-width: 140px;
-  height: 40px;
-  font-weight: 600;
-  border-radius: 999px;
+.test-conducted-form-footer .ant-btn {
+  min-width: 138px;
 }
 
-.test-conducted-view-report-btn.billing-patient-report-btn {
-  min-width: 140px;
-  height: 40px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.test-conducted-form-footer .test-conducted-approve-btn.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) {
+  background: #52c41a !important;
+  border-color: #52c41a !important;
+}
+
+.test-conducted-form-footer .test-conducted-approve-btn.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):hover {
+  background: #389e0d !important;
+  border-color: #389e0d !important;
+}
+
+.test-conducted-form-footer .test-conducted-approve-btn.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):active {
+  background: #237804 !important;
+  border-color: #237804 !important;
 }
 
 .test-conducted-delete-modal-root .app-modal-container,
@@ -391,33 +407,6 @@
   color: #64748b;
 }
 
-.test-conducted-delete-modal-close-btn,
-.test-conducted-delete-modal-delete-btn {
-  min-width: 120px;
-  height: 40px;
-  font-weight: 600;
-  border-radius: 999px;
-}
-
-.test-conducted-form-page .test-conducted-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) {
-  background-color: var(--test-conducted-final-btn-bg) !important;
-  border-color: var(--test-conducted-final-btn-bg) !important;
-}
-
-.test-conducted-form-page .test-conducted-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):hover {
-  background-color: var(--test-conducted-final-btn-hover) !important;
-  border-color: var(--test-conducted-final-btn-hover) !important;
-}
-
-.test-conducted-form-page .test-conducted-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):active {
-  background-color: #14532d !important;
-  border-color: #14532d !important;
-}
-
-.test-conducted-action-btn--danger.ant-btn-primary {
-  min-width: 220px;
-}
-
 @media (max-width: 1100px) {
   .test-conducted-form-layout {
     grid-template-columns: 1fr;
@@ -441,11 +430,10 @@
 
   .test-conducted-form-footer {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  .test-conducted-action-btn.ant-btn-primary,
-  .test-conducted-action-btn--danger.ant-btn-primary {
+  .test-conducted-form-footer .ant-btn {
     width: 100%;
-    min-width: 0;
   }
 }

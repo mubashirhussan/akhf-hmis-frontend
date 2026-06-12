@@ -2,6 +2,7 @@ import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/features/laboratory/api/mock-la
 import {
   createResultEntryFieldValues,
   createResultEntryTestsForRecord,
+  buildSavedFieldSnapshotOnSave,
   getFilledResultEntryFieldKeys,
   getResultEntryFieldSchema,
   getResultEntryReportTemplates,
@@ -19,6 +20,7 @@ export const getTestConductedFieldSchema = getResultEntryFieldSchema;
 export const getTestConductedReportTemplates = getResultEntryReportTemplates;
 export const createTestConductedFieldValues = createResultEntryFieldValues;
 export const getFilledTestConductedFieldKeys = getFilledResultEntryFieldKeys;
+export const buildTestConductedSavedFieldSnapshotOnSave = buildSavedFieldSnapshotOnSave;
 export const resolveTestConductedTest = resolveResultEntryTest;
 
 const TEST_CONDUCTED_DEMO_VALUES = {
@@ -61,14 +63,20 @@ export function createTestConductedDrafts(record) {
       ...createTestConductedFieldValues(schema),
       ...(TEST_CONDUCTED_DEMO_VALUES[test.testKey] ?? {}),
     };
+    const prefilledFieldKeys = getFilledResultEntryFieldKeys(fieldValues);
+    const initialSavedAt = record?.conductedAt ?? new Date().toISOString();
+    const initialSavedSnapshot = buildSavedFieldSnapshotOnSave(fieldValues, prefilledFieldKeys, {});
 
     drafts[test.testKey] = {
       fieldValues,
       remarks: schema?.defaultRemarks ?? '',
       selectedTemplateId: defaultTemplate?.value ?? '',
       templateContent: defaultTemplate?.content ?? '',
-      savedFieldKeys: [],
-      savedFieldTimes: {},
+      savedFieldKeys: initialSavedSnapshot.savedFieldKeys,
+      savedFieldTimes: prefilledFieldKeys.length
+        ? Object.fromEntries(prefilledFieldKeys.map((key) => [key, initialSavedAt]))
+        : initialSavedSnapshot.savedFieldTimes,
+      savedFieldValues: initialSavedSnapshot.savedFieldValues,
       finalized: false,
     };
   }

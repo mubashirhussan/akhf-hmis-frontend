@@ -10,10 +10,12 @@ import DeliveredReportDeliveryView from '@/features/laboratory/pages/delivered-r
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
-  getWorklistRowById,
+  getDefaultLaboratoryWorklistResults,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
+
+const DELIVERED_REPORTS_STATUS = 'delivered-reports';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function DeliveredReportsList() {
@@ -23,17 +25,19 @@ export default function DeliveredReportsList() {
   const recordId = searchParams.get('recordId');
 
   const [filters, setFilters] = useState(() => ({
-    ...createLaboratoryWorklistFilters('delivered-reports'),
+    ...createLaboratoryWorklistFilters(DELIVERED_REPORTS_STATUS),
     ageUnit: DOB_AGE_UNITS.years,
     patientAge: '',
     dateRange: null,
   }));
-  const [results, setResults] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [results, setResults] = useState(() =>
+    getDefaultLaboratoryWorklistResults(MOCK_LABORATORY_WORKLIST_ROWS, DELIVERED_REPORTS_STATUS),
+  );
+  const [hasSearched, setHasSearched] = useState(true);
 
   const activeRecord = useMemo(() => {
-    const row = recordId ? getWorklistRowById(recordId) : null;
-    return row?.status === 'delivered-reports' ? row : null;
+    if (!recordId) return null;
+    return MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId) ?? null;
   }, [recordId]);
 
   const patchFilter = (patch) => {
@@ -41,7 +45,12 @@ export default function DeliveredReportsList() {
   };
 
   const handleSearch = () => {
-    setResults(searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, filters));
+    setResults(
+      searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, {
+        ...filters,
+        status: DELIVERED_REPORTS_STATUS,
+      }),
+    );
     setHasSearched(true);
   };
 

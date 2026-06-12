@@ -80,13 +80,10 @@ export default function DeleteSavedComponentsModal({
       bodyClassName="result-entry-delete-modal-body"
       footer={
         <>
-          <Button className="result-entry-delete-modal-close-btn" onClick={onClose}>
-            Cancel
-          </Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Button
             type="primary"
             danger
-            className="result-entry-delete-modal-delete-btn"
             onClick={handleDelete}
             disabled={!savedParameters.length}
           >

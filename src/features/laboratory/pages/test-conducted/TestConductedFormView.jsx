@@ -6,7 +6,12 @@ import AppIcon from '@/components/icons/AppIcon';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
+import ChangeStatusModal, {
+  TEST_CONDUCTED_STATUS_OPTIONS,
+} from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
+import { updateLaboratoryWorklistStatus } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
+  buildTestConductedSavedFieldSnapshotOnSave,
   createTestConductedDrafts,
   createTestConductedFieldValues,
   createTestConductedTestsForRecord,
@@ -35,6 +40,7 @@ function formatSavedFieldDateTime(isoString) {
   const timePart = date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: true,
   });
 
@@ -82,9 +88,11 @@ function TestConductedFieldRow({
   );
 }
 
-export default function TestConductedFormView({ record }) {
+export default function TestConductedFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
   const reportSectionRef = useRef(null);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
+  const [sentTestKeys, setSentTestKeys] = useState([]);
 
   const initialSelection = useMemo(() => resolveTestConductedTest(record), [record]);
   const recordTests = useMemo(() => createTestConductedTestsForRecord(record), [record]);
@@ -108,6 +116,7 @@ export default function TestConductedFormView({ record }) {
     templateContent: reportTemplates[0]?.content ?? '',
     savedFieldKeys: [],
     savedFieldTimes: {},
+    savedFieldValues: {},
     finalized: false,
   };
 
@@ -118,6 +127,7 @@ export default function TestConductedFormView({ record }) {
     templateContent,
     savedFieldKeys,
     savedFieldTimes,
+    savedFieldValues,
     finalized,
   } = currentDraft;
   const isCurrentTestFinalized = Boolean(finalized);
@@ -125,8 +135,11 @@ export default function TestConductedFormView({ record }) {
   const savedFieldKeySet = useMemo(() => new Set(savedFieldKeys ?? []), [savedFieldKeys]);
 
   const visibleTests = useMemo(
-    () => filterTestConductedTestsByGroup(recordTests, testGroup),
-    [recordTests, testGroup],
+    () =>
+      filterTestConductedTestsByGroup(recordTests, testGroup).filter(
+        (test) => !sentTestKeys.includes(test.testKey),
+      ),
+    [recordTests, sentTestKeys, testGroup],
   );
 
   const handleTestGroupChange = useCallback(
@@ -195,18 +208,18 @@ export default function TestConductedFormView({ record }) {
       }
 
       const filledFieldKeys = getFilledTestConductedFieldKeys(fieldValues);
-      const savedAt = new Date().toISOString();
-      const nextSavedFieldTimes = Object.fromEntries(
-        filledFieldKeys.map((key) => [key, savedAt]),
+      const savedSnapshot = buildTestConductedSavedFieldSnapshotOnSave(
+        fieldValues,
+        filledFieldKeys,
+        { savedFieldValues, savedFieldTimes },
       );
 
       patchCurrentDraft({
-        savedFieldKeys: filledFieldKeys,
-        savedFieldTimes: nextSavedFieldTimes,
+        ...savedSnapshot,
         ...(finalize ? { finalized: true } : {}),
       });
 
-      const action = finalize ? 'finalized' : 'saved';
+      const action = finalize ? 'approved' : 'saved';
       message.success(
         `Result ${action} for ${record.patientName} (${schema?.title ?? 'Test'}, Lab #${record.labNo}).`,
       );
@@ -218,6 +231,8 @@ export default function TestConductedFormView({ record }) {
       patchCurrentDraft,
       record.labNo,
       record.patientName,
+      savedFieldTimes,
+      savedFieldValues,
       schema?.title,
     ],
   );
@@ -226,6 +241,48 @@ export default function TestConductedFormView({ record }) {
     reportSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     message.info(`Report section opened for ${schema?.title ?? 'selected test'}.`);
   }, [message, schema?.title]);
+
+  const handleChangeStatus = useCallback(
+    (status) => {
+      const recordId = record.sourceRecordId ?? record.id;
+      updateLaboratoryWorklistStatus(recordId, status);
+
+      const statusLabel =
+        TEST_CONDUCTED_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
+      const activeTest = recordTests.find((test) => test.testKey === activeTestKey);
+      const nextSentTestKeys = sentTestKeys.includes(activeTestKey)
+        ? sentTestKeys
+        : [...sentTestKeys, activeTestKey];
+
+      setSentTestKeys(nextSentTestKeys);
+
+      const nextVisibleTests = recordTests.filter(
+        (test) => !nextSentTestKeys.includes(test.testKey),
+      );
+
+      if (nextVisibleTests.length) {
+        setActiveTestKey(nextVisibleTests[0].testKey);
+      } else {
+        onAllTestsCompleted?.();
+      }
+
+      message.success(
+        `${activeTest?.label ?? schema?.title ?? 'Test'} sent to ${statusLabel} for ${record.patientName} (Lab #${record.labNo}).`,
+      );
+    },
+    [
+      activeTestKey,
+      message,
+      onAllTestsCompleted,
+      record.id,
+      record.labNo,
+      record.patientName,
+      record.sourceRecordId,
+      recordTests,
+      schema?.title,
+      sentTestKeys,
+    ],
+  );
 
   const sectionColumns = useMemo(() => {
     if (!schema) return [];
@@ -290,12 +347,20 @@ export default function TestConductedFormView({ record }) {
         </aside>
 
         <div className="test-conducted-main">
-          <h2 className="test-conducted-form-title">
-            {schema?.title ?? 'Test Results'}
-            {isCurrentTestFinalized ? (
-              <span className="test-conducted-form-finalized-badge">Finalized</span>
-            ) : null}
-          </h2>
+          <div className="test-conducted-main-header">
+            <h2 className="test-conducted-form-title">
+              {schema?.title ?? 'Test Results'}
+              {isCurrentTestFinalized ? (
+                <span className="test-conducted-form-finalized-badge">Finalized</span>
+              ) : null}
+            </h2>
+            <Button
+              icon={<AppIcon icon="mdi:swap-horizontal" className="h-4 w-4" />}
+              onClick={() => setIsChangeStatusModalOpen(true)}
+            >
+              Change Status
+            </Button>
+          </div>
 
           {sectionColumns.map((section) => (
             <section
@@ -392,7 +457,6 @@ export default function TestConductedFormView({ record }) {
           <div className="test-conducted-form-footer">
             {hasSavedResults ? (
               <Button
-                className="billing-patient-report-btn test-conducted-action-btn test-conducted-view-report-btn"
                 icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
                 onClick={handleViewReport}
               >
@@ -401,7 +465,6 @@ export default function TestConductedFormView({ record }) {
             ) : null}
             <Button
               type="primary"
-              className="test-conducted-action-btn"
               disabled={isCurrentTestFinalized}
               onClick={() => handleSave(false)}
             >
@@ -409,15 +472,24 @@ export default function TestConductedFormView({ record }) {
             </Button>
             <Button
               type="primary"
-              className="test-conducted-action-btn test-conducted-action-btn--final"
+              className="test-conducted-approve-btn"
               disabled={isCurrentTestFinalized}
               onClick={() => handleSave(true)}
             >
-              Final
+              Approve
             </Button>
           </div>
         </div>
       </div>
+
+      <ChangeStatusModal
+        open={isChangeStatusModalOpen}
+        onClose={() => setIsChangeStatusModalOpen(false)}
+        patientName={record.patientName}
+        labNo={record.labNo}
+        options={TEST_CONDUCTED_STATUS_OPTIONS}
+        onConfirm={handleChangeStatus}
+      />
     </div>
   );
 }

@@ -2,7 +2,12 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Checkbox, Input, Select } from 'antd';
+import AppIcon from '@/components/icons/AppIcon';
 import FloatingField from '@/components/ui/FloatingField';
+import ChangeStatusModal, {
+  DELIVERED_REPORTS_STATUS_OPTIONS,
+} from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
+import { updateLaboratoryWorklistStatus } from '@/features/laboratory/api/mock-laboratory-worklist';
 import FormGrid from '@/components/ui/FormGrid';
 import DataTable from '@/components/ui/DataTable';
 import {
@@ -28,6 +33,7 @@ export default function DeliveredReportDeliveryView({ record }) {
 
   const lineItems = useMemo(() => getDeliveredReportLineItems(record), [record]);
   const [selectedLineItemIds, setSelectedLineItemIds] = useState([]);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [deliveryForm, setDeliveryForm] = useState(() => createDeliveredDeliveryForm(record));
 
   const selectedLineItemSet = useMemo(
@@ -70,9 +76,30 @@ export default function DeliveredReportDeliveryView({ record }) {
     message.success(`Email sent for ${record.patientName} (Lab #${record.labNo}).`);
   }, [message, record.labNo, record.patientName, selectedLineItemIds.length]);
 
-  const handleChangeStatus = useCallback(() => {
-    message.info('Change status is not available in mock mode yet.');
-  }, [message]);
+  const handleOpenChangeStatus = useCallback(() => {
+    if (!selectedLineItemIds.length) {
+      message.error('Select at least one report to change status.');
+      return;
+    }
+
+    setIsChangeStatusModalOpen(true);
+  }, [message, selectedLineItemIds.length]);
+
+  const handleChangeStatus = useCallback(
+    (status) => {
+      updateLaboratoryWorklistStatus(record.id, status);
+
+      const statusLabel =
+        DELIVERED_REPORTS_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
+        status;
+
+      message.success(
+        `${selectedLineItemIds.length} report${selectedLineItemIds.length === 1 ? '' : 's'} sent to ${statusLabel} for ${record.patientName} (Lab #${record.labNo}).`,
+      );
+      setSelectedLineItemIds([]);
+    },
+    [message, record.id, record.labNo, record.patientName, selectedLineItemIds.length],
+  );
 
   const handleViewReport = useCallback(() => {
     message.success(`Report opened for ${record.patientName} (Lab #${record.labNo}).`);
@@ -225,17 +252,18 @@ export default function DeliveredReportDeliveryView({ record }) {
           type="primary"
           className="delivered-report-toolbar-btn"
           disabled={!hasSelectedLineItems}
-          onClick={handleViewReport}
+          icon={<AppIcon icon="mdi:swap-horizontal" className="h-4 w-4" />}
+          onClick={handleOpenChangeStatus}
         >
-          View Report
+          Change Status
         </Button>
         <Button
           type="primary"
           className="delivered-report-toolbar-btn"
           disabled={!hasSelectedLineItems}
-          onClick={handleChangeStatus}
+          onClick={handleViewReport}
         >
-          Change Status
+          View Report
         </Button>
         <Button
           type="primary"
@@ -256,6 +284,15 @@ export default function DeliveredReportDeliveryView({ record }) {
           pagination={false}
         />
       </section>
+
+      <ChangeStatusModal
+        open={isChangeStatusModalOpen}
+        onClose={() => setIsChangeStatusModalOpen(false)}
+        patientName={record.patientName}
+        labNo={record.labNo}
+        options={DELIVERED_REPORTS_STATUS_OPTIONS}
+        onConfirm={handleChangeStatus}
+      />
     </div>
   );
 }

@@ -7,10 +7,17 @@ import AppIcon from '@/components/icons/AppIcon';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
+import ChangeStatusModal, {
+  RESULT_ENTRY_STATUS_OPTIONS,
+} from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
 import DeleteSavedComponentsModal from '@/features/laboratory/pages/result-entry/DeleteSavedComponentsModal';
 import './result-entry.css';
-import { addConductedTestRow } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
+  addConductedTestRow,
+  updateLaboratoryWorklistStatus,
+} from '@/features/laboratory/api/mock-laboratory-worklist';
+import {
+  buildSavedFieldSnapshotOnSave,
   createResultEntryFieldValues,
   createResultEntryTestDrafts,
   createResultEntryTestsForRecord,
@@ -39,6 +46,7 @@ function formatSavedFieldDateTime(isoString) {
   const timePart = date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: true,
   });
 
@@ -90,6 +98,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
   const reportSectionRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
 
   const patient = useMemo(() => buildPatientInfoSummary(record), [record]);
   const initialSelection = useMemo(() => resolveResultEntryTest(record), [record]);
@@ -98,6 +107,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const [testGroup, setTestGroup] = useState(RESULT_ENTRY_ALL_TEST_GROUP);
   const [activeTestKey, setActiveTestKey] = useState(initialSelection.testKey);
   const [testDrafts, setTestDrafts] = useState(() => createResultEntryTestDrafts(record));
+  const [sentTestKeys, setSentTestKeys] = useState([]);
 
   const schema = useMemo(
     () => getResultEntryFieldSchema(activeTestKey),
@@ -115,6 +125,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
     templateContent: reportTemplates[0]?.content ?? '',
     savedFieldKeys: [],
     savedFieldTimes: {},
+    savedFieldValues: {},
     finalized: false,
   };
 
@@ -125,6 +136,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
     templateContent,
     savedFieldKeys,
     savedFieldTimes,
+    savedFieldValues,
     finalized,
   } = currentDraft;
   const isCurrentTestFinalized = Boolean(finalized);
@@ -132,11 +144,12 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const savedFieldKeySet = useMemo(() => new Set(savedFieldKeys ?? []), [savedFieldKeys]);
 
   const getPendingTests = useCallback(
-    (group = testGroup, drafts = testDrafts) =>
+    (group = testGroup, drafts = testDrafts, excludedTestKeys = sentTestKeys) =>
       filterResultEntryTestsByGroup(recordTests, group).filter(
-        (test) => !drafts[test.testKey]?.finalized,
+        (test) =>
+          !drafts[test.testKey]?.finalized && !excludedTestKeys.includes(test.testKey),
       ),
-    [recordTests, testDrafts, testGroup],
+    [recordTests, sentTestKeys, testDrafts, testGroup],
   );
 
   const pendingTests = useMemo(() => getPendingTests(), [getPendingTests]);
@@ -219,14 +232,13 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       }
 
       const filledFieldKeys = getFilledResultEntryFieldKeys(fieldValues);
-      const savedAt = new Date().toISOString();
-      const nextSavedFieldTimes = Object.fromEntries(
-        filledFieldKeys.map((key) => [key, savedAt]),
-      );
+      const savedSnapshot = buildSavedFieldSnapshotOnSave(fieldValues, filledFieldKeys, {
+        savedFieldValues,
+        savedFieldTimes,
+      });
 
       patchCurrentDraft({
-        savedFieldKeys: filledFieldKeys,
-        savedFieldTimes: nextSavedFieldTimes,
+        ...savedSnapshot,
         ...(finalize ? { finalized: true } : {}),
       });
 
@@ -263,6 +275,8 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       patchCurrentDraft,
       record,
       recordTests,
+      savedFieldTimes,
+      savedFieldValues,
       schema?.title,
       testDrafts,
     ],
@@ -292,6 +306,48 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       .filter((parameter) => String(parameter.value ?? '').trim() !== '');
   }, [fieldValues, savedFieldKeys, schema]);
 
+  const handleChangeStatus = useCallback(
+    (status) => {
+      updateLaboratoryWorklistStatus(record.id, status);
+
+      const statusLabel =
+        RESULT_ENTRY_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
+      const activeTest = recordTests.find((test) => test.testKey === activeTestKey);
+      const nextSentTestKeys = sentTestKeys.includes(activeTestKey)
+        ? sentTestKeys
+        : [...sentTestKeys, activeTestKey];
+
+      setSentTestKeys(nextSentTestKeys);
+
+      const nextPendingTests = recordTests.filter(
+        (test) =>
+          !nextSentTestKeys.includes(test.testKey) && !testDrafts[test.testKey]?.finalized,
+      );
+
+      if (nextPendingTests.length) {
+        setActiveTestKey(nextPendingTests[0].testKey);
+      } else {
+        onAllTestsCompleted?.();
+      }
+
+      message.success(
+        `${activeTest?.label ?? schema?.title ?? 'Test'} sent to ${statusLabel} for ${record.patientName} (Lab #${record.labNo}).`,
+      );
+    },
+    [
+      activeTestKey,
+      message,
+      onAllTestsCompleted,
+      record.id,
+      record.labNo,
+      record.patientName,
+      recordTests,
+      schema?.title,
+      sentTestKeys,
+      testDrafts,
+    ],
+  );
+
   const handleOpenDeleteModal = useCallback(() => {
     if (!savedParameters.length) {
       message.warning('No saved parameters to delete. Save results first.');
@@ -311,21 +367,24 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       }
 
       const nextSavedFieldTimes = { ...(savedFieldTimes ?? {}) };
+      const nextSavedFieldValues = { ...(savedFieldValues ?? {}) };
       for (const key of keysToDelete) {
         delete nextSavedFieldTimes[key];
+        delete nextSavedFieldValues[key];
       }
 
       patchCurrentDraft({
         fieldValues: nextFieldValues,
         savedFieldKeys: (savedFieldKeys ?? []).filter((key) => !keysToDelete.has(key)),
         savedFieldTimes: nextSavedFieldTimes,
+        savedFieldValues: nextSavedFieldValues,
       });
 
       message.success(
         `${selectedKeys.length} saved parameter${selectedKeys.length === 1 ? '' : 's'} deleted.`,
       );
     },
-    [fieldValues, patchCurrentDraft, savedFieldKeys, savedFieldTimes, message],
+    [fieldValues, patchCurrentDraft, savedFieldKeys, savedFieldTimes, savedFieldValues, message],
   );
 
   const sectionColumns = useMemo(() => {
@@ -395,12 +454,20 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
         </aside>
 
         <div className="result-entry-main">
-          <h2 className="result-entry-form-title">
-            {schema?.title ?? 'Enter Result'}
-            {isCurrentTestFinalized ? (
-              <span className="result-entry-form-finalized-badge">Finalized</span>
-            ) : null}
-          </h2>
+          <div className="result-entry-main-header">
+            <h2 className="result-entry-form-title">
+              {schema?.title ?? 'Enter Result'}
+              {isCurrentTestFinalized ? (
+                <span className="result-entry-form-finalized-badge">Finalized</span>
+              ) : null}
+            </h2>
+            <Button
+              icon={<AppIcon icon="mdi:swap-horizontal" className="h-4 w-4" />}
+              onClick={() => setIsChangeStatusModalOpen(true)}
+            >
+              Change Status
+            </Button>
+          </div>
 
           {sectionColumns.map((section) => (
             <section
@@ -497,7 +564,6 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
           <div className="result-entry-form-footer">
             {hasSavedResults ? (
               <Button
-                className="billing-patient-report-btn result-entry-action-btn result-entry-view-report-btn"
                 icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
                 onClick={handleViewReport}
               >
@@ -506,7 +572,6 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
             ) : null}
             <Button
               type="primary"
-              className="result-entry-action-btn"
               disabled={isCurrentTestFinalized}
               onClick={() => handleSave(false)}
             >
@@ -514,7 +579,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
             </Button>
             <Button
               type="primary"
-              className="result-entry-action-btn result-entry-action-btn--final"
+              className="result-entry-final-btn"
               disabled={isCurrentTestFinalized}
               onClick={() => handleSave(true)}
             >
@@ -523,7 +588,6 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
             <Button
               type="primary"
               danger
-              className="result-entry-action-btn result-entry-action-btn--danger"
               disabled={isCurrentTestFinalized}
               onClick={handleOpenDeleteModal}
             >
@@ -532,6 +596,14 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
           </div>
         </div>
       </div>
+
+      <ChangeStatusModal
+        open={isChangeStatusModalOpen}
+        onClose={() => setIsChangeStatusModalOpen(false)}
+        patientName={record.patientName}
+        labNo={record.labNo}
+        onConfirm={handleChangeStatus}
+      />
 
       <DeleteSavedComponentsModal
         open={isDeleteModalOpen}

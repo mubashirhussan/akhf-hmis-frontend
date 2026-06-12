@@ -66,6 +66,13 @@ export default function TestConductedList() {
     [pathname, router, searchParams],
   );
 
+  const closeApprovalForm = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('recordId');
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
+
   const columns = useMemo(
     () => [
       { title: 'MR. No', dataIndex: 'mrNo', key: 'mrNo', width: 150 },
@@ -100,7 +107,12 @@ export default function TestConductedList() {
   );
 
   if (activeRecord) {
-    return <TestConductedFormView record={activeRecord} />;
+    return (
+      <TestConductedFormView
+        record={activeRecord}
+        onAllTestsCompleted={closeApprovalForm}
+      />
+    );
   }
 
   return (

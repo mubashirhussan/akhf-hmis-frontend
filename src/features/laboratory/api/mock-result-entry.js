@@ -399,6 +399,36 @@ export function getFilledResultEntryFieldKeys(fieldValues = {}) {
     .map(([key]) => key);
 }
 
+function normalizeSavedFieldValue(value) {
+  return String(value ?? '').trim();
+}
+
+export function buildSavedFieldSnapshotOnSave(
+  fieldValues,
+  filledFieldKeys,
+  { savedFieldValues = {}, savedFieldTimes = {} } = {},
+) {
+  const savedAt = new Date().toISOString();
+  const nextSavedFieldTimes = {};
+  const nextSavedFieldValues = {};
+
+  for (const key of filledFieldKeys) {
+    const currentValue = fieldValues[key];
+    nextSavedFieldValues[key] = currentValue;
+
+    const valueChanged =
+      normalizeSavedFieldValue(currentValue) !== normalizeSavedFieldValue(savedFieldValues[key]);
+
+    nextSavedFieldTimes[key] = valueChanged ? savedAt : (savedFieldTimes[key] ?? savedAt);
+  }
+
+  return {
+    savedFieldKeys: filledFieldKeys,
+    savedFieldTimes: nextSavedFieldTimes,
+    savedFieldValues: nextSavedFieldValues,
+  };
+}
+
 export function createResultEntryTestDraft(testKey) {
   const schema = getResultEntryFieldSchema(testKey);
   const reportTemplates = getResultEntryReportTemplates(testKey);
@@ -411,6 +441,7 @@ export function createResultEntryTestDraft(testKey) {
     templateContent: defaultTemplate?.content ?? '',
     savedFieldKeys: [],
     savedFieldTimes: {},
+    savedFieldValues: {},
     finalized: false,
   };
 }

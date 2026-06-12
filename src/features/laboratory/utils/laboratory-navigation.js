@@ -1,3 +1,12 @@
+export function buildSampleReceivingHref(recordId) {
+  const params = new URLSearchParams();
+  if (recordId) {
+    params.set('recordId', recordId);
+  }
+  const query = params.toString();
+  return `/laboratory/sample-receiving${query ? `?${query}` : ''}`;
+}
+
 export function buildSampleCollectionHref(recordId) {
   const params = new URLSearchParams();
   if (recordId) {
@@ -32,4 +41,13 @@ export function buildUndeliveredReportHref(recordId) {
   }
   const query = params.toString();
   return `/laboratory/undelivered-reports${query ? `?${query}` : ''}`;
+}
+
+export function buildDeliveredReportHref(recordId) {
+  const params = new URLSearchParams();
+  if (recordId) {
+    params.set('recordId', recordId);
+  }
+  const query = params.toString();
+  return `/laboratory/delivered-reports${query ? `?${query}` : ''}`;
 }

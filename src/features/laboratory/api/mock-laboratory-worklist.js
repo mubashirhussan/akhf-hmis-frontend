@@ -239,6 +239,94 @@ export const MOCK_LABORATORY_WORKLIST_ROWS = [
     sendOut: 'no',
   },
   {
+    id: 'lab-10',
+    mrNo: 'AKHD-485700-44',
+    patientName: 'Rashid Mehmood',
+    relation: 'S/O',
+    relationName: 'Mehmood Akhtar',
+    age: '29 y',
+    requestedDate: '17/05/2026 09:15:00 AM',
+    department: 'OPD',
+    patientType: 'OPD',
+    collectedAt: 'Main LAB',
+    labNo: '6642',
+    visitNo: '20261035',
+    cnic: '35202-2233445-1',
+    mobile: '03012233445',
+    firstName: 'Rashid',
+    lastName: 'Mehmood',
+    status: 'undelivered-reports',
+    testGroup: 'hematology',
+    testName: 'cbc',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-11',
+    mrNo: 'AKHD-485680-32',
+    patientName: 'Saima Bibi',
+    relation: 'W/O',
+    relationName: 'Imran Khan',
+    age: '36 y',
+    requestedDate: '16/05/2026 01:30:00 PM',
+    department: 'Emergency',
+    patientType: 'General',
+    collectedAt: 'City LAB',
+    labNo: '6630',
+    visitNo: '20261030',
+    cnic: '35202-3344556-2',
+    mobile: '03123344556',
+    firstName: 'Saima',
+    lastName: 'Bibi',
+    status: 'undelivered-reports',
+    testGroup: 'serology',
+    testName: 'urine',
+    sendOut: 'yes',
+  },
+  {
+    id: 'lab-12',
+    mrNo: 'AKHD-485660-21',
+    patientName: 'Faisal Iqbal',
+    relation: 'S/O',
+    relationName: 'Iqbal Hussain',
+    age: '47 y',
+    requestedDate: '15/05/2026 10:00:00 AM',
+    department: 'Laboratory',
+    patientType: 'Panel',
+    collectedAt: 'Main LAB',
+    labNo: '6618',
+    visitNo: '20261027',
+    cnic: '35202-4455667-3',
+    mobile: '03234455667',
+    firstName: 'Faisal',
+    lastName: 'Iqbal',
+    status: 'undelivered-reports',
+    testGroup: 'biochemistry',
+    testName: 'lft',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-13',
+    mrNo: 'AKHD-485640-15',
+    patientName: 'Hina Shah',
+    relation: 'D/O',
+    relationName: 'Shahid Ali',
+    age: '24 y',
+    requestedDate: '18/05/2026 04:45:00 PM',
+    department: 'OPD',
+    patientType: 'B2B',
+    collectedAt: 'Main LAB',
+    labNo: '6660',
+    visitNo: '20261040',
+    cnic: '35202-5566778-4',
+    mobile: '03345566778',
+    firstName: 'Hina',
+    lastName: 'Shah',
+    status: 'undelivered-reports',
+    testGroup: 'microbiology',
+    testName: 'urine',
+    sendOut: 'no',
+  },
+  {
     id: 'lab-6',
     mrNo: 'AKHD-485790-05',
     patientName: 'Ayesha Malik',
@@ -260,9 +348,128 @@ export const MOCK_LABORATORY_WORKLIST_ROWS = [
     testName: 'cbc',
     sendOut: 'yes',
   },
+  {
+    id: 'lab-14',
+    mrNo: 'AKHD-485620-09',
+    patientName: 'Tariq Jamil',
+    relation: 'S/O',
+    relationName: 'Jamil Ahmed',
+    age: '55 y',
+    requestedDate: '12/05/2026 08:00:00 AM',
+    department: 'Emergency',
+    patientType: 'OPD',
+    collectedAt: 'Main LAB',
+    labNo: '6560',
+    visitNo: '20261008',
+    cnic: '35202-6677889-5',
+    mobile: '03456677889',
+    firstName: 'Tariq',
+    lastName: 'Jamil',
+    status: 'delivered-reports',
+    testGroup: 'biochemistry',
+    testName: 'lft',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-15',
+    mrNo: 'AKHD-485600-03',
+    patientName: 'Rubina Kausar',
+    relation: 'W/O',
+    relationName: 'Kausar Mehmood',
+    age: '41 y',
+    requestedDate: '11/05/2026 03:25:00 PM',
+    department: 'OPD',
+    patientType: 'Panel',
+    collectedAt: 'City LAB',
+    labNo: '6548',
+    visitNo: '20261005',
+    cnic: '35202-7788990-6',
+    mobile: '03567788990',
+    firstName: 'Rubina',
+    lastName: 'Kausar',
+    status: 'delivered-reports',
+    testGroup: 'hematology',
+    testName: 'esr',
+    sendOut: 'yes',
+  },
+  {
+    id: 'lab-16',
+    mrNo: 'AKHD-485580-88',
+    patientName: 'Waqas Anwar',
+    relation: 'S/O',
+    relationName: 'Anwar Latif',
+    age: '32 y',
+    requestedDate: '10/05/2026 11:50:00 AM',
+    department: 'Laboratory',
+    patientType: 'General',
+    collectedAt: 'Main LAB',
+    labNo: '6535',
+    visitNo: '20261001',
+    cnic: '35202-8899001-7',
+    mobile: '03678899001',
+    firstName: 'Waqas',
+    lastName: 'Anwar',
+    status: 'delivered-reports',
+    testGroup: 'serology',
+    testName: 'urine',
+    sendOut: 'no',
+  },
+  {
+    id: 'lab-17',
+    mrNo: 'AKHD-485560-77',
+    patientName: 'Nazia Perveen',
+    relation: 'D/O',
+    relationName: 'Perveen Akram',
+    age: '27 y',
+    requestedDate: '09/05/2026 02:10:00 PM',
+    department: 'Emergency',
+    patientType: 'B2B',
+    collectedAt: 'Main LAB',
+    labNo: '6520',
+    visitNo: '20260998',
+    cnic: '35202-9900112-8',
+    mobile: '03789900112',
+    firstName: 'Nazia',
+    lastName: 'Perveen',
+    status: 'delivered-reports',
+    testGroup: 'microbiology',
+    testName: 'urine',
+    sendOut: 'no',
+  },
 ];
 
 const CONDUCTED_TESTS_STORAGE_KEY = 'akhf-lab-conducted-tests';
+const STATUS_OVERRIDES_STORAGE_KEY = 'akhf-lab-status-overrides';
+
+function loadStatusOverrides() {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const stored = window.localStorage.getItem(STATUS_OVERRIDES_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveStatusOverrides(overrides) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(STATUS_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
+  } catch {
+    // Ignore storage write failures in mock mode.
+  }
+}
+
+function applyStatusOverride(row) {
+  if (!row?.id) return row;
+
+  const overrides = loadStatusOverrides();
+  const overrideStatus = overrides[row.id];
+
+  return overrideStatus ? { ...row, status: overrideStatus } : row;
+}
 
 function loadConductedTestRows() {
   if (typeof window === 'undefined') return [];
@@ -312,13 +519,28 @@ export function addConductedTestRow(record, { testKey, testGroup } = {}) {
 }
 
 export function getAllLaboratoryWorklistRows() {
-  return [...loadConductedTestRows(), ...MOCK_LABORATORY_WORKLIST_ROWS];
+  return [...loadConductedTestRows(), ...MOCK_LABORATORY_WORKLIST_ROWS].map(applyStatusOverride);
 }
 
 export function getWorklistRowById(recordId) {
   if (!recordId) return null;
 
-  return getAllLaboratoryWorklistRows().find((row) => row.id === recordId) ?? null;
+  return getAllLaboratoryWorklistRows().find((item) => item.id === recordId) ?? null;
+}
+
+export function updateLaboratoryWorklistStatus(recordId, status) {
+  if (!recordId || !status) return null;
+
+  const overrides = loadStatusOverrides();
+  overrides[recordId] = status;
+  saveStatusOverrides(overrides);
+
+  const row =
+    MOCK_LABORATORY_WORKLIST_ROWS.find((item) => item.id === recordId) ??
+    loadConductedTestRows().find((item) => item.id === recordId) ??
+    null;
+
+  return row ? applyStatusOverride({ ...row, status }) : null;
 }
 
 export function getDefaultLaboratoryWorklistResults(rows, defaultStatus = 'result-entry') {

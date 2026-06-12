@@ -10,6 +10,7 @@ import {
   buildResultEntryHref,
   buildSampleCollectionHref,
   buildTestConductedHref,
+  buildDeliveredReportHref,
   buildUndeliveredReportHref,
 } from '@/features/laboratory/utils/laboratory-navigation';
 
@@ -109,6 +110,21 @@ export function getBreadcrumbs(pathname, searchParams) {
         ...crumbs.slice(0, -1),
         { label: 'Undelivered Reports', href: '/laboratory/undelivered-reports' },
         { label: recordLabel, href: buildUndeliveredReportHref(recordId) },
+      ];
+    }
+  }
+
+  if (normalizePath(pathname) === '/laboratory/delivered-reports') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const record = getWorklistRowById(recordId);
+      const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Delivered Reports', href: '/laboratory/delivered-reports' },
+        { label: recordLabel, href: buildDeliveredReportHref(recordId) },
       ];
     }
   }
