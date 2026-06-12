@@ -1,6 +1,13 @@
 /* Laboratory — result entry */
 
+/* LIS conventions: pink = entered/saved, green = verified/final */
 .result-entry-form-page {
+  --result-entry-saved-bg: rgb(255, 204, 255);
+  --result-entry-saved-accent: #9d174d;
+  --result-entry-verified-bg: #d1e7dd;
+  --result-entry-verified-accent: #0f5132;
+  --result-entry-final-btn-bg: #15803d;
+  --result-entry-final-btn-hover: #166534;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -191,15 +198,37 @@
 }
 
 .result-entry-fields-column .result-entry-field-row.result-entry-field-row--saved {
-  background: #e8f4fc;
+  background: var(--result-entry-saved-bg);
+}
+
+.result-entry-fields-column .result-entry-field-row.result-entry-field-row--verified {
+  background: var(--result-entry-verified-bg);
 }
 
 .result-entry-field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   padding-top: 0;
   font-size: var(--font-size-xs);
   font-weight: 600;
   color: #334155;
   line-height: 1.3;
+}
+
+.result-entry-field-label-text {
+  line-height: 1.3;
+}
+
+.result-entry-field-saved-time {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--result-entry-saved-accent);
+  line-height: 1.2;
+}
+
+.result-entry-field-row--verified .result-entry-field-saved-time {
+  color: var(--result-entry-verified-accent);
 }
 
 .result-entry-field-control {
@@ -368,6 +397,21 @@
   height: 40px;
   font-weight: 600;
   border-radius: 999px;
+}
+
+.result-entry-form-page .result-entry-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) {
+  background-color: var(--result-entry-final-btn-bg) !important;
+  border-color: var(--result-entry-final-btn-bg) !important;
+}
+
+.result-entry-form-page .result-entry-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):hover {
+  background-color: var(--result-entry-final-btn-hover) !important;
+  border-color: var(--result-entry-final-btn-hover) !important;
+}
+
+.result-entry-form-page .result-entry-action-btn--final.ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):active {
+  background-color: #14532d !important;
+  border-color: #14532d !important;
 }
 
 .result-entry-action-btn--danger.ant-btn-primary {

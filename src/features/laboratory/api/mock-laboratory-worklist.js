@@ -262,6 +262,59 @@ export const MOCK_LABORATORY_WORKLIST_ROWS = [
   },
 ];
 
+const CONDUCTED_TESTS_STORAGE_KEY = 'akhf-lab-conducted-tests';
+
+function loadConductedTestRows() {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = window.localStorage.getItem(CONDUCTED_TESTS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveConductedTestRows(rows) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(CONDUCTED_TESTS_STORAGE_KEY, JSON.stringify(rows));
+  } catch {
+    // Ignore storage write failures in mock mode.
+  }
+}
+
+export function addConductedTestRow(record, { testKey, testGroup } = {}) {
+  if (!record?.id || !testKey) return null;
+
+  const conductedRows = loadConductedTestRows();
+  const id = `${record.id}-${testKey}-conducted`;
+
+  if (conductedRows.some((row) => row.id === id)) {
+    return conductedRows.find((row) => row.id === id) ?? null;
+  }
+
+  const conductedAt = dayjs();
+  const newRow = {
+    ...record,
+    id,
+    status: 'test-conducted',
+    testGroup: testGroup ?? record.testGroup,
+    testName: testKey,
+    requestedDate: conductedAt.format('DD/MM/YYYY HH:mm:ss A'),
+    conductedAt: conductedAt.toISOString(),
+    sourceRecordId: record.id,
+  };
+
+  saveConductedTestRows([newRow, ...conductedRows]);
+  return newRow;
+}
+
+export function getAllLaboratoryWorklistRows() {
+  return [...loadConductedTestRows(), ...MOCK_LABORATORY_WORKLIST_ROWS];
+}
+
 export function getDefaultLaboratoryWorklistResults(rows, defaultStatus = 'result-entry') {
   return rows.filter((row) => row.status === defaultStatus);
 }

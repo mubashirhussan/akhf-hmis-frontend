@@ -9,7 +9,7 @@ import FormGrid from '@/components/ui/FormGrid';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
 import DeleteSavedComponentsModal from '@/features/laboratory/pages/result-entry/DeleteSavedComponentsModal';
 import './result-entry.css';
-import PatientInfoHeaderCard from '@/features/patient/components/PatientInfoHeaderCard';
+import { addConductedTestRow } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
   createResultEntryFieldValues,
   createResultEntryTestDrafts,
@@ -27,7 +27,33 @@ import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-function ResultEntryFieldRow({ field, value, onChange, idPrefix, highlighted = false, disabled = false }) {
+function formatSavedFieldDateTime(isoString) {
+  if (!isoString) return '';
+
+  const date = new Date(isoString);
+  const datePart = date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const timePart = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `${datePart}, ${timePart}`;
+}
+
+function ResultEntryFieldRow({
+  field,
+  value,
+  onChange,
+  idPrefix,
+  highlighted = false,
+  disabled = false,
+  savedAt = '',
+}) {
   const fieldId = `${idPrefix}-${field.key}`;
 
   return (
@@ -35,12 +61,16 @@ function ResultEntryFieldRow({ field, value, onChange, idPrefix, highlighted = f
       className={[
         'result-entry-field-row',
         highlighted ? 'result-entry-field-row--saved' : '',
+        highlighted && disabled ? 'result-entry-field-row--verified' : '',
       ]
         .filter(Boolean)
         .join(' ')}
     >
       <label className="result-entry-field-label" htmlFor={fieldId}>
-        {field.label}
+        <span className="result-entry-field-label-text">{field.label}</span>
+        {highlighted && savedAt ? (
+          <span className="result-entry-field-saved-time">{formatSavedFieldDateTime(savedAt)}</span>
+        ) : null}
       </label>
       <div className="result-entry-field-control">
         <DynamicResultField
@@ -56,7 +86,7 @@ function ResultEntryFieldRow({ field, value, onChange, idPrefix, highlighted = f
   );
 }
 
-export default function ResultEntryFormView({ record }) {
+export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
   const reportSectionRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -84,36 +114,50 @@ export default function ResultEntryFormView({ record }) {
     selectedTemplateId: reportTemplates[0]?.value ?? '',
     templateContent: reportTemplates[0]?.content ?? '',
     savedFieldKeys: [],
+    savedFieldTimes: {},
     finalized: false,
   };
 
-  const { fieldValues, remarks, selectedTemplateId, templateContent, savedFieldKeys, finalized } =
-    currentDraft;
+  const {
+    fieldValues,
+    remarks,
+    selectedTemplateId,
+    templateContent,
+    savedFieldKeys,
+    savedFieldTimes,
+    finalized,
+  } = currentDraft;
   const isCurrentTestFinalized = Boolean(finalized);
+  const hasSavedResults = (savedFieldKeys ?? []).length > 0;
   const savedFieldKeySet = useMemo(() => new Set(savedFieldKeys ?? []), [savedFieldKeys]);
 
-  const visibleTests = useMemo(
-    () => filterResultEntryTestsByGroup(recordTests, testGroup),
-    [recordTests, testGroup],
+  const getPendingTests = useCallback(
+    (group = testGroup, drafts = testDrafts) =>
+      filterResultEntryTestsByGroup(recordTests, group).filter(
+        (test) => !drafts[test.testKey]?.finalized,
+      ),
+    [recordTests, testDrafts, testGroup],
   );
 
+  const pendingTests = useMemo(() => getPendingTests(), [getPendingTests]);
+
   const testNameOptions = useMemo(
-    () => visibleTests.map((test) => ({ value: test.testKey, label: test.label })),
-    [visibleTests],
+    () => pendingTests.map((test) => ({ value: test.testKey, label: test.label })),
+    [pendingTests],
   );
 
   const handleTestGroupChange = useCallback(
     (value) => {
       setTestGroup(value);
 
-      const nextVisibleTests = filterResultEntryTestsByGroup(recordTests, value);
-      const isActiveTestVisible = nextVisibleTests.some((test) => test.testKey === activeTestKey);
+      const nextPendingTests = getPendingTests(value);
+      const isActiveTestVisible = nextPendingTests.some((test) => test.testKey === activeTestKey);
 
-      if (!isActiveTestVisible && nextVisibleTests.length) {
-        setActiveTestKey(nextVisibleTests[0].testKey);
+      if (!isActiveTestVisible && nextPendingTests.length) {
+        setActiveTestKey(nextPendingTests[0].testKey);
       }
     },
-    [activeTestKey, recordTests],
+    [activeTestKey, getPendingTests],
   );
 
   const handleSelectTest = useCallback((testKey) => {
@@ -175,11 +219,35 @@ export default function ResultEntryFormView({ record }) {
       }
 
       const filledFieldKeys = getFilledResultEntryFieldKeys(fieldValues);
+      const savedAt = new Date().toISOString();
+      const nextSavedFieldTimes = Object.fromEntries(
+        filledFieldKeys.map((key) => [key, savedAt]),
+      );
 
       patchCurrentDraft({
         savedFieldKeys: filledFieldKeys,
+        savedFieldTimes: nextSavedFieldTimes,
         ...(finalize ? { finalized: true } : {}),
       });
+
+      if (finalize) {
+        const activeTest = recordTests.find((test) => test.testKey === activeTestKey);
+        addConductedTestRow(record, {
+          testKey: activeTestKey,
+          testGroup: activeTest?.testGroup,
+        });
+
+        const nextPendingTests = recordTests.filter(
+          (test) =>
+            test.testKey !== activeTestKey && !testDrafts[test.testKey]?.finalized,
+        );
+
+        if (nextPendingTests.length) {
+          setActiveTestKey(nextPendingTests[0].testKey);
+        } else {
+          onAllTestsCompleted?.();
+        }
+      }
 
       const action = finalize ? 'finalized' : 'saved';
       message.success(
@@ -187,13 +255,16 @@ export default function ResultEntryFormView({ record }) {
       );
     },
     [
+      activeTestKey,
       fieldValues,
       isCurrentTestFinalized,
       message,
+      onAllTestsCompleted,
       patchCurrentDraft,
-      record.labNo,
-      record.patientName,
+      record,
+      recordTests,
       schema?.title,
+      testDrafts,
     ],
   );
 
@@ -239,16 +310,22 @@ export default function ResultEntryFormView({ record }) {
         nextFieldValues[key] = '';
       }
 
+      const nextSavedFieldTimes = { ...(savedFieldTimes ?? {}) };
+      for (const key of keysToDelete) {
+        delete nextSavedFieldTimes[key];
+      }
+
       patchCurrentDraft({
         fieldValues: nextFieldValues,
         savedFieldKeys: (savedFieldKeys ?? []).filter((key) => !keysToDelete.has(key)),
+        savedFieldTimes: nextSavedFieldTimes,
       });
 
       message.success(
         `${selectedKeys.length} saved parameter${selectedKeys.length === 1 ? '' : 's'} deleted.`,
       );
     },
-    [fieldValues, patchCurrentDraft, savedFieldKeys, message],
+    [fieldValues, patchCurrentDraft, savedFieldKeys, savedFieldTimes, message],
   );
 
   const sectionColumns = useMemo(() => {
@@ -268,30 +345,7 @@ export default function ResultEntryFormView({ record }) {
 
   return (
     <div className="services-billing-page result-entry-form-page">
-      {/* <Collapse
-        bordered={false}
-        className="billing-patient-info-collapse"
-        defaultActiveKey={[]}
-        expandIconPlacement="end"
-        expandIcon={({ isActive }) =>
-          isActive ? (
-            <UpOutlined className="billing-patient-info-collapse-arrow" aria-hidden />
-          ) : (
-            <DownOutlined className="billing-patient-info-collapse-arrow" aria-hidden />
-          )
-        }
-        items={[
-          {
-            key: 'patient-info',
-            label: (
-              <span className="billing-patient-info-collapse-label">
-                <span className="billing-patient-info-collapse-title">Patient Info</span>
-              </span>
-            ),
-            children: <PatientInfoHeaderCard patient={patient} />,
-          },
-        ]}
-      /> */}
+     
 
       <div className="result-entry-form-layout">
         <aside className="result-entry-sidebar" aria-label="Test selection">
@@ -314,9 +368,8 @@ export default function ResultEntryFormView({ record }) {
           <section className="result-entry-sidebar-tests" aria-label="Ordered tests">
             <h3 className="result-entry-sidebar-tests-label">Tests</h3>
             <div className="result-entry-test-list" role="list">
-            {visibleTests.map((test) => {
+            {pendingTests.map((test) => {
               const isActive = test.testKey === activeTestKey;
-              const isFinalized = Boolean(testDrafts[test.testKey]?.finalized);
 
               return (
                 <button
@@ -326,7 +379,6 @@ export default function ResultEntryFormView({ record }) {
                   className={[
                     'result-entry-selection-card',
                     isActive ? 'result-entry-selection-card--active' : '',
-                    isFinalized ? 'result-entry-selection-card--finalized' : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -335,9 +387,6 @@ export default function ResultEntryFormView({ record }) {
                 >
                   <p className="result-entry-selection-title">{test.label}</p>
                   <p className="result-entry-selection-lab">Lab # {test.labNo}</p>
-                  {isFinalized ? (
-                    <span className="result-entry-selection-status">Finalized</span>
-                  ) : null}
                 </button>
               );
             })}
@@ -371,6 +420,7 @@ export default function ResultEntryFormView({ record }) {
                       field={field}
                       value={fieldValues[field.key]}
                       highlighted={savedFieldKeySet.has(field.key)}
+                      savedAt={savedFieldTimes?.[field.key]}
                       disabled={isCurrentTestFinalized}
                       onChange={(value) => patchFieldValue(field.key, value)}
                       idPrefix="result-entry"
@@ -385,6 +435,7 @@ export default function ResultEntryFormView({ record }) {
                       field={field}
                       value={fieldValues[field.key]}
                       highlighted={savedFieldKeySet.has(field.key)}
+                      savedAt={savedFieldTimes?.[field.key]}
                       disabled={isCurrentTestFinalized}
                       onChange={(value) => patchFieldValue(field.key, value)}
                       idPrefix="result-entry"
@@ -444,13 +495,15 @@ export default function ResultEntryFormView({ record }) {
           </section>
 
           <div className="result-entry-form-footer">
-            <Button
-              className="billing-patient-report-btn result-entry-action-btn result-entry-view-report-btn"
-              icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
-              onClick={handleViewReport}
-            >
-              View Report
-            </Button>
+            {hasSavedResults ? (
+              <Button
+                className="billing-patient-report-btn result-entry-action-btn result-entry-view-report-btn"
+                icon={<AppIcon icon="mdi:file-document-outline" className="h-4 w-4" />}
+                onClick={handleViewReport}
+              >
+                View Report
+              </Button>
+            ) : null}
             <Button
               type="primary"
               className="result-entry-action-btn"
@@ -461,7 +514,7 @@ export default function ResultEntryFormView({ record }) {
             </Button>
             <Button
               type="primary"
-              className="result-entry-action-btn"
+              className="result-entry-action-btn result-entry-action-btn--final"
               disabled={isCurrentTestFinalized}
               onClick={() => handleSave(true)}
             >
@@ -471,7 +524,7 @@ export default function ResultEntryFormView({ record }) {
               type="primary"
               danger
               className="result-entry-action-btn result-entry-action-btn--danger"
-              icon={<AppIcon icon="mdi:delete-outline" className="h-4 w-4" />}
+              // icon={<AppIcon icon="mdi:delete-outline" className="h-4 w-4" />}
               disabled={isCurrentTestFinalized}
               onClick={handleOpenDeleteModal}
             >

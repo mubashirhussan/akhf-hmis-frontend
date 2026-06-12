@@ -407,6 +407,7 @@ export function createResultEntryTestDraft(testKey) {
     selectedTemplateId: defaultTemplate?.value ?? '',
     templateContent: defaultTemplate?.content ?? '',
     savedFieldKeys: [],
+    savedFieldTimes: {},
     finalized: false,
   };
 }

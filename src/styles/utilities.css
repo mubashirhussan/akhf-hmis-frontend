@@ -362,11 +362,14 @@ textarea.field-control.ant-input {
   position: relative;
   height: var(--field-height) !important;
   min-height: var(--field-height) !important;
-  padding: 0 !important;
   box-sizing: border-box !important;
 }
 
-.field-control.ant-picker .ant-picker-input {
+.field-control.ant-picker:not(.ant-picker-range) {
+  padding: 0 !important;
+}
+
+.field-control.ant-picker:not(.ant-picker-range) .ant-picker-input {
   display: flex !important;
   align-items: center !important;
   flex-wrap: nowrap !important;
@@ -414,9 +417,10 @@ textarea.field-control.ant-input {
   justify-content: center !important;
   margin: 0 !important;
   line-height: 1 !important;
+  pointer-events: auto !important;
 }
 
-.field-control.ant-picker > .ant-picker-suffix {
+.field-control.ant-picker:not(.ant-picker-range) > .ant-picker-suffix {
   position: absolute !important;
   inset-inline-end: 10px !important;
   top: 50% !important;
@@ -429,11 +433,11 @@ textarea.field-control.ant-input {
   pointer-events: none;
 }
 
-.field-control.ant-picker > .ant-picker-suffix .anticon {
+.field-control.ant-picker:not(.ant-picker-range) > .ant-picker-suffix .anticon {
   pointer-events: auto;
 }
 
-.field-control.ant-picker:has(> .ant-picker-suffix) .ant-picker-input {
+.field-control.ant-picker:not(.ant-picker-range):has(> .ant-picker-suffix) .ant-picker-input {
   padding-inline-end: 30px !important;
 }
 

@@ -16,8 +16,9 @@ export default function DateRangeField({
       id={id}
       className={['w-full', FIELD_CONTROL_CLASS, className].filter(Boolean).join(' ')}
       value={value}
-      onChange={onChange}
+      onChange={(dates) => onChange?.(!dates || (dates[0] == null && dates[1] == null) ? null : dates)}
       format={format}
+      allowClear
       allowEmpty={allowEmpty}
     />
   );

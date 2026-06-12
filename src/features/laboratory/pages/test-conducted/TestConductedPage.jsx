@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { App, Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
@@ -8,6 +8,7 @@ import CollectionFilterForm from '@/features/laboratory/components/CollectionFil
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
+  getAllLaboratoryWorklistRows,
   getDefaultLaboratoryWorklistResults,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
@@ -27,12 +28,18 @@ export default function TestConductedList() {
   );
   const [hasSearched, setHasSearched] = useState(true);
 
+  useEffect(() => {
+    setResults(
+      getDefaultLaboratoryWorklistResults(getAllLaboratoryWorklistRows(), TEST_CONDUCTED_STATUS),
+    );
+  }, []);
+
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
 
   const handleSearch = () => {
-    setResults(searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, filters));
+    setResults(searchLaboratoryWorklistRows(getAllLaboratoryWorklistRows(), filters));
     setHasSearched(true);
   };
 

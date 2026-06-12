@@ -24,6 +24,8 @@ export default function ResultEntryList() {
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('result-entry'),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -53,6 +55,13 @@ export default function ResultEntryList() {
     },
     [pathname, router, searchParams],
   );
+
+  const closeResultEntryForm = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('recordId');
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
 
   const columns = useMemo(
     () => [
@@ -98,7 +107,12 @@ export default function ResultEntryList() {
   );
 
   if (activeRecord) {
-    return <ResultEntryFormView record={activeRecord} />;
+    return (
+      <ResultEntryFormView
+        record={activeRecord}
+        onAllTestsCompleted={closeResultEntryForm}
+      />
+    );
   }
 
   return (
