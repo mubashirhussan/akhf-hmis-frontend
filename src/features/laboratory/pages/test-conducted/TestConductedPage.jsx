@@ -29,6 +29,8 @@ export default function TestConductedList() {
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters(TEST_CONDUCTED_STATUS),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState(() =>
     getDefaultLaboratoryWorklistResults(MOCK_LABORATORY_WORKLIST_ROWS, TEST_CONDUCTED_STATUS),

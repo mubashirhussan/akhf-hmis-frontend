@@ -18,6 +18,8 @@ export default function SampleReceivingList() {
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('sample-receiving'),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);

@@ -24,6 +24,8 @@ export default function SampleCollectionList() {
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('sample-collection'),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
