@@ -1,24 +1,31 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
-import AppIcon from '@/components/icons/AppIcon';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from 'antd';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import TestConductedFormView from '@/features/laboratory/pages/test-conducted/TestConductedFormView';
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
   getAllLaboratoryWorklistRows,
   getDefaultLaboratoryWorklistResults,
+  getWorklistRowById,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
-
-const TEST_CONDUCTED_STATUS = 'test-conducted';
+import { resolveTestConductedRecord } from '@/features/laboratory/api/mock-test-conducted';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
+const TEST_CONDUCTED_STATUS = 'test-conducted';
+
 export default function TestConductedList() {
-  const { message } = App.useApp();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const recordId = searchParams.get('recordId');
+
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters(TEST_CONDUCTED_STATUS),
     ageUnit: DOB_AGE_UNITS.years,
@@ -34,6 +41,11 @@ export default function TestConductedList() {
     );
   }, []);
 
+  const activeRecord = useMemo(() => {
+    const row = recordId ? getWorklistRowById(recordId) : null;
+    return row ? resolveTestConductedRecord(row) : null;
+  }, [recordId]);
+
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
@@ -43,11 +55,13 @@ export default function TestConductedList() {
     setHasSearched(true);
   };
 
-  const handleMarkConducted = useCallback(
+  const openApprovalForm = useCallback(
     (record) => {
-      message.success(`Test marked as conducted for ${record.patientName} (Lab #${record.labNo}).`);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('recordId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
     },
-    [message],
+    [pathname, router, searchParams],
   );
 
   const columns = useMemo(
@@ -74,24 +88,18 @@ export default function TestConductedList() {
         width: 150,
         align: 'center',
         render: (_, record) => (
-          <Button
-            type="link"
-            size="small"
-            // icon={
-            //   <AppIcon
-            //     icon="mdi:check-circle-outline"
-            //     className="h-[14px] w-[14px] text-[var(--app-primary)]"
-            //   />
-            // }
-            onClick={() => handleMarkConducted(record)}
-          >
+          <Button type="link" size="small" onClick={() => openApprovalForm(record)}>
             Ready for Approval
           </Button>
         ),
       },
     ],
-    [handleMarkConducted],
+    [openApprovalForm],
   );
+
+  if (activeRecord) {
+    return <TestConductedFormView record={activeRecord} />;
+  }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">

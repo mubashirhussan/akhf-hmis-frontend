@@ -1,10 +1,16 @@
 import { footerLinks, navigation } from '@/config/navigation';
-import { MOCK_LABORATORY_WORKLIST_ROWS } from '@/features/laboratory/api/mock-laboratory-worklist';
+import {
+  getWorklistRowById,
+  MOCK_LABORATORY_WORKLIST_ROWS,
+} from '@/features/laboratory/api/mock-laboratory-worklist';
+import { resolveTestConductedRecord } from '@/features/laboratory/api/mock-test-conducted';
 import { MOCK_SERVICES_BILLING_VISITS } from '@/features/billing/api/mock-services-billing';
 import { buildBillingVisitHref, buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
 import {
   buildResultEntryHref,
   buildSampleCollectionHref,
+  buildTestConductedHref,
+  buildUndeliveredReportHref,
 } from '@/features/laboratory/utils/laboratory-navigation';
 
 function flattenItems(items, parent = null) {
@@ -72,6 +78,37 @@ export function getBreadcrumbs(pathname, searchParams) {
         ...crumbs.slice(0, -1),
         { label: 'Result Entry', href: '/laboratory/result-entry' },
         { label: recordLabel, href: buildResultEntryHref(recordId) },
+      ];
+    }
+  }
+
+  if (normalizePath(pathname) === '/laboratory/test-conducted') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const row = getWorklistRowById(recordId);
+      const record = row ? resolveTestConductedRecord(row) : null;
+      const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Ready for Approval';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Test Conducted', href: '/laboratory/test-conducted' },
+        { label: recordLabel, href: buildTestConductedHref(recordId) },
+      ];
+    }
+  }
+
+  if (normalizePath(pathname) === '/laboratory/undelivered-reports') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const record = getWorklistRowById(recordId);
+      const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Undelivered Reports', href: '/laboratory/undelivered-reports' },
+        { label: recordLabel, href: buildUndeliveredReportHref(recordId) },
       ];
     }
   }

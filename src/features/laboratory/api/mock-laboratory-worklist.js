@@ -315,6 +315,12 @@ export function getAllLaboratoryWorklistRows() {
   return [...loadConductedTestRows(), ...MOCK_LABORATORY_WORKLIST_ROWS];
 }
 
+export function getWorklistRowById(recordId) {
+  if (!recordId) return null;
+
+  return getAllLaboratoryWorklistRows().find((row) => row.id === recordId) ?? null;
+}
+
 export function getDefaultLaboratoryWorklistResults(rows, defaultStatus = 'result-entry') {
   return rows.filter((row) => row.status === defaultStatus);
 }

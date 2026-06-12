@@ -1,26 +1,40 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import DeliveredReportDeliveryView from '@/features/laboratory/pages/delivered-reports/DeliveredReportDeliveryView';
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
+  getWorklistRowById,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function DeliveredReportsList() {
-  const { message } = App.useApp();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const recordId = searchParams.get('recordId');
+
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('delivered-reports'),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+
+  const activeRecord = useMemo(() => {
+    const row = recordId ? getWorklistRowById(recordId) : null;
+    return row?.status === 'delivered-reports' ? row : null;
+  }, [recordId]);
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -31,11 +45,13 @@ export default function DeliveredReportsList() {
     setHasSearched(true);
   };
 
-  const handleViewReport = useCallback(
+  const openDeliveryForm = useCallback(
     (record) => {
-      message.success(`Report opened for ${record.patientName} (Lab #${record.labNo}).`);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('recordId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
     },
-    [message],
+    [pathname, router, searchParams],
   );
 
   const columns = useMemo(
@@ -59,7 +75,7 @@ export default function DeliveredReportsList() {
       {
         title: 'Action',
         key: 'action',
-        width: 140,
+        width: 150,
         align: 'center',
         render: (_, record) => (
           <Button
@@ -71,15 +87,19 @@ export default function DeliveredReportsList() {
                 className="h-[14px] w-[14px] text-[var(--app-primary)]"
               />
             }
-            onClick={() => handleViewReport(record)}
+            onClick={() => openDeliveryForm(record)}
           >
-            View Report
+            Report
           </Button>
         ),
       },
     ],
-    [handleViewReport],
+    [openDeliveryForm],
   );
+
+  if (activeRecord) {
+    return <DeliveredReportDeliveryView record={activeRecord} />;
+  }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">

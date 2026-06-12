@@ -365,8 +365,11 @@ const RESULT_ENTRY_RECORD_TESTS = {
 };
 
 export function createResultEntryTestsForRecord(record) {
-  const { testKey: primaryTestKey } = resolveResultEntryTest(record);
-  const configuredTests = RESULT_ENTRY_RECORD_TESTS[record?.id] ?? DEFAULT_RECORD_TESTS;
+  const baseRecord = record?.sourceRecordId
+    ? { ...record, id: record.sourceRecordId }
+    : record;
+  const { testKey: primaryTestKey } = resolveResultEntryTest(baseRecord);
+  const configuredTests = RESULT_ENTRY_RECORD_TESTS[baseRecord?.id] ?? DEFAULT_RECORD_TESTS;
   const uniqueTests = configuredTests.filter(
     (test, index, list) => list.findIndex((item) => item.testKey === test.testKey) === index,
   );
@@ -384,7 +387,7 @@ export function createResultEntryTestsForRecord(record) {
       testKey: test.testKey,
       testGroup: test.testGroup,
       label: schema?.title ?? test.testKey,
-      labNo: record.labNo,
+      labNo: record?.labNo ?? baseRecord?.labNo,
       sequence: index + 1,
     };
   });
@@ -421,3 +424,4 @@ export function createResultEntryTestDrafts(record) {
 
   return drafts;
 }
+

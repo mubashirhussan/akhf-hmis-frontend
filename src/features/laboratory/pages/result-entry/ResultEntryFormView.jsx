@@ -524,7 +524,6 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
               type="primary"
               danger
               className="result-entry-action-btn result-entry-action-btn--danger"
-              // icon={<AppIcon icon="mdi:delete-outline" className="h-4 w-4" />}
               disabled={isCurrentTestFinalized}
               onClick={handleOpenDeleteModal}
             >

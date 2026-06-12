@@ -2,3 +2,6 @@
 @import "./worklist.css";
 @import "../pages/sample-collection/sample-collection.css";
 @import "../pages/result-entry/result-entry.css";
+@import "../pages/test-conducted/test-conducted.css";
+@import "../pages/undelivered-reports/undelivered-report-delivery.css";
+@import "../pages/delivered-reports/delivered-report-delivery.css";

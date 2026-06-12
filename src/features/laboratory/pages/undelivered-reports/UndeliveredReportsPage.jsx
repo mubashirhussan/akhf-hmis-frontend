@@ -1,26 +1,40 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import UndeliveredReportDeliveryView from '@/features/laboratory/pages/undelivered-reports/UndeliveredReportDeliveryView';
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
+  getWorklistRowById,
   MOCK_LABORATORY_WORKLIST_ROWS,
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function UndeliveredReportsList() {
-  const { message } = App.useApp();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const recordId = searchParams.get('recordId');
+
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('undelivered-reports'),
     ageUnit: DOB_AGE_UNITS.years,
+    patientAge: '',
+    dateRange: null,
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+
+  const activeRecord = useMemo(() => {
+    const row = recordId ? getWorklistRowById(recordId) : null;
+    return row?.status === 'undelivered-reports' ? row : null;
+  }, [recordId]);
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -31,11 +45,13 @@ export default function UndeliveredReportsList() {
     setHasSearched(true);
   };
 
-  const handleDeliverReport = useCallback(
+  const openDeliveryForm = useCallback(
     (record) => {
-      message.success(`Report delivery started for ${record.patientName} (Lab #${record.labNo}).`);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('recordId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
     },
-    [message],
+    [pathname, router, searchParams],
   );
 
   const columns = useMemo(
@@ -71,15 +87,19 @@ export default function UndeliveredReportsList() {
                 className="h-[14px] w-[14px] text-[var(--app-primary)]"
               />
             }
-            onClick={() => handleDeliverReport(record)}
+            onClick={() => openDeliveryForm(record)}
           >
-            Deliver Report
+            Report
           </Button>
         ),
       },
     ],
-    [handleDeliverReport],
+    [openDeliveryForm],
   );
+
+  if (activeRecord) {
+    return <UndeliveredReportDeliveryView record={activeRecord} />;
+  }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">
