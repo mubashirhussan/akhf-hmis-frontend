@@ -9,6 +9,7 @@ import { buildBillingVisitHref, buildOpdPaymentHref } from '@/features/billing/u
 import {
   buildResultEntryHref,
   buildSampleCollectionHref,
+  buildSampleReceivingHref,
   buildTestConductedHref,
   buildDeliveredReportHref,
   buildUndeliveredReportHref,
@@ -67,6 +68,22 @@ export function getBreadcrumbs(pathname, searchParams) {
       ];
     }
   }
+  if (normalizePath(pathname) === '/laboratory/sample-receiving') {
+    const recordId = searchParams?.get?.('recordId');
+
+    if (recordId) {
+      const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+      const recordLabel = record ? `Lab #${record.labNo}` : 'Receive Sample';
+
+      return [
+        ...crumbs.slice(0, -1),
+        { label: 'Sample Receiving', href: '/laboratory/sample-receiving' },
+        { label: recordLabel, href: buildSampleReceivingHref(recordId) },
+      ];
+    }
+  }
+
+
 
   if (normalizePath(pathname) === '/laboratory/result-entry') {
     const recordId = searchParams?.get?.('recordId');

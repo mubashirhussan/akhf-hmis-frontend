@@ -12,8 +12,17 @@ import {
   searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import SampleReceivingFormView from '@/features/laboratory/pages/sample-receiving/SampleReceivingFormView';
+
 
 export default function SampleReceivingList() {
+
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const recordId = searchParams.get('recordId');
+
   const { message } = App.useApp();
   const [filters, setFilters] = useState(() => ({
     ...createLaboratoryWorklistFilters('sample-receiving'),
@@ -23,6 +32,15 @@ export default function SampleReceivingList() {
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+
+
+ const activeRecord = useMemo(
+    () =>
+      recordId
+        ? (MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId) ?? null)
+        : null,
+    [recordId],
+  );
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -35,9 +53,11 @@ export default function SampleReceivingList() {
 
   const handleReceiveSample = useCallback(
     (record) => {
-      message.success(`Sample received for ${record.patientName} (Lab #${record.labNo}).`);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('recordId', record.id);
+      router.push(`${pathname}?${params.toString()}`);
     },
-    [message],
+    [pathname, router, searchParams],
   );
 
   const columns = useMemo(
@@ -82,6 +102,9 @@ export default function SampleReceivingList() {
     ],
     [handleReceiveSample],
   );
+    if (activeRecord) {
+      return <SampleReceivingFormView record={activeRecord} />;
+    }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">

@@ -16,6 +16,15 @@ export function buildSampleCollectionHref(recordId) {
   return `/laboratory/sample-collection${query ? `?${query}` : ''}`;
 }
 
+export function buildSampleReceivingHref(recordId) {
+  const params = new URLSearchParams();
+  if (recordId) {
+    params.set('recordId', recordId);
+  }
+  const query = params.toString();
+  return `/laboratory/sample-receiving${query ? `?${query}` : ''}`;
+}
+
 export function buildResultEntryHref(recordId) {
   const params = new URLSearchParams();
   if (recordId) {
