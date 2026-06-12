@@ -16,11 +16,11 @@ import {
 } from '@/features/laboratory/api/mock-sample-collection';
 import { buildPatientInfoSummary } from '@/features/patient/utils/patient-info';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
+import '@/features/laboratory/pages/sample-receiving/sample-receiving.css';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function SampleCollectionFormView({ record }) {
+export default function SampleReceivingFormView({ record }) {
   const { message } = App.useApp();
 
   const patient = useMemo(() => buildPatientInfoSummary(record), [record]);
@@ -54,7 +54,7 @@ export default function SampleCollectionFormView({ record }) {
   }, []);
 
   const handleSave = () => {
-    message.success(`Sample collection saved for ${record.patientName} (Lab #${record.labNo}).`);
+    message.success(`Sample receiving saved for ${record.patientName} (Lab #${record.labNo}).`);
   };
 
   const columns = useMemo(
@@ -119,13 +119,13 @@ export default function SampleCollectionFormView({ record }) {
   );
 
   return (
-    <div className="sample-collection-form-page">
+    <div className="sample-receiving-form-page">
       <PatientInfoHeaderCard patient={patient} />
 
-      <FormGrid columns={4} className="sample-collection-entry-form">
-        <FloatingField label="Test Group" htmlFor="sample-collection-group">
+      <FormGrid columns={4} className="sample-receiving-entry-form">
+        <FloatingField label="Test Group" htmlFor="sample-receiving-group">
           <Select
-            id="sample-collection-group"
+            id="sample-receiving-group"
             className={controlClass}
             value={filters.testGroup}
             options={SAMPLE_COLLECTION_GROUP_OPTIONS}
@@ -133,9 +133,9 @@ export default function SampleCollectionFormView({ record }) {
           />
         </FloatingField>
 
-        <FloatingField label="Collected at" htmlFor="sample-collection-collected-at">
+        <FloatingField label="Collected at" htmlFor="sample-receiving-collected-at">
           <Select
-            id="sample-collection-collected-at"
+            id="sample-receiving-collected-at"
             className={controlClass}
             value={filters.collectedAt}
             options={SAMPLE_COLLECTION_SITE_OPTIONS}
@@ -145,27 +145,27 @@ export default function SampleCollectionFormView({ record }) {
 
      
 
-        <FloatingField label="Bar Code" htmlFor="sample-collection-barcode">
+        <FloatingField label="Bar Code" htmlFor="sample-receiving-barcode">
           <Input
-            id="sample-collection-barcode"
+            id="sample-receiving-barcode"
             className={controlClass}
             value={filters.barCode}
             onChange={(e) => patchFilter({ barCode: e.target.value })}
             autoComplete="off"
           />
         </FloatingField>
-  <FloatingField label="Select Printer Location" htmlFor="sample-collection-printer">
+  <FloatingField label="Select Printer Location" htmlFor="sample-receiving-printer">
           <Select
-            id="sample-collection-printer"
+            id="sample-receiving-printer"
             className={controlClass}
             value={filters.printerLocation}
             options={SAMPLE_COLLECTION_PRINTER_OPTIONS}
             onChange={(value) => patchFilter({ printerLocation: value })}
           />
         </FloatingField>
-        <FloatingField label="Clinical Diagnosis" htmlFor="sample-collection-diagnosis">
+        <FloatingField label="Clinical Diagnosis" htmlFor="sample-receiving-diagnosis">
           <Input.TextArea
-            id="sample-collection-diagnosis"
+            id="sample-receiving-diagnosis"
             className={controlClass}
             rows={4}
             value={filters.clinicalDiagnosis}
@@ -174,9 +174,9 @@ export default function SampleCollectionFormView({ record }) {
         </FloatingField>
         {
           isSatelliteCenter&& (
-  <FloatingField label="Location" htmlFor="sample-collection-location">
+  <FloatingField label="Location" htmlFor="sample-receiving-location">
           <Select
-            id="sample-collection-location"
+            id="sample-receiving-location"
             className={controlClass}
             value={filters.location}
             options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
@@ -191,19 +191,19 @@ export default function SampleCollectionFormView({ record }) {
       
       </FormGrid>
 
-      <section className="sample-collection-form-table-section" aria-label="Tests for collection">
+      <section className="sample-receiving-form-table-section" aria-label="Tests for receiving">
         <DataTable
           columns={columns}
           dataSource={testRows}
           rowKey="id"
           columnAlign="left"
           pagination={false}
-          locale={{ emptyText: 'No tests available for collection' }}
+          locale={{ emptyText: 'No tests available for receiving' }}
         />
       </section>
 
-      <div className="sample-collection-form-footer">
-        <Button type="primary" className="sample-collection-save-btn" onClick={handleSave}>
+      <div className="sample-receiving-form-footer">
+        <Button type="primary" className="sample-receiving-save-btn" onClick={handleSave}>
           Save
         </Button>
       </div>
