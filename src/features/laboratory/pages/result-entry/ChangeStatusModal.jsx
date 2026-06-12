@@ -7,14 +7,14 @@ import AppModal from '@/components/ui/AppModal';
 
 const COLLECTION_OPTION = {
   value: 'sample-collection',
-  label: 'Collection',
+  label: 'Sample Collection',
   description: 'Return sample to collection queue',
   icon: 'mdi:test-tube',
 };
 
 const RECEIVING_OPTION = {
   value: 'sample-receiving',
-  label: 'Receiving',
+  label: 'Sample Receiving',
   description: 'Forward sample to receiving desk',
   icon: 'mdi:package-variant-closed',
 };
@@ -28,7 +28,7 @@ const RESULT_ENTRY_OPTION = {
 
 const TEST_CONDUCTED_OPTION = {
   value: 'test-conducted',
-  label: 'Test Conduct',
+  label: 'Test Conducted',
   description: 'Send to test conducted queue',
   icon: 'mdi:flask-outline',
 };
@@ -141,7 +141,7 @@ export default function ChangeStatusModal({
               </span>
               <span className="result-entry-change-status-option-content">
                 <span className="result-entry-change-status-option-label">{option.label}</span>
-                <span className="result-entry-change-status-option-desc">{option.description}</span>
+                {/* <span className="result-entry-change-status-option-desc">{option.description}</span> */}
               </span>
               <span
                 className={[

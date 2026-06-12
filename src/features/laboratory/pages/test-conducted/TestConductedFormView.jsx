@@ -134,26 +134,29 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
   const hasSavedResults = (savedFieldKeys ?? []).length > 0;
   const savedFieldKeySet = useMemo(() => new Set(savedFieldKeys ?? []), [savedFieldKeys]);
 
-  const visibleTests = useMemo(
-    () =>
-      filterTestConductedTestsByGroup(recordTests, testGroup).filter(
-        (test) => !sentTestKeys.includes(test.testKey),
+  const getPendingTests = useCallback(
+    (group = testGroup, drafts = testDrafts, excludedTestKeys = sentTestKeys) =>
+      filterTestConductedTestsByGroup(recordTests, group).filter(
+        (test) =>
+          !drafts[test.testKey]?.finalized && !excludedTestKeys.includes(test.testKey),
       ),
-    [recordTests, sentTestKeys, testGroup],
+    [recordTests, sentTestKeys, testDrafts, testGroup],
   );
+
+  const visibleTests = useMemo(() => getPendingTests(), [getPendingTests]);
 
   const handleTestGroupChange = useCallback(
     (value) => {
       setTestGroup(value);
 
-      const nextVisibleTests = filterTestConductedTestsByGroup(recordTests, value);
-      const isActiveTestVisible = nextVisibleTests.some((test) => test.testKey === activeTestKey);
+      const nextPendingTests = getPendingTests(value);
+      const isActiveTestVisible = nextPendingTests.some((test) => test.testKey === activeTestKey);
 
-      if (!isActiveTestVisible && nextVisibleTests.length) {
-        setActiveTestKey(nextVisibleTests[0].testKey);
+      if (!isActiveTestVisible && nextPendingTests.length) {
+        setActiveTestKey(nextPendingTests[0].testKey);
       }
     },
-    [activeTestKey, recordTests],
+    [activeTestKey, getPendingTests],
   );
 
   const handleSelectTest = useCallback((testKey) => {
@@ -219,21 +222,41 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
         ...(finalize ? { finalized: true } : {}),
       });
 
+      if (finalize) {
+        const nextPendingTests = recordTests.filter(
+          (test) =>
+            test.testKey !== activeTestKey &&
+            !sentTestKeys.includes(test.testKey) &&
+            !testDrafts[test.testKey]?.finalized,
+        );
+
+        if (nextPendingTests.length) {
+          setActiveTestKey(nextPendingTests[0].testKey);
+        } else {
+          onAllTestsCompleted?.();
+        }
+      }
+
       const action = finalize ? 'approved' : 'saved';
       message.success(
         `Result ${action} for ${record.patientName} (${schema?.title ?? 'Test'}, Lab #${record.labNo}).`,
       );
     },
     [
+      activeTestKey,
       fieldValues,
       isCurrentTestFinalized,
       message,
+      onAllTestsCompleted,
       patchCurrentDraft,
       record.labNo,
       record.patientName,
+      recordTests,
       savedFieldTimes,
       savedFieldValues,
       schema?.title,
+      sentTestKeys,
+      testDrafts,
     ],
   );
 
@@ -256,12 +279,13 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
 
       setSentTestKeys(nextSentTestKeys);
 
-      const nextVisibleTests = recordTests.filter(
-        (test) => !nextSentTestKeys.includes(test.testKey),
+      const nextPendingTests = recordTests.filter(
+        (test) =>
+          !nextSentTestKeys.includes(test.testKey) && !testDrafts[test.testKey]?.finalized,
       );
 
-      if (nextVisibleTests.length) {
-        setActiveTestKey(nextVisibleTests[0].testKey);
+      if (nextPendingTests.length) {
+        setActiveTestKey(nextPendingTests[0].testKey);
       } else {
         onAllTestsCompleted?.();
       }
@@ -281,6 +305,7 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
       recordTests,
       schema?.title,
       sentTestKeys,
+      testDrafts,
     ],
   );
 

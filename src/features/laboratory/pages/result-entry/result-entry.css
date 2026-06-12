@@ -456,8 +456,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   border-radius: 11px;
   background: #f1f5f9;
@@ -471,8 +471,8 @@
 }
 
 .result-entry-change-status-option-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .result-entry-change-status-option-content {
