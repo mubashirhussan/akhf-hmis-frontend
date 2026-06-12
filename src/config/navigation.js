@@ -32,6 +32,94 @@ export const navigation = [
   },
   { key: 'ipd', label: 'IPD', href: '/ipd', icon: 'mdi:bed' },
   {
+    key: 'admin-pathology',
+    label: 'Admin Pathology',
+    href: '/admin-pathology',
+    icon: 'mdi:microscope',
+    children: [
+      {
+        key: 'pathology-component-values',
+        label: 'Pathology Component Values',
+        href: '/admin-pathology/component-values',
+      },
+      {
+        key: 'admin-services-vs-test-booking',
+        label: 'Admin Services vs TestBooking',
+        href: '/admin-pathology/services-vs-test-booking',
+      },
+      {
+        key: 'pathology-main-group',
+        label: 'Pathology Main Group',
+        href: '/admin-pathology/main-group',
+      },
+      {
+        key: 'pathology-sub-group',
+        label: 'Pathology Sub Group',
+        href: '/admin-pathology/sub-group',
+      },
+      {
+        key: 'pathology-test-name',
+        label: 'Pathology Test Name',
+        href: '/admin-pathology/test-name',
+      },
+      {
+        key: 'pathology-component',
+        label: 'Pathology Component',
+        href: '/admin-pathology/component',
+      },
+      {
+        key: 'pathology-test-range',
+        label: 'Pathology Test Range',
+        href: '/admin-pathology/test-range',
+      },
+      {
+        key: 'pathology-component-values-length',
+        label: 'Pathology Component Values Length',
+        href: '/admin-pathology/component-values-length',
+      },
+      {
+        key: 'pathology-test-booking',
+        label: 'Pathology Test Booking',
+        href: '/admin-pathology/test-booking',
+      },
+      {
+        key: 'map-pathology-services',
+        label: 'Map Pathology Services',
+        href: '/admin-pathology/map-services',
+      },
+      {
+        key: 'admin-service-test-booking',
+        label: 'Admin Service Test Booking',
+        href: '/admin-pathology/service-test-booking',
+      },
+      {
+        key: 'pathology-report-consultant',
+        label: 'Pathology Report Consultant',
+        href: '/admin-pathology/report-consultant',
+      },
+      {
+        key: 'add-interpretation',
+        label: 'Add Interpretation',
+        href: '/admin-pathology/interpretation',
+      },
+      {
+        key: 'machine-calculated-test',
+        label: 'Machine Calculated Test',
+        href: '/admin-pathology/machine-calculated-test',
+      },
+      {
+        key: 'machine-integration-compwise',
+        label: 'Machine Integration CompWise',
+        href: '/admin-pathology/machine-integration-compwise',
+      },
+      {
+        key: 'all-patient-service-report',
+        label: 'All Patient Service Report',
+        href: '/admin-pathology/all-patient-service-report',
+      },
+    ],
+  },
+  {
     key: 'laboratory',
     label: 'Laboratory',
     href: '/laboratory',
@@ -56,7 +144,6 @@ export const navigation = [
   { key: 'doctor-share', label: 'Doctor Share', href: '/doctor-share', icon: 'mdi:stethoscope' },
   { key: 'examination', label: 'Examination', href: '/examination', icon: 'mdi:clipboard-text-outline' },
   { key: 'inventory', label: 'Inventory', href: '/inventory', icon: 'mdi:package-variant-closed' },
-  { key: 'admin-pathology', label: 'Admin Pathology', href: '/admin-pathology', icon: 'mdi:microscope' },
   { key: 'demand-requisition', label: 'Demand Requisition', href: '/demand-requisition', icon: 'mdi:format-list-checks' },
   { key: 'blood-bank', label: 'Blood Bank', href: '/blood-bank', icon: 'mdi:water' },
   { key: 'payroll-setup', label: 'Payroll Setup', href: '/payroll-setup', icon: 'mdi:cash-multiple' },
