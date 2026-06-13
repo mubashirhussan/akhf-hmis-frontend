@@ -42,8 +42,8 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
     endValue: '',
     reportValues: '',
     gender: 'Both',
-    minAge: '0 (0 Y 0 M 0 D)',
-    maxAge: '0 (0 Y 0 M 0 D)',
+    minAge: '0 (0 Y - 0 M - 0 D)',
+    maxAge: '0 (0 Y - 0 M - 0 D)',
   },
   {
     id: '2',
@@ -53,8 +53,8 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
     endValue: '0.50',
     reportValues: '',
     gender: 'Both',
-    minAge: '0 (0 Y 0 M 0 D)',
-    maxAge: '120 (120 Y 0 M 0 D)',
+    minAge: '0 (0 Y - 0 M - 0 D)',
+    maxAge: '120 (120 Y - 0 M - 0 D)',
   },
   {
     id: '3',
@@ -64,8 +64,8 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
     endValue: '20',
     reportValues: '',
     gender: 'Male',
-    minAge: '18 (18 Y 0 M 0 D)',
-    maxAge: '65 (65 Y 0 M 0 D)',
+    minAge: '18 (18 Y - 0 M - 0 D)',
+    maxAge: '65 (65 Y - 0 M - 0 D)',
   },
   {
     id: '4',
@@ -75,8 +75,8 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
     endValue: '15.0',
     reportValues: '',
     gender: 'Female',
-    minAge: '12 (12 Y 0 M 0 D)',
-    maxAge: '50 (50 Y 0 M 0 D)',
+    minAge: '12 (12 Y - 0 M - 0 D)',
+    maxAge: '50 (50 Y - 0 M - 0 D)',
   },
   {
     id: '5',
@@ -86,8 +86,8 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
     endValue: '56',
     reportValues: 'Normal',
     gender: 'Both',
-    minAge: '0 (0 Y 0 M 0 D)',
-    maxAge: '0 (0 Y 0 M 0 D)',
+    minAge: '0 (0 Y - 0 M - 0 D)',
+    maxAge: '0 (0 Y - 0 M - 0 D)',
   },
 ];
 
@@ -127,13 +127,13 @@ export function formatAgeForDisplay(age, unit) {
   const num = Number.parseInt(String(age), 10) || 0;
 
   if (unit === DOB_AGE_UNITS.years) {
-    return `${num} (${num} Y 0 M 0 D)`;
+    return `${num} (${num} Y - 0 M - 0 D)`;
   }
 
   if (unit === DOB_AGE_UNITS.months) {
     const years = Math.floor(num / 12);
     const months = num % 12;
-    return `${num} (${years} Y ${months} M 0 D)`;
+    return `${num} (${years} Y - ${months} M - 0 D)`;
   }
 
   if (unit === DOB_AGE_UNITS.days) {
@@ -141,10 +141,10 @@ export function formatAgeForDisplay(age, unit) {
     const remainder = num % 365;
     const months = Math.floor(remainder / 30);
     const days = remainder % 30;
-    return `${num} (${years} Y ${months} M ${days} D)`;
+    return `${num} (${years} Y - ${months} M - ${days} D)`;
   }
 
-  return `${num} (0 Y 0 M 0 D)`;
+  return `${num} (0 Y - 0 M - 0 D)`;
 }
 
 function findTestLocationByLabel(testLabel) {
