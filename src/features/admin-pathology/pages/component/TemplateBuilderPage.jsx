@@ -160,7 +160,12 @@ export default function TemplateBuilderPage() {
           columns={columns}
           dataSource={rows}
           columnAlign="left"
-          pagination={{ pageSize: 10, showSizeChanger: true }}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50', '100'],
+            showTotal: (total) => `Total ${total} items`,
+          }}
           scroll={{ x: true }}
         />
       </section>

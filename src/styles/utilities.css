@@ -799,6 +799,41 @@ textarea.field-control.ant-input {
   overflow: auto !important;
 }
 
+.data-table-wrap .ant-table-pagination {
+  margin: 12px 0 0 !important;
+}
+
+.data-table-wrap .ant-table-pagination.ant-pagination {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.data-table-wrap .ant-table-pagination .ant-pagination-total-text {
+  flex: 0 0 auto;
+  margin-inline-end: 0 !important;
+  order: 1;
+  color: #64748b;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.data-table-wrap .ant-table-pagination .ant-pagination-options {
+  flex: 0 0 auto;
+  order: 2;
+  margin-inline-end: auto !important;
+}
+
+.data-table-wrap .ant-table-pagination .ant-pagination-prev,
+.data-table-wrap .ant-table-pagination .ant-pagination-item,
+.data-table-wrap .ant-table-pagination .ant-pagination-jump-prev,
+.data-table-wrap .ant-table-pagination .ant-pagination-jump-next,
+.data-table-wrap .ant-table-pagination .ant-pagination-next {
+  order: 3;
+}
+
 .app-modal-root .ant-modal-container,
 .app-modal-container {
   padding: 0 !important;
