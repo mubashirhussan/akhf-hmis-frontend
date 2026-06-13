@@ -152,7 +152,7 @@ export default function PathologyComponentPage() {
 
   const columns = useMemo(
     () => [
-      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 120 },
+      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 130, className: 'pathology-component-col-group-name' },
       { title: 'Sub Group Name', dataIndex: 'subGroupName', key: 'subGroupName', width: 140 },
       { title: 'TID', dataIndex: 'tid', key: 'tid', width: 72 },
       { title: 'Test Name', dataIndex: 'testName', key: 'testName', width: 160 },
@@ -171,7 +171,7 @@ export default function PathologyComponentPage() {
         key: 'referenceFemale',
         width: 180,
       },
-      { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 80 },
+      { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 88, className: 'pathology-component-col-unit' },
       { title: 'Priority', dataIndex: 'priority', key: 'priority', width: 80 },
       {
         title: 'Action',
