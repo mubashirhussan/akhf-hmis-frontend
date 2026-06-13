@@ -65,7 +65,7 @@ export const navigation = [
       {
         key: 'pathology-component',
         label: 'Pathology Component',
-        href: '/admin-pathology/component',
+        href: '/admin-pathology/pathology-component',
       },
       {
         key: 'pathology-test-range',

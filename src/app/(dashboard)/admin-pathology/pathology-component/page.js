@@ -4,6 +4,6 @@ export const metadata = {
   title: 'Pathology Component | AKHF',
 };
 
-export default function AdminPathologyComponentPage() {
+export default function PathologyComponentRoutePage() {
   return <PathologyComponentPage />;
 }
