@@ -80,6 +80,8 @@
 .pathology-test-range-conversion-link {
   padding-inline: 0;
   height: auto;
+  align-self: flex-start;
+  width: auto;
 }
 
 .pathology-test-range-unit {
@@ -130,4 +132,32 @@
     flex: 1;
     min-width: 0;
   }
+}
+
+.pathology-conversion-rate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pathology-conversion-rate-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.pathology-conversion-rate-form .field-control {
+  width: 100%;
+}
+
+.pathology-conversion-rate-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pathology-conversion-rate-save-btn,
+.pathology-conversion-rate-close-btn {
+  min-width: 120px;
 }

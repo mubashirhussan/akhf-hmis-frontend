@@ -220,12 +220,12 @@ export default function PathologyTestRangeForm({
               id={fieldId('new-condition')}
               className={controlClass}
               value={form.newCondition}
-              placeholder="New condition"
+              placeholder="Add New condition"
               onChange={(event) => onPatchForm({ newCondition: event.target.value })}
               autoComplete="off"
             />
             <Button type="link" className="pathology-test-range-new-link" onClick={onAddCondition}>
-              New
+              Add
             </Button>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default function PathologyTestRangeForm({
           />
           <Button
             type="link"
-            className="pathology-test-range-conversion-link"
+            className="pathology-test-range-conversion-link text-left"
             onClick={onAddConversionRate}
           >
             Add Conversion Rate

@@ -26,7 +26,6 @@ export default function PathologyTestRangeModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={900}
       className="pathology-test-range-modal"
       rootClassName="pathology-test-range-modal-root"
       footer={

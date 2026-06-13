@@ -169,7 +169,7 @@ export default function PathologyComponentForm({
             onChange={(event) => onPatchForm({ newUnit: event.target.value })}
             autoComplete="off"
           />
-          <Button type="default" onClick={onAddUnit}>
+          <Button   type="link" onClick={onAddUnit}>
             Add New Unit
           </Button>
         </div>

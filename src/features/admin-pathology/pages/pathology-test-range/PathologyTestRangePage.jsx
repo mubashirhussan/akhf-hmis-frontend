@@ -19,6 +19,7 @@ import {
   rowToPathologyTestRangeForm,
 } from '@/features/admin-pathology/api/mock-pathology-test-range';
 import PathologyTestRangeModal from '@/features/admin-pathology/pages/pathology-test-range/PathologyTestRangeModal';
+import ConversionRateModal from '@/features/admin-pathology/pages/pathology-test-range/ConversionRateModal';
 import { useConfirm } from '@/hooks/useConfirm';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
@@ -36,6 +37,7 @@ export default function PathologyTestRangePage() {
   const [unitOptions, setUnitOptions] = useState(BASE_UNIT_OPTIONS);
   const [conditionOptions, setConditionOptions] = useState(CONDITION_OPTIONS);
   const [isTestRangeModalOpen, setIsTestRangeModalOpen] = useState(false);
+  const [isConversionRateModalOpen, setIsConversionRateModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -170,8 +172,17 @@ export default function PathologyTestRangePage() {
   }, [conditionOptions, form.newCondition, message, patchForm]);
 
   const handleAddConversionRate = useCallback(() => {
-    message.info('Conversion rate will be connected to the backend API.');
-  }, [message]);
+    setIsConversionRateModalOpen(true);
+  }, []);
+
+  const closeConversionRateModal = useCallback(() => {
+    setIsConversionRateModalOpen(false);
+  }, []);
+
+  const conversionRateDefaultUnit = useMemo(
+    () => getOptionLabel(unitOptions, form.unit) || 'Null',
+    [form.unit, unitOptions],
+  );
 
   const columns = useMemo(
     () => [
@@ -261,6 +272,12 @@ export default function PathologyTestRangePage() {
         onSave={handleSave}
         onAddCondition={handleAddCondition}
         onAddConversionRate={handleAddConversionRate}
+      />
+
+      <ConversionRateModal
+        open={isConversionRateModalOpen}
+        onClose={closeConversionRateModal}
+        defaultUnit={conversionRateDefaultUnit}
       />
     </div>
   );
