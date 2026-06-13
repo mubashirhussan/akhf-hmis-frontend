@@ -712,28 +712,6 @@ textarea.field-control.ant-input {
   border-radius: 10px;
 }
 
-.data-table-wrap .ant-spin-nested-loading {
-  min-height: 160px;
-}
-
-.data-table-wrap--loading-body .data-table .ant-table-tbody > tr > td.data-table-body-loading-cell {
-  padding: 0 !important;
-  height: 240px;
-  border-bottom: none !important;
-}
-
-.data-table-body-loading-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 240px;
-  width: 100%;
-}
-
-.data-table-wrap--loading-body .ant-table-placeholder .ant-empty {
-  display: none;
-}
-
 .data-table-wrap .ant-table-wrapper {
   width: 100%;
   min-width: 0;
