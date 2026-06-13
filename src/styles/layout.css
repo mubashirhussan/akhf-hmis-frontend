@@ -1,5 +1,12 @@
 /* App shell — sidebar, header */
 
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.72);
+}
+
 html,
 body,
 .app-scrollbar:not(.sidebar-scroll),
