@@ -47,12 +47,7 @@ export function getBreadcrumbs(pathname, searchParams) {
     return [{ label: 'Home', href: '/' }];
   }
 
-  const crumbs = [];
-  let current = item;
-  while (current) {
-    crumbs.unshift({ label: current.label, href: current.href });
-    current = current.parent;
-  }
+  const baseCrumb = { label: item.label, href: item.href };
 
   if (normalizePath(pathname) === '/laboratory/sample-collection') {
     const recordId = searchParams?.get?.('recordId');
@@ -62,8 +57,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record ? `Lab #${record.labNo}` : 'Collect Sample';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Sample Collection', href: '/laboratory/sample-collection' },
+        baseCrumb,
         { label: recordLabel, href: buildSampleCollectionHref(recordId) },
       ];
     }
@@ -76,8 +70,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record ? `Lab #${record.labNo}` : 'Receive Sample';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Sample Receiving', href: '/laboratory/sample-receiving' },
+        baseCrumb,
         { label: recordLabel, href: buildSampleReceivingHref(recordId) },
       ];
     }
@@ -93,8 +86,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record ? `Lab #${record.labNo}` : 'Enter Result';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Result Entry', href: '/laboratory/result-entry' },
+        baseCrumb,
         { label: recordLabel, href: buildResultEntryHref(recordId) },
       ];
     }
@@ -109,8 +101,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Ready for Approval';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Test Conducted', href: '/laboratory/test-conducted' },
+        baseCrumb,
         { label: recordLabel, href: buildTestConductedHref(recordId) },
       ];
     }
@@ -124,8 +115,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Undelivered Reports', href: '/laboratory/undelivered-reports' },
+        baseCrumb,
         { label: recordLabel, href: buildUndeliveredReportHref(recordId) },
       ];
     }
@@ -139,8 +129,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const recordLabel = record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Delivered Reports', href: '/laboratory/delivered-reports' },
+        baseCrumb,
         { label: recordLabel, href: buildDeliveredReportHref(recordId) },
       ];
     }
@@ -154,8 +143,7 @@ export function getBreadcrumbs(pathname, searchParams) {
       const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Services';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Services Billing', href: '/opd/services-billing' },
+        baseCrumb,
         { label: visitLabel, href: buildBillingVisitHref(visitId) },
       ];
     }
@@ -169,14 +157,13 @@ export function getBreadcrumbs(pathname, searchParams) {
       const visitLabel = visit ? `Visit #${visit.visitNo}` : 'Visit Payment';
 
       return [
-        ...crumbs.slice(0, -1),
-        { label: 'Payment', href: '/opd/payment' },
+        baseCrumb,
         { label: visitLabel, href: buildOpdPaymentHref(visitId) },
       ];
     }
   }
 
-  return crumbs;
+  return [baseCrumb];
 }
 
 export function isPathActive(pathname, href) {
