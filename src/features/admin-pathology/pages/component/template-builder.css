@@ -1,0 +1,69 @@
+.template-builder-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.template-builder-form-grid .field-control,
+.template-builder-form-grid .ant-select {
+  width: 100%;
+}
+
+.template-builder-form-grid .field-control.ant-input-status-error,
+.template-builder-form-grid .ant-input-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.template-builder-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.template-builder-save-btn {
+  min-width: 138px;
+}
+
+.template-builder-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.template-builder-export-btn {
+  min-width: 138px;
+}
+
+.template-builder-new-unit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.template-builder-new-unit .field-control {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 991px) {
+  .template-builder-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .template-builder-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .template-builder-save-btn,
+  .template-builder-export-btn {
+    width: 100%;
+  }
+
+  .template-builder-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
