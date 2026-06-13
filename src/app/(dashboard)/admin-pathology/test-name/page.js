@@ -1,0 +1,9 @@
+import PathologyComponentPage from '@/features/admin-pathology/pages/pathology-component/PathologyComponentPage';
+
+export const metadata = {
+  title: 'Pathology Test Name | AKHF',
+};
+
+export default function PathologyComponentRoutePage() {
+  return <PathologyComponentPage />;
+}

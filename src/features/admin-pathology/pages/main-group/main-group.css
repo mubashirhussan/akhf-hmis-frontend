@@ -1,0 +1,82 @@
+.main-group-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.main-group-form-grid .field-control,
+.main-group-form-grid .ant-select,
+.main-group-form-grid .main-group-priority-input {
+  width: 100%;
+}
+
+.main-group-form-grid .main-group-priority-input.ant-input-number {
+  width: 100%;
+}
+
+.main-group-form-grid .field-control.ant-input-status-error,
+.main-group-form-grid .ant-input-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.main-group-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.main-group-save-btn {
+  min-width: 138px;
+}
+
+.main-group-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.main-group-export-btn {
+  min-width: 138px;
+}
+
+.main-group-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.main-group-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+.main-group-new-unit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.main-group-new-unit .field-control {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 991px) {
+  .main-group-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-group-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .main-group-save-btn,
+  .main-group-export-btn {
+    width: 100%;
+  }
+
+  .main-group-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
