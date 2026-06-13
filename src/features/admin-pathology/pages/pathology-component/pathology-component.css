@@ -40,6 +40,21 @@
   min-width: 138px;
 }
 
+.pathology-component-page .data-table .pathology-component-col-group-name,
+.pathology-component-page .data-table .pathology-component-col-unit {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+.pathology-component-page .data-table .pathology-component-col-group-name {
+  min-width: 130px;
+}
+
+.pathology-component-page .data-table .pathology-component-col-unit {
+  min-width: 88px;
+}
+
 .pathology-component-actions-cell .ant-btn-link {
   color: var(--app-primary) !important;
 }

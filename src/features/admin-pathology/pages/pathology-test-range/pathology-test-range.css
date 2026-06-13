@@ -1,0 +1,163 @@
+.pathology-test-range-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.pathology-test-range-form-grid .field-control,
+.pathology-test-range-form-grid .ant-select,
+.pathology-test-range-form-grid .pathology-test-range-age-field .dob-age-age,
+.pathology-test-range-form-grid .pathology-test-range-age-field .dob-age-unit {
+  width: 100%;
+}
+
+.pathology-test-range-form-grid .pathology-test-range-age-field .dob-age-field-inner {
+  width: 100%;
+}
+
+.pathology-test-range-form-grid .field-control.ant-input-status-error,
+.pathology-test-range-form-grid .ant-input-status-error.field-control,
+.pathology-test-range-form-grid .ant-select-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.pathology-test-range-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.pathology-test-range-save-btn {
+  min-width: 138px;
+}
+
+.pathology-test-range-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.pathology-test-range-export-btn {
+  min-width: 138px;
+}
+
+.pathology-test-range-test-component {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pathology-test-range-test-component .field-control:first-child {
+  flex: 0 0 88px;
+  min-width: 88px;
+}
+
+.pathology-test-range-test-component .field-control:last-child,
+.pathology-test-range-test-component .ant-select:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.pathology-test-range-condition {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pathology-test-range-new-condition {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pathology-test-range-new-condition .field-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.pathology-test-range-new-link,
+.pathology-test-range-conversion-link {
+  padding-inline: 0;
+  height: auto;
+  align-self: flex-start;
+  width: auto;
+}
+
+.pathology-test-range-unit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pathology-test-range-actions-cell .pathology-test-range-edit-btn.ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.pathology-test-range-actions-cell .pathology-test-range-delete-btn.ant-btn-link {
+  color: #ff4d4f !important;
+}
+
+.pathology-test-range-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+@media (max-width: 991px) {
+  .pathology-test-range-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .pathology-test-range-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .pathology-test-range-save-btn,
+  .pathology-test-range-export-btn {
+    width: 100%;
+  }
+
+  .pathology-test-range-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pathology-test-range-test-component {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pathology-test-range-test-component .field-control:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.pathology-conversion-rate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pathology-conversion-rate-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.pathology-conversion-rate-form .field-control {
+  width: 100%;
+}
+
+.pathology-conversion-rate-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pathology-conversion-rate-save-btn,
+.pathology-conversion-rate-close-btn {
+  min-width: 120px;
+}
