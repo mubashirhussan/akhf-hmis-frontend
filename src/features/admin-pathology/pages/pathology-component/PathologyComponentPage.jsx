@@ -160,13 +160,13 @@ export default function PathologyComponentPage() {
       { title: 'Component Name', dataIndex: 'componentName', key: 'componentName', width: 180 },
       { title: 'Field Type', dataIndex: 'fieldType', key: 'fieldType', width: 100 },
       {
-        title: 'Reference Values Male',
+        title: 'Ref Values Male',
         dataIndex: 'referenceMale',
         key: 'referenceMale',
         width: 180,
       },
       {
-        title: 'Reference Value Female',
+        title: 'Ref Value Female',
         dataIndex: 'referenceFemale',
         key: 'referenceFemale',
         width: 180,
