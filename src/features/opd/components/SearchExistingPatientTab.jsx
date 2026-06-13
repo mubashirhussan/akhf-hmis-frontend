@@ -6,9 +6,8 @@ import DetailSection from '@/components/ui/DetailSection';
 import DataTable from '@/components/ui/DataTable';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import {
-  MOCK_WALK_IN_PATIENTS,
-  searchWalkInPatients,
-} from '@/features/opd/api/mock-walk-in-patients';
+  useLazySearchWalkInPatientsQuery,
+} from '@/features/opd/api/opdEndpoints';
 import SearchServicesSection from '@/features/opd/components/SearchServicesSection';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { validateWalkInPatientSearch } from '@/features/opd/utils/walk-in-search-validation';
@@ -60,7 +59,9 @@ export default function SearchExistingPatientTab() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isPatientDetailsModalOpen, setIsPatientDetailsModalOpen] = useState(false);
 
-  const handleSearch = () => {
+  const [searchPatients, { isLoading }] = useLazySearchWalkInPatientsQuery();
+
+  const handleSearch = async () => {
     const validation = validateWalkInPatientSearch(mrNo, mobileNo);
     if (!validation.valid) {
       message.error(validation.message);
@@ -71,10 +72,7 @@ export default function SearchExistingPatientTab() {
       return;
     }
 
-    const matched = searchWalkInPatients(MOCK_WALK_IN_PATIENTS, {
-      mrNo,
-      mobile: mobileNo,
-    });
+    const { data: matched = [] } = await searchPatients({ mrNo, mobile: mobileNo });
     setResults(matched);
     setHasSearched(true);
     setSelectedPatient(null);
@@ -243,6 +241,7 @@ export default function SearchExistingPatientTab() {
           className="data-table--patient-list"
           columns={patientColumns}
           dataSource={results}
+          loading={isLoading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

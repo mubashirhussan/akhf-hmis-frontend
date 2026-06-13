@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
@@ -9,13 +9,15 @@ import BillingVisitPaymentView from '@/features/billing/pages/payment/BillingVis
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
 import DataTable from '@/components/ui/DataTable';
-import { MOCK_BILLING_VISIT_SERVICE_ROWS } from '@/features/billing/api/mock-billing-visit-services';
 import {
-  MOCK_SERVICES_BILLING_VISITS,
-  searchServicesBillingVisits,
   SERVICES_BILLING_STATUS_COLORS,
   SERVICES_BILLING_TYPE_COLORS,
 } from '@/features/billing/api/mock-services-billing';
+import {
+  useGetBillingVisitQuery,
+  useGetBillingVisitServicesQuery,
+  useLazySearchBillingVisitsQuery,
+} from '@/features/billing/api/billingEndpoints';
 import { buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
@@ -23,10 +25,6 @@ import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 const controlClass = FIELD_CONTROL_CLASS;
 
 const PAYMENT_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-
-function createDefaultVisitServiceRows() {
-  return MOCK_BILLING_VISIT_SERVICE_ROWS.map((row) => ({ ...row }));
-}
 
 const emptyFilters = {
   visitNo: '',
@@ -75,27 +73,14 @@ export default function PaymentList() {
   const [filters, setFilters] = useState(emptyFilters);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [visitServiceRowsByVisitId, setVisitServiceRowsByVisitId] = useState({});
+  const [searchVisits, { isLoading }] = useLazySearchBillingVisitsQuery();
 
   const visitId = searchParams.get('visitId');
-  const activeVisit = useMemo(
-    () =>
-      visitId
-        ? (MOCK_SERVICES_BILLING_VISITS.find((visit) => visit.id === visitId) ?? null)
-        : null,
-    [visitId],
-  );
-
-  useEffect(() => {
-    if (!visitId) return;
-
-    setVisitServiceRowsByVisitId((prev) => {
-      if (prev[visitId]) return prev;
-      return { ...prev, [visitId]: createDefaultVisitServiceRows() };
-    });
-  }, [visitId]);
-
-  const visitServiceRows = visitId ? (visitServiceRowsByVisitId[visitId] ?? []) : [];
+  const { data: activeVisit = null } = useGetBillingVisitQuery(visitId, { skip: !visitId });
+  const { data: visitServiceRows = [], isLoading: isLoadingVisitServices } =
+    useGetBillingVisitServicesQuery(visitId, {
+    skip: !visitId,
+  });
 
   const openVisitPayment = useCallback(
     (record) => {
@@ -108,8 +93,8 @@ export default function PaymentList() {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
 
-  const handleSearch = () => {
-    const matched = searchServicesBillingVisits(MOCK_SERVICES_BILLING_VISITS, filters);
+  const handleSearch = async () => {
+    const { data: matched = [] } = await searchVisits(filters);
     setResults(matched);
     setHasSearched(true);
   };
@@ -177,7 +162,13 @@ export default function PaymentList() {
   );
 
   if (activeVisit) {
-    return <BillingVisitPaymentView visit={activeVisit} serviceRows={visitServiceRows} />;
+    return (
+      <BillingVisitPaymentView
+        visit={activeVisit}
+        serviceRows={visitServiceRows}
+        loading={isLoadingVisitServices}
+      />
+    );
   }
 
   return (
@@ -335,6 +326,7 @@ export default function PaymentList() {
         <DataTable
           columns={columns}
           dataSource={results}
+          loading={isLoading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

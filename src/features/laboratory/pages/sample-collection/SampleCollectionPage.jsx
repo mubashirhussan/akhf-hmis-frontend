@@ -10,9 +10,11 @@ import SampleCollectionFormView from '@/features/laboratory/pages/sample-collect
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
-  MOCK_LABORATORY_WORKLIST_ROWS,
-  searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
+import {
+  useGetLaboratoryWorklistRecordQuery,
+  useLazySearchLaboratoryWorklistQuery,
+} from '@/features/laboratory/api/laboratoryEndpoints';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function SampleCollectionList() {
@@ -29,21 +31,18 @@ export default function SampleCollectionList() {
   }));
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
-
-  const activeRecord = useMemo(
-    () =>
-      recordId
-        ? (MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId) ?? null)
-        : null,
-    [recordId],
-  );
+  const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
+  const { data: activeRecord = null } = useGetLaboratoryWorklistRecordQuery(recordId, {
+    skip: !recordId,
+  });
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
 
-  const handleSearch = () => {
-    setResults(searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, filters));
+  const handleSearch = async () => {
+    const { data = [] } = await searchWorklist(filters);
+    setResults(data);
     setHasSearched(true);
   };
 
@@ -116,6 +115,7 @@ export default function SampleCollectionList() {
         <DataTable
           columns={columns}
           dataSource={results}
+          loading={isLoading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

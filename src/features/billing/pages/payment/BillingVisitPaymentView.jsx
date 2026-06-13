@@ -27,7 +27,7 @@ function formatTableAmount(value) {
   return Number(value ?? 0).toLocaleString('en-PK');
 }
 
-export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
+export default function BillingVisitPaymentView({ visit, serviceRows = [], loading = false }) {
   const { message } = App.useApp();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
 
@@ -260,6 +260,7 @@ export default function BillingVisitPaymentView({ visit, serviceRows = [] }) {
           wrapClassName="billing-payment-services-table-wrap"
           columns={paymentTableColumns}
           dataSource={paymentTableRows}
+          loading={loading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

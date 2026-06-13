@@ -1,7 +1,7 @@
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import {
   GROUP_OPTIONS,
-  INITIAL_PATHOLOGY_COMPONENT_ROWS,
+  getPathologyComponentRows,
   SUB_GROUP_OPTIONS,
   TEST_OPTIONS,
   UNIT_OPTIONS,
@@ -91,6 +91,43 @@ export const INITIAL_PATHOLOGY_TEST_RANGE_ROWS = [
   },
 ];
 
+let testRangeRows = INITIAL_PATHOLOGY_TEST_RANGE_ROWS.map((row) => ({ ...row }));
+let conditionOptionsState = CONDITION_OPTIONS.map((option) => ({ ...option }));
+let nextTestRangeId =
+  Math.max(...INITIAL_PATHOLOGY_TEST_RANGE_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getPathologyTestRangeRows() {
+  return testRangeRows;
+}
+
+export function getPathologyConditionOptions() {
+  return conditionOptionsState;
+}
+
+export function createPathologyTestRangeRow(rowPayload) {
+  const id = String(nextTestRangeId);
+  nextTestRangeId += 1;
+  const row = { id, ...rowPayload };
+  testRangeRows = [row, ...testRangeRows];
+  return row;
+}
+
+export function updatePathologyTestRangeRow(id, rowPayload) {
+  testRangeRows = testRangeRows.map((row) =>
+    row.id === id ? { ...row, ...rowPayload } : row,
+  );
+  return testRangeRows.find((row) => row.id === id) ?? null;
+}
+
+export function deletePathologyTestRangeRow(id) {
+  testRangeRows = testRangeRows.filter((row) => row.id !== id);
+}
+
+export function addPathologyConditionOption(option) {
+  conditionOptionsState = [...conditionOptionsState, option];
+  return option;
+}
+
 export function createEmptyPathologyTestRangeForm() {
   return {
     groupName: 'haematology',
@@ -116,7 +153,7 @@ export function getComponentOptions(subGroupName, testName) {
   const testMeta = getTestMeta(subGroupName, testName);
   if (!testMeta) return [];
 
-  return INITIAL_PATHOLOGY_COMPONENT_ROWS.filter((row) => row.tid === testMeta.tid).map((row) => ({
+  return getPathologyComponentRows().filter((row) => row.tid === testMeta.tid).map((row) => ({
     value: String(row.tcid),
     label: row.componentName,
     tcid: row.tcid,
@@ -186,7 +223,9 @@ export function rowToPathologyTestRangeForm(row, unitOptions = UNIT_OPTIONS) {
   const gender =
     GENDER_OPTIONS.find((option) => option.label === row.gender)?.value ?? 'both';
   const condition =
-    CONDITION_OPTIONS.find((option) => option.label === row.condition)?.value ?? 'normal';
+    getPathologyConditionOptions().find((option) => option.label === row.condition)?.value ??
+    CONDITION_OPTIONS.find((option) => option.label === row.condition)?.value ??
+    'normal';
   const unit =
     unitOptions.find((option) => option.label === row.unit)?.value ??
     unitOptions.find((option) => option.value === row.unit)?.value ??

@@ -9,12 +9,11 @@ import TestConductedFormView from '@/features/laboratory/pages/test-conducted/Te
 import DataTable from '@/components/ui/DataTable';
 import {
   createLaboratoryWorklistFilters,
-  getAllLaboratoryWorklistRows,
-  getDefaultLaboratoryWorklistResults,
-  getWorklistRowById,
-  MOCK_LABORATORY_WORKLIST_ROWS,
-  searchLaboratoryWorklistRows,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
+import {
+  useGetLaboratoryWorklistRecordQuery,
+  useLazySearchLaboratoryWorklistQuery,
+} from '@/features/laboratory/api/laboratoryEndpoints';
 import { resolveTestConductedRecord } from '@/features/laboratory/api/mock-test-conducted';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
@@ -32,28 +31,29 @@ export default function TestConductedList() {
     patientAge: '',
     dateRange: null,
   }));
-  const [results, setResults] = useState(() =>
-    getDefaultLaboratoryWorklistResults(MOCK_LABORATORY_WORKLIST_ROWS, TEST_CONDUCTED_STATUS),
-  );
+  const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(true);
+  const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
+  const { data: worklistRecord = null } = useGetLaboratoryWorklistRecordQuery(recordId, {
+    skip: !recordId,
+  });
 
   useEffect(() => {
-    setResults(
-      getDefaultLaboratoryWorklistResults(getAllLaboratoryWorklistRows(), TEST_CONDUCTED_STATUS),
-    );
-  }, []);
+    searchWorklist(filters).then(({ data = [] }) => setResults(data));
+  }, [searchWorklist]);
 
-  const activeRecord = useMemo(() => {
-    const row = recordId ? getWorklistRowById(recordId) : null;
-    return row ? resolveTestConductedRecord(row) : null;
-  }, [recordId]);
+  const activeRecord = useMemo(
+    () => (worklistRecord ? resolveTestConductedRecord(worklistRecord) : null),
+    [worklistRecord],
+  );
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
 
-  const handleSearch = () => {
-    setResults(searchLaboratoryWorklistRows(getAllLaboratoryWorklistRows(), filters));
+  const handleSearch = async () => {
+    const { data = [] } = await searchWorklist(filters);
+    setResults(data);
     setHasSearched(true);
   };
 
@@ -128,6 +128,7 @@ export default function TestConductedList() {
         <DataTable
           columns={columns}
           dataSource={results}
+          loading={isLoading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

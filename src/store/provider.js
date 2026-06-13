@@ -1,6 +1,8 @@
 'use client';
 
-/** Pass-through until Redux or other global store is added. */
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
+
 export default function StoreProvider({ children }) {
-  return children;
+  return <Provider store={store}>{children}</Provider>;
 }

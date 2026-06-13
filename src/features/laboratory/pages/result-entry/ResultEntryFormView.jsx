@@ -13,8 +13,10 @@ import ChangeStatusModal, {
 import DeleteSavedComponentsModal from '@/features/laboratory/pages/result-entry/DeleteSavedComponentsModal';
 import './result-entry.css';
 import {
+  useUpdateLaboratoryWorklistStatusMutation,
+} from '@/features/laboratory/api/laboratoryEndpoints';
+import {
   addConductedTestRow,
-  updateLaboratoryWorklistStatus,
 } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
   buildSavedFieldSnapshotOnSave,
@@ -96,6 +98,7 @@ function ResultEntryFieldRow({
 
 export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
+  const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
   const reportSectionRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
@@ -308,7 +311,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
 
   const handleChangeStatus = useCallback(
     (status) => {
-      updateLaboratoryWorklistStatus(record.id, status);
+      void updateWorklistStatus({ recordId: record.id, status });
 
       const statusLabel =
         RESULT_ENTRY_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
@@ -345,6 +348,7 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       schema?.title,
       sentTestKeys,
       testDrafts,
+      updateWorklistStatus,
     ],
   );
 
