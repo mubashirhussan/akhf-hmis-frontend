@@ -116,24 +116,24 @@ export default function TemplateBuilderPage() {
 
   const columns = useMemo(
     () => [
-      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 140 },
-      { title: 'Sub Group Name', dataIndex: 'subGroupName', key: 'subGroupName', width: 160 },
-      { title: 'TID', dataIndex: 'tid', key: 'tid', width: 80 },
-      { title: 'Test Name', dataIndex: 'testName', key: 'testName', width: 180 },
-      { title: 'TCID', dataIndex: 'tcid', key: 'tcid', width: 90 },
-      { title: 'Component Name', dataIndex: 'componentName', key: 'componentName', width: 200 },
-      { title: 'Field Type', dataIndex: 'fieldType', key: 'fieldType', width: 110 },
+      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 120 },
+      { title: 'Sub Group Name', dataIndex: 'subGroupName', key: 'subGroupName', width: 140 },
+      { title: 'TID', dataIndex: 'tid', key: 'tid', width: 72 },
+      { title: 'Test Name', dataIndex: 'testName', key: 'testName', width: 160 },
+      { title: 'TCID', dataIndex: 'tcid', key: 'tcid', width: 80 },
+      { title: 'Component Name', dataIndex: 'componentName', key: 'componentName', width: 180 },
+      { title: 'Field Type', dataIndex: 'fieldType', key: 'fieldType', width: 100 },
       {
         title: 'Reference Values Male',
         dataIndex: 'referenceMale',
         key: 'referenceMale',
-        width: 160,
+        width: 180,
       },
       {
         title: 'Reference Value Female',
         dataIndex: 'referenceFemale',
         key: 'referenceFemale',
-        width: 160,
+        width: 180,
       },
     ],
     [],
@@ -166,7 +166,6 @@ export default function TemplateBuilderPage() {
             pageSizeOptions: ['10', '20', '50', '100'],
             showTotal: (total) => `Total ${total} items`,
           }}
-          scroll={{ x: true }}
         />
       </section>
 
