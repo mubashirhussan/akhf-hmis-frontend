@@ -74,7 +74,7 @@ const nextGroupIdRef = useRef(
     current.filter((row) => row.id !== record.id)
   );
 
-  message.success('Component deleted.');
+  message.success('Sub Group deleted.');
 }, [message]);
 
   const handleSave = useCallback(() => {
@@ -109,7 +109,7 @@ const rowPayload = {
       );
       setIsComponentModalOpen(false);
       setEditingRowId(null);
-      message.success('Component updated.');
+      message.success('Sub Group updated.');
       return;
     }
 
@@ -119,7 +119,7 @@ const rowPayload = {
   ]);
 
   setIsComponentModalOpen(false);
-  message.success('Component created.');
+  message.success('Sub Group created.');
 }, [form, editingRowId, message]);
 
   const columns = useMemo(
@@ -140,7 +140,7 @@ const rowPayload = {
               type="link"
               size="small"
               className="sub-group-actions-cell"
-              aria-label="Edit component"
+              aria-label="Edit Sub Group"
               icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
               onClick={() => handleEditRow(record)}
             />
@@ -165,7 +165,7 @@ const rowPayload = {
     <div className="services-billing-page sub-group-page">
       <div className="sub-group-table-toolbar">
         <Button type="primary" onClick={openComponentModal}>
-          Add Component
+          Add Sub Group
         </Button>
       </div>
 
@@ -187,7 +187,7 @@ const rowPayload = {
       <SubGroupModal
         open={isComponentModalOpen}
         onClose={closeComponentModal}
-        title={editingRowId ? 'Edit Component' : 'Add Component'}
+        title={editingRowId ? 'Edit Sub Group' : 'Add Sub Group'}
         form={form}
         errors={fieldErrors}
         onPatchForm={patchForm}

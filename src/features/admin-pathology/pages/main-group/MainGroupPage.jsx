@@ -74,7 +74,7 @@ const nextGroupIdRef = useRef(
     current.filter((row) => row.id !== record.id)
   );
 
-  message.success('Component deleted.');
+  message.success('Main Group deleted.');
 }, [message]);
 
   const handleSave = useCallback(() => {
@@ -103,7 +103,7 @@ const rowPayload = {
       );
       setIsComponentModalOpen(false);
       setEditingRowId(null);
-      message.success('Component updated.');
+      message.success('Main Group updated.');
       return;
     }
 
@@ -113,7 +113,7 @@ const rowPayload = {
   ]);
 
   setIsComponentModalOpen(false);
-  message.success('Component created.');
+  message.success('Main Group created.');
 }, [form, editingRowId, message]);
 
   const columns = useMemo(
@@ -133,7 +133,7 @@ const rowPayload = {
               type="link"
               size="small"
               className="main-group-actions-cell"
-              aria-label="Edit component"
+              aria-label="Edit main-group"
               icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
               onClick={() => handleEditRow(record)}
             />
@@ -158,7 +158,7 @@ const rowPayload = {
     <div className="services-billing-page main-group-page">
       <div className="main-group-table-toolbar">
         <Button type="primary" onClick={openComponentModal}>
-          Add Component
+          Add Main Group
         </Button>
       </div>
 
@@ -180,7 +180,7 @@ const rowPayload = {
       <MainGroupModal
         open={isComponentModalOpen}
         onClose={closeComponentModal}
-        title={editingRowId ? 'Edit Component' : 'Add Component'}
+        title={editingRowId ? 'Edit Main Group' : 'Add Main Group'}
         form={form}
         errors={fieldErrors}
         onPatchForm={patchForm}
