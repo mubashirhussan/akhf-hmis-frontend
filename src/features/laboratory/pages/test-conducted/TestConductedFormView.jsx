@@ -9,7 +9,7 @@ import DynamicResultField from '@/features/laboratory/components/DynamicResultFi
 import ChangeStatusModal, {
   TEST_CONDUCTED_STATUS_OPTIONS,
 } from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
-import { updateLaboratoryWorklistStatus } from '@/features/laboratory/api/mock-laboratory-worklist';
+import { useUpdateLaboratoryWorklistStatusMutation } from '@/features/laboratory/api/laboratoryEndpoints';
 import {
   buildTestConductedSavedFieldSnapshotOnSave,
   createTestConductedDrafts,
@@ -90,6 +90,7 @@ function TestConductedFieldRow({
 
 export default function TestConductedFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
+  const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
   const reportSectionRef = useRef(null);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [sentTestKeys, setSentTestKeys] = useState([]);
@@ -268,7 +269,7 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
   const handleChangeStatus = useCallback(
     (status) => {
       const recordId = record.sourceRecordId ?? record.id;
-      updateLaboratoryWorklistStatus(recordId, status);
+      void updateWorklistStatus({ recordId, status });
 
       const statusLabel =
         TEST_CONDUCTED_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;

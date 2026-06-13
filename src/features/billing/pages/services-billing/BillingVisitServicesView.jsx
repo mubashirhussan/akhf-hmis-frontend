@@ -30,7 +30,7 @@ import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function BillingVisitServicesView({ visit, serviceRows, setServiceRows }) {
+export default function BillingVisitServicesView({ visit, serviceRows, setServiceRows, loading = false }) {
   const router = useRouter();
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
@@ -278,6 +278,7 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
           wrapClassName="billing-visit-services-table-wrap"
           columns={columns}
           dataSource={serviceRows}
+          loading={loading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

@@ -1,15 +1,11 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Space, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import { UNIT_OPTIONS as BASE_UNIT_OPTIONS } from '@/features/admin-pathology/api/mock-pathology-component';
 import {
-  CONDITION_OPTIONS,
-  GENDER_OPTIONS,
   GROUP_OPTIONS,
-  INITIAL_PATHOLOGY_TEST_RANGE_ROWS,
   createEmptyPathologyTestRangeForm,
   formatAgeForDisplay,
   getComponentOptions,
@@ -17,7 +13,16 @@ import {
   getSubGroupOptions,
   getTestMeta,
   rowToPathologyTestRangeForm,
+  GENDER_OPTIONS,
 } from '@/features/admin-pathology/api/mock-pathology-test-range';
+import {
+  useAddPathologyConditionMutation,
+  useCreatePathologyTestRangeMutation,
+  useDeletePathologyTestRangeMutation,
+  useGetPathologyLookupsQuery,
+  useGetPathologyTestRangesQuery,
+  useUpdatePathologyTestRangeMutation,
+} from '@/features/admin-pathology/api/pathologyApi';
 import PathologyTestRangeModal from '@/features/admin-pathology/pages/pathology-test-range/PathologyTestRangeModal';
 import ConversionRateModal from '@/features/admin-pathology/pages/pathology-test-range/ConversionRateModal';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -28,14 +33,16 @@ const DELETE_ICON_CLASS = 'h-[16px] w-[16px] text-[#ff4d4f]';
 export default function PathologyTestRangePage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
-  const nextIdRef = useRef(
-    Math.max(...INITIAL_PATHOLOGY_TEST_RANGE_ROWS.map((row) => Number(row.id)), 0) + 1,
-  );
+  const { data: rows = [], isLoading } = useGetPathologyTestRangesQuery();
+  const { data: lookups } = useGetPathologyLookupsQuery();
+  const unitOptions = lookups?.unitOptions ?? [];
+  const conditionOptions = lookups?.conditionOptions ?? [];
+  const [createTestRange] = useCreatePathologyTestRangeMutation();
+  const [updateTestRange] = useUpdatePathologyTestRangeMutation();
+  const [deleteTestRange] = useDeletePathologyTestRangeMutation();
+  const [addCondition] = useAddPathologyConditionMutation();
 
   const [form, setForm] = useState(createEmptyPathologyTestRangeForm);
-  const [rows, setRows] = useState(INITIAL_PATHOLOGY_TEST_RANGE_ROWS);
-  const [unitOptions, setUnitOptions] = useState(BASE_UNIT_OPTIONS);
-  const [conditionOptions, setConditionOptions] = useState(CONDITION_OPTIONS);
   const [isTestRangeModalOpen, setIsTestRangeModalOpen] = useState(false);
   const [isConversionRateModalOpen, setIsConversionRateModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
@@ -83,14 +90,14 @@ export default function PathologyTestRangePage() {
       const confirmed = await confirmDelete({ itemName });
 
       if (confirmed) {
-        setRows((current) => current.filter((row) => row.id !== record.id));
+        await deleteTestRange(record.id).unwrap();
         message.success('Test range removed.');
       }
     },
-    [confirmDelete, message],
+    [confirmDelete, deleteTestRange, message],
   );
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!form.testComponent) {
       setFieldErrors({ testComponent: 'Test Component is required.' });
       return;
@@ -123,22 +130,25 @@ export default function PathologyTestRangePage() {
     };
 
     if (editingRowId) {
-      setRows((current) =>
-        current.map((row) => (row.id === editingRowId ? { ...row, ...rowPayload } : row)),
-      );
+      await updateTestRange({ id: editingRowId, ...rowPayload }).unwrap();
       setIsTestRangeModalOpen(false);
       setEditingRowId(null);
       message.success('Test range updated.');
       return;
     }
 
-    const id = String(nextIdRef.current);
-    nextIdRef.current += 1;
-
-    setRows((current) => [{ id, ...rowPayload }, ...current]);
+    await createTestRange(rowPayload).unwrap();
     setIsTestRangeModalOpen(false);
     message.success('Test range saved to the table.');
-  }, [conditionOptions, editingRowId, form, message, unitOptions]);
+  }, [
+    conditionOptions,
+    createTestRange,
+    editingRowId,
+    form,
+    message,
+    unitOptions,
+    updateTestRange,
+  ]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
@@ -148,7 +158,7 @@ export default function PathologyTestRangePage() {
     message.info('Export will be connected to the backend API.');
   }, [message, rows.length]);
 
-  const handleAddCondition = useCallback(() => {
+  const handleAddCondition = useCallback(async () => {
     const label = form.newCondition.trim();
     if (!label) {
       message.error('Enter a condition name first.');
@@ -166,10 +176,10 @@ export default function PathologyTestRangePage() {
       return;
     }
 
-    setConditionOptions((current) => [...current, { value, label }]);
+    await addCondition({ value, label }).unwrap();
     patchForm({ condition: value, newCondition: '' });
     message.success(`Condition "${label}" added.`);
-  }, [conditionOptions, form.newCondition, message, patchForm]);
+  }, [addCondition, conditionOptions, form.newCondition, message, patchForm]);
 
   const handleAddConversionRate = useCallback(() => {
     setIsConversionRateModalOpen(true);
@@ -249,6 +259,7 @@ export default function PathologyTestRangePage() {
           rowKey="id"
           columns={columns}
           dataSource={rows}
+          loading={isLoading}
           columnAlign="left"
           pagination={{
             pageSize: 10,

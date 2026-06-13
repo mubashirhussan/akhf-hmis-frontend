@@ -8,12 +8,11 @@ import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import AddedServicesPanel from "@/features/opd/components/AddedServicesPanel";
 import {
   MOCK_DOCTORS,
-  MOCK_SERVICES,
   formatPkr,
   formatServiceDateTime,
   paginateServices,
-  searchServices,
 } from "@/features/opd/api/mock-walk-in-services";
+import { useLazySearchWalkInServicesQuery } from "@/features/opd/api/opdEndpoints";
 
 const SERVICE_CATEGORY_OPTIONS = [
   { value: "all", label: "All Category" },
@@ -45,6 +44,7 @@ export default function SearchServicesSection({ variant = "full" }) {
   const [searchResults, setSearchResults] = useState([]);
   const [resultsPage, setResultsPage] = useState(1);
   const [addedServices, setAddedServices] = useState([]);
+  const [searchServicesQuery] = useLazySearchWalkInServicesQuery();
 
   const { items: pagedResults, total: resultsTotal } = useMemo(
     () => paginateServices(searchResults, resultsPage),
@@ -62,14 +62,15 @@ export default function SearchServicesSection({ variant = "full" }) {
     }
 
     const timer = setTimeout(() => {
-      const matched = searchServices(MOCK_SERVICES, category, query);
-      setSearchResults(matched);
-      setResultsPage(1);
-      setHasSearched(true);
+      void searchServicesQuery({ category, query }).then(({ data: matched = [] }) => {
+        setSearchResults(matched);
+        setResultsPage(1);
+        setHasSearched(true);
+      });
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [category, searchQuery]);
+  }, [category, searchQuery, searchServicesQuery]);
 
   const handleSelectedServicesChange = (selectedIds) => {
     setAddedServices((prev) => {

@@ -7,7 +7,7 @@ import FloatingField from '@/components/ui/FloatingField';
 import ChangeStatusModal, {
   UNDELIVERED_REPORTS_STATUS_OPTIONS,
 } from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
-import { updateLaboratoryWorklistStatus } from '@/features/laboratory/api/mock-laboratory-worklist';
+import { useUpdateLaboratoryWorklistStatusMutation } from '@/features/laboratory/api/laboratoryEndpoints';
 import FormGrid from '@/components/ui/FormGrid';
 import DataTable from '@/components/ui/DataTable';
 import {
@@ -30,6 +30,7 @@ function PaymentStatusBadge({ label, tone = 'pending' }) {
 
 export default function UndeliveredReportDeliveryView({ record }) {
   const { message } = App.useApp();
+  const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
 
   const lineItems = useMemo(() => getUndeliveredReportLineItems(record), [record]);
   const [selectedLineItemIds, setSelectedLineItemIds] = useState([]);
@@ -87,7 +88,7 @@ export default function UndeliveredReportDeliveryView({ record }) {
 
   const handleChangeStatus = useCallback(
     (status) => {
-      updateLaboratoryWorklistStatus(record.id, status);
+      void updateWorklistStatus({ recordId: record.id, status });
 
       const statusLabel =
         UNDELIVERED_REPORTS_STATUS_OPTIONS.find((option) => option.value === status)?.label ??

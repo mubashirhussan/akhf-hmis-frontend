@@ -196,6 +196,43 @@ export const INITIAL_PATHOLOGY_COMPONENT_ROWS = [
   },
 ];
 
+let componentRows = INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => ({ ...row }));
+let unitOptionsState = UNIT_OPTIONS.map((option) => ({ ...option }));
+let nextTcid =
+  Math.max(...INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => row.tcid), 0) + 1;
+
+export function getPathologyComponentRows() {
+  return componentRows;
+}
+
+export function getPathologyUnitOptions() {
+  return unitOptionsState;
+}
+
+export function createPathologyComponentRow(rowPayload) {
+  const tcid = nextTcid;
+  nextTcid += 1;
+  const row = {
+    id: String(tcid),
+    tcid,
+    ...rowPayload,
+  };
+  componentRows = [row, ...componentRows];
+  return row;
+}
+
+export function updatePathologyComponentRow(id, rowPayload) {
+  componentRows = componentRows.map((row) =>
+    row.id === id ? { ...row, ...rowPayload } : row,
+  );
+  return componentRows.find((row) => row.id === id) ?? null;
+}
+
+export function addPathologyUnitOption(option) {
+  unitOptionsState = [...unitOptionsState, option];
+  return option;
+}
+
 export function createEmptyPathologyComponentForm() {
   return {
     groupName: 'haematology',

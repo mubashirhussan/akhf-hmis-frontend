@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
@@ -8,26 +8,32 @@ import PathologyComponentModal from '@/features/admin-pathology/pages/pathology-
 import {
   FIELD_TYPE_OPTIONS,
   GROUP_OPTIONS,
-  INITIAL_PATHOLOGY_COMPONENT_ROWS,
-  UNIT_OPTIONS,
   createEmptyPathologyComponentForm,
   getOptionLabel,
   getSubGroupOptions,
   getTestMeta,
   rowToPathologyComponentForm,
 } from '@/features/admin-pathology/api/mock-pathology-component';
+import {
+  useAddPathologyUnitMutation,
+  useCreatePathologyComponentMutation,
+  useGetPathologyComponentsQuery,
+  useGetPathologyLookupsQuery,
+  useUpdatePathologyComponentMutation,
+} from '@/features/admin-pathology/api/pathologyApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 export default function PathologyComponentPage() {
   const { message } = App.useApp();
-  const nextTcidRef = useRef(
-    Math.max(...INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => row.tcid), 0) + 1,
-  );
+  const { data: rows = [], isLoading } = useGetPathologyComponentsQuery();
+  const { data: lookups } = useGetPathologyLookupsQuery();
+  const unitOptions = lookups?.unitOptions ?? [];
+  const [createComponent] = useCreatePathologyComponentMutation();
+  const [updateComponent] = useUpdatePathologyComponentMutation();
+  const [addUnit] = useAddPathologyUnitMutation();
 
   const [form, setForm] = useState(createEmptyPathologyComponentForm);
-  const [rows, setRows] = useState(INITIAL_PATHOLOGY_COMPONENT_ROWS);
-  const [unitOptions, setUnitOptions] = useState(UNIT_OPTIONS);
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -68,7 +74,7 @@ export default function PathologyComponentPage() {
     [unitOptions],
   );
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     const componentName = form.componentName.trim();
     if (!componentName) {
       setFieldErrors({ componentName: 'Component Name is required.' });
@@ -93,31 +99,17 @@ export default function PathologyComponentPage() {
     };
 
     if (editingRowId) {
-      setRows((current) =>
-        current.map((row) =>
-          row.id === editingRowId ? { ...row, ...rowPayload } : row,
-        ),
-      );
+      await updateComponent({ id: editingRowId, ...rowPayload }).unwrap();
       setIsComponentModalOpen(false);
       setEditingRowId(null);
       message.success('Component updated.');
       return;
     }
 
-    const tcid = nextTcidRef.current;
-    nextTcidRef.current += 1;
-
-    setRows((current) => [
-      {
-        id: String(tcid),
-        tcid,
-        ...rowPayload,
-      },
-      ...current,
-    ]);
+    await createComponent(rowPayload).unwrap();
     setIsComponentModalOpen(false);
     message.success('Component saved to the table.');
-  }, [editingRowId, form, message, unitOptions]);
+  }, [createComponent, editingRowId, form, message, unitOptions, updateComponent]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
@@ -127,7 +119,7 @@ export default function PathologyComponentPage() {
     message.info('Export will be connected to the backend API.');
   }, [message, rows.length]);
 
-  const handleAddUnit = useCallback(() => {
+  const handleAddUnit = useCallback(async () => {
     const label = form.newUnit.trim();
     if (!label) {
       message.error('Enter a unit name first.');
@@ -145,10 +137,10 @@ export default function PathologyComponentPage() {
       return;
     }
 
-    setUnitOptions((current) => [...current, { value, label }]);
+    await addUnit({ value, label }).unwrap();
     patchForm({ unit: value, newUnit: '' });
     message.success(`Unit "${label}" added.`);
-  }, [form.newUnit, message, patchForm, unitOptions]);
+  }, [addUnit, form.newUnit, message, patchForm, unitOptions]);
 
   const columns = useMemo(
     () => [
@@ -215,6 +207,7 @@ export default function PathologyComponentPage() {
           rowKey="id"
           columns={columns}
           dataSource={rows}
+          loading={isLoading}
           columnAlign="left"
           pagination={{
             pageSize: 10,

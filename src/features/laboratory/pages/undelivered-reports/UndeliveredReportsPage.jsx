@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
@@ -8,15 +8,14 @@ import LaboratoryDepartmentTag from '@/features/laboratory/components/Laboratory
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
 import UndeliveredReportDeliveryView from '@/features/laboratory/pages/undelivered-reports/UndeliveredReportDeliveryView';
 import DataTable from '@/components/ui/DataTable';
+import { createLaboratoryWorklistFilters } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
-  createLaboratoryWorklistFilters,
-  getDefaultLaboratoryWorklistResults,
-  MOCK_LABORATORY_WORKLIST_ROWS,
-  searchLaboratoryWorklistRows,
-} from '@/features/laboratory/api/mock-laboratory-worklist';
+  useGetLaboratoryWorklistRecordQuery,
+  useLazySearchLaboratoryWorklistQuery,
+} from '@/features/laboratory/api/laboratoryEndpoints';
+import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const UNDELIVERED_REPORTS_STATUS = 'undelivered-reports';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 export default function UndeliveredReportsList() {
   const router = useRouter();
@@ -30,27 +29,29 @@ export default function UndeliveredReportsList() {
     patientAge: '',
     dateRange: null,
   }));
-  const [results, setResults] = useState(() =>
-    getDefaultLaboratoryWorklistResults(MOCK_LABORATORY_WORKLIST_ROWS, UNDELIVERED_REPORTS_STATUS),
-  );
+  const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(true);
+  const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
+  const { data: activeRecord = null } = useGetLaboratoryWorklistRecordQuery(recordId, {
+    skip: !recordId,
+  });
 
-  const activeRecord = useMemo(() => {
-    if (!recordId) return null;
-    return MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId) ?? null;
-  }, [recordId]);
+  useEffect(() => {
+    searchWorklist({ ...filters, status: UNDELIVERED_REPORTS_STATUS }).then(({ data = [] }) =>
+      setResults(data),
+    );
+  }, [searchWorklist]);
 
   const patchFilter = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   };
 
-  const handleSearch = () => {
-    setResults(
-      searchLaboratoryWorklistRows(MOCK_LABORATORY_WORKLIST_ROWS, {
-        ...filters,
-        status: UNDELIVERED_REPORTS_STATUS,
-      }),
-    );
+  const handleSearch = async () => {
+    const { data = [] } = await searchWorklist({
+      ...filters,
+      status: UNDELIVERED_REPORTS_STATUS,
+    });
+    setResults(data);
     setHasSearched(true);
   };
 
@@ -123,6 +124,7 @@ export default function UndeliveredReportsList() {
         <DataTable
           columns={columns}
           dataSource={results}
+          loading={isLoading}
           rowKey="id"
           columnAlign="left"
           pagination={false}

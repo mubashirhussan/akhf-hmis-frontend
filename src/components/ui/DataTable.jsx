@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef } from 'react';
-import { Table } from 'antd';
+import { Spin, Table } from 'antd';
 import { useElementWidth } from '@/hooks/useElementWidth';
 import { getTableScrollWidth } from '@/lib/table-utils';
 
@@ -19,6 +19,22 @@ function applyColumnAlign(columns = [], defaultAlign = 'left') {
   }));
 }
 
+function isTableLoading(loading) {
+  if (!loading) return false;
+  if (typeof loading === 'object') return loading.spinning !== false;
+  return true;
+}
+
+function countLeafColumns(columns = []) {
+  return columns.reduce((count, column) => {
+    if (column.children?.length) {
+      return count + countLeafColumns(column.children);
+    }
+
+    return count + 1;
+  }, 0);
+}
+
 export default function DataTable({
   className = '',
   wrapClassName = '',
@@ -26,6 +42,9 @@ export default function DataTable({
   columnAlign = 'left',
   scroll = { x: false },
   tableLayout = 'auto',
+  loading = false,
+  rowSelection,
+  components: userComponents,
   ...props
 }) {
   const wrapRef = useRef(null);
@@ -79,11 +98,47 @@ export default function DataTable({
   }, [scroll, needsHorizontalScroll, contentWidth]);
 
   const resolvedTableLayout = tableLayout ?? (needsHorizontalScroll ? 'fixed' : 'auto');
+  const isLoading = isTableLoading(loading);
+  const loadingColSpan = countLeafColumns(resolvedColumns) + (rowSelection ? 1 : 0);
+
+  const tableComponents = useMemo(() => {
+    const BodyWrapper = (bodyProps) => {
+      if (isLoading) {
+        return (
+          <tbody {...bodyProps}>
+            <tr className="ant-table-placeholder">
+              <td colSpan={loadingColSpan} className="data-table-body-loading-cell">
+                <div className="data-table-body-loading-content">
+                  <Spin size="large" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        );
+      }
+
+      const UserBodyWrapper = userComponents?.body?.wrapper;
+      if (UserBodyWrapper) {
+        return <UserBodyWrapper {...bodyProps} />;
+      }
+
+      return <tbody {...bodyProps}>{bodyProps.children}</tbody>;
+    };
+
+    return {
+      ...userComponents,
+      body: {
+        ...userComponents?.body,
+        wrapper: BodyWrapper,
+      },
+    };
+  }, [isLoading, loadingColSpan, userComponents]);
 
   const wrapClassNames = [
     'data-table-wrap',
     'app-scrollbar',
     verticalScrollY != null && 'data-table-wrap--scroll-body',
+    isLoading && 'data-table-wrap--loading-body',
     wrapClassName,
   ]
     .filter(Boolean)
@@ -105,6 +160,8 @@ export default function DataTable({
         scroll={tableScroll}
         bordered
         tableLayout={resolvedTableLayout}
+        rowSelection={rowSelection}
+        components={tableComponents}
         {...props}
       />
     </div>

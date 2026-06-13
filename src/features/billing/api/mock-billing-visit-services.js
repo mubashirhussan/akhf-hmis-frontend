@@ -77,6 +77,24 @@ export const MOCK_BILLING_VISIT_SERVICE_ROWS = [
   },
 ];
 
+let visitServiceRowsByVisitId = {};
+
+export function getBillingVisitServiceRows(visitId) {
+  if (!visitId) return [];
+
+  if (!visitServiceRowsByVisitId[visitId]) {
+    visitServiceRowsByVisitId[visitId] = MOCK_BILLING_VISIT_SERVICE_ROWS.map((row) => ({ ...row }));
+  }
+
+  return visitServiceRowsByVisitId[visitId];
+}
+
+export function setBillingVisitServiceRows(visitId, rows) {
+  if (!visitId) return [];
+  visitServiceRowsByVisitId[visitId] = rows;
+  return rows;
+}
+
 export { buildPatientInfoSummary as buildBillingPatientSummary } from '@/features/patient/utils/patient-info';
 
 export function calcBillingServicesGrandTotal(rows = []) {
