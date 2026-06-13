@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button, Input, Select } from 'antd';
+import { Button, Input, InputNumber, Select } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
@@ -10,11 +10,11 @@ import {
   GROUP_OPTIONS,
   getSubGroupOptions,
   getTestOptions,
-} from '@/features/admin-pathology/api/mock-template-builder';
+} from '@/features/admin-pathology/api/mock-pathology-component';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function TemplateBuilderForm({
+export default function PathologyComponentForm({
   form,
   unitOptions,
   errors = {},
@@ -23,7 +23,7 @@ export default function TemplateBuilderForm({
   onAddUnit,
 }) {
   const componentNameRef = useRef(null);
-  const fieldId = (name) => `template-builder-${name}`;
+  const fieldId = (name) => `pathology-component-${name}`;
   const subGroupOptions = getSubGroupOptions(form.groupName);
   const testOptions = getTestOptions(form.subGroupName);
   const componentNameError = errors.componentName;
@@ -34,7 +34,7 @@ export default function TemplateBuilderForm({
   }, [componentNameError]);
 
   return (
-    <FormGrid columns={2} className="template-builder-form-grid">
+    <FormGrid columns={2} className="pathology-component-form-grid">
       <FormField label="Group Name">
         <Select
           id={fieldId('group-name')}
@@ -119,6 +119,17 @@ export default function TemplateBuilderForm({
         />
       </FormField>
 
+      <FormField label="Priority">
+        <InputNumber
+          id={fieldId('priority')}
+          className={`${controlClass} pathology-component-priority-input`}
+          value={form.priority}
+          min={1}
+          max={99}
+          onChange={(priority) => onPatchForm({ priority: priority ?? 1 })}
+        />
+      </FormField>
+
       <FormField label="Tool Tip">
         <Input
           id={fieldId('tool-tip')}
@@ -150,7 +161,7 @@ export default function TemplateBuilderForm({
       </FormField>
 
       <FormField label="New Unit">
-        <div className="template-builder-new-unit">
+        <div className="pathology-component-new-unit">
           <Input
             id={fieldId('new-unit')}
             className={controlClass}

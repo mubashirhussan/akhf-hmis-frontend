@@ -1,9 +1,9 @@
-import TemplateBuilderPage from '@/features/admin-pathology/pages/component/TemplateBuilderPage';
+import PathologyComponentPage from '@/features/admin-pathology/pages/pathology-component/PathologyComponentPage';
 
 export const metadata = {
-  title: 'Template Builder | AKHF',
+  title: 'Pathology Component | AKHF',
 };
 
-export default function PathologyComponentPage() {
-  return <TemplateBuilderPage />;
+export default function AdminPathologyComponentPage() {
+  return <PathologyComponentPage />;
 }

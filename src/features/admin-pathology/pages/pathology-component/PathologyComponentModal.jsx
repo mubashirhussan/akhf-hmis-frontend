@@ -2,11 +2,12 @@
 
 import { Button } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import TemplateBuilderForm from '@/features/admin-pathology/components/TemplateBuilderForm';
+import PathologyComponentForm from '@/features/admin-pathology/pages/pathology-component/PathologyComponentForm';
 
-export default function TemplateBuilderModal({
+export default function PathologyComponentModal({
   open,
   onClose,
+  title = 'Add Component',
   form,
   unitOptions,
   errors,
@@ -19,21 +20,22 @@ export default function TemplateBuilderModal({
     <AppModal
       open={open}
       onClose={onClose}
-      title="Add Component"
+      title={title}
       centered={false}
+      mask={{ closable: false }}
       style={{ top: 20 }}
-      className="template-builder-modal"
-      rootClassName="template-builder-modal-root"
+      className="pathology-component-modal"
+      rootClassName="pathology-component-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" className="template-builder-save-btn" onClick={onSave}>
+          <Button type="primary" className="pathology-component-save-btn" onClick={onSave}>
             Save
           </Button>
         </>
       }
     >
-      <TemplateBuilderForm
+      <PathologyComponentForm
         form={form}
         unitOptions={unitOptions}
         errors={errors}

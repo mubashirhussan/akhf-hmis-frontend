@@ -1,31 +1,35 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { App, Button } from 'antd';
+import { App, Button, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import TemplateBuilderModal from '@/features/admin-pathology/components/TemplateBuilderModal';
+import PathologyComponentModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentModal';
 import {
   FIELD_TYPE_OPTIONS,
   GROUP_OPTIONS,
-  INITIAL_TEMPLATE_BUILDER_ROWS,
+  INITIAL_PATHOLOGY_COMPONENT_ROWS,
   UNIT_OPTIONS,
-  createEmptyTemplateBuilderForm,
+  createEmptyPathologyComponentForm,
   getOptionLabel,
   getSubGroupOptions,
   getTestMeta,
-} from '@/features/admin-pathology/api/mock-template-builder';
+  rowToPathologyComponentForm,
+} from '@/features/admin-pathology/api/mock-pathology-component';
 
-export default function TemplateBuilderPage() {
+const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+
+export default function PathologyComponentPage() {
   const { message } = App.useApp();
   const nextTcidRef = useRef(
-    Math.max(...INITIAL_TEMPLATE_BUILDER_ROWS.map((row) => row.tcid), 0) + 1,
+    Math.max(...INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => row.tcid), 0) + 1,
   );
 
-  const [form, setForm] = useState(createEmptyTemplateBuilderForm);
-  const [rows, setRows] = useState(INITIAL_TEMPLATE_BUILDER_ROWS);
+  const [form, setForm] = useState(createEmptyPathologyComponentForm);
+  const [rows, setRows] = useState(INITIAL_PATHOLOGY_COMPONENT_ROWS);
   const [unitOptions, setUnitOptions] = useState(UNIT_OPTIONS);
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
+  const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const patchForm = useCallback((patch) => {
@@ -42,15 +46,27 @@ export default function TemplateBuilderPage() {
   }, []);
 
   const openComponentModal = useCallback(() => {
-    setForm(createEmptyTemplateBuilderForm());
+    setForm(createEmptyPathologyComponentForm());
+    setEditingRowId(null);
     setFieldErrors({});
     setIsComponentModalOpen(true);
   }, []);
 
   const closeComponentModal = useCallback(() => {
     setIsComponentModalOpen(false);
+    setEditingRowId(null);
     setFieldErrors({});
   }, []);
+
+  const handleEditRow = useCallback(
+    (record) => {
+      setForm(rowToPathologyComponentForm(record, unitOptions));
+      setEditingRowId(record.id);
+      setFieldErrors({});
+      setIsComponentModalOpen(true);
+    },
+    [unitOptions],
+  );
 
   const handleSave = useCallback(() => {
     const componentName = form.componentName.trim();
@@ -62,26 +78,46 @@ export default function TemplateBuilderPage() {
     setFieldErrors({});
 
     const testMeta = getTestMeta(form.subGroupName, form.testName);
-    const tcid = nextTcidRef.current;
-    nextTcidRef.current += 1;
-
-    const newRow = {
-      id: String(tcid),
+    const rowPayload = {
       groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
       subGroupName: getOptionLabel(getSubGroupOptions(form.groupName), form.subGroupName),
       tid: testMeta?.tid ?? 0,
       testName: testMeta?.label ?? form.testName,
-      tcid,
       componentName,
       fieldType: getOptionLabel(FIELD_TYPE_OPTIONS, form.fieldType),
+      unit: getOptionLabel(unitOptions, form.unit) || '—',
+      priority: form.priority ?? 1,
+      toolTip: form.toolTip.trim(),
       referenceMale: form.referenceMale.trim(),
       referenceFemale: form.referenceFemale.trim(),
     };
 
-    setRows((current) => [newRow, ...current]);
+    if (editingRowId) {
+      setRows((current) =>
+        current.map((row) =>
+          row.id === editingRowId ? { ...row, ...rowPayload } : row,
+        ),
+      );
+      setIsComponentModalOpen(false);
+      setEditingRowId(null);
+      message.success('Component updated.');
+      return;
+    }
+
+    const tcid = nextTcidRef.current;
+    nextTcidRef.current += 1;
+
+    setRows((current) => [
+      {
+        id: String(tcid),
+        tcid,
+        ...rowPayload,
+      },
+      ...current,
+    ]);
     setIsComponentModalOpen(false);
     message.success('Component saved to the table.');
-  }, [form, message]);
+  }, [editingRowId, form, message, unitOptions]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
@@ -135,18 +171,38 @@ export default function TemplateBuilderPage() {
         key: 'referenceFemale',
         width: 180,
       },
+      { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 80 },
+      { title: 'Priority', dataIndex: 'priority', key: 'priority', width: 80 },
+      {
+        title: 'Action',
+        key: 'action',
+        width: 90,
+        align: 'center',
+        render: (_, record) => (
+          <Tooltip title="Edit">
+            <Button
+              type="link"
+              size="small"
+              className="pathology-component-actions-cell"
+              aria-label="Edit component"
+              icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
+              onClick={() => handleEditRow(record)}
+            />
+          </Tooltip>
+        ),
+      },
     ],
-    [],
+    [handleEditRow],
   );
 
   return (
-    <div className="services-billing-page template-builder-page">
-      <div className="template-builder-table-toolbar">
+    <div className="services-billing-page pathology-component-page">
+      <div className="pathology-component-table-toolbar">
         <Button type="primary" onClick={openComponentModal}>
           Add Component
         </Button>
         <Button
-          className="template-builder-export-btn"
+          className="pathology-component-export-btn"
           icon={<AppIcon icon="mdi:export" className="h-4 w-4" />}
           onClick={handleExport}
         >
@@ -154,7 +210,7 @@ export default function TemplateBuilderPage() {
         </Button>
       </div>
 
-      <section className="services-billing-results" aria-label="Template builder components">
+      <section className="services-billing-results" aria-label="Pathology components">
         <DataTable
           rowKey="id"
           columns={columns}
@@ -169,9 +225,10 @@ export default function TemplateBuilderPage() {
         />
       </section>
 
-      <TemplateBuilderModal
+      <PathologyComponentModal
         open={isComponentModalOpen}
         onClose={closeComponentModal}
+        title={editingRowId ? 'Edit Component' : 'Add Component'}
         form={form}
         unitOptions={unitOptions}
         errors={fieldErrors}
