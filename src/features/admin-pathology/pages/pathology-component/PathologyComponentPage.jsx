@@ -225,6 +225,7 @@ export default function PathologyComponentPage() {
         form={form}
         unitOptions={unitOptions}
         errors={fieldErrors}
+        isEditing={Boolean(editingRowId)}
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}

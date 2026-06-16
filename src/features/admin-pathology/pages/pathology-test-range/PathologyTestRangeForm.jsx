@@ -1,13 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { Button, Input, Select } from 'antd';
 import AgeUnitField from '@/components/ui/AgeUnitField';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import {
-  CONDITION_OPTIONS,
   GENDER_OPTIONS,
   GROUP_OPTIONS,
   getComponentOptions,
@@ -22,22 +20,17 @@ export default function PathologyTestRangeForm({
   unitOptions,
   conditionOptions,
   errors = {},
+  isEditing = false,
   onPatchForm,
   onClearError,
   onAddCondition,
   onAddConversionRate,
 }) {
-  const testComponentTcidRef = useRef(null);
   const fieldId = (name) => `pathology-test-range-${name}`;
   const subGroupOptions = getSubGroupOptions(form.groupName);
   const testOptions = getTestOptions(form.subGroupName);
   const componentOptions = getComponentOptions(form.subGroupName, form.testName);
   const testComponentError = errors.testComponent;
-
-  useEffect(() => {
-    if (!testComponentError) return;
-    testComponentTcidRef.current?.focus({ preventScroll: false });
-  }, [testComponentError]);
 
   return (
     <FormGrid columns={2} className="pathology-test-range-form-grid">
@@ -47,6 +40,7 @@ export default function PathologyTestRangeForm({
           className={controlClass}
           value={form.groupName}
           options={GROUP_OPTIONS}
+          disabled={isEditing}
           onChange={(groupName) => {
             const nextSubGroups = getSubGroupOptions(groupName);
             const nextSubGroup = nextSubGroups[0]?.value ?? '';
@@ -58,7 +52,6 @@ export default function PathologyTestRangeForm({
               subGroupName: nextSubGroup,
               testName: nextTest,
               testComponent: nextComponents[0]?.value ?? '',
-              testComponentTcid: nextComponents[0] ? String(nextComponents[0].tcid) : '',
             });
           }}
         />
@@ -70,6 +63,7 @@ export default function PathologyTestRangeForm({
           className={controlClass}
           value={form.subGroupName}
           options={subGroupOptions}
+          disabled={isEditing}
           onChange={(subGroupName) => {
             const nextTests = getTestOptions(subGroupName);
             const nextTest = nextTests[0]?.value ?? '';
@@ -78,7 +72,6 @@ export default function PathologyTestRangeForm({
               subGroupName,
               testName: nextTest,
               testComponent: nextComponents[0]?.value ?? '',
-              testComponentTcid: nextComponents[0] ? String(nextComponents[0].tcid) : '',
             });
           }}
         />
@@ -90,57 +83,33 @@ export default function PathologyTestRangeForm({
           className={controlClass}
           value={form.testName}
           options={testOptions}
+          disabled={isEditing}
           onChange={(testName) => {
             const nextComponents = getComponentOptions(form.subGroupName, testName);
             onPatchForm({
               testName,
               testComponent: nextComponents[0]?.value ?? '',
-              testComponentTcid: nextComponents[0] ? String(nextComponents[0].tcid) : '',
             });
           }}
         />
       </FormField>
 
       <FormField label="Test Component" required error={testComponentError}>
-        <div className="pathology-test-range-test-component">
-          <Input
-            ref={testComponentTcidRef}
-            id={fieldId('test-component-tcid')}
-            className={controlClass}
-            value={form.testComponentTcid}
-            placeholder="TCID"
-            onChange={(event) => {
-              const tcid = event.target.value.replace(/\D/g, '');
-              const matched = componentOptions.find((option) => String(option.tcid) === tcid);
-              onPatchForm({
-                testComponentTcid: tcid,
-                testComponent: matched?.value ?? '',
-              });
-              if (testComponentError) {
-                onClearError?.('testComponent');
-              }
-            }}
-            autoComplete="off"
-          />
-          <Select
-            id={fieldId('test-component')}
-            className={controlClass}
-            value={form.testComponent || undefined}
-            options={componentOptions}
-            placeholder="Select component"
-            status={testComponentError ? 'error' : undefined}
-            onChange={(testComponent) => {
-              const matched = componentOptions.find((option) => option.value === testComponent);
-              onPatchForm({
-                testComponent,
-                testComponentTcid: matched ? String(matched.tcid) : '',
-              });
-              if (testComponentError) {
-                onClearError?.('testComponent');
-              }
-            }}
-          />
-        </div>
+        <Select
+          id={fieldId('test-component')}
+          className={controlClass}
+          value={form.testComponent || undefined}
+          options={componentOptions}
+          placeholder="Select component"
+          disabled={isEditing}
+          status={testComponentError ? 'error' : undefined}
+          onChange={(testComponent) => {
+            onPatchForm({ testComponent });
+            if (testComponentError) {
+              onClearError?.('testComponent');
+            }
+          }}
+        />
       </FormField>
 
       <FormField label="Start Value">

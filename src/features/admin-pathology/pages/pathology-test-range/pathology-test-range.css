@@ -42,23 +42,6 @@
   min-width: 138px;
 }
 
-.pathology-test-range-test-component {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pathology-test-range-test-component .field-control:first-child {
-  flex: 0 0 88px;
-  min-width: 88px;
-}
-
-.pathology-test-range-test-component .field-control:last-child,
-.pathology-test-range-test-component .ant-select:last-child {
-  flex: 1;
-  min-width: 0;
-}
-
 .pathology-test-range-condition {
   display: flex;
   flex-direction: column;
@@ -121,16 +104,6 @@
   .pathology-test-range-table-toolbar {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .pathology-test-range-test-component {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .pathology-test-range-test-component .field-control:first-child {
-    flex: 1;
-    min-width: 0;
   }
 }
 

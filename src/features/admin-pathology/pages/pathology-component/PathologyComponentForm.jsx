@@ -18,6 +18,7 @@ export default function PathologyComponentForm({
   form,
   unitOptions,
   errors = {},
+  isEditing = false,
   onPatchForm,
   onClearError,
   onAddUnit,
@@ -41,6 +42,7 @@ export default function PathologyComponentForm({
           className={controlClass}
           value={form.groupName}
           options={GROUP_OPTIONS}
+          disabled={isEditing}
           onChange={(groupName) => {
             const nextSubGroups = getSubGroupOptions(groupName);
             const nextSubGroup = nextSubGroups[0]?.value ?? '';
@@ -60,6 +62,7 @@ export default function PathologyComponentForm({
           className={controlClass}
           value={form.subGroupName}
           options={subGroupOptions}
+          disabled={isEditing}
           onChange={(subGroupName) => {
             const nextTests = getTestOptions(subGroupName);
             onPatchForm({
@@ -76,6 +79,7 @@ export default function PathologyComponentForm({
           className={controlClass}
           value={form.testName}
           options={testOptions}
+          disabled={isEditing}
           onChange={(testName) => onPatchForm({ testName })}
         />
       </FormField>

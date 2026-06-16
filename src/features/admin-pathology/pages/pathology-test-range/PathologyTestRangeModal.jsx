@@ -12,6 +12,7 @@ export default function PathologyTestRangeModal({
   unitOptions,
   conditionOptions,
   errors,
+  isEditing = false,
   onPatchForm,
   onClearError,
   onSave,
@@ -42,6 +43,7 @@ export default function PathologyTestRangeModal({
         unitOptions={unitOptions}
         conditionOptions={conditionOptions}
         errors={errors}
+        isEditing={isEditing}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
         onAddCondition={onAddCondition}

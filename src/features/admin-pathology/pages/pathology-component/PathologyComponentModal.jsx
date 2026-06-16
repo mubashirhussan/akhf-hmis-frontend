@@ -11,6 +11,7 @@ export default function PathologyComponentModal({
   form,
   unitOptions,
   errors,
+  isEditing = false,
   onPatchForm,
   onClearError,
   onSave,
@@ -39,6 +40,7 @@ export default function PathologyComponentModal({
         form={form}
         unitOptions={unitOptions}
         errors={errors}
+        isEditing={isEditing}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
         onAddUnit={onAddUnit}

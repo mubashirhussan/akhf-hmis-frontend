@@ -114,7 +114,7 @@ export default function PathologyTestRangePage() {
       subGroupName: getOptionLabel(getSubGroupOptions(form.groupName), form.subGroupName),
       testName: testMeta?.label ?? form.testName,
       componentName: componentMeta?.label ?? '',
-      tcid: componentMeta?.tcid ?? (Number(form.testComponentTcid) || 0),
+      tcid: componentMeta?.tcid ?? (Number(form.testComponent) || 0),
       startValue: form.startValue.trim(),
       endValue: form.endValue.trim(),
       reportValues: form.reportValues.trim(),
@@ -278,6 +278,7 @@ export default function PathologyTestRangePage() {
         unitOptions={unitOptions}
         conditionOptions={conditionOptions}
         errors={fieldErrors}
+        isEditing={Boolean(editingRowId)}
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}
