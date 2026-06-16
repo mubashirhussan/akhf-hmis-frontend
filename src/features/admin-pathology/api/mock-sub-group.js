@@ -88,6 +88,41 @@ export const INITIAL_SUB_GROUP_ROWS = [
   },
 ];
 
+let subGroupRows = INITIAL_SUB_GROUP_ROWS.map((row) => ({ ...row }));
+let nextSubGroupId =
+  Math.max(...INITIAL_SUB_GROUP_ROWS.map((row) => row.subGroupId), 0) + 1;
+
+export function getSubGroupRows() {
+  return subGroupRows;
+}
+
+export function createSubGroupRow(rowPayload) {
+  const subGroupId = nextSubGroupId++;
+
+  const row = {
+    id: String(subGroupId),
+    subGroupId,
+    ...rowPayload,
+  };
+
+  subGroupRows = [row, ...subGroupRows];
+
+  return row;
+}
+export function updateSubGroupRow(id, rowPayload) {
+  subGroupRows = subGroupRows.map((row) =>
+    row.id === id
+      ? { ...row, ...rowPayload }
+      : row,
+  );
+
+  return subGroupRows.find((row) => row.id === id) ?? null;
+}
+export function deleteSubGroupRow(id) {
+  subGroupRows = subGroupRows.filter(
+    (row) => row.id !== id,
+  );
+}
 export function createEmptySubGroupForm() {
   return {
     id: '',

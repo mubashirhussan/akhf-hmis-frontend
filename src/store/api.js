@@ -5,6 +5,9 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: env.apiBaseUrl }),
   tagTypes: [
+    'MainGroup',
+    'SubGroup',
+    'TestName',
     'PathologyComponent',
     'PathologyTestRange',
     'PathologyLookups',
@@ -12,9 +15,8 @@ export const api = createApi({
     'WalkInPatient',
     'WalkInService',
     'BillingVisit',
-    'BillingVisitServices',
-    'MainGroup',
-    'SubGroup'
+    'BillingVisitServices'
+  
   ],
   endpoints: () => ({}),
 });
