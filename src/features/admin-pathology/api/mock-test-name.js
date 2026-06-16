@@ -134,13 +134,19 @@ export const INITIAL_TEST_NAME_ROWS = [
 ];
 
 let testNameRows = INITIAL_TEST_NAME_ROWS.map((row) => ({ ...row }));
+let nextTid =
+  Math.max(...INITIAL_TEST_NAME_ROWS.map((row) => row.tid), 0) + 1;
+
+export function getTestNameRows() {
+  return testNameRows;
+}
 
 export function createTestNameRow(rowPayload) {
-  const tcid = nextTcid;
-  nextTcid += 1;
+  const tid = nextTid++;
+
   const row = {
-    id: String(tcid),
-    tcid,
+    id: String(tid),
+    tid,
     ...rowPayload,
   };
   testNameRows = [row, ...testNameRows];
@@ -163,6 +169,11 @@ export function createEmptyTestNameForm() {
     standardName:'',
     fee:0,
   };
+}
+export function deleteTestNameRow(id) {
+  testNameRows = testNameRows.filter(
+    (row) => row.id !== id,
+  );
 }
 
 export function rowToTestNameForm(row) {

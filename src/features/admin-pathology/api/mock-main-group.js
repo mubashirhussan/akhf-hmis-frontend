@@ -11,6 +11,43 @@ export const INITIAL_MAIN_GROUP_ROWS = [
   { id: '118', groupId: 118, groupName: 'Enzymology', fee: 100 },
 ];
 
+let groupRows = INITIAL_MAIN_GROUP_ROWS.map((row) => ({ ...row }));
+
+let nextGroupId =
+  Math.max(...INITIAL_MAIN_GROUP_ROWS.map((row) => row.groupId), 0) + 1;
+
+export function getMainGroupRows() {
+  return groupRows;
+}
+
+export function createMainGroupRow(rowPayload) {
+  const groupId = nextGroupId++;
+
+  const row = {
+    id: String(groupId),
+    groupId,
+    ...rowPayload,
+  };
+
+  groupRows = [row, ...groupRows];
+
+  return row;
+}
+
+export function updateMainGroupRow(id, rowPayload) {
+  groupRows = groupRows.map((row) =>
+    row.id === id
+      ? { ...row, ...rowPayload }
+      : row,
+  );
+
+  return groupRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteMainGroupRow(id) {
+  groupRows = groupRows.filter((row) => row.id !== id);
+}
+
 export function createEmptyMainGroupForm() {
   return {
     groupName: '',
@@ -24,4 +61,3 @@ export function rowToMainGroupForm(row) {
     fee: row.fee ?? 0,
   };
 }
-
