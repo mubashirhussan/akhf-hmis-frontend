@@ -1,19 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Button, Input, InputNumber, Select } from 'antd';
+import {useRef } from 'react';
+import { Input, InputNumber } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import {
-  GROUP_OPTIONS,
-} from '@/features/admin-pathology/api/mock-main-group';
+
 
 const controlClass = FIELD_CONTROL_CLASS;
 
 export default function MainGroupForm({
-  form,
-  onPatchForm,
+  form, errors = {}, onPatchForm, onClearError
 }) {
   const componentNameRef = useRef(null);
   const fieldId = (name) => `main-group-${name}`;
@@ -22,15 +19,18 @@ export default function MainGroupForm({
 
   return (
     <FormGrid columns={2} className="main-group-form-grid">
-      <FormField label="Group Name">
-        <Select
-          id={fieldId('group-name')}
-          className={controlClass}
-          value={form.groupName}
-          options={GROUP_OPTIONS}
-          onChange={(groupName) => onPatchForm({ groupName })}
-        />
-      </FormField>
+<FormField label="Group Name"
+  required
+  help={errors?.groupName}
+  validateStatus={errors?.groupName ? 'error' : ''}
+>
+  <Input
+    id={fieldId('group-name')}
+    className={controlClass}
+    value={form.groupName}
+    onChange={(e) => onPatchForm({ groupName: e.target.value })}
+  />
+</FormField>
 
 
       <FormField label="Fee">

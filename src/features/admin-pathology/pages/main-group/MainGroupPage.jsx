@@ -1,18 +1,17 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Tooltip, Input } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import MainGroupModal from '@/features/admin-pathology/pages/main-group/MainGroupModal';
 import {
-  GROUP_OPTIONS,
   INITIAL_MAIN_GROUP_ROWS,
   createEmptyMainGroupForm,
-  getOptionLabel,
   rowToMainGroupForm,
 } from '@/features/admin-pathology/api/mock-main-group';
 import '@/features/admin-pathology/pages/main-group/main-group.css';
+import { useConfirm } from '@/hooks/useConfirm';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
@@ -27,6 +26,8 @@ export default function MainGroupPage() {
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+      const { confirmDelete } = useConfirm();
 
 const nextGroupIdRef = useRef(
   Math.max(...INITIAL_MAIN_GROUP_ROWS.map((row) => row.groupId)) + 1
@@ -69,13 +70,18 @@ const nextGroupIdRef = useRef(
     },
     [],
   );
-  const handleDeleteRow = useCallback((record) => {
-  setRows((current) =>
-    current.filter((row) => row.id !== record.id)
-  );
-
-  message.success('Main Group deleted.');
-}, [message]);
+const handleDeleteRow = useCallback(
+  async (record) => {
+    const itemName = record.groupName;
+    const confirmed = await confirmDelete({ itemName });
+    if (!confirmed) return;
+    setRows((current) =>
+      current.filter((row) => row.id !== record.id)
+    );
+    message.success('Main Group deleted.');
+  },
+  [confirmDelete, message],
+);
 
   const handleSave = useCallback(() => {
     const groupName = form.groupName.trim();
@@ -89,7 +95,7 @@ const nextGroupIdRef = useRef(
 const rowPayload = {
   id: crypto.randomUUID(),
   groupId: nextGroupIdRef.current++,
-  groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
+  groupName: form.groupName ?? '',
   fee: form.fee ?? 0,
 };
 
@@ -115,6 +121,16 @@ const rowPayload = {
   setIsComponentModalOpen(false);
   message.success('Main Group created.');
 }, [form, editingRowId, message]);
+
+  const filteredRows = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+
+    if (!term) return rows;
+
+    return rows.filter((row) =>
+      row.groupName?.toLowerCase().includes(term),
+    );
+  }, [rows, searchTerm]);
 
   const columns = useMemo(
     () => [
@@ -156,17 +172,25 @@ const rowPayload = {
 
   return (
     <div className="services-billing-page main-group-page">
-      <div className="main-group-table-toolbar">
-        <Button type="primary" onClick={openComponentModal}>
-          Add Main Group
-        </Button>
-      </div>
+ <div className="main-group-table-toolbar" style={{ display: 'flex', gap: 12 , justifyContent:'space-between'}}>
+  <Input
+    placeholder="Filter by Main Group"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    allowClear
+    style={{ width: 260 }}
+  />
+
+  <Button type="primary" onClick={openComponentModal}>
+    Add Main Group
+  </Button>
+</div>
 
       <section className="services-billing-results" aria-label="main group">
         <DataTable
           rowKey="id"
           columns={columns}
-          dataSource={rows}
+          dataSource={filteredRows}
           columnAlign="left"
           pagination={{
             pageSize: 10,

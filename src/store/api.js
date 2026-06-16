@@ -13,6 +13,8 @@ export const api = createApi({
     'WalkInService',
     'BillingVisit',
     'BillingVisitServices',
+    'MainGroup',
+    'SubGroup'
   ],
   endpoints: () => ({}),
 });
