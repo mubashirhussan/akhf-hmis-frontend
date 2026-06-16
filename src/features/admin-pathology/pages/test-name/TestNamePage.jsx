@@ -37,7 +37,6 @@ export default function TestNamePage() {
   });
   const { confirmDelete } = useConfirm();
   const { data: rows = [], isLoading } = useGetTestNamesQuery();
-  console.log('RTK rows:', rows);
   const [createTestName] = useCreateTestNameMutation();
   const [updateTestName] = useUpdateTestNameMutation();
   const [deleteTestName] = useDeleteTestNameMutation();
@@ -76,74 +75,65 @@ export default function TestNamePage() {
     setFieldErrors({});
     setIsComponentModalOpen(true);
   }, []);
-const handleDeleteRow = useCallback(
-  async (record) => {
-    const itemName = record.testName;
-    const confirmed = await confirmDelete({
-      itemName,
-    });
-    if (!confirmed) return;
-    await deleteTestName(record.id).unwrap();
-    message.success('Test deleted.');
-  },
-  [confirmDelete, deleteTestName, message],
-);
+  const handleDeleteRow = useCallback(
+    async (record) => {
+      const itemName = record.testName;
+      const confirmed = await confirmDelete({
+        itemName,
+      });
+      if (!confirmed) return;
+      await deleteTestName(record.id).unwrap();
+      message.success("Test deleted.");
+    },
+    [confirmDelete, deleteTestName, message],
+  );
 
-const handleSave = useCallback(async () => {
-  const testName = (form.testName || '').trim();
+  const handleSave = useCallback(async () => {
+    const testName = (form.testName || "").trim();
 
-  if (!testName) {
-    setFieldErrors({
-      testName: 'Test Name is required.',
-    });
+    if (!testName) {
+      setFieldErrors({
+        testName: "Test Name is required.",
+      });
 
-    return;
-  }
+      return;
+    }
 
-  setFieldErrors({});
+    setFieldErrors({});
 
-  const rowPayload = {
-    groupName: getOptionLabel(
-      GROUP_OPTIONS,
-      form.groupName,
-    ),
-    subGroupName: getOptionLabel(
-      getSubGroupOptions(form.groupName),
-      form.subGroupName,
-    ),
-    testName,
-    medicalName: form.medicalName ?? '',
-    standardName: form.standardName ?? '',
-    fieldType: 'TextBox',
-    fee: form.fee ?? 0,
-  };
+    const rowPayload = {
+      groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
+      subGroupName: getOptionLabel(
+        getSubGroupOptions(form.groupName),
+        form.subGroupName,
+      ),
+      testName,
+      medicalName: form.medicalName ?? "",
+      standardName: form.standardName ?? "",
+      fieldType: "TextBox",
+      fee: form.fee ?? 0,
+    };
 
-  if (editingRowId) {
-    await updateTestName({
-      id: editingRowId,
-      ...rowPayload,
-    }).unwrap();
+    if (editingRowId) {
+      await updateTestName({
+        id: editingRowId,
+        ...rowPayload,
+      }).unwrap();
+
+      setIsComponentModalOpen(false);
+      setEditingRowId(null);
+
+      message.success("Test Name updated.");
+
+      return;
+    }
+
+    await createTestName(rowPayload).unwrap();
 
     setIsComponentModalOpen(false);
-    setEditingRowId(null);
-
-    message.success('Test Name updated.');
-
-    return;
-  }
-
-  await createTestName(rowPayload).unwrap();
-
-  setIsComponentModalOpen(false);
-
-  message.success('Test Name created.');
-}, [
-  form,
-  editingRowId,
-  createTestName,
-  updateTestName,
-  message,
-]);
+    
+    message.success("Test Name created.");
+  }, [form, editingRowId, createTestName, updateTestName, message]);
 
   const groupOptions = useMemo(() => {
     const uniqueGroups = [
@@ -217,11 +207,11 @@ const handleSave = useCallback(async () => {
         key: "testName",
         width: 160,
       },
-{
-  title: 'Control Type',
-  dataIndex: 'fieldType',
-  key: 'fieldType',
-},
+      {
+        title: "Control Type",
+        dataIndex: "fieldType",
+        key: "fieldType",
+      },
       { title: "Fee", dataIndex: "fee", key: "fee", width: 140 },
       {
         title: "Action",
