@@ -23,6 +23,7 @@ export default function SubGroupModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
+      width={480}
       className="sub-group-modal"
       rootClassName="sub-group-modal-root"
       footer={

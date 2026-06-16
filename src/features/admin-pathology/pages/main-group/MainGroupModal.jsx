@@ -22,6 +22,7 @@ export default function MainGroupModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
+      width={480}
       className="main-group-modal"
       rootClassName="main-group-modal-root"
       footer={

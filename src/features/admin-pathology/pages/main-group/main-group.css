@@ -58,12 +58,6 @@
   min-width: 0;
 }
 
-@media (max-width: 991px) {
-  .main-group-form-grid.form-grid {
-    --form-cols: 2;
-  }
-}
-
 @media (max-width: 767px) {
   .main-group-form-grid.form-grid {
     --form-cols: 1;

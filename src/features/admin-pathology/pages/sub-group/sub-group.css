@@ -59,12 +59,6 @@
   min-width: 0;
 }
 
-@media (max-width: 991px) {
-  .sub-group-form-grid.form-grid {
-    --form-cols: 2;
-  }
-}
-
 @media (max-width: 767px) {
   .sub-group-form-grid.form-grid {
     --form-cols: 1;

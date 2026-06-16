@@ -20,7 +20,7 @@ form, errors = {}, onPatchForm, onClearError
 
 
   return (
-    <FormGrid columns={2} className="sub-group-form-grid">
+    <FormGrid columns={1} className="sub-group-form-grid">
       <FormField label="Group Name">
         <Select
           id={fieldId('group-name')}

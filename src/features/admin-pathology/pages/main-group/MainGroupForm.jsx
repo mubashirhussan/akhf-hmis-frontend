@@ -18,7 +18,7 @@ export default function MainGroupForm({
 
 
   return (
-    <FormGrid columns={2} className="main-group-form-grid">
+    <FormGrid columns={1} className="main-group-form-grid">
 <FormField label="Group Name"
   required
   help={errors?.groupName}
