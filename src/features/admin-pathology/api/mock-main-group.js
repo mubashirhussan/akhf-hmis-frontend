@@ -1,10 +1,3 @@
-export const GROUP_OPTIONS = [
-  { value: 'haematology', label: 'Haematology' },
-  { value: 'biochemistry', label: 'Biochemistry' },
-  { value: 'microbiology', label: 'Microbiology' },
-];
-
-
 export const INITIAL_MAIN_GROUP_ROWS = [
   { id: '10', groupId: 10, groupName: 'Haematology', fee: 1000 },
   { id: '12', groupId: 12, groupName: 'Microbiology', fee: 1000 },
@@ -20,22 +13,15 @@ export const INITIAL_MAIN_GROUP_ROWS = [
 
 export function createEmptyMainGroupForm() {
   return {
-    groupName: 'haematology',
-    fee: 0
+    groupName: '',
+    fee: 0,
   };
 }
 
 export function rowToMainGroupForm(row) {
-  const groupName =
-    GROUP_OPTIONS.find((option) => option.label === row.groupName)?.value ?? 'haematology';
-
   return {
-    groupName,
-
+    groupName: row.groupName ?? '',
     fee: row.fee ?? 0,
-
   };
 }
-export function getOptionLabel(options, value) {
-  return options.find((option) => option.value === value)?.label ?? value;
-}
+
