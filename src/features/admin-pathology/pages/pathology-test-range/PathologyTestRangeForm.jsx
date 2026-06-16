@@ -6,12 +6,13 @@ import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import {
-  GENDER_OPTIONS,
-  GROUP_OPTIONS,
-  getComponentOptions,
-  getSubGroupOptions,
-  getTestOptions,
-} from '@/features/admin-pathology/api/mock-pathology-test-range';
+  useGetMainGroupsQuery,
+  useGetSubGroupsQuery,
+  useGetTestNamesQuery,
+  useGetPathologyComponentsQuery,
+  useGetPathologyLookupsQuery,
+} from '@/features/admin-pathology/api/pathologyApi';
+import { useMemo } from 'react';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -26,10 +27,55 @@ export default function PathologyTestRangeForm({
   onAddCondition,
   onAddConversionRate,
 }) {
+  const { data: mainGroups = [] } = useGetMainGroupsQuery();
+  const { data: subGroups = [] } = useGetSubGroupsQuery();
+  const { data: testNames = [] } = useGetTestNamesQuery();
+  const { data: components = [] } = useGetPathologyComponentsQuery();
+  const { data: lookups } = useGetPathologyLookupsQuery();
+
+const genderOptions = useMemo(() => {
+  return lookups?.genderOptions ?? [];
+}, [lookups]);
   const fieldId = (name) => `pathology-test-range-${name}`;
-  const subGroupOptions = getSubGroupOptions(form.groupName);
-  const testOptions = getTestOptions(form.subGroupName);
-  const componentOptions = getComponentOptions(form.subGroupName, form.testName);
+  const groupOptions = useMemo(() => {
+  return mainGroups.map((g) => ({
+    label: g.groupName,
+    value: g.groupName,
+  }));
+}, [mainGroups]);
+  const subGroupOptions = useMemo(() => {
+  return subGroups
+    .filter((sg) => sg.groupName === form.groupName)
+    .map((sg) => ({
+      label: sg.subGroupName,
+      value: sg.subGroupName,
+    }));
+}, [subGroups, form.groupName]);
+  const testOptions = useMemo(() => {
+  return testNames
+    .filter(
+      (t) =>
+        t.groupName === form.groupName &&
+        t.subGroupName === form.subGroupName
+    )
+    .map((t) => ({
+      label: t.testName,
+      value: t.testName,
+    }));
+}, [testNames, form.groupName, form.subGroupName]);
+  const componentOptions = useMemo(() => {
+  return components
+    .filter(
+      (c) =>
+        c.groupName === form.groupName &&
+        c.subGroupName === form.subGroupName &&
+        c.testName === form.testName
+    )
+    .map((c) => ({
+      label: c.componentName,
+      value: c.componentName,
+    }));
+}, [components, form.groupName, form.subGroupName, form.testName]);
   const testComponentError = errors.testComponent;
 
   return (
@@ -39,21 +85,28 @@ export default function PathologyTestRangeForm({
           id={fieldId('main-group')}
           className={controlClass}
           value={form.groupName}
-          options={GROUP_OPTIONS}
+          options={groupOptions}
           disabled={isEditing}
-          onChange={(groupName) => {
-            const nextSubGroups = getSubGroupOptions(groupName);
-            const nextSubGroup = nextSubGroups[0]?.value ?? '';
-            const nextTests = getTestOptions(nextSubGroup);
-            const nextTest = nextTests[0]?.value ?? '';
-            const nextComponents = getComponentOptions(nextSubGroup, nextTest);
-            onPatchForm({
-              groupName,
-              subGroupName: nextSubGroup,
-              testName: nextTest,
-              testComponent: nextComponents[0]?.value ?? '',
-            });
-          }}
+onChange={(groupName) => {
+  const nextSub = subGroups.find(sg => sg.groupName === groupName)?.subGroupName ?? '';
+  const nextTest = testNames.find(
+    t => t.groupName === groupName && t.subGroupName === nextSub
+  )?.testName ?? '';
+
+  const nextComp = components.find(
+    c =>
+      c.groupName === groupName &&
+      c.subGroupName === nextSub &&
+      c.testName === nextTest
+  )?.componentName ?? '';
+
+  onPatchForm({
+    groupName,
+    subGroupName: nextSub,
+    testName: nextTest,
+    testComponent: nextComp,
+  });
+}}
         />
       </FormField>
 
@@ -64,16 +117,26 @@ export default function PathologyTestRangeForm({
           value={form.subGroupName}
           options={subGroupOptions}
           disabled={isEditing}
-          onChange={(subGroupName) => {
-            const nextTests = getTestOptions(subGroupName);
-            const nextTest = nextTests[0]?.value ?? '';
-            const nextComponents = getComponentOptions(subGroupName, nextTest);
-            onPatchForm({
-              subGroupName,
-              testName: nextTest,
-              testComponent: nextComponents[0]?.value ?? '',
-            });
-          }}
+onChange={(subGroupName) => {
+  const nextTest = testNames.find(
+    t =>
+      t.groupName === form.groupName &&
+      t.subGroupName === subGroupName
+  )?.testName ?? '';
+
+  const nextComp = components.find(
+    c =>
+      c.groupName === form.groupName &&
+      c.subGroupName === subGroupName &&
+      c.testName === nextTest
+  )?.componentName ?? '';
+
+  onPatchForm({
+    subGroupName,
+    testName: nextTest,
+    testComponent: nextComp,
+  });
+}}
         />
       </FormField>
 
@@ -84,13 +147,19 @@ export default function PathologyTestRangeForm({
           value={form.testName}
           options={testOptions}
           disabled={isEditing}
-          onChange={(testName) => {
-            const nextComponents = getComponentOptions(form.subGroupName, testName);
-            onPatchForm({
-              testName,
-              testComponent: nextComponents[0]?.value ?? '',
-            });
-          }}
+onChange={(testName) => {
+  const nextComp = components.find(
+    c =>
+      c.groupName === form.groupName &&
+      c.subGroupName === form.subGroupName &&
+      c.testName === testName
+  )?.componentName ?? '';
+
+  onPatchForm({
+    testName,
+    testComponent: nextComp,
+  });
+}}
         />
       </FormField>
 
@@ -147,7 +216,7 @@ export default function PathologyTestRangeForm({
           id={fieldId('gender')}
           className={controlClass}
           value={form.gender}
-          options={GENDER_OPTIONS}
+          options={genderOptions}
           onChange={(gender) => onPatchForm({ gender })}
         />
       </FormField>

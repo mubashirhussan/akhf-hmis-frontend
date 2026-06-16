@@ -19,6 +19,7 @@ import {
   useCreateTestNameMutation,
   useUpdateTestNameMutation,
   useDeleteTestNameMutation,
+  useGetSubGroupsQuery,
 } from "@/features/admin-pathology/api/pathologyApi";
 
 const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
@@ -37,6 +38,7 @@ export default function TestNamePage() {
   });
   const { confirmDelete } = useConfirm();
   const { data: rows = [], isLoading } = useGetTestNamesQuery();
+  const { data: subGroups = [] } = useGetSubGroupsQuery();
   const [createTestName] = useCreateTestNameMutation();
   const [updateTestName] = useUpdateTestNameMutation();
   const [deleteTestName] = useDeleteTestNameMutation();
@@ -103,10 +105,12 @@ export default function TestNamePage() {
 
     const rowPayload = {
       groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-      subGroupName: getOptionLabel(
-        getSubGroupOptions(form.groupName),
-        form.subGroupName,
-      ),
+subGroupName:
+  subGroups.find(
+    (sg) =>
+      sg.groupId === form.groupId &&
+      sg.subGroupName === form.subGroupName
+  )?.subGroupName || form.subGroupName,
       testName,
       medicalName: form.medicalName ?? "",
       standardName: form.standardName ?? "",

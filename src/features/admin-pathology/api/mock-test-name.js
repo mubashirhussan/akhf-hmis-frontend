@@ -120,17 +120,6 @@ export const INITIAL_TEST_NAME_ROWS = [
     fieldType: 'TextBox',
     fee: 200
   },
-  {
-    id: '10',
-    tid: 991,
-    groupName: 'Haematology',
-    subGroupName: 'CBC',
-    testName: 'ESR',
-    medicalName: 'Erythrocyte Sedimentation Rate',
-    standardName: 'ESR Test',
-    fieldType: 'TextBox',
-    fee: 150
-  },
 ];
 
 let testNameRows = INITIAL_TEST_NAME_ROWS.map((row) => ({ ...row }));
