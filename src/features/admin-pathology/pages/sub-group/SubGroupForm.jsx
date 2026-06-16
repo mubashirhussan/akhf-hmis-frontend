@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import {Input, InputNumber, Select } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import {
-  GROUP_OPTIONS,
-} from '@/features/admin-pathology/api/mock-sub-group';
+import { 
+  useGetMainGroupsQuery
+ } from '../../api/pathologyApi';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -16,8 +16,15 @@ form, errors = {}, onPatchForm, onClearError
 }) {
   const componentNameRef = useRef(null);
   const fieldId = (name) => `sub-group-${name}`;
+  const { data: rows = [], isLoading } = useGetMainGroupsQuery();
 
 
+const groupOptions = useMemo(() => {
+  return rows.map((r) => ({
+    label: r.groupName,
+    value: r.groupId,
+  }));
+}, [rows]);
 
   return (
     <FormGrid columns={1} className="sub-group-form-grid">
@@ -25,9 +32,9 @@ form, errors = {}, onPatchForm, onClearError
         <Select
           id={fieldId('group-name')}
           className={controlClass}
-          value={form.groupName}
-          options={GROUP_OPTIONS}
-          onChange={(groupName) => onPatchForm({ groupName })}
+          value={form.groupId}
+          options={groupOptions}
+          onChange={(groupId) => onPatchForm({ groupId })}
         />
       </FormField>
 

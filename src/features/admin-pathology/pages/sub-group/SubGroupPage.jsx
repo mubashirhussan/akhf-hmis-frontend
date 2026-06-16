@@ -18,6 +18,7 @@ import {
   useCreateSubGroupMutation,
   useUpdateSubGroupMutation,
   useDeleteSubGroupMutation,
+  useGetMainGroupsQuery,
 } from "@/features/admin-pathology/api/pathologyApi";
 
 const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
@@ -35,9 +36,11 @@ export default function SubGroupPage() {
     subGroupName: "",
   });
   const { data: rows = [], isLoading } = useGetSubGroupsQuery();
+  const { data: mainGroups = [] } = useGetMainGroupsQuery();
   const [createSubGroup] = useCreateSubGroupMutation();
   const [updateSubGroup] = useUpdateSubGroupMutation();
   const [deleteSubGroup] = useDeleteSubGroupMutation();
+
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -97,24 +100,27 @@ export default function SubGroupPage() {
     [confirmDelete, deleteSubGroup, message],
   );
   const handleSave = useCallback(async () => {
-    const groupName = (form.groupName || "").trim();
-    const subGroupName = (form.subGroupName || "").trim();
-    if (!groupName || !subGroupName) {
-      setFieldErrors({
-        groupName: !groupName ? "Group Name is required." : "",
-        subGroupName: !subGroupName ? "Sub Group Name is required." : "",
-      });
-
-      return;
-    }
+const groupId = form.groupId;
+const subGroupName = (form.subGroupName || "").trim();
+const selectedGroup = mainGroups.find(
+  (g) => g.groupId === form.groupId
+);
+if (!groupId || !subGroupName) {
+  setFieldErrors({
+    groupId: !groupId ? "Group Name is required." : "",
+    subGroupName: !subGroupName ? "Sub Group Name is required." : "",
+  });
+  return;
+}
 
     setFieldErrors({});
 
-    const rowPayload = {
-      groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-      subGroupName,
-      fee: form.fee ?? 0,
-    };
+const rowPayload = {
+  groupId: form.groupId,
+  groupName: selectedGroup?.groupName,
+  subGroupName,
+  fee: form.fee ?? 0,
+};
     if (editingRowId) {
       await updateSubGroup({
         id: editingRowId,
