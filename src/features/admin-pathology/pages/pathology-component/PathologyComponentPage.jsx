@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip } from "antd";
-import AppIcon from "@/components/icons/AppIcon";
-import DataTable from "@/components/ui/DataTable";
-import PathologyComponentModal from "@/features/admin-pathology/pages/pathology-component/PathologyComponentModal";
+import { useCallback, useMemo, useState } from 'react';
+import { App, Button, Tooltip } from 'antd';
+import AppIcon from '@/components/icons/AppIcon';
+import DataTable from '@/components/ui/DataTable';
+import PathologyComponentModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentModal';
 import {
   FIELD_TYPE_OPTIONS,
   GROUP_OPTIONS,
@@ -13,16 +13,16 @@ import {
   getSubGroupOptions,
   getTestMeta,
   rowToPathologyComponentForm,
-} from "@/features/admin-pathology/api/mock-pathology-component";
+} from '@/features/admin-pathology/api/mock-pathology-component';
 import {
   useAddPathologyUnitMutation,
   useCreatePathologyComponentMutation,
   useGetPathologyComponentsQuery,
   useGetPathologyLookupsQuery,
   useUpdatePathologyComponentMutation,
-} from "@/features/admin-pathology/api/pathologyApi";
+} from '@/features/admin-pathology/api/pathologyApi';
 
-const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
+const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 export default function PathologyComponentPage() {
   const { message } = App.useApp();
@@ -77,30 +77,21 @@ export default function PathologyComponentPage() {
   const handleSave = useCallback(async () => {
     const componentName = form.componentName.trim();
     if (!componentName) {
-      setFieldErrors({ componentName: "Component Name is required." });
+      setFieldErrors({ componentName: 'Component Name is required.' });
       return;
     }
 
     setFieldErrors({});
 
     const testMeta = getTestMeta(form.subGroupName, form.testName);
-    const nextTid =
-  rows.length > 0
-    ? Math.max(...rows.map((row) => Number(row.tid) || 0)) + 1
-    : 1;
     const rowPayload = {
       groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-      subGroupName: getOptionLabel(
-        getSubGroupOptions(form.groupName),
-        form.subGroupName,
-      ),
-        tid: editingRowId
-    ? rows.find((row) => row.id === editingRowId)?.tid
-    : nextTid,
+      subGroupName: getOptionLabel(getSubGroupOptions(form.groupName), form.subGroupName),
+      tid: testMeta?.tid ?? 0,
       testName: testMeta?.label ?? form.testName,
       componentName,
       fieldType: getOptionLabel(FIELD_TYPE_OPTIONS, form.fieldType),
-      unit: getOptionLabel(unitOptions, form.unit) || "—",
+      unit: getOptionLabel(unitOptions, form.unit) || '—',
       priority: form.priority ?? 1,
       toolTip: form.toolTip.trim(),
       referenceMale: form.referenceMale.trim(),
@@ -111,115 +102,74 @@ export default function PathologyComponentPage() {
       await updateComponent({ id: editingRowId, ...rowPayload }).unwrap();
       setIsComponentModalOpen(false);
       setEditingRowId(null);
-      message.success("Component updated.");
+      message.success('Component updated.');
       return;
     }
 
     await createComponent(rowPayload).unwrap();
     setIsComponentModalOpen(false);
-    message.success("Component saved to the table.");
-  }, [
-    createComponent,
-    editingRowId,
-    form,
-    message,
-    unitOptions,
-    updateComponent,
-  ]);
+    message.success('Component saved to the table.');
+  }, [createComponent, editingRowId, form, message, unitOptions, updateComponent]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
-      message.warning("No data to export.");
+      message.warning('No data to export.');
       return;
     }
-    message.info("Export will be connected to the backend API.");
+    message.info('Export will be connected to the backend API.');
   }, [message, rows.length]);
 
   const handleAddUnit = useCallback(async () => {
     const label = form.newUnit.trim();
     if (!label) {
-      message.error("Enter a unit name first.");
+      message.error('Enter a unit name first.');
       return;
     }
 
-    const value = label.toLowerCase().replace(/\s+/g, "-");
+    const value = label.toLowerCase().replace(/\s+/g, '-');
     const existing = unitOptions.find(
-      (option) =>
-        option.value === value ||
-        option.label.toLowerCase() === label.toLowerCase(),
+      (option) => option.value === value || option.label.toLowerCase() === label.toLowerCase(),
     );
 
     if (existing) {
-      patchForm({ unit: existing.value, newUnit: "" });
+      patchForm({ unit: existing.value, newUnit: '' });
       message.info(`Unit "${existing.label}" already exists.`);
       return;
     }
 
     await addUnit({ value, label }).unwrap();
-    patchForm({ unit: value, newUnit: "" });
+    patchForm({ unit: value, newUnit: '' });
     message.success(`Unit "${label}" added.`);
   }, [addUnit, form.newUnit, message, patchForm, unitOptions]);
 
   const columns = useMemo(
     () => [
+      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 130, className: 'pathology-component-col-group-name' },
+      { title: 'Sub Group Name', dataIndex: 'subGroupName', key: 'subGroupName', width: 140 },
+      { title: 'TID', dataIndex: 'tid', key: 'tid', width: 72 },
+      { title: 'Test Name', dataIndex: 'testName', key: 'testName', width: 160 },
+      { title: 'TCID', dataIndex: 'tcid', key: 'tcid', width: 80 },
+      { title: 'Component Name', dataIndex: 'componentName', key: 'componentName', width: 180 },
+      { title: 'Field Type', dataIndex: 'fieldType', key: 'fieldType', width: 100 },
       {
-        title: "Group Name",
-        dataIndex: "groupName",
-        key: "groupName",
-        width: 130,
-        className: "pathology-component-col-group-name",
-      },
-      {
-        title: "Sub Group Name",
-        dataIndex: "subGroupName",
-        key: "subGroupName",
-        width: 140,
-      },
-      { title: "TID", dataIndex: "tid", key: "tid", width: 72 },
-      {
-        title: "Test Name",
-        dataIndex: "testName",
-        key: "testName",
-        width: 160,
-      },
-      { title: "TCID", dataIndex: "tcid", key: "tcid", width: 80 },
-      {
-        title: "Component Name",
-        dataIndex: "componentName",
-        key: "componentName",
+        title: 'Ref Values Male',
+        dataIndex: 'referenceMale',
+        key: 'referenceMale',
         width: 180,
       },
       {
-        title: "Field Type",
-        dataIndex: "fieldType",
-        key: "fieldType",
-        width: 100,
-      },
-      {
-        title: "Ref Values Male",
-        dataIndex: "referenceMale",
-        key: "referenceMale",
+        title: 'Ref Value Female',
+        dataIndex: 'referenceFemale',
+        key: 'referenceFemale',
         width: 180,
       },
+      { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 88, className: 'pathology-component-col-unit' },
+      { title: 'Priority', dataIndex: 'priority', key: 'priority', width: 80 },
       {
-        title: "Ref Value Female",
-        dataIndex: "referenceFemale",
-        key: "referenceFemale",
-        width: 180,
-      },
-      {
-        title: "Unit",
-        dataIndex: "unit",
-        key: "unit",
-        width: 88,
-        className: "pathology-component-col-unit",
-      },
-      { title: "Priority", dataIndex: "priority", key: "priority", width: 80 },
-      {
-        title: "Action",
-        key: "action",
+        title: 'Action',
+        key: 'action',
         width: 90,
-        align: "center",
+        align: 'center',
         render: (_, record) => (
           <Tooltip title="Edit">
             <Button
@@ -227,12 +177,7 @@ export default function PathologyComponentPage() {
               size="small"
               className="pathology-component-actions-cell"
               aria-label="Edit component"
-              icon={
-                <AppIcon
-                  icon="mdi:pencil-outline"
-                  className={ACTION_ICON_CLASS}
-                />
-              }
+              icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
               onClick={() => handleEditRow(record)}
             />
           </Tooltip>
@@ -257,10 +202,7 @@ export default function PathologyComponentPage() {
         </Button>
       </div>
 
-      <section
-        className="services-billing-results"
-        aria-label="Pathology components"
-      >
+      <section className="services-billing-results" aria-label="Pathology components">
         <DataTable
           rowKey="id"
           columns={columns}
@@ -270,7 +212,7 @@ export default function PathologyComponentPage() {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ['10', '20', '50', '100'],
             showTotal: (total) => `Total ${total} items`,
           }}
         />
@@ -279,7 +221,7 @@ export default function PathologyComponentPage() {
       <PathologyComponentModal
         open={isComponentModalOpen}
         onClose={closeComponentModal}
-        title={editingRowId ? "Edit Component" : "Add Component"}
+        title={editingRowId ? 'Edit Component' : 'Add Component'}
         form={form}
         unitOptions={unitOptions}
         errors={fieldErrors}

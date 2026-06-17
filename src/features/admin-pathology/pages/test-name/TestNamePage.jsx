@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { App, Button, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
@@ -9,7 +9,6 @@ import {
   GROUP_OPTIONS,
   createEmptyTestNameForm,
   getOptionLabel,
-  getSubGroupOptions,
   rowToTestNameForm,
 } from "@/features/admin-pathology/api/mock-test-name";
 import "@/features/admin-pathology/pages/test-name/test-name.css";

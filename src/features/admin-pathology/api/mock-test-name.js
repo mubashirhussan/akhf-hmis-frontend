@@ -151,8 +151,8 @@ export function updateTestNameRow(id, rowPayload) {
 
 export function createEmptyTestNameForm() {
   return {
-    groupName: 'haematology',
-    subGroupName: 'cbc',
+    groupName: '',
+    subGroupName: '',
     testName: '',
     medicalName:'',
     standardName:'',

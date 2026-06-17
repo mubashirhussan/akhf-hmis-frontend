@@ -88,23 +88,12 @@ const genderOptions = useMemo(() => {
           options={groupOptions}
           disabled={isEditing}
 onChange={(groupName) => {
-  const nextSub = subGroups.find(sg => sg.groupName === groupName)?.subGroupName ?? '';
-  const nextTest = testNames.find(
-    t => t.groupName === groupName && t.subGroupName === nextSub
-  )?.testName ?? '';
-
-  const nextComp = components.find(
-    c =>
-      c.groupName === groupName &&
-      c.subGroupName === nextSub &&
-      c.testName === nextTest
-  )?.componentName ?? '';
 
   onPatchForm({
     groupName,
-    subGroupName: nextSub,
-    testName: nextTest,
-    testComponent: nextComp,
+    subGroupName: '',
+    testName: '',
+    testComponent: '',
   });
 }}
         />
@@ -116,25 +105,14 @@ onChange={(groupName) => {
           className={controlClass}
           value={form.subGroupName}
           options={subGroupOptions}
-          disabled={isEditing}
+          disabled={!form.groupName}
 onChange={(subGroupName) => {
-  const nextTest = testNames.find(
-    t =>
-      t.groupName === form.groupName &&
-      t.subGroupName === subGroupName
-  )?.testName ?? '';
 
-  const nextComp = components.find(
-    c =>
-      c.groupName === form.groupName &&
-      c.subGroupName === subGroupName &&
-      c.testName === nextTest
-  )?.componentName ?? '';
 
   onPatchForm({
     subGroupName,
-    testName: nextTest,
-    testComponent: nextComp,
+    testName: '',
+    testComponent: '',
   });
 }}
         />
@@ -146,18 +124,13 @@ onChange={(subGroupName) => {
           className={controlClass}
           value={form.testName}
           options={testOptions}
-          disabled={isEditing}
+          disabled={!form.subGroupName}
 onChange={(testName) => {
-  const nextComp = components.find(
-    c =>
-      c.groupName === form.groupName &&
-      c.subGroupName === form.subGroupName &&
-      c.testName === testName
-  )?.componentName ?? '';
+
 
   onPatchForm({
     testName,
-    testComponent: nextComp,
+    testComponent: '',
   });
 }}
         />
@@ -170,7 +143,7 @@ onChange={(testName) => {
           value={form.testComponent || undefined}
           options={componentOptions}
           placeholder="Select component"
-          disabled={isEditing}
+          disabled={!form.testName}
           status={testComponentError ? 'error' : undefined}
           onChange={(testComponent) => {
             onPatchForm({ testComponent });

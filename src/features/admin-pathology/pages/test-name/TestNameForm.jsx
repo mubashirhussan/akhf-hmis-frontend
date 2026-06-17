@@ -64,6 +64,7 @@ export default function SubGroupForm({
           className={controlClass}
           value={form.subGroupName}
           options={subGroupOptions}
+          disabled={!form.groupName}
           onChange={(subGroupName) => {
             onPatchForm({
               subGroupName,
