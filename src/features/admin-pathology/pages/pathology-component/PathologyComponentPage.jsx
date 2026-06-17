@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Tooltip, Select, Input } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import PathologyComponentModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentModal';
@@ -37,10 +37,22 @@ export default function PathologyComponentPage() {
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [filters, setFilters] = useState({
+  groupName: '',
+  subGroupName: '',
+  testName: '',
+  componentName: '',
+});
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
   }, []);
+  const patchFilter = useCallback((patch) => {
+  setFilters((prev) => ({
+    ...prev,
+    ...patch,
+  }));
+}, []);
 
   const clearFieldError = useCallback((field) => {
     setFieldErrors((current) => {
@@ -142,6 +154,90 @@ export default function PathologyComponentPage() {
     message.success(`Unit "${label}" added.`);
   }, [addUnit, form.newUnit, message, patchForm, unitOptions]);
 
+
+const groupOptions = useMemo(() => {
+  const uniqueGroups = [
+    ...new Set(rows.map((row) => row.groupName).filter(Boolean)),
+  ];
+
+  return uniqueGroups.map((group) => ({
+    label: group,
+    value: group,
+  }));
+}, [rows]);
+
+const subGroupOptions = useMemo(() => {
+  let filteredRows = rows;
+
+  if (filters.groupName) {
+    filteredRows = filteredRows.filter(
+      (row) => row.groupName === filters.groupName,
+    );
+  }
+
+  const uniqueSubGroups = [
+    ...new Set(filteredRows.map((row) => row.subGroupName).filter(Boolean)),
+  ];
+
+  return uniqueSubGroups.map((subGroup) => ({
+    label: subGroup,
+    value: subGroup,
+  }));
+}, [rows, filters.groupName]);
+
+const testNameOptions = useMemo(() => {
+  let filteredRows = rows;
+
+  if (filters.groupName) {
+    filteredRows = filteredRows.filter(
+      (row) => row.groupName === filters.groupName,
+    );
+  }
+
+  if (filters.subGroupName) {
+    filteredRows = filteredRows.filter(
+      (row) => row.subGroupName === filters.subGroupName,
+    );
+  }
+
+  const uniqueTests = [
+    ...new Set(filteredRows.map((row) => row.testName).filter(Boolean)),
+  ];
+
+  return uniqueTests.map((test) => ({
+    label: test,
+    value: test,
+  }));
+}, [rows, filters.groupName, filters.subGroupName]);
+
+const filteredRows = useMemo(() => {
+  return rows.filter((row) => {
+    const matchesGroup = filters.groupName
+      ? row.groupName === filters.groupName
+      : true;
+
+    const matchesSubGroup = filters.subGroupName
+      ? row.subGroupName === filters.subGroupName
+      : true;
+
+    const matchesTestName = filters.testName
+      ? row.testName === filters.testName
+      : true;
+
+    const matchesComponentName = filters.componentName.trim()
+      ? row.componentName
+          ?.toLowerCase()
+          .includes(filters.componentName.trim().toLowerCase())
+      : true;
+
+    return (
+      matchesGroup &&
+      matchesSubGroup &&
+      matchesTestName &&
+      matchesComponentName
+    );
+  });
+}, [rows, filters]);
   const columns = useMemo(
     () => [
       { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 130, className: 'pathology-component-col-group-name' },
@@ -189,24 +285,91 @@ export default function PathologyComponentPage() {
 
   return (
     <div className="services-billing-page pathology-component-page">
-      <div className="pathology-component-table-toolbar">
-        <Button type="primary" onClick={openComponentModal}>
-          Add Component
-        </Button>
-        <Button
-          className="pathology-component-export-btn"
-          icon={<AppIcon icon="mdi:export" className="h-4 w-4" />}
-          onClick={handleExport}
-        >
-          Export
-        </Button>
-      </div>
+<div
+  className="pathology-component-table-toolbar"
+  style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  }}
+>
+  <div style={{ display: 'flex', gap: 10 }}>
+    <Select
+      placeholder="Filter by Main Group"
+      allowClear
+      style={{ width: 220 }}
+      value={filters.groupName || undefined}
+      options={groupOptions}
+      onChange={(value) =>
+        patchFilter({
+          groupName: value || '',
+          subGroupName: '',
+          testName: '',
+        })
+      }
+    />
+
+    <Select
+      placeholder="Filter by Sub Group"
+      allowClear
+      style={{ width: 220 }}
+      value={filters.subGroupName || undefined}
+      options={subGroupOptions}
+      onChange={(value) =>
+        patchFilter({
+          subGroupName: value || '',
+          testName: '',
+        })
+      }
+    />
+
+    <Select
+      placeholder="Filter by Test Name"
+      allowClear
+      style={{ width: 220 }}
+      value={filters.testName || undefined}
+      options={testNameOptions}
+      onChange={(value) =>
+        patchFilter({
+          testName: value || '',
+        })
+      }
+    />
+
+    <Input
+      placeholder="Filter by Component Name"
+      allowClear
+      style={{ width: 250 }}
+      value={filters.componentName}
+      onChange={(e) =>
+        patchFilter({
+          componentName: e.target.value,
+        })
+      }
+    />
+  </div>
+
+  <div style={{ display: 'flex', gap: 10 }}>
+    <Button type="primary" onClick={openComponentModal}>
+      Add Component
+    </Button>
+
+    <Button
+      className="pathology-component-export-btn"
+      icon={<AppIcon icon="mdi:export" className="h-4 w-4" />}
+      onClick={handleExport}
+    >
+      Export
+    </Button>
+  </div>
+</div>
 
       <section className="services-billing-results" aria-label="Pathology components">
         <DataTable
           rowKey="id"
           columns={columns}
-          dataSource={rows}
+          dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
           pagination={{
