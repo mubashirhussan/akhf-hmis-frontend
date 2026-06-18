@@ -9,7 +9,6 @@ import {
   createEmptyMainGroupForm,
   rowToMainGroupForm,
 } from "@/features/admin-pathology/api/mock-main-group";
-import "@/features/admin-pathology/pages/main-group/main-group.css";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetMainGroupsQuery,

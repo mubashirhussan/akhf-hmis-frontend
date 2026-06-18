@@ -11,7 +11,6 @@ import {
   getOptionLabel,
   rowToTestNameForm,
 } from "@/features/admin-pathology/api/mock-test-name";
-import "@/features/admin-pathology/pages/test-name/test-name.css";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetTestNamesQuery,

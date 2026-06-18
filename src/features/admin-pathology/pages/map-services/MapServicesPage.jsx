@@ -11,7 +11,7 @@ import {
   useGetMainGroupsQuery,
 } from "@/features/admin-pathology/api/pathologyApi";
 import { SERVICE_OPTIONS } from "@/features/admin-pathology/api/mock-test-booking";
-import "./map-services.css";
+
 
 export default function MapServicesPage() {
   const { message } = App.useApp();

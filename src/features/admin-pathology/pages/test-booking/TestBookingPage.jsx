@@ -21,7 +21,6 @@ import {
 } from "@/features/admin-pathology/api/mock-test-booking";
 
 import { useConfirm } from "@/hooks/useConfirm";
-import "@/features/admin-pathology/pages/test-booking/test-booking.css";
 import { Select } from "antd";
 
 const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";

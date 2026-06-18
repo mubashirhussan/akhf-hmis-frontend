@@ -1,3 +1,8 @@
 /* Admin pathology feature styles */
+@import "../pages/main-group/main-group.css";
+@import "../pages/sub-group/sub-group.css";
+@import "../pages/test-name/test-name.css";
 @import "../pages/pathology-component/pathology-component.css";
 @import "../pages/pathology-test-range/pathology-test-range.css";
+@import "../pages/test-booking/test-booking.css";
+@import "../pages/map-services/map-services.css";
