@@ -11,6 +11,7 @@ import {
   useUpdateTestBookingMutation,
   useDeleteTestBookingMutation,
   useGetMainGroupsQuery,
+  useGetPathologyComponentsQuery,
 } from "@/features/admin-pathology/api/pathologyApi";
 
 import {
@@ -38,6 +39,7 @@ export default function TestBookingPage() {
 
   const { data: rows = [], isLoading } = useGetTestBookingsQuery();
   const { data: mainGroups = [] } = useGetMainGroupsQuery();
+  const { data: components = [] } = useGetPathologyComponentsQuery();
 
   const [createBooking] = useCreateTestBookingMutation();
   const [updateBooking] = useUpdateTestBookingMutation();
@@ -96,6 +98,7 @@ if (editingId) {
 await updateBooking({
   id: editingId,
   mainGroup: form.mainGroup,
+  component: form.component,
   testBookingName: form.testBookingName,
   service: form.service,
   specimenRequired: form.specimenRequired,
@@ -107,6 +110,7 @@ await updateBooking({
 } else {
 await createBooking({
   mainGroup: form.mainGroup,
+  component: form.component,
   testBookingName,
   service: form.service,
   specimenRequired: "",
@@ -213,7 +217,7 @@ const filteredRows = useMemo(() => {
         />
 </div>
         <Button type="primary" onClick={openModal}>
-          Create Test Booking
+          Add Test Booking
         </Button>
       </div>
 
@@ -228,16 +232,17 @@ const filteredRows = useMemo(() => {
         }}
       />
 
-      <TestBookingModal
-        open={open}
-        form={form}
-        onClose={closeModal}
-        onPatchForm={patchForm}
-        onSave={handleSave}
-        mainGroups={mainGroups}
-        services={SERVICE_OPTIONS}
-        isEdit={!!editingId}
-      />
+<TestBookingModal
+  open={open}
+  form={form}
+  onClose={closeModal}
+  onPatchForm={patchForm}
+  onSave={handleSave}
+  mainGroups={mainGroups}
+  components={components}
+  services={SERVICE_OPTIONS}
+  isEdit={!!editingId}
+/>
     </div>
   );
 }

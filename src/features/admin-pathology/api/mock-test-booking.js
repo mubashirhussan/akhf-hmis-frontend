@@ -135,19 +135,21 @@ export function deleteTestBookingRow(id) {
 }
 
 export function createEmptyTestBookingForm() {
-  return {
-    mainGroup: "",
-    testBookingName: "",
-    service: "",
-    specimenRequired: "",
-    collectionTime: "",
-    gender: "",
-  };
+return {
+  mainGroup: "",
+  component: "",
+  testBookingName: "",
+  service: "",
+  specimenRequired: "",
+  collectionTime: "",
+  gender: "",
+};
 }
 
 export function rowToTestBookingForm(row) {
   return {
     mainGroup: row.mainGroup ?? "",
+    component: row.component ?? "",
     testBookingName: row.testBookingName ?? "",
     service: row.service ?? "",
     specimenRequired: row.specimenRequired ?? "",

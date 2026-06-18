@@ -16,6 +16,7 @@ export default function TestBookingModal({
   onSave,
   mainGroups = [],
   services = [],
+  components = [],
   isEdit,
 }) {
   const groupOptions = mainGroups.map((g) => ({
@@ -26,6 +27,15 @@ export default function TestBookingModal({
   const serviceOptions = services.map((s) => ({
     label: s.label ?? s.serviceName,
     value: s.value ?? s.serviceName,
+  }));
+const componentOptions = components
+  .filter(
+    (c) =>
+      c.groupName?.toLowerCase() === form.mainGroup?.toLowerCase()
+  )
+  .map((c) => ({
+    label: c.componentName,
+    value: c.componentName,
   }));
 
   return (
@@ -58,6 +68,20 @@ export default function TestBookingModal({
           allowClear
         />
       </FormField>
+      <FormField label="Component" required>
+  <Select
+    className={controlClass}
+    value={form.component}
+    options={componentOptions}
+    onChange={(value) =>
+      onPatchForm({
+        component: value,
+      })
+    }
+    allowClear
+    disabled={!form.mainGroup}
+  />
+</FormField>
 
       <FormField label="Test Booking Name" required>
         <Input
