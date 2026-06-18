@@ -93,21 +93,26 @@ export default function TestBookingPage() {
     };
 
 if (editingId) {
-  await updateBooking({
-    id: editingId,
-    testBookingName: form.testBookingName,
-    specimenRequired: form.specimenRequired,
-    collectionTime: form.collectionTime,
-    gender: form.gender,
-  }).unwrap();
+await updateBooking({
+  id: editingId,
+  mainGroup: form.mainGroup,
+  testBookingName: form.testBookingName,
+  service: form.service,
+  specimenRequired: form.specimenRequired,
+  collectionTime: form.collectionTime,
+  gender: form.gender,
+}).unwrap();
 
   message.success("Updated successfully");
 } else {
-  await createBooking({
-    mainGroup: form.mainGroup,
-    testBookingName,
-    service: form.service,
-  }).unwrap();
+await createBooking({
+  mainGroup: form.mainGroup,
+  testBookingName,
+  service: form.service,
+  specimenRequired: "",
+  collectionTime: "",
+  gender: "",
+}).unwrap();
 
   message.success("Created successfully");
 }

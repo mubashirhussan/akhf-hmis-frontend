@@ -13,73 +13,93 @@ export const SERVICE_OPTIONS = [
 const INITIAL_TEST_BOOKING_ROWS = [
   {
     id: "1",
-    testBookingName: "CBC Booking",
+    mainGroup: "Hematology",
+    testBookingName: "CBC",
     specimenRequired: "Blood",
     collectionTime: "Morning",
     gender: "Female",
+    service: "bsr_blood_sugar_random"
   },
   {
     id: "2",
-    testBookingName: "Urine Routine Booking",
+    mainGroup: "Microbiology",
+    testBookingName: "Urine Routine",
     specimenRequired: "Urine",
     collectionTime: "Morning",
     gender: "Male",
+    service: "24hr_urinary_amylase"
   },
   {
     id: "3",
-    testBookingName: "LFT Booking",
+    mainGroup: "Serology",
+    testBookingName: "LFT",
     specimenRequired: "Blood",
     collectionTime: "Fasting Required",
     gender: "Female",
+    service: "17_oh_progesterone"
   },
   {
     id: "4",
-    testBookingName: "KFT Booking",
+    mainGroup: "Chemistry",
+    testBookingName: "KFT",
     specimenRequired: "Blood",
     collectionTime: "Any Time",
     gender: "Male",
+    service: "24hr_urinary_copper"
   },
   {
     id: "5",
-    testBookingName: "Hormone Test Booking",
+    mainGroup: "Serology",
+    testBookingName: "Hormone Test",
     specimenRequired: "Blood",
     collectionTime: "Morning",
     gender: "Female",
+    service: "24hr_urinary_cortisol"
   },
   {
     id: "6",
-    testBookingName: "Thyroid Panel Booking",
+    mainGroup: "Chemistry",
+    testBookingName: "Thyroid Panel",
     specimenRequired: "Blood",
     collectionTime: "Morning",
     gender: "Male",
+    service: "24hr_urinary_creatinine"
   },
   {
     id: "7",
-    testBookingName: "Diabetes Test Booking",
+    mainGroup: "Chemistry",
+    testBookingName: "Diabetes Test",
     specimenRequired: "Blood",
     collectionTime: "Fasting Required",
     gender: "Female",
+    service: "bsr_blood_sugar_random"
   },
   {
     id: "8",
-    testBookingName: "Pregnancy Test Booking",
+    mainGroup: "Microbiology",
+    testBookingName: "Pregnancy Test",
     specimenRequired: "Urine",
     collectionTime: "Any Time",
     gender: "Female",
+    service: "24hr_urinary_chloride"
   },
   {
     id: "9",
-    testBookingName: "Lipid Profile Booking",
+    mainGroup: "Serology",
+    testBookingName: "Lipid Profile",
     specimenRequired: "Blood",
     collectionTime: "Fasting Required",
     gender: "Male",
+    service: "ot_anesthesia_machine"
   },
   {
     id: "10",
-    testBookingName: "Electrolyte Panel Booking",
+    mainGroup: "Microbiology",
+    testBookingName: "Electrolyte Panel",
     specimenRequired: "Blood",
     collectionTime: "Any Time",
     gender: "Male",
+    service: "24hr_urinary_copper"
   },
 ];
 
@@ -116,7 +136,9 @@ export function deleteTestBookingRow(id) {
 
 export function createEmptyTestBookingForm() {
   return {
+    mainGroup: "",
     testBookingName: "",
+    service: "",
     specimenRequired: "",
     collectionTime: "",
     gender: "",
