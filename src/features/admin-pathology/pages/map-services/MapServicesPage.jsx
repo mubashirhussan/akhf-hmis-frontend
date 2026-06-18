@@ -101,7 +101,7 @@ export default function MapServicesPage() {
           placeholder="Filter Main Group"
           style={{ width: 220 }}
           allowClear
-          value={selectedGroup}
+          value={selectedGroup || undefined}
           options={mainGroups.map((g) => ({
             label: g.groupName,
             value: g.groupName,
@@ -110,7 +110,7 @@ export default function MapServicesPage() {
         />
 
         <Input
-          placeholder="Search Test Booking"
+          placeholder="Filter by Test Booking"
           style={{ width: 260 }}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

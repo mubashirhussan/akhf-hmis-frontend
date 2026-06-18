@@ -199,9 +199,9 @@ const filteredRows = useMemo(() => {
         <div className="filter flex gap-2">
         <Select
   placeholder="Filter by Main Group"
-  style={{ width: 220, marginLeft: 10 }}
+  style={{ width: 220, marginLeft: 1 }}
   allowClear
-  value={selectedGroup}
+  value={selectedGroup || undefined}
   options={mainGroups.map(g => ({
     label: g.groupName,
     value: g.groupName,
@@ -209,7 +209,7 @@ const filteredRows = useMemo(() => {
   onChange={(value) => setSelectedGroup(value || "")}
 />
         <Input
-          placeholder="Search Test Booking"
+          placeholder="Filter by Test Booking"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           allowClear
