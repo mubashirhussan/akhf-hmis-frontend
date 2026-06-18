@@ -8,6 +8,7 @@ import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import AddedServicesPanel from "@/features/opd/components/AddedServicesPanel";
 import {
   MOCK_DOCTORS,
+  MOCK_SERVICES,
   formatPkr,
   formatServiceDateTime,
   paginateServices,

@@ -98,7 +98,7 @@ if (editingId) {
 await updateBooking({
   id: editingId,
   mainGroup: form.mainGroup,
-  component: form.component,
+  components: form.components,
   testBookingName: form.testBookingName,
   service: form.service,
   specimenRequired: form.specimenRequired,
@@ -110,7 +110,7 @@ await updateBooking({
 } else {
 await createBooking({
   mainGroup: form.mainGroup,
-  component: form.component,
+  components: form.components,
   testBookingName,
   service: form.service,
   specimenRequired: "",

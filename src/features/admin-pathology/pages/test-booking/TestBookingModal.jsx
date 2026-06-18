@@ -34,8 +34,8 @@ const componentOptions = components
       c.groupName?.toLowerCase() === form.mainGroup?.toLowerCase()
   )
   .map((c) => ({
-    label: c.componentName,
     value: c.componentName,
+    label: c.componentName,
   }));
 
   return (
@@ -68,18 +68,31 @@ const componentOptions = components
           allowClear
         />
       </FormField>
-      <FormField label="Component" required>
+<FormField label="Components" required>
   <Select
+    mode="multiple"
     className={controlClass}
-    value={form.component}
+    value={form.components}
     options={componentOptions}
+    disabled={!form.mainGroup}
+    allowClear
+    maxTagCount={2}
+    maxTagPlaceholder={(omitted) => `+${omitted.length}`}
+    optionRender={(option) => (
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          type="checkbox"
+          checked={form.components.includes(option.value)}
+          readOnly
+        />
+        <span>{option.label}</span>
+      </div>
+    )}
     onChange={(value) =>
       onPatchForm({
-        component: value,
+        components: value,
       })
     }
-    allowClear
-    disabled={!form.mainGroup}
   />
 </FormField>
 
