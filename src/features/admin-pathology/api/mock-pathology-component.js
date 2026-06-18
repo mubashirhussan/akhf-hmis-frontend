@@ -235,10 +235,10 @@ export function addPathologyUnitOption(option) {
 
 export function createEmptyPathologyComponentForm() {
   return {
-    groupName: 'haematology',
-    subGroupName: 'cbc',
-    testName: 'esr',
-    fieldType: 'html',
+    groupName: '',
+    subGroupName: '',
+    testName: '',
+    fieldType: '',
     componentName: '',
     unit: '',
     priority: 1,

@@ -130,9 +130,9 @@ export function addPathologyConditionOption(option) {
 
 export function createEmptyPathologyTestRangeForm() {
   return {
-    groupName: 'haematology',
-    subGroupName: 'cbc',
-    testName: 'esr',
+    groupName: '',
+    subGroupName: '',
+    testName: '',
     testComponent: '',
     startValue: '',
     endValue: '',

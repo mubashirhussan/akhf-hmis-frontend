@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Space, Tooltip } from "antd";
+import { App, Button, Space, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import {
@@ -48,10 +48,21 @@ export default function PathologyTestRangePage() {
     useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+const [filters, setFilters] = useState({
+  testName: "",
+  componentName: "",
+});
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
   }, []);
+
+  const patchFilter = useCallback((patch) => {
+  setFilters((prev) => ({
+    ...prev,
+    ...patch,
+  }));
+}, []);
 
   const clearFieldError = useCallback((field) => {
     setFieldErrors((current) => {
@@ -207,6 +218,33 @@ export default function PathologyTestRangePage() {
     [form.unit, unitOptions],
   );
 
+  const testNameOptions = useMemo(() => {
+  const uniqueTests = [
+    ...new Set(rows.map((row) => row.testName).filter(Boolean)),
+  ];
+
+  return uniqueTests.map((test) => ({
+    label: test,
+    value: test,
+  }));
+}, [rows]);
+
+const filteredRows = useMemo(() => {
+  return rows.filter((row) => {
+    const matchesTestName = filters.testName
+      ? row.testName === filters.testName
+      : true;
+
+    const matchesComponentName = filters.componentName.trim()
+      ? row.componentName
+          ?.toLowerCase()
+          .includes(filters.componentName.trim().toLowerCase())
+      : true;
+
+    return matchesTestName && matchesComponentName;
+  });
+}, [rows, filters]);
+
   const columns = useMemo(
     () => [
       { title: "TestName", dataIndex: "testName", key: "testName", width: 200 },
@@ -279,18 +317,56 @@ export default function PathologyTestRangePage() {
 
   return (
     <div className="services-billing-page pathology-test-range-page">
-      <div className="pathology-test-range-table-toolbar">
-        <Button type="primary" onClick={openTestRangeModal}>
-          Add Test Range
-        </Button>
-        <Button
-          className="pathology-test-range-export-btn"
-          icon={<AppIcon icon="mdi:export" className="h-4 w-4" />}
-          onClick={handleExport}
-        >
-          Export
-        </Button>
-      </div>
+<div
+  className="pathology-test-range-table-toolbar"
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
+  }}
+>
+  <div style={{ display: "flex", gap: 10 }}>
+    <Select
+      placeholder="Filter by Test Name"
+      allowClear
+      style={{ width: 220 }}
+      value={filters.testName || undefined}
+      options={testNameOptions}
+      onChange={(value) =>
+        patchFilter({
+          testName: value || "",
+        })
+      }
+    />
+
+    <Input
+      placeholder="Filter by Component Name"
+      allowClear
+      style={{ width: 250 }}
+      value={filters.componentName}
+      onChange={(e) =>
+        patchFilter({
+          componentName: e.target.value,
+        })
+      }
+    />
+  </div>
+
+  <div style={{ display: "flex", gap: 10 }}>
+    <Button type="primary" onClick={openTestRangeModal}>
+      Add Test Range
+    </Button>
+
+    <Button
+      className="pathology-test-range-export-btn"
+      icon={<AppIcon icon="mdi:export" className="h-4 w-4" />}
+      onClick={handleExport}
+    >
+      Export
+    </Button>
+  </div>
+</div>
 
       <section
         className="services-billing-results"
@@ -299,7 +375,7 @@ export default function PathologyTestRangePage() {
         <DataTable
           rowKey="id"
           columns={columns}
-          dataSource={rows}
+          dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
           pagination={{

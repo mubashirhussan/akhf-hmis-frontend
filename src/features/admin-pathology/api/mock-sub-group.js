@@ -126,7 +126,7 @@ export function deleteSubGroupRow(id) {
 export function createEmptySubGroupForm() {
   return {
     id: '',
-    groupName: 'Haematology',
+    groupName: '',
     subGroupName: '',
     fee: '0',
   };

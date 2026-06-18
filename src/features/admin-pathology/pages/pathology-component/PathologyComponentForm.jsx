@@ -72,20 +72,11 @@ export default function PathologyComponentForm({
           options={groupOptions}
           disabled={isEditing}
           onChange={(groupName) => {
-            const nextSubGroup =
-              subGroups.find((sg) => sg.groupName === groupName)
-                ?.subGroupName ?? "";
-
-            const nextTest =
-              testNames.find(
-                (t) =>
-                  t.groupName === groupName && t.subGroupName === nextSubGroup,
-              )?.testName ?? "";
 
             onPatchForm({
               groupName,
-              subGroupName: nextSubGroup,
-              testName: nextTest,
+              subGroupName: '',
+              testName: '',
             });
           }}
         />
@@ -97,18 +88,12 @@ export default function PathologyComponentForm({
           className={controlClass}
           value={form.subGroupName}
           options={subGroupOptions}
-          disabled={isEditing}
+          disabled={!form.groupName}
           onChange={(subGroupName) => {
-            const nextTest =
-              testNames.find(
-                (t) =>
-                  t.groupName === form.groupName &&
-                  t.subGroupName === subGroupName,
-              )?.testName ?? "";
 
             onPatchForm({
               subGroupName,
-              testName: nextTest,
+              testName: '',
             });
           }}
         />
@@ -120,7 +105,7 @@ export default function PathologyComponentForm({
           className={controlClass}
           value={form.testName}
           options={testOptions}
-          disabled={isEditing}
+          disabled={!form.subGroupName}
           onChange={(testName) => onPatchForm({ testName })}
         />
       </FormField>
