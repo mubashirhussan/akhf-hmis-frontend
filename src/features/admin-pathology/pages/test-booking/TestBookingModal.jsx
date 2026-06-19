@@ -42,7 +42,7 @@ const componentOptions = components
 <AppModal
   open={open}
   onClose={onClose}
-  title={isEdit ? "Edit Test Booking" : "Create Test Booking"}
+  title={isEdit ? "Edit Test Booking" : "Add Test Booking"}
   width={500}
   footer={
     <>
@@ -55,6 +55,17 @@ const componentOptions = components
 >
   {!isEdit ? (
     <FormGrid columns={1}>
+            <FormField label="Test Booking Name" required>
+        <Input
+          className={controlClass}
+          value={form.testBookingName}
+          onChange={(e) =>
+            onPatchForm({
+              testBookingName: e.target.value,
+            })
+          }
+        />
+      </FormField>
       <FormField label="Main Group" required>
         <Select
           className={controlClass}
@@ -96,31 +107,34 @@ const componentOptions = components
   />
 </FormField>
 
-      <FormField label="Test Booking Name" required>
-        <Input
-          className={controlClass}
-          value={form.testBookingName}
-          onChange={(e) =>
-            onPatchForm({
-              testBookingName: e.target.value,
-            })
-          }
-        />
-      </FormField>
 
-      <FormField label="Service" required>
-        <Select
-          className={controlClass}
-          value={form.service}
-          options={serviceOptions}
-          onChange={(value) =>
-            onPatchForm({
-              service: value,
-            })
-          }
-          allowClear
+
+<FormField label="Service" required>
+  <Select
+    mode="multiple"
+    className={controlClass}
+    value={form.service || []}
+    options={serviceOptions}
+    allowClear
+    maxTagCount={2}
+    maxTagPlaceholder={(omitted) => `+${omitted.length}`}
+    optionRender={(option) => (
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          type="checkbox"
+          checked={(form.service || []).includes(option.value)}
+          readOnly
         />
-      </FormField>
+        <span>{option.label}</span>
+      </div>
+    )}
+    onChange={(value) =>
+      onPatchForm({
+        service: value,
+      })
+    }
+  />
+</FormField>
     </FormGrid>
   ) : (
     <FormGrid columns={1}>

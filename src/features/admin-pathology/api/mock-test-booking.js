@@ -139,7 +139,7 @@ export function createEmptyTestBookingForm() {
     mainGroup: "",
     components: [],
     testBookingName: "",
-    service: "",
+    service: [],
     specimenRequired: "",
     collectionTime: "",
     gender: "",
