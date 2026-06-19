@@ -1,0 +1,83 @@
+.test-booking-page {
+  padding: 0;
+}
+
+.test-booking-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.test-booking-toolbar .ant-input {
+  width: 260px;
+}
+
+.test-booking-toolbar .ant-btn {
+  min-width: 180px;
+}
+
+.test-booking-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.test-booking-save-btn {
+  min-width: 140px;
+}
+
+.test-booking-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.test-booking-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+.test-booking-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.test-booking-form-grid .field-control,
+.test-booking-form-grid .ant-select,
+.test-booking-form-grid .ant-input {
+  width: 100%;
+}
+
+.test-booking-form-grid .field-control.ant-input-status-error,
+.test-booking-form-grid .ant-input-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.test-booking-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 991px) {
+  .test-booking-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .test-booking-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .test-booking-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .test-booking-toolbar .ant-input,
+  .test-booking-toolbar .ant-btn {
+    width: 100%;
+  }
+}

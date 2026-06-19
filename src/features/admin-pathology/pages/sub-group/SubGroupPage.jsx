@@ -11,7 +11,6 @@ import {
   getOptionLabel,
   rowToSubGroupForm,
 } from "@/features/admin-pathology/api/mock-sub-group";
-import "@/features/admin-pathology/pages/sub-group/sub-group.css";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetSubGroupsQuery,

@@ -37,7 +37,12 @@ import {
   GENDER_OPTIONS,
   updatePathologyTestRangeRow,
 } from "@/features/admin-pathology/api/mock-pathology-test-range";
-
+import {
+  getTestBookingRows,
+  createTestBookingRow,
+  updateTestBookingRow,
+  deleteTestBookingRow,
+} from "@/features/admin-pathology/api/mock-test-booking";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -178,6 +183,32 @@ export const pathologyApi = api.injectEndpoints({
       },
       invalidatesTags: ["PathologyTestRange"],
     }),
+    getTestBookings: builder.query({
+  queryFn: async () => ({ data: getTestBookingRows() }),
+  providesTags: ["TestBooking"],
+}),
+
+createTestBooking: builder.mutation({
+  queryFn: async (rowPayload) => ({
+    data: createTestBookingRow(rowPayload),
+  }),
+  invalidatesTags: ["TestBooking"],
+}),
+
+updateTestBooking: builder.mutation({
+  queryFn: async ({ id, ...rowPayload }) => ({
+    data: updateTestBookingRow(id, rowPayload),
+  }),
+  invalidatesTags: ["TestBooking"],
+}),
+
+deleteTestBooking: builder.mutation({
+  queryFn: async (id) => {
+    deleteTestBookingRow(id);
+    return { data: { id } };
+  },
+  invalidatesTags: ["TestBooking"],
+}),
     addPathologyCondition: builder.mutation({
       queryFn: async (option) => ({
         data: addPathologyConditionOption(option),
@@ -210,4 +241,8 @@ export const {
   useUpdatePathologyTestRangeMutation,
   useDeletePathologyTestRangeMutation,
   useAddPathologyConditionMutation,
+  useGetTestBookingsQuery,
+  useCreateTestBookingMutation,
+  useUpdateTestBookingMutation,
+  useDeleteTestBookingMutation,
 } = pathologyApi;
