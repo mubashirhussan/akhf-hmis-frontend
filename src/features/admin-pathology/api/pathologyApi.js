@@ -43,6 +43,12 @@ import {
   updateTestBookingRow,
   deleteTestBookingRow,
 } from "@/features/admin-pathology/api/mock-test-booking";
+import {
+  getReportConsultantRows,
+  createReportConsultantRow,
+  updateReportConsultantRow,
+  deleteReportConsultantRow,
+} from "@/features/admin-pathology/api/mock-report-consultant";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -215,6 +221,29 @@ deleteTestBooking: builder.mutation({
       }),
       invalidatesTags: ["PathologyLookups"],
     }),
+    getReportConsultants: builder.query({
+      queryFn: async () => ({ data: getReportConsultantRows() }),
+      providesTags: ["ReportConsultant"],
+    }),
+    createReportConsultant: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createReportConsultantRow(rowPayload),
+      }),
+      invalidatesTags: ["ReportConsultant"],
+    }),
+    updateReportConsultant: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateReportConsultantRow(id, rowPayload),
+      }),
+      invalidatesTags: ["ReportConsultant"],
+    }),
+    deleteReportConsultant: builder.mutation({
+      queryFn: async (id) => {
+        deleteReportConsultantRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["ReportConsultant"],
+    }),
   }),
 });
 
@@ -245,4 +274,8 @@ export const {
   useCreateTestBookingMutation,
   useUpdateTestBookingMutation,
   useDeleteTestBookingMutation,
+  useGetReportConsultantsQuery,
+  useCreateReportConsultantMutation,
+  useUpdateReportConsultantMutation,
+  useDeleteReportConsultantMutation,
 } = pathologyApi;

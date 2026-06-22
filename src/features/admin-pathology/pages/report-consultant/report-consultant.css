@@ -1,0 +1,64 @@
+.report-consultant-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.report-consultant-form-grid .field-control {
+  width: 100%;
+}
+
+.report-consultant-form-grid .field-control.ant-input-status-error,
+.report-consultant-form-grid .ant-input-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.report-consultant-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.report-consultant-save-btn {
+  min-width: 138px;
+}
+
+.report-consultant-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.report-consultant-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.report-consultant-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+@media (max-width: 767px) {
+  .report-consultant-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .report-consultant-save-btn {
+    width: 100%;
+  }
+
+  .report-consultant-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-consultant-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-consultant-filters .ant-input-affix-wrapper,
+  .report-consultant-filters .ant-input {
+    width: 100% !important;
+  }
+}
