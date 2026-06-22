@@ -50,7 +50,7 @@ export default function AdminServicesForm({
           status={errors?.serviceCategory ? 'error' : ''}
           value={form.serviceCategory || undefined}
           options={SERVICE_CATEGORY_OPTIONS}
-          placeholder="--- Select ---"
+        
           showSearch
           optionFilterProp="label"
           onChange={(serviceCategory) => {
