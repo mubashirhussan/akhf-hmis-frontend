@@ -55,6 +55,12 @@ import {
   updateInterpretationRow,
   deleteInterpretationRow,
 } from "@/features/admin-pathology/api/mock-interpretation";
+import {
+  getMachineIntegrationCompwiseRows,
+  createMachineIntegrationCompwiseRow,
+  updateMachineIntegrationCompwiseRow,
+  deleteMachineIntegrationCompwiseRow,
+} from "@/features/admin-pathology/api/mock-machine-integration-compwise";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -273,6 +279,29 @@ deleteTestBooking: builder.mutation({
       },
       invalidatesTags: ["Interpretation"],
     }),
+    getMachineIntegrationCompwise: builder.query({
+      queryFn: async () => ({ data: getMachineIntegrationCompwiseRows() }),
+      providesTags: ["MachineIntegrationCompwise"],
+    }),
+    createMachineIntegrationCompwise: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createMachineIntegrationCompwiseRow(rowPayload),
+      }),
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
+    updateMachineIntegrationCompwise: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateMachineIntegrationCompwiseRow(id, rowPayload),
+      }),
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
+    deleteMachineIntegrationCompwise: builder.mutation({
+      queryFn: async (id) => {
+        deleteMachineIntegrationCompwiseRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
   }),
 });
 
@@ -311,4 +340,8 @@ export const {
   useCreateInterpretationMutation,
   useUpdateInterpretationMutation,
   useDeleteInterpretationMutation,
+  useGetMachineIntegrationCompwiseQuery,
+  useCreateMachineIntegrationCompwiseMutation,
+  useUpdateMachineIntegrationCompwiseMutation,
+  useDeleteMachineIntegrationCompwiseMutation,
 } = pathologyApi;

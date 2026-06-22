@@ -1,0 +1,65 @@
+.machine-integration-compwise-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.machine-integration-compwise-form-grid .field-control,
+.machine-integration-compwise-form-grid .ant-select {
+  width: 100%;
+}
+
+.machine-integration-compwise-form-grid .field-control.ant-input-status-error,
+.machine-integration-compwise-form-grid .ant-input-status-error.field-control,
+.machine-integration-compwise-form-grid .ant-select-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.machine-integration-compwise-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.machine-integration-compwise-save-btn {
+  min-width: 138px;
+}
+
+.machine-integration-compwise-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.machine-integration-compwise-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.machine-integration-compwise-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+@media (max-width: 767px) {
+  .machine-integration-compwise-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .machine-integration-compwise-save-btn {
+    width: 100%;
+  }
+
+  .machine-integration-compwise-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .machine-integration-compwise-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .machine-integration-compwise-filters .ant-select {
+    width: 100% !important;
+  }
+}

@@ -13,6 +13,7 @@ export const api = createApi({
     "TestBooking",
     'ReportConsultant',
     'Interpretation',
+    'MachineIntegrationCompwise',
     'PathologyLookups',
     'LaboratoryWorklist',
     'WalkInPatient',
