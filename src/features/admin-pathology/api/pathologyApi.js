@@ -49,6 +49,12 @@ import {
   updateReportConsultantRow,
   deleteReportConsultantRow,
 } from "@/features/admin-pathology/api/mock-report-consultant";
+import {
+  getInterpretationRows,
+  createInterpretationRow,
+  updateInterpretationRow,
+  deleteInterpretationRow,
+} from "@/features/admin-pathology/api/mock-interpretation";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -244,6 +250,29 @@ deleteTestBooking: builder.mutation({
       },
       invalidatesTags: ["ReportConsultant"],
     }),
+    getInterpretations: builder.query({
+      queryFn: async () => ({ data: getInterpretationRows() }),
+      providesTags: ["Interpretation"],
+    }),
+    createInterpretation: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createInterpretationRow(rowPayload),
+      }),
+      invalidatesTags: ["Interpretation"],
+    }),
+    updateInterpretation: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateInterpretationRow(id, rowPayload),
+      }),
+      invalidatesTags: ["Interpretation"],
+    }),
+    deleteInterpretation: builder.mutation({
+      queryFn: async (id) => {
+        deleteInterpretationRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["Interpretation"],
+    }),
   }),
 });
 
@@ -278,4 +307,8 @@ export const {
   useCreateReportConsultantMutation,
   useUpdateReportConsultantMutation,
   useDeleteReportConsultantMutation,
+  useGetInterpretationsQuery,
+  useCreateInterpretationMutation,
+  useUpdateInterpretationMutation,
+  useDeleteInterpretationMutation,
 } = pathologyApi;

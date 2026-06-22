@@ -7,6 +7,7 @@ export const SERVICE_OPTIONS = [
   { value: "24hr_urinary_copper", label: "24 Hours Urinary Copper" },
   { value: "24hr_urinary_cortisol", label: "24 Hours Urinary Cortisol" },
   { value: "24hr_urinary_creatinine", label: "24 HOURS URINARY CREATININE" },
+  { value: "shbg", label: "Sex Hormone Binding Globulin (SHBG)" },
 
 ];
 

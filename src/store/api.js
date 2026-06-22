@@ -12,6 +12,7 @@ export const api = createApi({
     'PathologyTestRange',
     "TestBooking",
     'ReportConsultant',
+    'Interpretation',
     'PathologyLookups',
     'LaboratoryWorklist',
     'WalkInPatient',
