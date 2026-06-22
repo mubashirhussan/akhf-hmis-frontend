@@ -19,8 +19,8 @@ export const api = createApi({
     'WalkInPatient',
     'WalkInService',
     'BillingVisit',
-    'BillingVisitServices'
-  
+    'BillingVisitServices',
+    'ServiceAdmin',
   ],
   endpoints: () => ({}),
 });

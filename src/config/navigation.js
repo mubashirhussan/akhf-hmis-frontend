@@ -133,7 +133,19 @@ export const navigation = [
       { key: 'delivered-reports', label: 'Delivered Reports', href: '/laboratory/delivered-reports' },
     ],
   },
-  { key: 'service-admin', label: 'Service Admin', href: '/service-admin', icon: 'mdi:account-cog-outline' },
+  {
+    key: 'service-admin',
+    label: 'Service Admin',
+    href: '/service-admin',
+    icon: 'mdi:account-cog-outline',
+    children: [
+      {
+        key: 'admin-services',
+        label: 'Admin Services',
+        href: '/service-admin/admin-services',
+      },
+    ],
+  },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },
   { key: 'discount', label: 'Discount', href: '/discount', icon: 'iconamoon:discount-light' },
   { key: 'human-resource', label: 'Human Resource', href: '/human-resource', icon: 'mdi:account-group-outline' },
