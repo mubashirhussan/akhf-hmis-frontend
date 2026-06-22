@@ -109,7 +109,7 @@ export const navigation = [
       },
       {
         key: 'machine-integration-compwise',
-        label: 'Machine Integration CompWise',
+        label: 'Machine Integration Component Wise',
         href: '/admin-pathology/machine-integration-compwise',
       },
       {
