@@ -102,11 +102,11 @@ export const navigation = [
         label: 'Add Interpretation',
         href: '/admin-pathology/interpretation',
       },
-      {
-        key: 'machine-calculated-test',
-        label: 'Machine Calculated Test',
-        href: '/admin-pathology/machine-calculated-test',
-      },
+      // {
+      //   key: 'machine-calculated-test',
+      //   label: 'Machine Calculated Test',
+      //   href: '/admin-pathology/machine-calculated-test',
+      // },
       {
         key: 'machine-integration-compwise',
         label: 'Machine Integration Component Wise',
