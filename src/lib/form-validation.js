@@ -1,14 +1,15 @@
 export const PATIENT_REG_FORM_SELECTOR = '.patient-registration-form';
 
-/** Stable DOM id for patient registration fields (label htmlFor + focus on submit). */
+import { formFieldId } from '@/components/ui/FormFieldPrefixContext';
+
+/** @deprecated Use formFieldId('patient-reg', name) */
 export function patientRegFieldId(name) {
-  const key = Array.isArray(name) ? name.join('-') : String(name);
-  return `patient-reg-${key}`;
+  return formFieldId('patient-reg', name);
 }
 
+/** @deprecated Use formFieldId('emergency-reg', name) */
 export function emergencyRegFieldId(name) {
-  const key = Array.isArray(name) ? name.join('-') : String(name);
-  return `emergency-reg-${key}`;
+  return formFieldId('emergency-reg', name);
 }
 
 /** Resolves the patient registration <form> element (Ant Design Form ref is not a DOM node). */
@@ -64,6 +65,26 @@ export function clearInvalidFocusHighlight(
     el.removeAttribute('data-invalid');
   });
 }
+
+function hasAnyFormErrors(form) {
+  return form.getFieldsError().some(({ errors }) => errors.length > 0);
+}
+
+/** Removes submit-validation highlight from a single field once it becomes valid. */
+export function clearFieldInvalidFocus(fieldName, rootOrSelector = PATIENT_REG_FORM_SELECTOR) {
+  const root = resolvePatientRegFormRoot(rootOrSelector);
+  if (!(root instanceof Element)) {
+    return;
+  }
+
+  const fieldKey = fieldNameToKey(fieldName);
+  const fieldWrap = findPatientRegFieldWrap(root, fieldKey);
+  if (fieldWrap) {
+    fieldWrap.classList.remove('patient-reg-invalid-focus');
+    fieldWrap.removeAttribute('data-invalid');
+  }
+}
+
 
 function fieldNameToKey(fieldName) {
   return Array.isArray(fieldName) ? fieldName.join('-') : String(fieldName);
@@ -176,7 +197,21 @@ export function handleFormChangeClearErrors(form, changed, onExtraChange) {
   for (const key of Object.keys(changed)) {
     const errors = form.getFieldError(key);
     if (errors.length > 0) {
-      form.validateFields([key]).catch(() => {});
+      form
+        .validateFields([key])
+        .then(() => {
+          clearFieldInvalidFocus(key);
+          if (!hasAnyFormErrors(form)) {
+            clearPatientRegValidationState();
+          }
+        })
+        .catch(() => {});
+      continue;
+    }
+
+    clearFieldInvalidFocus(key);
+    if (!hasAnyFormErrors(form)) {
+      clearPatientRegValidationState();
     }
   }
 }

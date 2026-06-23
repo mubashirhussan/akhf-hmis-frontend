@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Form } from "antd";
-import FloatingField from "@/components/ui/FloatingField";
-import { emergencyRegFieldId } from "@/lib/form-validation";
+import { Form } from 'antd';
+import FloatingField from '@/components/ui/FloatingField';
+import { formFieldId, useFormFieldPrefix } from '@/components/ui/FormFieldPrefixContext';
 
-export default function EmergencyRegField({
+export default function FormFloatingField({
   name,
   label,
   rules,
@@ -12,25 +12,24 @@ export default function EmergencyRegField({
   required = false,
   col,
   colStart,
-  variant = "control",
+  variant = 'control',
   htmlFor,
-  className = "",
+  className = '',
   valuePropName,
   children,
 }) {
-  const fieldId = name != null ? emergencyRegFieldId(name) : undefined;
+  const prefix = useFormFieldPrefix();
+  const fieldId = name != null ? formFieldId(prefix, name) : undefined;
   const fieldClass =
     name != null
-      ? ["emergency-reg-field", `emergency-reg-field--${name}`, className]
-          .filter(Boolean)
-          .join(" ")
+      ? [`${prefix}-field`, `${prefix}-field--${name}`, className].filter(Boolean).join(' ')
       : className;
 
   const formItemProps = {
     noStyle: true,
     ...(name != null ? { name, id: fieldId } : {}),
     ...(rules ? { rules } : {}),
-    validateTrigger: validateTrigger ?? ["onChange", "onSubmit"],
+    validateTrigger: validateTrigger ?? ['onChange', 'onSubmit'],
     ...(valuePropName ? { valuePropName } : {}),
   };
 

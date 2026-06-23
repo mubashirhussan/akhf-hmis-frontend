@@ -11,17 +11,10 @@ import {
   Form,
   Input,
   Select,
-  Space,
   Upload,
 } from 'antd';
 import FormGrid from '@/components/ui/FormGrid';
-import PatientRegField from '@/features/opd/components/PatientRegField';
-import {
-  clearPatientRegValidationState,
-  focusFormField,
-  handleFormChangeClearErrors,
-  highlightAllInvalidFields,
-} from '@/lib/form-validation';
+import FormFloatingField from '@/components/ui/FormFloatingField';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { useCreateEmployeeMutation } from '@/features/human-resource/api/employeeApi';
 
@@ -196,7 +189,6 @@ const initialValues = {
 };
 
 const DEFAULT_OPEN_PANELS = ['general', 'basic', 'address', 'employment'];
-const ALL_PANEL_KEYS = ['general', 'basic', 'address', 'employment'];
 
 const FIELD_PANEL_MAP = {
   title: 'general',
@@ -325,7 +317,6 @@ export default function EmployeeEntryPage() {
   const [form] = Form.useForm();
   const [createEmployee, { isLoading: isSaving }] = useCreateEmployeeMutation();
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
-  const [pendingSubmitErrors, setPendingSubmitErrors] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [photoPreview, setPhotoPreview] = useState('');
 
@@ -337,27 +328,6 @@ export default function EmployeeEntryPage() {
     () => calculateAge(birthDay, birthMonth, birthYear),
     [birthDay, birthMonth, birthYear],
   );
-
-  useEffect(() => {
-    if (!pendingSubmitErrors?.length) {
-      return undefined;
-    }
-
-    const firstInvalidName = pendingSubmitErrors[0].name;
-    const timer = window.setTimeout(() => {
-      highlightAllInvalidFields(pendingSubmitErrors);
-      if (typeof form.scrollToField === 'function') {
-        form.scrollToField(firstInvalidName, {
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }
-      focusFormField(form, firstInvalidName);
-      setPendingSubmitErrors(null);
-    }, 50);
-
-    return () => window.clearTimeout(timer);
-  }, [activePanels, form, pendingSubmitErrors]);
 
   useEffect(() => {
     return () => {
@@ -374,7 +344,7 @@ export default function EmployeeEntryPage() {
         label: 'General Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField
+            <FormFloatingField
               label="Profile photo"
               col="full"
               className="employee-entry-photo-field"
@@ -431,71 +401,71 @@ export default function EmployeeEntryPage() {
                   </div>
                 </div>
               </Upload>
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="employeeNo" label="Employee No">
+            <FormFloatingField name="employeeNo" label="Employee No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="title" label="Title">
+            <FormFloatingField name="title" label="Title">
               <Select className={controlClass} options={TITLE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="firstName"
               label="First Name"
               required
               rules={REQUIRED_RULE('First name is required')}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="middleName" label="Middle Name">
+            <FormFloatingField name="middleName" label="Middle Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="lastName"
               label="Last Name"
               required
               rules={REQUIRED_RULE('Last name is required')}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="relationType" label="Relation">
+            <FormFloatingField name="relationType" label="Relation">
               <Select className={controlClass} options={RELATION_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="relationFirstName"
               label="Relation First Name"
               required
               rules={REQUIRED_RULE('Relation first name is required')}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="relationMiddleName" label="Relation Middle Name">
+            <FormFloatingField name="relationMiddleName" label="Relation Middle Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="relationLastName"
               label="Relation Last Name"
               required
               rules={REQUIRED_RULE('Relation last name is required')}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="gender" label="Gender">
+            <FormFloatingField name="gender" label="Gender">
               <Select className={controlClass} options={GENDER_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="employeeType" label="Employee Type">
+            <FormFloatingField name="employeeType" label="Employee Type">
               <Select className={controlClass} options={EMPLOYEE_TYPE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -504,51 +474,51 @@ export default function EmployeeEntryPage() {
         label: 'Basic Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField label="Date Of Birth" >
+            <FormFloatingField label="Date Of Birth" >
               {/* <BirthDateControl /> */}
                <Input className={controlClass} type="date" />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField label="Age">
+            <FormFloatingField label="Age">
               <ReadOnlyValue value={ageLabel} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="nationality" label="Nationality">
+            <FormFloatingField name="nationality" label="Nationality">
               <Select className={controlClass} options={NATIONALITY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="otherNationality" label="Other Nationality">
+            <FormFloatingField name="otherNationality" label="Other Nationality">
               <Select className={controlClass} options={NATIONALITY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="placeOfBirth" label="Place Of Birth">
+            <FormFloatingField name="placeOfBirth" label="Place Of Birth">
               <Select className={controlClass} options={PLACE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="maritalStatus"
               label="Marital Status"
             >
               <Select className={controlClass} options={MARITAL_STATUS_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="religion" label="Religion">
+            <FormFloatingField name="religion" label="Religion">
               <Select className={controlClass} options={RELIGION_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="domicile" label="Domicile">
+            <FormFloatingField name="domicile" label="Domicile">
               <Select className={controlClass} options={DOMICILE_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="cnicNo" label="CNIC No">
+            <FormFloatingField name="cnicNo" label="CNIC No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="passportNo" label="Passport No">
+            <FormFloatingField name="passportNo" label="Passport No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField label="CNIC Expiry">
+            <FormFloatingField label="CNIC Expiry">
               <div className="employee-entry-expiry-row">
                 <Form.Item noStyle name="cnicExpiry">
                   <Input className={controlClass} placeholder="dd/MM/yyyy" />
@@ -557,15 +527,15 @@ export default function EmployeeEntryPage() {
                   <Checkbox className="employee-entry-inline-checkbox">Life Time</Checkbox>
                 </Form.Item>
               </div>
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="languageKnown" label="Language Known">
+            <FormFloatingField name="languageKnown" label="Language Known">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="bloodGroup" label="Blood Group">
+            <FormFloatingField name="bloodGroup" label="Blood Group">
               <Select className={controlClass} options={BLOOD_GROUP_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -574,40 +544,40 @@ export default function EmployeeEntryPage() {
         label: 'Address Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField label="Home Phone" name="home no">
+            <FormFloatingField label="Home Phone" name="home no">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="mobileNo" label="Mobile No">
+            <FormFloatingField name="mobileNo" label="Mobile No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField label="Office Phone" name="office no">
+            <FormFloatingField label="Office Phone" name="office no">
                  <Input className={controlClass} />
              
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="emailAddress" label="Email Address">
+            <FormFloatingField name="emailAddress" label="Email Address">
               <Input className={controlClass} type="email" />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="emergencyContactNo" label="Emergency Contact #">
+            <FormFloatingField name="emergencyContactNo" label="Emergency Contact #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="emergencyContactName" label="Emergency Contact Name">
+            <FormFloatingField name="emergencyContactName" label="Emergency Contact Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="districtName" label="District Name">
+            <FormFloatingField name="districtName" label="District Name">
               <Select className={controlClass} options={DISTRICT_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="tehsilName" label="Tehsil Name">
+            <FormFloatingField name="tehsilName" label="Tehsil Name">
               <Select className={controlClass} options={TEHSIL_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="permanentAddress"
               label="Permanent Address"
               required
@@ -615,15 +585,15 @@ export default function EmployeeEntryPage() {
               // col="full"
             >
               <Input.TextArea className={controlClass} rows={2} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="presentAddress" label="Present Address" >
+            <FormFloatingField name="presentAddress" label="Present Address" >
               <Input.TextArea className={controlClass} rows={2} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="officeAddress" label="Office Address" >
+            <FormFloatingField name="officeAddress" label="Office Address" >
               <Input.TextArea className={controlClass} rows={2} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -632,57 +602,57 @@ export default function EmployeeEntryPage() {
         label: 'Employment Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField name="designation" label="Designation">
+            <FormFloatingField name="designation" label="Designation">
               <Select className={controlClass} options={DESIGNATION_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="grade" label="Grade (I-IX)">
+            <FormFloatingField name="grade" label="Grade (I-IX)">
               <Select className={controlClass} options={GRADE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="doj" label="D.O.J">
+            <FormFloatingField name="doj" label="D.O.J">
               <Input className={controlClass} placeholder="dd/MM/yyyy" />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="hospital" label="Hospital">
+            <FormFloatingField name="hospital" label="Hospital">
               <Select className={controlClass} options={HOSPITAL_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="department" label="Department">
+            <FormFloatingField name="department" label="Department">
               <Select className={controlClass} options={DEPARTMENT_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="ntnNo" label="NTN #">
+            <FormFloatingField name="ntnNo" label="NTN #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="subDepartment" label="Sub Department">
+            <FormFloatingField name="subDepartment" label="Sub Department">
               <Select className={controlClass} options={SUB_DEPARTMENT_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="shift" label="Shift">
+            <FormFloatingField name="shift" label="Shift">
               <Select className={controlClass} options={SHIFT_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="designationDetail" label="Designation Detail">
+            <FormFloatingField name="designationDetail" label="Designation Detail">
               <Input.TextArea className={controlClass} rows={1} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="salaryMode" label="Salary Mode">
+            <FormFloatingField name="salaryMode" label="Salary Mode">
               <Select className={controlClass} options={SALARY_MODE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="gpFundNo" label="GP Fund No">
+            <FormFloatingField name="gpFundNo" label="GP Fund No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="providentFundNo" label="Provident Fund No">
+            <FormFloatingField name="providentFundNo" label="Provident Fund No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="eobiNo" label="EOBI No">
+            <FormFloatingField name="eobiNo" label="EOBI No">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
             <div className="employee-entry-checkbox-slot">
               <Form.Item name="isConsultant" valuePropName="checked" noStyle>
@@ -693,13 +663,11 @@ export default function EmployeeEntryPage() {
         ),
       },
     ],
-    [ageLabel, fileList, form, message, photoPreview],
+    [ageLabel, fileList, photoPreview],
   );
 
   const handleClear = () => {
     form.resetFields();
-    setPendingSubmitErrors(null);
-    clearPatientRegValidationState();
     setActivePanels(DEFAULT_OPEN_PANELS);
     setFileList([]);
 
@@ -713,8 +681,6 @@ export default function EmployeeEntryPage() {
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      setPendingSubmitErrors(null);
-      clearPatientRegValidationState();
 
       await createEmployee({
         ...values,
@@ -725,26 +691,25 @@ export default function EmployeeEntryPage() {
       message.success('Employee entry saved');
     } catch (error) {
       const errorFields = error?.errorFields;
-      if (!errorFields) {
-        message.error('Failed to save employee');
+      if (!errorFields?.length) {
+        message.error(errorFields ? 'Please complete all required fields' : 'Failed to save employee');
         return;
       }
 
-      if (errorFields.length > 0) {
-        const panelsToOpen = new Set(activePanels);
-        for (const field of errorFields) {
-          const fieldName = Array.isArray(field.name) ? field.name[0] : field.name;
-          const panel = FIELD_PANEL_MAP[fieldName];
-          if (panel) {
-            panelsToOpen.add(panel);
-          }
+      const panelsToOpen = new Set(activePanels);
+      for (const field of errorFields) {
+        const fieldName = Array.isArray(field.name) ? field.name[0] : field.name;
+        const panel = FIELD_PANEL_MAP[fieldName];
+        if (panel) {
+          panelsToOpen.add(panel);
         }
-        setActivePanels([...panelsToOpen]);
-        setPendingSubmitErrors(errorFields);
-      } else {
-        setActivePanels(ALL_PANEL_KEYS);
       }
-      message.error('Please complete all required fields');
+      setActivePanels([...panelsToOpen]);
+
+      const firstInvalidName = errorFields[0].name;
+      window.setTimeout(() => {
+        form.scrollToField(firstInvalidName, { behavior: 'smooth', block: 'center' });
+      }, 100);
     }
   };
 
@@ -757,13 +722,6 @@ export default function EmployeeEntryPage() {
         requiredMark={false}
         scrollToFirstError
         initialValues={initialValues}
-        onValuesChange={(changed) => {
-          handleFormChangeClearErrors(form, changed);
-          const stillHasErrors = form.getFieldsError().some(({ errors }) => errors.length > 0);
-          if (!stillHasErrors) {
-            clearPatientRegValidationState();
-          }
-        }}
       >
         <Collapse
           items={collapseItems}

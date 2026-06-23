@@ -5,7 +5,8 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Checkbox, Collapse, Form, Input, Select } from 'antd';
 import DobAgeField from '@/components/ui/DobAgeField';
 import FormGrid from '@/components/ui/FormGrid';
-import PatientRegField from '@/features/opd/components/PatientRegField';
+import FormFloatingField from '@/components/ui/FormFloatingField';
+import { FormFieldPrefixProvider } from '@/components/ui/FormFieldPrefixContext';
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import {
   clearPatientRegValidationState,
@@ -266,11 +267,11 @@ export default function PatientRegistrationForm() {
         label: 'Patient Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid">
-            <PatientRegField name="title" label="Title">
+            <FormFloatingField name="title" label="Title">
               <Select className={controlClass} options={TITLE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="firstName"
               label="First Name"
               required
@@ -278,13 +279,13 @@ export default function PatientRegistrationForm() {
               validateTrigger={['onChange', 'onSubmit']}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="lastName" label="Last Name">
+            <FormFloatingField name="lastName" label="Last Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="dobAge"
               label="DOB / Age"
               required
@@ -292,17 +293,17 @@ export default function PatientRegistrationForm() {
               validateTrigger={['onChange', 'onSubmit']}
             >
               <DobAgeFormControl />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="gender" label="Patient Gender">
+            <FormFloatingField name="gender" label="Patient Gender">
               <Select className={controlClass} options={GENDER_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="cnic" label="CNIC #">
+            <FormFloatingField name="cnic" label="CNIC #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="contactNo"
               label="Contact #"
               required
@@ -310,21 +311,21 @@ export default function PatientRegistrationForm() {
               validateTrigger={['onChange', 'onSubmit']}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="city" label="City">
+            <FormFloatingField name="city" label="City">
               <Select className={controlClass} options={CITY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="town" label="Town">
+            <FormFloatingField name="town" label="Town">
               <Select className={controlClass} options={TOWN_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="guardianRelation" label="Guardian">
+            <FormFloatingField name="guardianRelation" label="Guardian">
               <Select className={controlClass} options={RELATION_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="guardianFirstName"
               label="Guardian First Name"
               required
@@ -332,19 +333,19 @@ export default function PatientRegistrationForm() {
               validateTrigger={['onChange', 'onSubmit']}
             >
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="guardianLastName" label="Guardian Last Name">
+            <FormFloatingField name="guardianLastName" label="Guardian Last Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="email" label="Email">
+            <FormFloatingField name="email" label="Email">
               <Input className={controlClass} type="email" />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="presentAddress" label="Present Address">
+            <FormFloatingField name="presentAddress" label="Present Address">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -353,33 +354,33 @@ export default function PatientRegistrationForm() {
         label: 'Address Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid">
-            <PatientRegField name="religion" label="Religion">
+            <FormFloatingField name="religion" label="Religion">
               <Select className={controlClass} options={RELIGION_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="country" label="Country">
+            <FormFloatingField name="country" label="Country">
               <Select className={controlClass} options={COUNTRY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="province" label="Province">
+            <FormFloatingField name="province" label="Province">
               <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="district" label="District">
+            <FormFloatingField name="district" label="District">
               <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="addressCity" label="City">
+            <FormFloatingField name="addressCity" label="City">
               <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="nationality" label="Nationality">
+            <FormFloatingField name="nationality" label="Nationality">
               <Select className={controlClass} options={NATIONALITY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="addressEmail" label="Email">
+            <FormFloatingField name="addressEmail" label="Email">
               <Input className={controlClass} type="email" />
-            </PatientRegField>
+            </FormFloatingField>
 
             <div className="patient-reg-checkbox-slot">
               <Form.Item name="sameForNextOfKin" valuePropName="checked" noStyle>
@@ -387,9 +388,9 @@ export default function PatientRegistrationForm() {
               </Form.Item>
             </div>
 
-            <PatientRegField name="permanentAddress" label="Permanent Address" col="full">
+            <FormFloatingField name="permanentAddress" label="Permanent Address" col="full">
               <Input.TextArea className={controlClass} rows={2} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -398,61 +399,61 @@ export default function PatientRegistrationForm() {
         label: 'Next of Kin Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid">
-            <PatientRegField name="kinTitle" label="Title">
+            <FormFloatingField name="kinTitle" label="Title">
               <Select className={controlClass} options={KIN_TITLE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinGender" label="Gender">
+            <FormFloatingField name="kinGender" label="Gender">
               <Select className={controlClass} options={KIN_GENDER_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinRelation" label="Relation with patient">
+            <FormFloatingField name="kinRelation" label="Relation with patient">
               <Select className={controlClass} options={KIN_RELATION_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinFirstName" label="First Name">
+            <FormFloatingField name="kinFirstName" label="First Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinMiddleName" label="Middle Name">
+            <FormFloatingField name="kinMiddleName" label="Middle Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinLastName" label="Last Name">
+            <FormFloatingField name="kinLastName" label="Last Name">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinCnic" label="CNIC #">
+            <FormFloatingField name="kinCnic" label="CNIC #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinContact" label="Contact #">
+            <FormFloatingField name="kinContact" label="Contact #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinCountry" label="Country">
+            <FormFloatingField name="kinCountry" label="Country">
               <Select className={controlClass} options={COUNTRY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinProvince" label="Province">
+            <FormFloatingField name="kinProvince" label="Province">
               <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinDistrict" label="District">
+            <FormFloatingField name="kinDistrict" label="District">
               <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinCity" label="City">
+            <FormFloatingField name="kinCity" label="City">
               <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinAddress1" label="Address 1">
+            <FormFloatingField name="kinAddress1" label="Address 1">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="kinAddress2" label="Address 2">
+            <FormFloatingField name="kinAddress2" label="Address 2">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -461,11 +462,11 @@ export default function PatientRegistrationForm() {
         label: 'General Information',
         children: isB2bLabCategory ? (
           <FormGrid columns={4} className="patient-reg-section-grid">
-            <PatientRegField name="labCategory" label="Lab Partner">
+            <FormFloatingField name="labCategory" label="Lab Partner">
               <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField
+            <FormFloatingField
               name="selectedLab"
               label="Select Lab"
               required
@@ -473,45 +474,45 @@ export default function PatientRegistrationForm() {
               validateTrigger={['onChange', 'onSubmit']}
             >
               <Select className={controlClass} options={LAB_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ) : (
           <FormGrid columns={4} className="patient-reg-section-grid">
-            <PatientRegField name="speciality" label="Speciality/Dept">
+            <FormFloatingField name="speciality" label="Speciality/Dept">
               <Select className={controlClass} options={SPECIALITY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="doctor" label="Doctor">
+            <FormFloatingField name="doctor" label="Doctor">
               <Select className={controlClass} options={DOCTOR_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="checkupType" label="Checkup Type">
+            <FormFloatingField name="checkupType" label="Checkup Type">
               <Select className={controlClass} options={CHECKUP_TYPE_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="panelReference" label="Reference #">
+            <FormFloatingField name="panelReference" label="Reference #">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="primaryCategory" label="Category">
+            <FormFloatingField name="primaryCategory" label="Category">
               <Select className={controlClass} options={PRIMARY_CATEGORY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="labCategory" label="Lab Partner">
+            <FormFloatingField name="labCategory" label="Lab Partner">
               <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="complaint" label="Complaint">
+            <FormFloatingField name="complaint" label="Complaint">
               <Select className={controlClass} options={COMPLAINT_OPTIONS} allowClear />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="complaintOther" label="Other">
+            <FormFloatingField name="complaintOther" label="Other">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
 
-            <PatientRegField name="comments" label="Comments">
+            <FormFloatingField name="comments" label="Comments">
               <Input className={controlClass} />
-            </PatientRegField>
+            </FormFloatingField>
           </FormGrid>
         ),
       },
@@ -596,6 +597,7 @@ export default function PatientRegistrationForm() {
           }
         }}
       >
+        <FormFieldPrefixProvider prefix="patient-reg">
         <Collapse
           items={collapseItems}
           activeKey={activePanels}
@@ -623,6 +625,7 @@ export default function PatientRegistrationForm() {
             Save &amp; Print
           </Button>
         </div>
+        </FormFieldPrefixProvider>
       </Form>
     </div>
   );

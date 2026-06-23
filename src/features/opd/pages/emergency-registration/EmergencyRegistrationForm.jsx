@@ -4,7 +4,8 @@ import { Form, Input, Select, Button } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import FormGrid from "@/components/ui/FormGrid";
-import EmergencyRegField from "@/features/opd/components/EmergencyRegField";
+import FormFloatingField from "@/components/ui/FormFloatingField";
+import { FormFieldPrefixProvider } from "@/components/ui/FormFieldPrefixContext";
 import { DOB_AGE_UNITS } from "@/lib/dob-from-age";
 import DobAgeField from "@/components/ui/DobAgeField";
 
@@ -92,20 +93,21 @@ export default function EmergencyRegistrationForm() {
   return (
     <div className="min-h-screen p-6">
       <Form form={form} initialValues={initialValues} layout="vertical">
+        <FormFieldPrefixProvider prefix="emergency-reg">
         <div className="bg-white rounded-lg border border-gray-200 px-5 py-4 mb-4">
           <div className="flex items-end gap-4">
             <div className="flex-1">
               <FormGrid columns={5}>
-                <EmergencyRegField name="regNo" label="Reg No">
+                <FormFloatingField name="regNo" label="Reg No">
                   <Input
                     className={ctrl}
                     placeholder="Enter Registration Number"
                   />
-                </EmergencyRegField>
+                </FormFloatingField>
 
-                <EmergencyRegField name="visit" label="Visit #">
+                <FormFloatingField name="visit" label="Visit #">
                   <Input className={ctrl} placeholder="Enter Visit Number" />
-                </EmergencyRegField>
+                </FormFloatingField>
 
                 <Button
                   icon={<AppIcon icon="material-symbols:search" className="h-[1.5em] w-[1.5em]" />}
@@ -134,7 +136,7 @@ export default function EmergencyRegistrationForm() {
 
           <div className="px-5 py-5">
             <FormGrid columns={4}>
-              <EmergencyRegField
+              <FormFloatingField
                 name="firstName"
                 label="First Name"
                 required
@@ -142,24 +144,24 @@ export default function EmergencyRegistrationForm() {
                 validateTrigger={["onChange", "onSubmit"]}
               >
                 <Input className={ctrl} placeholder="Enter First Name" />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="relation" label="Relation">
+              <FormFloatingField name="relation" label="Relation">
                 <Select className={ctrl} options={RELATION_OPTIONS} />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField
+              <FormFloatingField
                 name="relationFirstName"
                 label="Relation First Name"
               >
                 <Input className={ctrl} placeholder="Enter First Name" />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="admitBy" label="Admit By">
+              <FormFloatingField name="admitBy" label="Admit By">
                 <Input className={ctrl} placeholder="Enter Name" />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField
+              <FormFloatingField
                 name="dobAge"
                 label="DOB / Age"
                 required
@@ -167,9 +169,9 @@ export default function EmergencyRegistrationForm() {
                 validateTrigger={["onChange", "onSubmit"]}
               >
                 <DobAgeFormControl />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField
+              <FormFloatingField
                 name="patientGender"
                 label="Patient Gender"
                 required
@@ -181,36 +183,36 @@ export default function EmergencyRegistrationForm() {
                   placeholder="Gender"
                   options={GENDER_OPTIONS}
                 />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="mobile" label="Mobile #">
+              <FormFloatingField name="mobile" label="Mobile #">
                 <Input className={ctrl} placeholder="Enter Mobile Number" />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="address" label="Address">
+              <FormFloatingField name="address" label="Address">
                 <Input className={ctrl} placeholder="Enter Address here..." />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="department" label="Department">
+              <FormFloatingField name="department" label="Department">
                 <Select className={ctrl} options={DEPARTMENT_OPTIONS} />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="doctor" label="Doctor">
+              <FormFloatingField name="doctor" label="Doctor">
                 <Select className={ctrl} options={DOCTOR_OPTIONS} />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField name="arrivalStatus" label="Arrival Status">
+              <FormFloatingField name="arrivalStatus" label="Arrival Status">
                 <Select className={ctrl} options={ARRIVAL_STATUS_OPTIONS} />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField
+              <FormFloatingField
                 name="patientCondition"
                 label="Patient Condition"
               >
                 <Select className={ctrl} options={PATIENT_CONDITION_OPTIONS} />
-              </EmergencyRegField>
+              </FormFloatingField>
 
-              <EmergencyRegField
+              <FormFloatingField
                 name="admittedDiagnosis"
                 label="Admitted Diagnosis"
                 col={2}
@@ -219,7 +221,7 @@ export default function EmergencyRegistrationForm() {
                   className={` pl-4! pt-3! ${ctrl}`}
                   placeholder="Enter here..." rows={3}
                 />
-              </EmergencyRegField>
+              </FormFloatingField>
             </FormGrid>
           </div>
         </div>
@@ -238,6 +240,7 @@ export default function EmergencyRegistrationForm() {
             Register
           </Button>
         </div>
+        </FormFieldPrefixProvider>
       </Form>
     </div>
   );

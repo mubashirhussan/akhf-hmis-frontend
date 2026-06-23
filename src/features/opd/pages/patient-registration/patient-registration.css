@@ -42,6 +42,12 @@
   color: var(--app-error);
 }
 
+.patient-registration-form .floating-field:has(.ant-input-status-error) .floating-label,
+.patient-registration-form .floating-field:has(.ant-select-status-error) .floating-label,
+.patient-registration-form .floating-field:has(.ant-input-affix-wrapper-status-error) .floating-label {
+  color: var(--app-error) !important;
+}
+
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .floating-label,
 .patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .floating-label {
   color: var(--app-error) !important;
@@ -60,7 +66,7 @@
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-input-status-error,
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-select-status-error,
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .ant-picker-status-error {
-  border: 2px solid var(--app-error) !important;
+  border: 1px solid var(--app-error) !important;
   border-color: var(--app-error) !important;
   box-shadow: none !important;
   outline: none !important;
@@ -82,7 +88,7 @@
 .patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-select-open:not(.ant-select-disabled),
 .patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .field-control.ant-picker-focused:not(.ant-picker-disabled),
 .patient-registration-form.patient-reg-validation-failed .patient-reg-invalid-focus .dob-age-field-inner:focus-within {
-  border: 2px solid var(--app-error) !important;
+  border: 1px solid var(--app-error) !important;
   border-color: var(--app-error) !important;
   box-shadow: none !important;
   outline: none !important;

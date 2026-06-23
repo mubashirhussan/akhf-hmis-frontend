@@ -3,6 +3,14 @@
   column-gap: 14px;
 }
 
+.employee-entry-form .field-control.ant-input-status-error,
+.employee-entry-form .ant-input-status-error.field-control,
+.employee-entry-form .ant-select-status-error.field-control,
+.employee-entry-form .field-control.ant-input-affix-wrapper-status-error {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
 .employee-entry-birth-grid {
   display: grid;
   grid-template-columns: 84px minmax(120px, 1fr) 110px;
