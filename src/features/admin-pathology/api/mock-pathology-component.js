@@ -1,203 +1,193 @@
 export const GROUP_OPTIONS = [
-  { value: 'haematology', label: 'Haematology' },
-  { value: 'biochemistry', label: 'Biochemistry' },
-  { value: 'microbiology', label: 'Microbiology' },
+  { value: "haematology", label: "Haematology" },
+  { value: "biochemistry", label: "Biochemistry" },
+  { value: "microbiology", label: "Microbiology" },
 ];
 
 export const SUB_GROUP_OPTIONS = {
   haematology: [
-    { value: 'cbc', label: 'CBC' },
-    { value: 'absolute-cell-counts', label: 'Absolute Cell Counts' },
-    { value: 'coagulation', label: 'Coagulation' },
+    { value: "cbc", label: "CBC" },
+    { value: "absolute-cell-counts", label: "Absolute Cell Counts" },
+    { value: "coagulation", label: "Coagulation" },
   ],
   biochemistry: [
-    { value: 'liver-function', label: 'Liver Function' },
-    { value: 'renal-function', label: 'Renal Function' },
+    { value: "liver-function", label: "Liver Function" },
+    { value: "renal-function", label: "Renal Function" },
   ],
   microbiology: [
-    { value: 'culture', label: 'Culture' },
-    { value: 'serology', label: 'Serology' },
+    { value: "culture", label: "Culture" },
+    { value: "serology", label: "Serology" },
   ],
 };
 
 export const TEST_OPTIONS = {
   cbc: [
-    { value: 'esr', label: 'ESR', tid: 991 },
-    { value: 'hb', label: 'Hb', tid: 992 },
+    { value: "esr", label: "ESR", tid: 991 },
+    { value: "hb", label: "Hb", tid: 992 },
   ],
-  'absolute-cell-counts': [
-    { value: 'absolute-basophil-count', label: 'Absolute Basophil Count', tid: 1027 },
-    { value: 'absolute-eosinophil-count', label: 'Absolute Eosinophil Count', tid: 1028 },
+  "absolute-cell-counts": [
+    { value: "absolute-basophil-count", label: "Absolute Basophil Count", tid: 1027 },
+    { value: "absolute-eosinophil-count", label: "Absolute Eosinophil Count", tid: 1028 },
   ],
-  coagulation: [{ value: 'pt', label: 'PT', tid: 1100 }],
-  'liver-function': [{ value: 'alt', label: 'ALT', tid: 1200 }],
-  'renal-function': [{ value: 'creatinine', label: 'Creatinine', tid: 1300 }],
-  culture: [{ value: 'blood-culture', label: 'Blood Culture', tid: 1400 }],
-  serology: [{ value: 'hbsag', label: 'HBsAg', tid: 1500 }],
+  coagulation: [{ value: "pt", label: "PT", tid: 1100 }],
+  "liver-function": [{ value: "alt", label: "ALT", tid: 1200 }],
+  "renal-function": [{ value: "creatinine", label: "Creatinine", tid: 1300 }],
+  culture: [{ value: "blood-culture", label: "Blood Culture", tid: 1400 }],
+  serology: [{ value: "hbsag", label: "HBsAg", tid: 1500 }],
 };
 
 export const FIELD_TYPE_OPTIONS = [
-  { value: 'html', label: 'Html' },
-  { value: 'textbox', label: 'TextBox' },
-  { value: 'radiobuttonlist', label: 'RadioButtonList' },
-  { value: 'checkboxlist', label: 'CheckBoxList' },
-  { value: 'radiobutton', label: 'RadioButton' },
-  { value: 'checkbox', label: 'CheckBox' },
-  { value: 'dropdownlist', label: 'DropDownList' },
+  { value: "html", label: "Html" },
+  { value: "textbox", label: "TextBox" },
+  { value: "radiobuttonlist", label: "RadioButtonList" },
+  { value: "checkboxlist", label: "CheckBoxList" },
+  { value: "radiobutton", label: "RadioButton" },
+  { value: "checkbox", label: "CheckBox" },
+  { value: "dropdownlist", label: "DropDownList" },
 ];
 
 export const UNIT_OPTIONS = [
-  { value: 'mm/hr', label: 'mm/hr' },
-  { value: 'g/dl', label: 'g/dl' },
-  { value: 'cells/ul', label: 'cells/ul' },
-  { value: 'percent', label: '%' },
+  { value: "mm/hr", label: "mm/hr" },
+  { value: "g/dl", label: "g/dl" },
+  { value: "cells/ul", label: "cells/ul" },
+  { value: "percent", label: "%" },
 ];
 
 export const INITIAL_PATHOLOGY_COMPONENT_ROWS = [
   {
-    id: '1',
-    groupName: 'Haematology',
-    subGroupName: 'Absolute Cell Counts',
+    id: "1",
+    groupName: "Haematology",
+    subGroupName: "Absolute Cell Counts",
     tid: 991,
-    testName: 'Absolute Basophil Count',
+    testName: "Absolute Basophil Count",
     tcid: 8789,
-    componentName: 'Absolute Basophil Count',
-    fieldType: 'TextBox',
-    unit: 'cells/ul',
+    componentName: "Absolute Basophil Count",
+    fieldType: "TextBox",
+    unit: "cells/ul",
     priority: 1,
-    referenceMale: '0.02 - 0.50',
-    referenceFemale: '0.02 - 0.50',
+    referenceMale: "0.02 - 0.50",
+    referenceFemale: "0.02 - 0.50",
   },
   {
-    id: '2',
-    groupName: 'Haematology',
-    subGroupName: 'Absolute Cell Counts',
+    id: "2",
+    groupName: "Haematology",
+    subGroupName: "Absolute Cell Counts",
     tid: 1027,
-    testName: 'Absolute Eosinophil Count',
+    testName: "Absolute Eosinophil Count",
     tcid: 2789,
-    componentName: 'Absolute Eosinophil Count',
-    fieldType: 'TextBox',
-    unit: 'cells/ul',
+    componentName: "Absolute Eosinophil Count",
+    fieldType: "TextBox",
+    unit: "cells/ul",
     priority: 2,
-    referenceMale: '40-400',
-    referenceFemale: '40-400',
+    referenceMale: "40-400",
+    referenceFemale: "40-400",
   },
   {
-    id: '3',
-    groupName: 'Haematology',
-    subGroupName: 'CBC',
+    id: "3",
+    groupName: "Haematology",
+    subGroupName: "CBC",
     tid: 991,
-    testName: 'ESR',
+    testName: "ESR",
     tcid: 8790,
-    componentName: 'ESR Value',
-    fieldType: 'TextBox',
-    unit: 'mm/hr',
+    componentName: "ESR Value",
+    fieldType: "TextBox",
+    unit: "mm/hr",
     priority: 1,
-    referenceMale: '0 - 20',
-    referenceFemale: '0 - 30',
+    referenceMale: "0 - 20",
+    referenceFemale: "0 - 30",
   },
   {
-    id: '4',
-    groupName: 'Haematology',
-    subGroupName: 'CBC',
+    id: "4",
+    groupName: "Haematology",
+    subGroupName: "CBC",
     tid: 992,
-    testName: 'Hb',
+    testName: "Hb",
     tcid: 8791,
-    componentName: 'Haemoglobin',
-    fieldType: 'TextBox',
-    unit: 'g/dl',
+    componentName: "Haemoglobin",
+    fieldType: "TextBox",
+    unit: "g/dl",
     priority: 2,
-    referenceMale: '13.0 - 17.0',
-    referenceFemale: '12.0 - 15.0',
+    referenceMale: "13.0 - 17.0",
+    referenceFemale: "12.0 - 15.0",
   },
   {
-    id: '5',
-    groupName: 'Haematology',
-    subGroupName: 'Coagulation',
+    id: "5",
+    groupName: "Haematology",
+    subGroupName: "Coagulation",
     tid: 1100,
-    testName: 'PT',
+    testName: "PT",
     tcid: 8792,
-    componentName: 'Prothrombin Time',
-    fieldType: 'DropDownList',
-    unit: '%',
+    componentName: "Prothrombin Time",
+    fieldType: "DropDownList",
+    unit: "%",
     priority: 3,
-    referenceMale: '11 - 13.5',
-    referenceFemale: '11 - 13.5',
+    referenceMale: "11 - 13.5",
+    referenceFemale: "11 - 13.5",
   },
   {
-    id: '6',
-    groupName: 'Biochemistry',
-    subGroupName: 'Liver Function',
+    id: "6",
+    groupName: "Biochemistry",
+    subGroupName: "Liver Function",
     tid: 1200,
-    testName: 'ALT',
+    testName: "ALT",
     tcid: 8793,
-    componentName: 'ALT Level',
-    fieldType: 'TextBox',
-    unit: 'U/L',
+    componentName: "ALT Level",
+    fieldType: "TextBox",
+    unit: "U/L",
     priority: 1,
-    referenceMale: '7 - 56',
-    referenceFemale: '7 - 56',
+    referenceMale: "7 - 56",
+    referenceFemale: "7 - 56",
   },
   {
-    id: '7',
-    groupName: 'Biochemistry',
-    subGroupName: 'Renal Function',
+    id: "7",
+    groupName: "Biochemistry",
+    subGroupName: "Renal Function",
     tid: 1300,
-    testName: 'Creatinine',
+    testName: "Creatinine",
     tcid: 8794,
-    componentName: 'Serum Creatinine',
-    fieldType: 'TextBox',
-    unit: 'mg/dl',
+    componentName: "Serum Creatinine",
+    fieldType: "TextBox",
+    unit: "mg/dl",
     priority: 2,
-    referenceMale: '0.7 - 1.3',
-    referenceFemale: '0.6 - 1.1',
+    referenceMale: "0.7 - 1.3",
+    referenceFemale: "0.6 - 1.1",
   },
   {
-    id: '8',
-    groupName: 'Microbiology',
-    subGroupName: 'Serology',
+    id: "8",
+    groupName: "Microbiology",
+    subGroupName: "Serology",
     tid: 1500,
-    testName: 'HBsAg',
+    testName: "HBsAg",
     tcid: 8795,
-    componentName: 'HBsAg Result',
-    fieldType: 'RadioButtonList',
-    unit: '—',
+    componentName: "HBsAg Result",
+    fieldType: "RadioButtonList",
+    unit: "—",
     priority: 1,
-    referenceMale: 'Non Reactive',
-    referenceFemale: 'Non Reactive',
+    referenceMale: "Non Reactive",
+    referenceFemale: "Non Reactive",
   },
   {
-    id: '9',
-    groupName: 'Microbiology',
-    subGroupName: 'Culture',
+    id: "9",
+    groupName: "Microbiology",
+    subGroupName: "Culture",
     tid: 1400,
-    testName: 'Blood Culture',
+    testName: "Blood Culture",
     tcid: 8796,
-    componentName: 'Organism Identified',
-    fieldType: 'CheckBoxList',
-    unit: '—',
+    componentName: "Organism Identified",
+    fieldType: "CheckBoxList",
+    unit: "—",
     priority: 4,
-    referenceMale: '—',
-    referenceFemale: '—',
-  },
-  {
-    id: '10',
-    groupName: 'Haematology',
-    subGroupName: 'CBC',
-    tid: 991,
-    testName: 'ESR',
-    tcid: 8797,
-    componentName: 'ESR Interpretation',
-    fieldType: 'Html',
-    unit: '—',
-    priority: 5,
-    referenceMale: '—',
-    referenceFemale: '—',
+    referenceMale: "—",
+    referenceFemale: "—",
   },
 ];
 
-let componentRows = INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => ({ ...row }));
+let componentRows = INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => ({
+  ...row,
+}));
+
 let unitOptionsState = UNIT_OPTIONS.map((option) => ({ ...option }));
+
 let nextTcid =
   Math.max(...INITIAL_PATHOLOGY_COMPONENT_ROWS.map((row) => row.tcid), 0) + 1;
 
@@ -210,22 +200,27 @@ export function getPathologyUnitOptions() {
 }
 
 export function createPathologyComponentRow(rowPayload) {
-  const tcid = nextTcid;
-  nextTcid += 1;
+  const tcid = nextTcid++;
   const row = {
     id: String(tcid),
     tcid,
     ...rowPayload,
   };
+
   componentRows = [row, ...componentRows];
   return row;
 }
 
 export function updatePathologyComponentRow(id, rowPayload) {
   componentRows = componentRows.map((row) =>
-    row.id === id ? { ...row, ...rowPayload } : row,
+    row.id === id ? { ...row, ...rowPayload } : row
   );
+
   return componentRows.find((row) => row.id === id) ?? null;
+}
+
+export function deletePathologyComponentRow(id) {
+  componentRows = componentRows.filter((row) => row.id !== id);
 }
 
 export function addPathologyUnitOption(option) {
@@ -235,47 +230,57 @@ export function addPathologyUnitOption(option) {
 
 export function createEmptyPathologyComponentForm() {
   return {
-    groupName: '',
-    subGroupName: '',
-    testName: '',
-    fieldType: '',
-    componentName: '',
-    unit: '',
+    groupName: "",
+    subGroupName: "",
+    testName: "",
+    fieldType: "",
+    componentName: "",
+    unit: "",
     priority: 1,
-    toolTip: '',
-    referenceMale: '',
-    referenceFemale: '',
-    newUnit: '',
+    toolTip: "",
+    referenceMale: "",
+    referenceFemale: "",
+    newUnit: "",
   };
 }
 
 export function rowToPathologyComponentForm(row, unitOptions = UNIT_OPTIONS) {
   const groupName =
-    GROUP_OPTIONS.find((option) => option.label === row.groupName)?.value ?? 'haematology';
+    GROUP_OPTIONS.find((option) => option.label === row.groupName)?.value ??
+    "haematology";
+
   const subGroupName =
-    getSubGroupOptions(groupName).find((option) => option.label === row.subGroupName)?.value ??
-    'cbc';
+    getSubGroupOptions(groupName).find(
+      (option) => option.label === row.subGroupName
+    )?.value ?? "cbc";
+
   const testName =
-    getTestOptions(subGroupName).find((option) => option.label === row.testName)?.value ?? 'esr';
+    getTestOptions(subGroupName).find(
+      (option) => option.label === row.testName
+    )?.value ?? "esr";
+
   const fieldType =
-    FIELD_TYPE_OPTIONS.find((option) => option.label === row.fieldType)?.value ?? 'html';
+    FIELD_TYPE_OPTIONS.find(
+      (option) => option.label === row.fieldType
+    )?.value ?? "html";
+
   const unit =
     unitOptions.find((option) => option.label === row.unit)?.value ??
     unitOptions.find((option) => option.value === row.unit)?.value ??
-    '';
+    "";
 
   return {
     groupName,
     subGroupName,
     testName,
     fieldType,
-    componentName: row.componentName ?? '',
+    componentName: row.componentName ?? "",
     unit,
     priority: row.priority ?? 1,
-    toolTip: row.toolTip ?? '',
-    referenceMale: row.referenceMale ?? '',
-    referenceFemale: row.referenceFemale ?? '',
-    newUnit: '',
+    toolTip: row.toolTip ?? "",
+    referenceMale: row.referenceMale ?? "",
+    referenceFemale: row.referenceFemale ?? "",
+    newUnit: "",
   };
 }
 
@@ -292,6 +297,9 @@ export function getOptionLabel(options, value) {
 }
 
 export function getTestMeta(subGroupName, testName) {
-  return getTestOptions(subGroupName).find((option) => option.value === testName) ?? null;
+  return (
+    getTestOptions(subGroupName).find(
+      (option) => option.value === testName
+    ) ?? null
+  );
 }
-

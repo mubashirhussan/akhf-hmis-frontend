@@ -81,3 +81,53 @@
     width: 100%;
   }
 }
+
+
+.test-booking-linkage-table .ant-table {
+  border: none !important;
+}
+
+.test-booking-linkage-table .ant-table-container,
+.test-booking-linkage-table .ant-table-content {
+  border: none !important;
+}
+
+
+.test-booking-linkage-table .ant-table-thead > tr > th {
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0 8px 10px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+
+.test-booking-linkage-table .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+
+.test-booking-linkage-table .ant-table-tbody > tr > td {
+  padding: 12px 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: transparent !important;
+}
+
+
+.test-booking-linkage-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+
+.test-booking-linkage-table .ant-table-cell {
+  border-inline-end: none !important;
+}
+
+
+.test-booking-linkage-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc !important;
+}

@@ -20,6 +20,7 @@ import {
 import {
   addPathologyUnitOption,
   createPathologyComponentRow,
+  deletePathologyComponentRow,
   FIELD_TYPE_OPTIONS,
   getPathologyComponentRows,
   getPathologyUnitOptions,
@@ -43,24 +44,6 @@ import {
   updateTestBookingRow,
   deleteTestBookingRow,
 } from "@/features/admin-pathology/api/mock-test-booking";
-import {
-  getReportConsultantRows,
-  createReportConsultantRow,
-  updateReportConsultantRow,
-  deleteReportConsultantRow,
-} from "@/features/admin-pathology/api/mock-report-consultant";
-import {
-  getInterpretationRows,
-  createInterpretationRow,
-  updateInterpretationRow,
-  deleteInterpretationRow,
-} from "@/features/admin-pathology/api/mock-interpretation";
-import {
-  getMachineIntegrationCompwiseRows,
-  createMachineIntegrationCompwiseRow,
-  updateMachineIntegrationCompwiseRow,
-  deleteMachineIntegrationCompwiseRow,
-} from "@/features/admin-pathology/api/mock-machine-integration-compwise";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -68,19 +51,15 @@ export const pathologyApi = api.injectEndpoints({
       providesTags: ["MainGroup"],
     }),
     createMainGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createMainGroupRow(rowPayload),
-      }),
+      queryFn: async (rowPayload) => ({ data: createMainGroupRow(rowPayload) }),
       invalidatesTags: ["MainGroup"],
     }),
-
     updateMainGroup: builder.mutation({
       queryFn: async ({ id, ...rowPayload }) => ({
         data: updateMainGroupRow(id, rowPayload),
       }),
       invalidatesTags: ["MainGroup"],
     }),
-
     deleteMainGroup: builder.mutation({
       queryFn: async (id) => {
         deleteMainGroupRow(id);
@@ -93,26 +72,19 @@ export const pathologyApi = api.injectEndpoints({
       providesTags: ["SubGroup"],
     }),
     createSubGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createSubGroupRow(rowPayload),
-      }),
+      queryFn: async (rowPayload) => ({ data: createSubGroupRow(rowPayload) }),
       invalidatesTags: ["SubGroup"],
     }),
-
     updateSubGroup: builder.mutation({
       queryFn: async ({ id, ...rowPayload }) => ({
         data: updateSubGroupRow(id, rowPayload),
       }),
       invalidatesTags: ["SubGroup"],
     }),
-
     deleteSubGroup: builder.mutation({
       queryFn: async (id) => {
         deleteSubGroupRow(id);
-
-        return {
-          data: { id },
-        };
+        return { data: { id } };
       },
       invalidatesTags: ["SubGroup"],
     }),
@@ -121,26 +93,19 @@ export const pathologyApi = api.injectEndpoints({
       providesTags: ["TestName"],
     }),
     createTestName: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createTestNameRow(rowPayload),
-      }),
+      queryFn: async (rowPayload) => ({ data: createTestNameRow(rowPayload) }),
       invalidatesTags: ["TestName"],
     }),
-
     updateTestName: builder.mutation({
       queryFn: async ({ id, ...rowPayload }) => ({
         data: updateTestNameRow(id, rowPayload),
       }),
       invalidatesTags: ["TestName"],
     }),
-
     deleteTestName: builder.mutation({
       queryFn: async (id) => {
         deleteTestNameRow(id);
-
-        return {
-          data: { id },
-        };
+        return { data: { id } };
       },
       invalidatesTags: ["TestName"],
     }),
@@ -148,6 +113,13 @@ export const pathologyApi = api.injectEndpoints({
       queryFn: async () => ({ data: getPathologyComponentRows() }),
       providesTags: ["PathologyComponent"],
     }),
+    deletePathologyComponent: builder.mutation({
+  queryFn: async (id) => {
+    deletePathologyComponentRow(id);
+    return { data: { id } };
+  },
+  invalidatesTags: ["PathologyComponent", "PathologyLookups"],
+}),
     getPathologyTestRanges: builder.query({
       queryFn: async () => ({ data: getPathologyTestRangeRows() }),
       providesTags: ["PathologyTestRange"],
@@ -202,109 +174,36 @@ export const pathologyApi = api.injectEndpoints({
       invalidatesTags: ["PathologyTestRange"],
     }),
     getTestBookings: builder.query({
-  queryFn: async () => ({ data: getTestBookingRows() }),
-  providesTags: ["TestBooking"],
-}),
-
-createTestBooking: builder.mutation({
-  queryFn: async (rowPayload) => ({
-    data: createTestBookingRow(rowPayload),
-  }),
-  invalidatesTags: ["TestBooking"],
-}),
-
-updateTestBooking: builder.mutation({
-  queryFn: async ({ id, ...rowPayload }) => ({
-    data: updateTestBookingRow(id, rowPayload),
-  }),
-  invalidatesTags: ["TestBooking"],
-}),
-
-deleteTestBooking: builder.mutation({
-  queryFn: async (id) => {
-    deleteTestBookingRow(id);
-    return { data: { id } };
-  },
-  invalidatesTags: ["TestBooking"],
-}),
+      queryFn: async () => ({ data: getTestBookingRows() }),
+      providesTags: ["TestBooking"],
+    }),
+    createTestBooking: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createTestBookingRow(rowPayload),
+      }),
+      invalidatesTags: ["TestBooking"],
+    }),
+    updateTestBooking: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateTestBookingRow(id, rowPayload),
+      }),
+      invalidatesTags: ["TestBooking"],
+    }),
+    deleteTestBooking: builder.mutation({
+      queryFn: async (id) => {
+        deleteTestBookingRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["TestBooking"],
+    }),
     addPathologyCondition: builder.mutation({
       queryFn: async (option) => ({
         data: addPathologyConditionOption(option),
       }),
       invalidatesTags: ["PathologyLookups"],
     }),
-    getReportConsultants: builder.query({
-      queryFn: async () => ({ data: getReportConsultantRows() }),
-      providesTags: ["ReportConsultant"],
-    }),
-    createReportConsultant: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createReportConsultantRow(rowPayload),
-      }),
-      invalidatesTags: ["ReportConsultant"],
-    }),
-    updateReportConsultant: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateReportConsultantRow(id, rowPayload),
-      }),
-      invalidatesTags: ["ReportConsultant"],
-    }),
-    deleteReportConsultant: builder.mutation({
-      queryFn: async (id) => {
-        deleteReportConsultantRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["ReportConsultant"],
-    }),
-    getInterpretations: builder.query({
-      queryFn: async () => ({ data: getInterpretationRows() }),
-      providesTags: ["Interpretation"],
-    }),
-    createInterpretation: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createInterpretationRow(rowPayload),
-      }),
-      invalidatesTags: ["Interpretation"],
-    }),
-    updateInterpretation: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateInterpretationRow(id, rowPayload),
-      }),
-      invalidatesTags: ["Interpretation"],
-    }),
-    deleteInterpretation: builder.mutation({
-      queryFn: async (id) => {
-        deleteInterpretationRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["Interpretation"],
-    }),
-    getMachineIntegrationCompwise: builder.query({
-      queryFn: async () => ({ data: getMachineIntegrationCompwiseRows() }),
-      providesTags: ["MachineIntegrationCompwise"],
-    }),
-    createMachineIntegrationCompwise: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createMachineIntegrationCompwiseRow(rowPayload),
-      }),
-      invalidatesTags: ["MachineIntegrationCompwise"],
-    }),
-    updateMachineIntegrationCompwise: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateMachineIntegrationCompwiseRow(id, rowPayload),
-      }),
-      invalidatesTags: ["MachineIntegrationCompwise"],
-    }),
-    deleteMachineIntegrationCompwise: builder.mutation({
-      queryFn: async (id) => {
-        deleteMachineIntegrationCompwiseRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["MachineIntegrationCompwise"],
-    }),
   }),
 });
-
 export const {
   useGetMainGroupsQuery,
   useCreateMainGroupMutation,
@@ -323,6 +222,7 @@ export const {
   useGetPathologyLookupsQuery,
   useCreatePathologyComponentMutation,
   useUpdatePathologyComponentMutation,
+  useDeletePathologyComponentMutation,
   useAddPathologyUnitMutation,
   useCreatePathologyTestRangeMutation,
   useUpdatePathologyTestRangeMutation,
@@ -332,16 +232,4 @@ export const {
   useCreateTestBookingMutation,
   useUpdateTestBookingMutation,
   useDeleteTestBookingMutation,
-  useGetReportConsultantsQuery,
-  useCreateReportConsultantMutation,
-  useUpdateReportConsultantMutation,
-  useDeleteReportConsultantMutation,
-  useGetInterpretationsQuery,
-  useCreateInterpretationMutation,
-  useUpdateInterpretationMutation,
-  useDeleteInterpretationMutation,
-  useGetMachineIntegrationCompwiseQuery,
-  useCreateMachineIntegrationCompwiseMutation,
-  useUpdateMachineIntegrationCompwiseMutation,
-  useDeleteMachineIntegrationCompwiseMutation,
 } = pathologyApi;
