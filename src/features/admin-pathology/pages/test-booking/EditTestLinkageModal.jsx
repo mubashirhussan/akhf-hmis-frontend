@@ -58,7 +58,7 @@ export default function EditTestLinkModal({
   }, [filteredComponents, testName]);
 
   return (
-    <AppModal open={open} onClose={onClose} title="Edit Test" width={600}>
+    <AppModal open={open} onClose={onClose} title="Edit Test" width={600} centered={false} mask={{ closable: false }} style={{ top: 20 }} className="test-booking-modal" rootClassName="test-booking-modal-root">
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div>
           <div style={{ fontSize: 12, marginBottom: 6, color: "#666" }}>

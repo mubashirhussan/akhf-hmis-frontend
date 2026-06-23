@@ -8,3 +8,7 @@
   margin-bottom: 10px;
   align-items: center;
 }
+.map-services-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}

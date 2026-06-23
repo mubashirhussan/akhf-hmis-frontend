@@ -87,11 +87,16 @@ export default function TestBookingLinkageModal({
   ];
 
   return (
-    <AppModal
-      open={open}
-      onClose={onClose}
-      title={booking?.testBookingName}
-      width={900}
+<AppModal
+  open={open}
+  onClose={onClose}
+  title={booking?.testBookingName}
+  width={900}
+  centered={false}
+  mask={{ closable: false }}
+  style={{ top: 20 }}
+  className="test-booking-modal"
+  rootClassName="test-booking-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
