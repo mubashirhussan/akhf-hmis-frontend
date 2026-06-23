@@ -278,61 +278,47 @@ function calculateAge(day, month, year) {
   return `${Math.max(age, 0)} Years`;
 }
 
-function BirthDateControl() {
-  return (
-    <div className="employee-entry-birth-grid">
-      <Form.Item
-        noStyle
-        name="birthDay"
-        rules={[{ required: true, message: 'Birth day is required' }]}
-        validateTrigger={['onChange', 'onSubmit']}
-      >
-        <Input className={controlClass} placeholder="DD" maxLength={2} />
-      </Form.Item>
-      <Form.Item
-        noStyle
-        name="birthMonth"
-        rules={[{ required: true, message: 'Birth month is required' }]}
-        validateTrigger={['onChange', 'onSubmit']}
-      >
-        <Select
-          className={controlClass}
-          placeholder="Month"
-          options={MONTH_OPTIONS}
-          optionFilterProp="label"
-        />
-      </Form.Item>
-      <Form.Item
-        noStyle
-        name="birthYear"
-        rules={[{ required: true, message: 'Birth year is required' }]}
-        validateTrigger={['onChange', 'onSubmit']}
-      >
-        <Input className={controlClass} placeholder="YYYY" maxLength={4} />
-      </Form.Item>
-    </div>
-  );
-}
+// function BirthDateControl() {
+//   return (
+//     <div className="employee-entry-birth-grid">
+//       <Form.Item
+//         noStyle
+//         name="birthDay"
+//         rules={[{ required: true, message: 'Birth day is required' }]}
+//         validateTrigger={['onChange', 'onSubmit']}
+//       >
+//         <Input className={controlClass} placeholder="DD" maxLength={2} />
+//       </Form.Item>
+//       <Form.Item
+//         noStyle
+//         name="birthMonth"
+//         rules={[{ required: true, message: 'Birth month is required' }]}
+//         validateTrigger={['onChange', 'onSubmit']}
+//       >
+//         <Select
+//           className={controlClass}
+//           placeholder="Month"
+//           options={MONTH_OPTIONS}
+//           optionFilterProp="label"
+//         />
+//       </Form.Item>
+//       <Form.Item
+//         noStyle
+//         name="birthYear"
+//         rules={[{ required: true, message: 'Birth year is required' }]}
+//         validateTrigger={['onChange', 'onSubmit']}
+//       >
+//         <Input className={controlClass} placeholder="YYYY" maxLength={4} />
+//       </Form.Item>
+//     </div>
+//   );
+// }
 
 function ReadOnlyValue({ value }) {
   return <div className="employee-entry-readonly">{value}</div>;
 }
 
-function PhoneSegments({ names, placeholders = ['009', '21', ''] }) {
-  return (
-    <Space.Compact block className="employee-entry-phone-compact">
-      <Form.Item noStyle name={names[0]}>
-        <Input className={controlClass} placeholder={placeholders[0]} maxLength={4} />
-      </Form.Item>
-      <Form.Item noStyle name={names[1]}>
-        <Input className={controlClass} placeholder={placeholders[1]} maxLength={4} />
-      </Form.Item>
-      <Form.Item noStyle name={names[2]}>
-        <Input className={controlClass} placeholder={placeholders[2]} maxLength={16} />
-      </Form.Item>
-    </Space.Compact>
-  );
-}
+
 
 export default function EmployeeEntryPage() {
   const { message } = App.useApp();
@@ -520,8 +506,9 @@ export default function EmployeeEntryPage() {
         label: 'Basic Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField label="Date Of Birth" col={2}>
-              <BirthDateControl />
+            <PatientRegField label="Date Of Birth" >
+              {/* <BirthDateControl /> */}
+               <Input className={controlClass} type="date" />
             </PatientRegField>
 
             <PatientRegField label="Age">
@@ -589,20 +576,17 @@ export default function EmployeeEntryPage() {
         label: 'Address Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <PatientRegField label="Home Phone">
-              <PhoneSegments
-                names={['homePhoneCountry', 'homePhoneCity', 'homePhoneNumber']}
-              />
+            <PatientRegField label="Home Phone" name="home no">
+              <Input className={controlClass} />
             </PatientRegField>
 
             <PatientRegField name="mobileNo" label="Mobile No">
               <Input className={controlClass} />
             </PatientRegField>
 
-            <PatientRegField label="Office Phone">
-              <PhoneSegments
-                names={['officePhoneCountry', 'officePhoneCity', 'officePhoneNumber']}
-              />
+            <PatientRegField label="Office Phone" name="office no">
+                 <Input className={controlClass} />
+             
             </PatientRegField>
 
             <PatientRegField name="emailAddress" label="Email Address">
@@ -630,16 +614,16 @@ export default function EmployeeEntryPage() {
               label="Permanent Address"
               required
               rules={REQUIRED_RULE('Permanent address is required')}
-              col="full"
+              // col="full"
             >
               <Input.TextArea className={controlClass} rows={2} />
             </PatientRegField>
 
-            <PatientRegField name="presentAddress" label="Present Address" col={2}>
+            <PatientRegField name="presentAddress" label="Present Address" >
               <Input.TextArea className={controlClass} rows={2} />
             </PatientRegField>
 
-            <PatientRegField name="officeAddress" label="Office Address" col={2}>
+            <PatientRegField name="officeAddress" label="Office Address" >
               <Input.TextArea className={controlClass} rows={2} />
             </PatientRegField>
           </FormGrid>
@@ -682,8 +666,8 @@ export default function EmployeeEntryPage() {
               <Select className={controlClass} options={SHIFT_OPTIONS} />
             </PatientRegField>
 
-            <PatientRegField name="designationDetail" label="Designation Detail" col={2}>
-              <Input.TextArea className={controlClass} rows={3} />
+            <PatientRegField name="designationDetail" label="Designation Detail">
+              <Input.TextArea className={controlClass} rows={1} />
             </PatientRegField>
 
             <PatientRegField name="salaryMode" label="Salary Mode">
