@@ -208,7 +208,6 @@ const FIELD_PANEL_MAP = {
   relationType: 'general',
   relationFirstName: 'general',
   relationMiddleName: 'general',
-  relationName: 'general',
   relationLastName: 'general',
   employeeType: 'general',
   birthDay: 'basic',
@@ -434,22 +433,12 @@ export default function EmployeeEntryPage() {
               </Upload>
             </PatientRegField>
 
-            <PatientRegField
-              name="title"
-              label="Title"
-            >
-              <Select className={controlClass} options={TITLE_OPTIONS} />
-            </PatientRegField>
-
-            <PatientRegField
-              name="relationType"
-              label="Relation"
-            >
-              <Select className={controlClass} options={RELATION_OPTIONS} />
-            </PatientRegField>
-
             <PatientRegField name="employeeNo" label="Employee No">
               <Input className={controlClass} />
+            </PatientRegField>
+
+            <PatientRegField name="title" label="Title">
+              <Select className={controlClass} options={TITLE_OPTIONS} />
             </PatientRegField>
 
             <PatientRegField
@@ -474,6 +463,10 @@ export default function EmployeeEntryPage() {
               <Input className={controlClass} />
             </PatientRegField>
 
+            <PatientRegField name="relationType" label="Relation">
+              <Select className={controlClass} options={RELATION_OPTIONS} />
+            </PatientRegField>
+
             <PatientRegField
               name="relationFirstName"
               label="Relation First Name"
@@ -484,10 +477,6 @@ export default function EmployeeEntryPage() {
             </PatientRegField>
 
             <PatientRegField name="relationMiddleName" label="Relation Middle Name">
-              <Input className={controlClass} />
-            </PatientRegField>
-
-            <PatientRegField name="relationName" label="Name">
               <Input className={controlClass} />
             </PatientRegField>
 
