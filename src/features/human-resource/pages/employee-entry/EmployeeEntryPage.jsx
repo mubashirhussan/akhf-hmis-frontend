@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { DownOutlined, UpOutlined, UserOutlined } from '@ant-design/icons';
+import { CameraOutlined, DownOutlined, UpOutlined, UserOutlined } from '@ant-design/icons';
 import {
   App,
   Avatar,
@@ -23,6 +23,7 @@ import {
   highlightAllInvalidFields,
 } from '@/lib/form-validation';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import { useCreateEmployeeMutation } from '@/features/human-resource/api/employeeApi';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -323,6 +324,7 @@ function ReadOnlyValue({ value }) {
 export default function EmployeeEntryPage() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const [createEmployee, { isLoading: isSaving }] = useCreateEmployeeMutation();
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
   const [pendingSubmitErrors, setPendingSubmitErrors] = useState(null);
   const [fileList, setFileList] = useState([]);
@@ -373,6 +375,65 @@ export default function EmployeeEntryPage() {
         label: 'General Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
+            <PatientRegField
+              label="Profile photo"
+              col="full"
+              className="employee-entry-photo-field"
+            >
+              <Upload
+                accept="image/*"
+                beforeUpload={() => false}
+                maxCount={1}
+                showUploadList={false}
+                fileList={fileList}
+                onChange={({ fileList: nextFileList }) => {
+                  const next = nextFileList.slice(-1);
+                  setFileList(next);
+
+                  const latestFile = next[0]?.originFileObj;
+                  if (!latestFile) {
+                    if (photoPreview.startsWith('blob:')) {
+                      URL.revokeObjectURL(photoPreview);
+                    }
+                    setPhotoPreview('');
+                    return;
+                  }
+
+                  if (photoPreview.startsWith('blob:')) {
+                    URL.revokeObjectURL(photoPreview);
+                  }
+
+                  setPhotoPreview(URL.createObjectURL(latestFile));
+                }}
+              >
+                <div
+                  className={[
+                    'employee-entry-avatar-upload',
+                    photoPreview ? 'employee-entry-avatar-upload--has-photo' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload profile photo"
+                >
+                  <Avatar
+                    shape="square"
+                    size={64}
+                    src={photoPreview || undefined}
+                    icon={!photoPreview ? <UserOutlined /> : undefined}
+                    className="employee-entry-photo-preview"
+                  />
+                  <span className="employee-entry-avatar-upload-badge" aria-hidden>
+                    <CameraOutlined />
+                  </span>
+                  <div className="employee-entry-avatar-overlay">
+                    <span>{photoPreview ? 'Change' : 'Upload'}</span>
+                  </div>
+                </div>
+              </Upload>
+            </PatientRegField>
+
             <PatientRegField
               name="title"
               label="Title"
@@ -445,58 +506,6 @@ export default function EmployeeEntryPage() {
 
             <PatientRegField name="employeeType" label="Employee Type">
               <Select className={controlClass} options={EMPLOYEE_TYPE_OPTIONS} />
-            </PatientRegField>
-
-            <PatientRegField label="Attach Picture" col={2}>
-              <div className="employee-entry-photo-row">
-                <Upload
-                  beforeUpload={() => false}
-                  maxCount={1}
-                  fileList={fileList}
-                  onChange={({ fileList: nextFileList }) => {
-                    const next = nextFileList.slice(-1);
-                    setFileList(next);
-
-                    const latestFile = next[0]?.originFileObj;
-                    if (!latestFile) {
-                      if (photoPreview.startsWith('blob:')) {
-                        URL.revokeObjectURL(photoPreview);
-                      }
-                      setPhotoPreview('');
-                      return;
-                    }
-
-                    if (photoPreview.startsWith('blob:')) {
-                      URL.revokeObjectURL(photoPreview);
-                    }
-
-                    setPhotoPreview(URL.createObjectURL(latestFile));
-                  }}
-                >
-                  <Button>Choose File</Button>
-                </Upload>
-
-                {/* <Button
-                  type="primary"
-                  onClick={() => {
-                    if (fileList.length === 0) {
-                      message.warning('Please choose a picture first.');
-                      return;
-                    }
-                    message.success('Picture attached.');
-                  }}
-                >
-                  Attach
-                </Button> */}
-
-                <Avatar
-                  shape="square"
-                  size={64}
-                  src={photoPreview || undefined}
-                  icon={!photoPreview ? <UserOutlined /> : undefined}
-                  className="employee-entry-photo-preview"
-                />
-              </div>
             </PatientRegField>
           </FormGrid>
         ),
@@ -717,14 +726,21 @@ export default function EmployeeEntryPage() {
       const values = await form.validateFields();
       setPendingSubmitErrors(null);
       clearPatientRegValidationState();
-      message.success('Employee entry saved');
-      console.info('Employee entry', {
+
+      await createEmployee({
         ...values,
         picture: fileList[0]?.name ?? null,
         age: ageLabel,
-      });
+      }).unwrap();
+
+      message.success('Employee entry saved');
     } catch (error) {
-      const errorFields = error?.errorFields ?? [];
+      const errorFields = error?.errorFields;
+      if (!errorFields) {
+        message.error('Failed to save employee');
+        return;
+      }
+
       if (errorFields.length > 0) {
         const panelsToOpen = new Set(activePanels);
         for (const field of errorFields) {
@@ -784,7 +800,12 @@ export default function EmployeeEntryPage() {
           <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
             Clear
           </Button>
-          <Button type="primary" className="patient-reg-btn-save" onClick={handleSave}>
+          <Button
+            type="primary"
+            className="patient-reg-btn-save"
+            onClick={handleSave}
+            loading={isSaving}
+          >
             Save Employee
           </Button>
         </div>

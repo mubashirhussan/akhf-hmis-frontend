@@ -21,6 +21,7 @@ export const api = createApi({
     'BillingVisit',
     'BillingVisitServices',
     'ServiceAdmin',
+    'Employee',
   ],
   endpoints: () => ({}),
 });

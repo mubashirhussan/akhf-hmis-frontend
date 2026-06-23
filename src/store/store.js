@@ -5,6 +5,7 @@ import '@/features/laboratory/api/laboratoryEndpoints';
 import '@/features/opd/api/opdEndpoints';
 import '@/features/billing/api/billingEndpoints';
 import '@/features/service-admin/api/serviceAdminApi';
+import '@/features/human-resource/api/employeeApi';
 
 export const store = configureStore({
   reducer: {
