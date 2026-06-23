@@ -1,3 +1,28 @@
+export const DOCTOR_OPTIONS = [
+  {
+    value: 'Dr. Mujahid Habib',
+    label: 'Dr. Mujahid Habib',
+    doctorQualification: 'MBBS, DCP, M.Phil (Histopathology)',
+    doctorDesignation: 'Consultant Pathologist',
+  },
+  {
+    value: 'Dr. Saima Khan',
+    label: 'Dr. Saima Khan',
+    doctorQualification: 'MBBS, FCPS (Haematology)',
+    doctorDesignation: 'Consultant Haematologist',
+  },
+  {
+    value: 'Dr. Asif Raza',
+    label: 'Dr. Asif Raza',
+    doctorQualification: 'MBBS, M.Phil (Microbiology)',
+    doctorDesignation: 'Consultant Microbiologist',
+  },
+];
+
+export function getDoctorDetails(doctorName) {
+  return DOCTOR_OPTIONS.find((option) => option.value === doctorName) ?? null;
+}
+
 export const INITIAL_REPORT_CONSULTANT_ROWS = [
   {
     id: '1',

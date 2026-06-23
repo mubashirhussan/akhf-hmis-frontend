@@ -44,6 +44,24 @@ import {
   updateTestBookingRow,
   deleteTestBookingRow,
 } from "@/features/admin-pathology/api/mock-test-booking";
+import {
+  getReportConsultantRows,
+  createReportConsultantRow,
+  updateReportConsultantRow,
+  deleteReportConsultantRow,
+} from "@/features/admin-pathology/api/mock-report-consultant";
+import {
+  getInterpretationRows,
+  createInterpretationRow,
+  updateInterpretationRow,
+  deleteInterpretationRow,
+} from "@/features/admin-pathology/api/mock-interpretation";
+import {
+  getMachineIntegrationCompwiseRows,
+  createMachineIntegrationCompwiseRow,
+  updateMachineIntegrationCompwiseRow,
+  deleteMachineIntegrationCompwiseRow,
+} from "@/features/admin-pathology/api/mock-machine-integration-compwise";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMainGroups: builder.query({
@@ -202,6 +220,75 @@ export const pathologyApi = api.injectEndpoints({
       }),
       invalidatesTags: ["PathologyLookups"],
     }),
+    getReportConsultants: builder.query({
+      queryFn: async () => ({ data: getReportConsultantRows() }),
+      providesTags: ["ReportConsultant"],
+    }),
+    createReportConsultant: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createReportConsultantRow(rowPayload),
+      }),
+      invalidatesTags: ["ReportConsultant"],
+    }),
+    updateReportConsultant: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateReportConsultantRow(id, rowPayload),
+      }),
+      invalidatesTags: ["ReportConsultant"],
+    }),
+    deleteReportConsultant: builder.mutation({
+      queryFn: async (id) => {
+        deleteReportConsultantRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["ReportConsultant"],
+    }),
+    getInterpretations: builder.query({
+      queryFn: async () => ({ data: getInterpretationRows() }),
+      providesTags: ["Interpretation"],
+    }),
+    createInterpretation: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createInterpretationRow(rowPayload),
+      }),
+      invalidatesTags: ["Interpretation"],
+    }),
+    updateInterpretation: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateInterpretationRow(id, rowPayload),
+      }),
+      invalidatesTags: ["Interpretation"],
+    }),
+    deleteInterpretation: builder.mutation({
+      queryFn: async (id) => {
+        deleteInterpretationRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["Interpretation"],
+    }),
+    getMachineIntegrationCompwise: builder.query({
+      queryFn: async () => ({ data: getMachineIntegrationCompwiseRows() }),
+      providesTags: ["MachineIntegrationCompwise"],
+    }),
+    createMachineIntegrationCompwise: builder.mutation({
+      queryFn: async (rowPayload) => ({
+        data: createMachineIntegrationCompwiseRow(rowPayload),
+      }),
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
+    updateMachineIntegrationCompwise: builder.mutation({
+      queryFn: async ({ id, ...rowPayload }) => ({
+        data: updateMachineIntegrationCompwiseRow(id, rowPayload),
+      }),
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
+    deleteMachineIntegrationCompwise: builder.mutation({
+      queryFn: async (id) => {
+        deleteMachineIntegrationCompwiseRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ["MachineIntegrationCompwise"],
+    }),
   }),
 });
 export const {
@@ -232,4 +319,16 @@ export const {
   useCreateTestBookingMutation,
   useUpdateTestBookingMutation,
   useDeleteTestBookingMutation,
+  useGetReportConsultantsQuery,
+  useCreateReportConsultantMutation,
+  useUpdateReportConsultantMutation,
+  useDeleteReportConsultantMutation,
+  useGetInterpretationsQuery,
+  useCreateInterpretationMutation,
+  useUpdateInterpretationMutation,
+  useDeleteInterpretationMutation,
+  useGetMachineIntegrationCompwiseQuery,
+  useCreateMachineIntegrationCompwiseMutation,
+  useUpdateMachineIntegrationCompwiseMutation,
+  useDeleteMachineIntegrationCompwiseMutation,
 } = pathologyApi;

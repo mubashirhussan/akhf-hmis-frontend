@@ -37,16 +37,16 @@ export const navigation = [
     href: '/admin-pathology',
     icon: 'mdi:microscope',
     children: [
-      {
-        key: 'pathology-component-values',
-        label: 'Pathology Component Values',
-        href: '/admin-pathology/component-values',
-      },
-      {
-        key: 'admin-services-vs-test-booking',
-        label: 'Admin Services vs TestBooking',
-        href: '/admin-pathology/services-vs-test-booking',
-      },
+      // {
+      //   key: 'pathology-component-values',
+      //   label: 'Pathology Component Values',
+      //   href: '/admin-pathology/component-values',
+      // },
+      // {
+      //   key: 'admin-services-vs-test-booking',
+      //   label: 'Admin Services vs TestBooking',
+      //   href: '/admin-pathology/services-vs-test-booking',
+      // },
       {
         key: 'pathology-main-group',
         label: 'Pathology Main Group',
@@ -72,11 +72,11 @@ export const navigation = [
         label: 'Pathology Test Range',
         href: '/admin-pathology/test-range',
       },
-      {
-        key: 'pathology-component-values-length',
-        label: 'Pathology Component Values Length',
-        href: '/admin-pathology/component-values-length',
-      },
+      // {
+      //   key: 'pathology-component-values-length',
+      //   label: 'Pathology Component Values Length',
+      //   href: '/admin-pathology/component-values-length',
+      // },
       {
         key: 'pathology-test-booking',
         label: 'Pathology Test Booking',
@@ -87,11 +87,11 @@ export const navigation = [
         label: 'Map Pathology Services',
         href: '/admin-pathology/map-services',
       },
-      {
-        key: 'admin-service-test-booking',
-        label: 'Admin Service Test Booking',
-        href: '/admin-pathology/service-test-booking',
-      },
+      // {
+      //   key: 'admin-service-test-booking',
+      //   label: 'Admin Service Test Booking',
+      //   href: '/admin-pathology/service-test-booking',
+      // },
       {
         key: 'pathology-report-consultant',
         label: 'Pathology Report Consultant',
