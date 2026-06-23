@@ -31,10 +31,15 @@ export default function MapServicesModal({
   };
 
   return (
-    <AppModal
-      open={open}
-      onClose={onClose}
-      title="Map Service Edit"
+<AppModal
+  open={open}
+  onClose={onClose}
+  title="Map Service Edit"
+  centered={false}
+  mask={{ closable: false }}
+  style={{ top: 20 }}
+  className="map-services-modal"
+  rootClassName="map-services-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>

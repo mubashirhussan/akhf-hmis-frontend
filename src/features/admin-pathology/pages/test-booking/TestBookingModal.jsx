@@ -16,11 +16,16 @@ export default function TestBookingModal({
   isEdit,
 }) {
   return (
-    <AppModal
-      open={open}
-      onClose={onClose}
-      title={isEdit ? "Edit Test Booking" : "Add Test Booking"}
-      width={760}
+<AppModal
+  open={open}
+  onClose={onClose}
+  title={isEdit ? "Edit Test Booking" : "Add Test Booking"}
+  width={760}
+  centered={false}
+  mask={{ closable: false }}
+  style={{ top: 20 }}
+  className="test-booking-modal"
+  rootClassName="test-booking-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
