@@ -1,12 +1,10 @@
 export const SERVICE_OPTIONS = [
-  { value: "bsr_blood_sugar_random", label: "BSR (Blood Sugar Random)" },
-  { value: "ot_anesthesia_machine", label: "OT ANESTHESIA MACHINE" },
-  { value: "17_oh_progesterone", label: "17-OH Hydroxy Progesterone" },
-  { value: "24hr_urinary_amylase", label: "24 Hours Urinary Amylase" },
-  { value: "24hr_urinary_chloride", label: "24 Hours Urinary Chloride" },
-  { value: "24hr_urinary_copper", label: "24 Hours Urinary Copper" },
-  { value: "24hr_urinary_cortisol", label: "24 Hours Urinary Cortisol" },
-  { value: "24hr_urinary_creatinine", label: "24 HOURS URINARY CREATININE" },
+  { value: "cbc", label: "CBC (Complete Blood Count)" },
+  { value: "esr", label: "ESR (Erythrocyte Sedimentation Rate)" },
+  { value: "lft", label: "LFT (Liver Function Test)" },
+  { value: "blood-glucose", label: "Blood Glucose" },
+  { value: "urine", label: "Urine Routine" },
+  { value: "blood-cross-match", label: "Blood Cross Match and Screening" },
   { value: "hba1c_glycated_hemoglobin", label: "HbA1c (Glycated Hemoglobin)" },
   { value: "lipid_profile_fasting", label: "Lipid Profile - Fasting" },
   { value: "thyroid_panel_total", label: "Thyroid Profile (T3, T4, TSH)" },
@@ -14,7 +12,7 @@ export const SERVICE_OPTIONS = [
   { value: "renal_function_test", label: "RFT / Kidney Function Test" },
   { value: "crp_quantitative", label: "C-Reactive Protein (CRP) Quantitative" },
   { value: "d_dimer_plasma", label: "D-Dimer Test" },
-  { value: "urine_re_microscopic", label: "Urine Routine Examination" }
+  { value: "urine_re_microscopic", label: "Urine Routine Examination" },
 ];
 
 const INITIAL_TEST_BOOKING_ROWS = [
@@ -106,7 +104,8 @@ let testBookingRows = INITIAL_TEST_BOOKING_ROWS.map((row) => ({
   testNames: [...row.testNames],
 }));
 
-let nextId = Math.max(...INITIAL_TEST_BOOKING_ROWS.map((row) => Number(row.id))) + 1;
+let nextId =
+  Math.max(...INITIAL_TEST_BOOKING_ROWS.map((row) => Number(row.id))) + 1;
 
 export function getTestBookingRows() {
   return testBookingRows;
@@ -131,7 +130,7 @@ export function updateTestBookingRow(id, payload) {
           ...payload,
           testNames: payload.testNames ?? row.testNames ?? [],
         }
-      : row
+      : row,
   );
 
   return testBookingRows.find((row) => row.id === id) ?? null;

@@ -315,7 +315,7 @@ export function getResultEntryFieldSchema(testKey) {
 
 export function getResultEntryReportTemplates(testKey) {
   const hardcoded = RESULT_ENTRY_REPORT_TEMPLATES[testKey] ?? [];
-  const fromInterpretation = getInterpretationTemplateOptions();
+  const fromInterpretation = getInterpretationTemplateOptions(testKey);
   return [...hardcoded, ...fromInterpretation];
 }
 

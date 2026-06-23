@@ -76,10 +76,12 @@ export function rowToInterpretationForm(row) {
   };
 }
 
-export function getInterpretationTemplateOptions() {
-  return interpretationRows.map((row) => ({
-    value: row.id,
-    label: row.templateName,
-    content: row.templateDescription,
-  }));
+export function getInterpretationTemplateOptions(serviceName) {
+  return interpretationRows
+    .filter((row) => row.serviceName === serviceName)
+    .map((row) => ({
+      value: row.id,
+      label: row.templateName,
+      content: row.templateDescription,
+    }));
 }
