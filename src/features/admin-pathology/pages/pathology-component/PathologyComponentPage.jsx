@@ -20,6 +20,7 @@ import {
   useGetPathologyComponentsQuery,
   useGetPathologyLookupsQuery,
   useUpdatePathologyComponentMutation,
+  useGetTestNamesQuery,
 } from '@/features/admin-pathology/api/pathologyApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
@@ -28,6 +29,7 @@ export default function PathologyComponentPage() {
   const { message } = App.useApp();
   const { data: rows = [], isLoading } = useGetPathologyComponentsQuery();
   const { data: lookups } = useGetPathologyLookupsQuery();
+  const { data: testNames = [] } = useGetTestNamesQuery();
   const unitOptions = lookups?.unitOptions ?? [];
   const [createComponent] = useCreatePathologyComponentMutation();
   const [updateComponent] = useUpdatePathologyComponentMutation();
@@ -99,8 +101,8 @@ export default function PathologyComponentPage() {
     const rowPayload = {
       groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
       subGroupName: getOptionLabel(getSubGroupOptions(form.groupName), form.subGroupName),
-      tid: testMeta?.tid ?? 0,
-      testName: testMeta?.label ?? form.testName,
+      tid: testNames.find((t) => t.testName === form.testName)?.tid ?? 0,
+testName: form.testName,
       componentName,
       fieldType: getOptionLabel(FIELD_TYPE_OPTIONS, form.fieldType),
       unit: getOptionLabel(unitOptions, form.unit) || '—',

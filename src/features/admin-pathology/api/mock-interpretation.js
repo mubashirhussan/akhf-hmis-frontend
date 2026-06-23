@@ -75,3 +75,13 @@ export function rowToInterpretationForm(row) {
     templateDescription: row.templateDescription ?? '',
   };
 }
+
+export function getInterpretationTemplateOptions(serviceName) {
+  return interpretationRows
+    .filter((row) => row.serviceName === serviceName)
+    .map((row) => ({
+      value: row.id,
+      label: row.templateName,
+      content: row.templateDescription,
+    }));
+}
