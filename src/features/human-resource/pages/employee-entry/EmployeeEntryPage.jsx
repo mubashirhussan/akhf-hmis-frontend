@@ -476,7 +476,7 @@ export default function EmployeeEntryPage() {
                   <Button>Choose File</Button>
                 </Upload>
 
-                <Button
+                {/* <Button
                   type="primary"
                   onClick={() => {
                     if (fileList.length === 0) {
@@ -487,7 +487,7 @@ export default function EmployeeEntryPage() {
                   }}
                 >
                   Attach
-                </Button>
+                </Button> */}
 
                 <Avatar
                   shape="square"
