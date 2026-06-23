@@ -7,7 +7,6 @@ export const SERVICE_OPTIONS = [
   { value: "24hr_urinary_copper", label: "24 Hours Urinary Copper" },
   { value: "24hr_urinary_cortisol", label: "24 Hours Urinary Cortisol" },
   { value: "24hr_urinary_creatinine", label: "24 HOURS URINARY CREATININE" },
-  // Newly Added Services
   { value: "hba1c_glycated_hemoglobin", label: "HbA1c (Glycated Hemoglobin)" },
   { value: "lipid_profile_fasting", label: "Lipid Profile - Fasting" },
   { value: "thyroid_panel_total", label: "Thyroid Profile (T3, T4, TSH)" },

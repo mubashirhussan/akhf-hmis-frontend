@@ -306,29 +306,35 @@ export default function TestBookingPage() {
         isEdit={Boolean(editingId)}
       />
 
-      <TestBookingLinkageModal
-        open={bookingLinkModalOpen}
-        booking={selectedBooking}
-        components={components}
-        onClose={() => {
-          setBookingLinkModalOpen(false);
-          setSelectedBookingId(null);
-        }}
-        onSave={handleSaveBookingLinkage}
-        onEdit={handleEditLink}
-        onDelete={async (record) => {
-          await deleteComponent(record.id).unwrap();
-          if (selectedBooking) {
-            const updatedNames = selectedBooking.testNames.filter(
-              (t) => t !== record.testName
-            );
-            await updateBooking({
-              id: selectedBooking.id,
-              testNames: updatedNames,
-            }).unwrap();
-          }
-        }}
-      />
+<TestBookingLinkageModal
+  open={bookingLinkModalOpen}
+  booking={selectedBooking}
+  components={components}
+  onClose={() => {
+    setBookingLinkModalOpen(false);
+    setSelectedBookingId(null);
+  }}
+  onSave={handleSaveBookingLinkage}
+  onDelete={async (record) => {
+    await deleteComponent(record.id).unwrap();
+    if (selectedBooking) {
+      const updatedNames = selectedBooking.testNames.filter(
+        (t) => t !== record.testName
+      );
+      await updateBooking({
+        id: selectedBooking.id,
+        testNames: updatedNames,
+      }).unwrap();
+    }
+  }}
+  onAddTest={async (bookingId, updatedTestNames) => {
+    await updateBooking({
+      id: bookingId,
+      testNames: updatedTestNames,
+    }).unwrap();
+    message.success("Test added successfully");
+  }}
+/>
 
       <EditTestLinkModal
         open={editLinkOpen}

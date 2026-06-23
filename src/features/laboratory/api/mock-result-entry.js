@@ -1,3 +1,4 @@
+import { getInterpretationTemplateOptions } from '@/features/admin-pathology/api/mock-interpretation';
 export const RESULT_ENTRY_ALL_TEST_GROUP = 'all';
 
 export const RESULT_ENTRY_TEST_GROUP_OPTIONS = [
@@ -313,7 +314,9 @@ export function getResultEntryFieldSchema(testKey) {
 }
 
 export function getResultEntryReportTemplates(testKey) {
-  return RESULT_ENTRY_REPORT_TEMPLATES[testKey] ?? [];
+  const hardcoded = RESULT_ENTRY_REPORT_TEMPLATES[testKey] ?? [];
+  const fromInterpretation = getInterpretationTemplateOptions();
+  return [...hardcoded, ...fromInterpretation];
 }
 
 export function createResultEntryFieldValues(schema) {

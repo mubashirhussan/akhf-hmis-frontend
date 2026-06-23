@@ -1,34 +1,53 @@
 "use client";
 
-import { App, Button, Table, Tag } from "antd";
+import { App, Button, Table, Tag, Select  } from "antd";
+import { useState, useMemo } from "react";
 import AppModal from "@/components/ui/AppModal";
 import AppIcon from "@/components/icons/AppIcon";
 import { useConfirm } from "@/hooks/useConfirm";
 
 export default function TestBookingLinkageModal({
-  open,
-  onClose,
-  booking,
-  components = [],
-  onDelete,
-  onEdit,
-  onSave,
+  open, onClose, booking, components = [], onDelete, onSave, onAddTest,
 }) {
   const { confirmDelete } = useConfirm();
   const { message } = App.useApp();
+  const [addTestOpen, setAddTestOpen] = useState(false);
+const [selectedTestToAdd, setSelectedTestToAdd] = useState(null);
 
-  const data = (booking?.testNames ?? []).map((testName) => {
-    const component = components.find((c) => c.testName === testName);
-    return {
-      id: component?.id ?? `unlinked-${testName}`,
-      tid: component?.tid ?? "—",
+const availableTestOptions = useMemo(() => {
+  const alreadyAdded = new Set(booking?.testNames ?? []);
+  const matchingComponents = components.filter(
+    (c) => c.groupName === booking?.mainGroup
+  );
+  const uniqueTestNames = [...new Set(matchingComponents.map((c) => c.testName))];
+  return uniqueTestNames
+    .filter((t) => !alreadyAdded.has(t))
+    .map((t) => ({ label: t, value: t }));
+}, [components, booking]);
+
+const data = (booking?.testNames ?? []).flatMap((testName) => {
+  const matched = components.filter((c) => c.testName === testName);
+  if (matched.length === 0) {
+    return [{
+      id: `unlinked-${testName}`,
+      tid: "—",
       testName,
-      componentName: component?.componentName ?? "—",
-      tcid: component?.tcid ?? "—",
-      _hasComponent: Boolean(component),
-      _component: component ?? null,
-    };
-  });
+      componentName: "—",
+      tcid: "—",
+      _hasComponent: false,
+      _component: null,
+    }];
+  }
+  return matched.map((component) => ({
+    id: component.id,
+    tid: component.tid,
+    testName,
+    componentName: component.componentName,
+    tcid: component.tcid,
+    _hasComponent: true,
+    _component: component,
+  }));
+});
 
   const columns = [
     { title: "TID", dataIndex: "tid", width: 80 },
@@ -45,45 +64,28 @@ export default function TestBookingLinkageModal({
       render: () => booking?.id,
       width: 120,
     },
-    {
-      title: "Actions",
-      width: 90,
-      render: (_, record) => (
-        <div style={{ display: "flex", gap: 10 }}>
-          <Button
-            type="link"
-            size="small"
-            icon={<AppIcon icon="mdi:pencil-outline" />}
-            onClick={() =>
-              onEdit(
-                record._component ?? {
-                  id: null,
-                  testName: record.testName,
-                  componentName: "",
-                }
-              )
-            }
-          />
-
-          <Button
-            type="link"
-            danger
-            size="small"
-            disabled={!record._hasComponent}
-            icon={<AppIcon icon="mdi:delete-outline" />}
-            onClick={async () => {
-              if (!record._hasComponent) return;
-              const confirmed = await confirmDelete({
-                itemName: record.testName,
-              });
-              if (!confirmed) return;
-              await onDelete(record._component);
-              message.success("Deleted successfully");
-            }}
-          />
-        </div>
-      ),
-    },
+{
+  title: "Actions",
+  width: 60,
+  render: (_, record) => (
+    <Button
+      type="link"
+      danger
+      size="small"
+      disabled={!record._hasComponent}
+      icon={<AppIcon icon="mdi:delete-outline" />}
+      onClick={async () => {
+        if (!record._hasComponent) return;
+        const confirmed = await confirmDelete({
+          itemName: record.testName,
+        });
+        if (!confirmed) return;
+        await onDelete(record._component);
+        message.success("Deleted successfully");
+      }}
+    />
+  ),
+},
   ];
 
   return (
@@ -113,15 +115,63 @@ export default function TestBookingLinkageModal({
         </>
       }
     >
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-        className="test-booking-linkage-table"
-        bordered={false}
-        locale={{ emptyText: "No tests added to this booking yet." }}
+  <div style={{ marginBottom: 12, display: "flex", justifyContent: "flex-end" }}>
+    <Button type="primary" onClick={() => setAddTestOpen(true)}>
+      Add Tests
+    </Button>
+  </div>
+
+  {addTestOpen && (
+    <div
+      style={{
+        background: "#fafafa",
+        border: "1px solid #e8e8e8",
+        borderRadius: 6,
+        padding: "12px 16px",
+        marginBottom: 12,
+        display: "flex",
+        gap: 10,
+        alignItems: "center",
+      }}
+    >
+      <Select
+        style={{ flex: 1 }}
+        placeholder="Select a test to add"
+        value={selectedTestToAdd}
+        options={availableTestOptions}
+        onChange={(v) => setSelectedTestToAdd(v)}
+        showSearch
+        optionFilterProp="label"
+        allowClear
       />
+      <Button
+        type="primary"
+        disabled={!selectedTestToAdd}
+        onClick={async () => {
+          if (!selectedTestToAdd || !booking) return;
+          const updatedNames = [...(booking.testNames ?? []), selectedTestToAdd];
+          await onAddTest?.(booking.id, updatedNames);
+          setSelectedTestToAdd(null);
+          setAddTestOpen(false);
+        }}
+      >
+        Add
+      </Button>
+      <Button onClick={() => { setAddTestOpen(false); setSelectedTestToAdd(null); }}>
+        Cancel
+      </Button>
+    </div>
+  )}
+
+  <Table
+    rowKey="id"
+    columns={columns}
+    dataSource={data}
+    pagination={false}
+    className="test-booking-linkage-table"
+    bordered={false}
+    locale={{ emptyText: "No tests added to this booking yet." }}
+  />
     </AppModal>
   );
 }

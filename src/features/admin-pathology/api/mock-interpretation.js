@@ -75,3 +75,11 @@ export function rowToInterpretationForm(row) {
     templateDescription: row.templateDescription ?? '',
   };
 }
+
+export function getInterpretationTemplateOptions() {
+  return interpretationRows.map((row) => ({
+    value: row.id,
+    label: row.templateName,
+    content: row.templateDescription,
+  }));
+}
