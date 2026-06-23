@@ -148,7 +148,19 @@ export const navigation = [
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },
   { key: 'discount', label: 'Discount', href: '/discount', icon: 'iconamoon:discount-light' },
-  { key: 'human-resource', label: 'Human Resource', href: '/human-resource', icon: 'mdi:account-group-outline' },
+  {
+    key: 'human-resource',
+    label: 'Human Resource',
+    href: '/human-resource',
+    icon: 'mdi:account-group-outline',
+    children: [
+      {
+        key: 'employee-entry',
+        label: 'Employee Entry',
+        href: '/human-resource/employee-entry',
+      },
+    ],
+  },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
   { key: 'financial-reports', label: 'Financial Reports', href: '/financial-reports', icon: 'mdi:calculator-variant-outline' },
   { key: 'user-role', label: 'User Role & Mng.', href: '/user-role', icon: 'carbon:user' },

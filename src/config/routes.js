@@ -18,6 +18,10 @@ export const ROUTES = {
     undeliveredReports: '/laboratory/undelivered-reports',
     deliveredReports: '/laboratory/delivered-reports',
   },
+  humanResource: {
+    root: '/human-resource',
+    employeeEntry: '/human-resource/employee-entry',
+  },
   pharmacy: '/pharmacy',
   billing: '/billing',
   settings: '/settings',

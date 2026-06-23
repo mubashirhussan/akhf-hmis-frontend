@@ -1,0 +1,107 @@
+.employee-entry-section-grid.form-grid {
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.employee-entry-birth-grid {
+  display: grid;
+  grid-template-columns: 84px minmax(120px, 1fr) 110px;
+  gap: 8px;
+}
+
+.employee-entry-readonly {
+  display: flex;
+  align-items: center;
+  min-height: var(--field-height);
+  padding: 0 12px;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  color: #475569;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+.employee-entry-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.employee-entry-photo-row .ant-upload-wrapper {
+  max-width: 100%;
+}
+
+.employee-entry-photo-preview {
+  flex-shrink: 0;
+  border: 1px solid #d8dee9;
+  background: #f8fafc;
+}
+
+.employee-entry-expiry-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.employee-entry-expiry-row .ant-input {
+  flex: 1 1 auto;
+}
+
+.employee-entry-phone-compact .ant-input {
+  text-align: center;
+}
+
+.employee-entry-phone-compact .ant-input:last-child {
+  text-align: left;
+}
+
+.employee-entry-inline-checkbox.ant-checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--field-height);
+  margin-inline-start: 12px;
+  white-space: nowrap;
+}
+
+.employee-entry-checkbox-slot {
+  display: flex;
+  align-items: center;
+  min-height: var(--field-height);
+  margin-top: 6px;
+  padding-top: 7px;
+}
+
+.employee-entry-checkbox-slot .ant-checkbox-wrapper {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: #334155;
+}
+
+.employee-entry-form .ant-upload-list {
+  margin-top: 6px;
+}
+
+@media (max-width: 991px) {
+  .employee-entry-birth-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .employee-entry-section-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .employee-entry-birth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-entry-inline-checkbox.ant-checkbox-wrapper {
+    margin-inline-start: 0;
+    margin-top: 8px;
+  }
+}
