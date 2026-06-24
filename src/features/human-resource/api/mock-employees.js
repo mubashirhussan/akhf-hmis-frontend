@@ -51,6 +51,10 @@ export const INITIAL_EMPLOYEE_ROWS = [
     picture: null,
     age: '42 Years',
     status: 'active',
+    certificates: [],
+    documents: [],
+    skills: [],
+    relationships: [],
   },
   {
     id: '2',
@@ -104,6 +108,10 @@ export const INITIAL_EMPLOYEE_ROWS = [
     picture: null,
     age: '28 Years',
     status: 'active',
+    certificates: [],
+    documents: [],
+    skills: [],
+    relationships: [],
   },
 ];
 
@@ -126,12 +134,34 @@ export function createEmployeeRow(employeePayload) {
   const row = {
     id,
     status: 'active',
+    certificates: [],
+    documents: [],
+    skills: [],
+    relationships: [],
     ...employeePayload,
   };
 
   employeeRows = [row, ...employeeRows];
 
   return row;
+}
+
+export function updateEmployeeRow(id, updates) {
+  const index = employeeRows.findIndex((row) => row.id === id);
+  if (index === -1) {
+    return null;
+  }
+
+  employeeRows[index] = {
+    ...employeeRows[index],
+    ...updates,
+  };
+
+  return employeeRows[index];
+}
+
+export function saveEmployeeSection(id, section, data) {
+  return updateEmployeeRow(id, { [section]: data });
 }
 
 export function getEmployeeDisplayName(employee) {

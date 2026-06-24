@@ -44,6 +44,7 @@ export default function AppTabs({
       <div className="app-tabs-nav" role="tablist">
         {items.map((item) => {
           const isActive = item.key === activeKey;
+          const isDisabled = Boolean(item.disabled);
 
           return (
             <button
@@ -51,8 +52,20 @@ export default function AppTabs({
               type="button"
               role="tab"
               aria-selected={isActive}
-              className={`app-tabs-tab ${isActive ? 'app-tabs-tab--active' : ''}`}
-              onClick={() => setActiveKey(item.key)}
+              aria-disabled={isDisabled}
+              disabled={isDisabled}
+              className={[
+                'app-tabs-tab',
+                isActive ? 'app-tabs-tab--active' : '',
+                isDisabled ? 'app-tabs-tab--disabled' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => {
+                if (!isDisabled) {
+                  setActiveKey(item.key);
+                }
+              }}
             >
               {item.label}
             </button>

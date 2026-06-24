@@ -1,3 +1,85 @@
+.employee-entry-tab-actions {
+  margin-top: 16px;
+  padding-top: 4px;
+}
+
+.employee-entry-tabs {
+  margin-bottom: 4px;
+}
+
+.employee-entry-tabs-panel {
+  border: 1px solid #d2d2d2;
+  border-radius: 0 10px 10px 10px;
+  background: #ffffff;
+  padding: 12px 12px 16px;
+}
+
+.employee-entry-tabs-panel.app-tabs-panel--first-active {
+  border-top-left-radius: 0;
+}
+
+.employee-entry-list-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.employee-entry-list-empty {
+  margin: 0;
+  padding: 20px 12px;
+  border: 1px dashed #d8dee9;
+  border-radius: 8px;
+  background: #f8fafc;
+  text-align: center;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: #64748b;
+}
+
+.employee-entry-list-row {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.employee-entry-list-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.employee-entry-list-row-title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #334155;
+}
+
+.employee-entry-list-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.employee-entry-list-remove-btn:hover {
+  background: #fee2e2;
+}
+
+.employee-entry-list-add-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
 .employee-entry-section-grid.form-grid {
   row-gap: 12px;
   column-gap: 14px;
