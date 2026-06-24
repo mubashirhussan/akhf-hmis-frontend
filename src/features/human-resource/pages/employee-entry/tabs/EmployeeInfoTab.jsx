@@ -88,6 +88,7 @@ const DESIGNATION_OPTIONS = [
   { value: 'medical-officer', label: 'Medical Officer' },
   { value: 'staff-nurse', label: 'Staff Nurse' },
   { value: 'administrator', label: 'Administrator' },
+  { value: 'officer', label: 'Officer' },
 ];
 
 const GRADE_OPTIONS = Array.from({ length: 10 }, (_, index) => ({
@@ -110,6 +111,7 @@ const SUB_DEPARTMENT_OPTIONS = [
   { value: 'administration', label: 'Administration' },
   { value: 'finance', label: 'Finance' },
   { value: 'reception', label: 'Reception' },
+  { value: 'human-resource', label: 'Human Resource' },
 ];
 
 const SHIFT_OPTIONS = [

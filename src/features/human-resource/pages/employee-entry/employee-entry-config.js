@@ -78,3 +78,24 @@ export const initialValues = {
   skills: [],
   relationships: [],
 };
+
+export function employeeToFormValues(employee) {
+  if (!employee) {
+    return { ...initialValues };
+  }
+
+  const nextValues = { ...initialValues };
+
+  for (const fieldName of EMPLOYEE_INFO_FIELD_NAMES) {
+    if (fieldName in employee && employee[fieldName] !== undefined) {
+      nextValues[fieldName] = employee[fieldName];
+    }
+  }
+
+  nextValues.certificates = employee.certificates ?? [];
+  nextValues.documents = employee.documents ?? [];
+  nextValues.skills = employee.skills ?? [];
+  nextValues.relationships = employee.relationships ?? [];
+
+  return nextValues;
+}

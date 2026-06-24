@@ -5,12 +5,18 @@ import {
   createEmployeeRow,
   updateEmployeeRow,
   saveEmployeeSection,
+  deleteEmployeeRow,
 } from '@/features/human-resource/api/mock-employees';
+import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getEmployees: builder.query({
       queryFn: async () => ({ data: getEmployeeRows() }),
+      providesTags: ['Employee'],
+    }),
+    searchEmployees: builder.query({
+      queryFn: async (filters) => ({ data: searchEmployees(filters) }),
       providesTags: ['Employee'],
     }),
     getEmployee: builder.query({
@@ -79,11 +85,23 @@ export const employeeApi = api.injectEndpoints({
       },
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Employee', id }],
     }),
+    deleteEmployee: builder.mutation({
+      queryFn: async (id) => {
+        const deleted = deleteEmployeeRow(id);
+        if (!deleted) {
+          return { error: { status: 404, data: 'Employee not found' } };
+        }
+        return { data: { id } };
+      },
+      invalidatesTags: ['Employee'],
+    }),
   }),
 });
 
 export const {
   useGetEmployeesQuery,
+  useSearchEmployeesQuery,
+  useLazySearchEmployeesQuery,
   useGetEmployeeQuery,
   useCreateEmployeeMutation,
   useUpdateEmployeeInfoMutation,
@@ -91,4 +109,5 @@ export const {
   useSaveEmployeeDocumentsMutation,
   useSaveEmployeeSkillsMutation,
   useSaveEmployeeRelationshipsMutation,
+  useDeleteEmployeeMutation,
 } = employeeApi;

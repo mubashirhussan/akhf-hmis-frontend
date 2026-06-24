@@ -21,6 +21,7 @@ export const ROUTES = {
   humanResource: {
     root: '/human-resource',
     employeeEntry: '/human-resource/employee-entry',
+    searchAllEmployee: '/human-resource/search-all-employee',
   },
   pharmacy: '/pharmacy',
   billing: '/billing',

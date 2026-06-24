@@ -1,0 +1,48 @@
+.search-all-employee-page {
+  padding: 8px 4px 24px;
+}
+
+.employee-search-layout {
+  margin-bottom: 16px;
+}
+
+.employee-search-form.form-grid {
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.employee-search-form > .floating-field {
+  margin-top: 6px;
+}
+
+.employee-search-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.employee-search-results {
+  margin-top: 8px;
+}
+
+.employee-search-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 991px) {
+  .employee-search-form.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .employee-search-form.form-grid {
+    --form-cols: 1;
+  }
+}

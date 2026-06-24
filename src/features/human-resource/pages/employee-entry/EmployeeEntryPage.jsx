@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { App, Form } from "antd";
 import AppTabs from "@/components/ui/AppTabs";
 import {
@@ -10,6 +11,7 @@ import {
   useSaveEmployeeDocumentsMutation,
   useSaveEmployeeSkillsMutation,
   useSaveEmployeeRelationshipsMutation,
+  useGetEmployeeQuery,
 } from "@/features/human-resource/api/employeeApi";
 import EmployeeTabActions from "./components/EmployeeTabActions";
 import {
@@ -21,6 +23,7 @@ import {
   TAB_SAVE_SUCCESS_MESSAGES,
   initialValues,
   getNextEmployeeEntryTab,
+  employeeToFormValues,
 } from "./employee-entry-config";
 import EmployeeInfoTab, {
   EMPLOYEE_INFO_FIELD_PANEL_MAP,
@@ -64,6 +67,25 @@ function pickEmployeeInfoValues(values) {
 }
 
 export default function EmployeeEntryPage() {
+  const searchParams = useSearchParams();
+  const editEmployeeId = searchParams.get("employeeId");
+  const { data: editingEmployee, isFetching } = useGetEmployeeQuery(editEmployeeId, {
+    skip: !editEmployeeId,
+  });
+
+  if (editEmployeeId && isFetching && !editingEmployee) {
+    return null;
+  }
+
+  return (
+    <EmployeeEntryFormContent
+      key={editEmployeeId ?? "new"}
+      editingEmployee={editingEmployee ?? null}
+    />
+  );
+}
+
+function EmployeeEntryFormContent({ editingEmployee }) {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [createEmployee, { isLoading: isCreating }] =
@@ -79,11 +101,16 @@ export default function EmployeeEntryPage() {
   const [saveRelationships, { isLoading: isSavingRelationships }] =
     useSaveEmployeeRelationshipsMutation();
 
-  const [employeeId, setEmployeeId] = useState(null);
+  const [employeeId, setEmployeeId] = useState(editingEmployee?.id ?? null);
   const [activeTab, setActiveTab] = useState(EMPLOYEE_ENTRY_TABS.INFO);
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
   const [fileList, setFileList] = useState([]);
   const [photoPreview, setPhotoPreview] = useState("");
+
+  const formInitialValues = useMemo(
+    () => employeeToFormValues(editingEmployee),
+    [editingEmployee],
+  );
 
   const birthDay = Form.useWatch("birthDay", form);
   const birthMonth = Form.useWatch("birthMonth", form);
@@ -370,7 +397,7 @@ export default function EmployeeEntryPage() {
         className="patient-registration-form employee-entry-form"
         requiredMark={false}
         scrollToFirstError
-        initialValues={initialValues}
+        initialValues={formInitialValues}
       >
         <AppTabs
           items={tabItems}
