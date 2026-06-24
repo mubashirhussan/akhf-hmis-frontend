@@ -156,7 +156,7 @@ export const navigation = [
     children: [
       {
         key: 'employee-entry',
-        label: 'Employee Entry',
+        label: 'Add Employee',
         href: '/human-resource/employee-entry',
       },
       {

@@ -7,12 +7,13 @@ export default function EmployeeTabActions({
   onSave,
   loading = false,
   saveLabel = 'Save',
+  clearLabel = 'Clear',
   disabled = false,
 }) {
   return (
     <div className="patient-registration-actions employee-entry-tab-actions">
       <Button type="link" className="patient-reg-btn-clear" onClick={onClear} disabled={loading}>
-        Clear
+        {clearLabel}
       </Button>
       <Button
         type="primary"

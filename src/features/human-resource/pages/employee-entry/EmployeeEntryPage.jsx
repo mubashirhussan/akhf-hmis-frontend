@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { App, Form } from "antd";
 import AppTabs from "@/components/ui/AppTabs";
+import { ROUTES } from "@/config/routes";
 import {
   useCreateEmployeeMutation,
   useUpdateEmployeeInfoMutation,
@@ -14,6 +15,7 @@ import {
   useGetEmployeeQuery,
 } from "@/features/human-resource/api/employeeApi";
 import EmployeeTabActions from "./components/EmployeeTabActions";
+import EmployeeEntryHeader from "./components/EmployeeEntryHeader";
 import {
   DEFAULT_OPEN_PANELS,
   EMPLOYEE_ENTRY_TABS,
@@ -69,9 +71,10 @@ function pickEmployeeInfoValues(values) {
 export default function EmployeeEntryPage() {
   const searchParams = useSearchParams();
   const editEmployeeId = searchParams.get("employeeId");
-  const { data: editingEmployee, isFetching } = useGetEmployeeQuery(editEmployeeId, {
+  const { data: fetchedEmployee, isFetching } = useGetEmployeeQuery(editEmployeeId, {
     skip: !editEmployeeId,
   });
+  const editingEmployee = editEmployeeId ? (fetchedEmployee ?? null) : null;
 
   if (editEmployeeId && isFetching && !editingEmployee) {
     return null;
@@ -80,13 +83,15 @@ export default function EmployeeEntryPage() {
   return (
     <EmployeeEntryFormContent
       key={editEmployeeId ?? "new"}
-      editingEmployee={editingEmployee ?? null}
+      editingEmployee={editingEmployee}
+      isEditMode={Boolean(editEmployeeId)}
     />
   );
 }
 
-function EmployeeEntryFormContent({ editingEmployee }) {
+function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
   const { message } = App.useApp();
+  const router = useRouter();
   const [form] = Form.useForm();
   const [createEmployee, { isLoading: isCreating }] =
     useCreateEmployeeMutation();
@@ -194,6 +199,9 @@ function EmployeeEntryFormContent({ editingEmployee }) {
       } else {
         const created = await createEmployee(payload).unwrap();
         setEmployeeId(created.id);
+        router.replace(
+          `${ROUTES.humanResource.employeeEntry}?employeeId=${created.id}`,
+        );
       }
 
       message.success(TAB_SAVE_SUCCESS_MESSAGES[EMPLOYEE_ENTRY_TABS.INFO]);
@@ -267,30 +275,52 @@ function EmployeeEntryFormContent({ editingEmployee }) {
       ? EMPLOYEE_ENTRY_TABS.INFO
       : activeTab;
 
-  const handleClearInfo = () => {
-    form.setFieldsValue(
-      EMPLOYEE_INFO_FIELD_NAMES.reduce((acc, fieldName) => {
-        acc[fieldName] = initialValues[fieldName];
-        return acc;
-      }, {}),
-    );
-    setActivePanels(DEFAULT_OPEN_PANELS);
-    setFileList([]);
-
+  const resetPhoto = useCallback(() => {
     if (photoPreview.startsWith("blob:")) {
       URL.revokeObjectURL(photoPreview);
     }
     setPhotoPreview("");
+    setFileList([]);
+  }, [photoPreview]);
+
+  const handleNewEmployee = useCallback(() => {
+    router.replace(ROUTES.humanResource.employeeEntry);
+  }, [router]);
+
+  const handleClearInfo = () => {
+    if (isEditMode) {
+      form.setFieldsValue(formInitialValues);
+      resetPhoto();
+      setActivePanels(DEFAULT_OPEN_PANELS);
+      setActiveTab(EMPLOYEE_ENTRY_TABS.INFO);
+      message.info("Unsaved changes discarded");
+      return;
+    }
+
+    form.setFieldsValue({
+      ...initialValues,
+      certificates: [],
+      documents: [],
+      skills: [],
+      relationships: [],
+    });
+    resetPhoto();
     setEmployeeId(null);
+    setActivePanels(DEFAULT_OPEN_PANELS);
     setActiveTab(EMPLOYEE_ENTRY_TABS.INFO);
-    message.info("Employee info cleared");
+    message.info("Form cleared");
   };
 
   const handleClearListTab = (tabKey) => {
     const listName = EMPLOYEE_LIST_TAB_FIELDS[tabKey];
-    form.setFieldValue(listName, []);
-    message.info(`${TAB_SAVE_LABELS[tabKey]} cleared`);
+    const resetRows = isEditMode ? (editingEmployee?.[listName] ?? []) : [];
+    form.setFieldValue(listName, resetRows);
+    message.info(
+      isEditMode ? `${TAB_SAVE_LABELS[tabKey]} reset` : `${TAB_SAVE_LABELS[tabKey]} cleared`,
+    );
   };
+
+  const infoClearLabel = isEditMode ? "Discard Changes" : "Clear";
 
   const tabItems = useMemo(
     () => [
@@ -310,6 +340,7 @@ function EmployeeEntryFormContent({ editingEmployee }) {
             />
             <EmployeeTabActions
               saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.INFO]}
+              clearLabel={infoClearLabel}
               loading={savingTab === EMPLOYEE_ENTRY_TABS.INFO}
               onClear={handleClearInfo}
               onSave={handleSaveInfo}
@@ -386,11 +417,27 @@ function EmployeeEntryFormContent({ editingEmployee }) {
         ),
       },
     ],
-    [activePanels, ageLabel, fileList, handleSaveInfo, isEmployeeSaved, photoPreview, savingTab],
+    [
+      activePanels,
+      ageLabel,
+      editingEmployee,
+      fileList,
+      formInitialValues,
+      handleSaveInfo,
+      infoClearLabel,
+      isEditMode,
+      isEmployeeSaved,
+      photoPreview,
+      savingTab,
+    ],
   );
 
   return (
     <div className="patient-registration-page employee-entry-page">
+      <EmployeeEntryHeader
+        isEditMode={isEditMode}
+        onNewEmployee={handleNewEmployee}
+      />
       <Form
         form={form}
         name="employee-entry"

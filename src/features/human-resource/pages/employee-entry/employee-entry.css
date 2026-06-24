@@ -1,3 +1,42 @@
+.employee-entry-page {
+  padding-top: 0;
+}
+
+.employee-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.employee-entry-header--end {
+  justify-content: flex-end;
+}
+
+.employee-entry-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--app-primary);
+  text-decoration: none;
+}
+
+.employee-entry-back-link:hover {
+  color: #025a94;
+  text-decoration: underline;
+}
+
+.employee-entry-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .employee-entry-tab-actions {
   margin-top: 16px;
   padding-top: 4px;
