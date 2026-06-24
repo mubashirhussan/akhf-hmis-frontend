@@ -35,9 +35,9 @@ export default function EmployeeSearchFilterForm({
           onSubmit();
         }}
       >
-        <FloatingField label="Hospital" htmlFor={fieldId('hospital')}>
+        <FloatingField label="Hospital">
           <Select
-            id={fieldId('hospital')}
+            aria-label="Hospital"
             className={controlClass}
             value={filters.hospital}
             options={HOSPITAL_FILTER_OPTIONS.filter((option) => option.value !== 'all')}
@@ -45,9 +45,9 @@ export default function EmployeeSearchFilterForm({
           />
         </FloatingField>
 
-        <FloatingField label="Department" htmlFor={fieldId('department')}>
+        <FloatingField label="Department">
           <Select
-            id={fieldId('department')}
+            aria-label="Department"
             className={controlClass}
             value={filters.department}
             options={DEPARTMENT_FILTER_OPTIONS}
@@ -67,9 +67,9 @@ export default function EmployeeSearchFilterForm({
           />
         </FloatingField>
 
-        <FloatingField label="Designation" htmlFor={fieldId('designation')}>
+        <FloatingField label="Designation">
           <Select
-            id={fieldId('designation')}
+            aria-label="Designation"
             className={controlClass}
             value={filters.designation}
             options={DESIGNATION_FILTER_OPTIONS}
@@ -77,9 +77,9 @@ export default function EmployeeSearchFilterForm({
           />
         </FloatingField>
 
-        <FloatingField label="Employee Type" htmlFor={fieldId('employee-type')}>
+        <FloatingField label="Employee Type">
           <Select
-            id={fieldId('employee-type')}
+            aria-label="Employee Type"
             className={controlClass}
             value={filters.employeeType}
             options={EMPLOYEE_TYPE_FILTER_OPTIONS}
@@ -87,9 +87,9 @@ export default function EmployeeSearchFilterForm({
           />
         </FloatingField>
 
-        <FloatingField label="Employee Status" htmlFor={fieldId('status')}>
+        <FloatingField label="Employee Status">
           <Select
-            id={fieldId('status')}
+            aria-label="Employee Status"
             className={controlClass}
             value={filters.status}
             options={EMPLOYEE_STATUS_FILTER_OPTIONS}

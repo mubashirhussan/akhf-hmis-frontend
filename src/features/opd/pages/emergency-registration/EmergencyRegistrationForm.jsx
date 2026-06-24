@@ -92,7 +92,7 @@ export default function EmergencyRegistrationForm() {
 
   return (
     <div className="min-h-screen p-6">
-      <Form form={form} initialValues={initialValues} layout="vertical">
+      <Form form={form} name="emergency-reg" initialValues={initialValues} layout="vertical">
         <FormFieldPrefixProvider prefix="emergency-reg">
         <div className="bg-white rounded-lg border border-gray-200 px-5 py-4 mb-4">
           <div className="flex items-end gap-4">

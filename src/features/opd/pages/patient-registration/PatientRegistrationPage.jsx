@@ -580,6 +580,7 @@ export default function PatientRegistrationForm() {
     <div className="patient-registration-page">
       <Form
         form={form}
+        name="patient-reg"
         layout="vertical"
         className="patient-registration-form"
         requiredMark={false}

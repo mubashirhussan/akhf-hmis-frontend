@@ -32,16 +32,27 @@ export default function FloatingField({
           <span className="floating-label floating-label--inline">{radioLabel}</span>
           <div className="floating-control">{children}</div>
         </>
-      ) : (
+        ) : (
         <>
-          <label className="floating-label" htmlFor={htmlFor}>
-            {label}
-            {required ? (
-              <span className="floating-label-asterisk" aria-hidden>
-                *
-              </span>
-            ) : null}
-          </label>
+          {htmlFor ? (
+            <label className="floating-label" htmlFor={htmlFor}>
+              {label}
+              {required ? (
+                <span className="floating-label-asterisk" aria-hidden>
+                  *
+                </span>
+              ) : null}
+            </label>
+          ) : (
+            <span className="floating-label">
+              {label}
+              {required ? (
+                <span className="floating-label-asterisk" aria-hidden>
+                  *
+                </span>
+              ) : null}
+            </span>
+          )}
           <div className="floating-control">{children}</div>
         </>
       )}

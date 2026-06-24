@@ -356,7 +356,7 @@ export default function EmployeeInfoTab({
         label: 'Address Information',
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-            <FormFloatingField label="Home Phone" name="home no">
+            <FormFloatingField label="Home Phone" name="homePhoneNumber">
               <Input className={controlClass} />
             </FormFloatingField>
 
@@ -364,7 +364,7 @@ export default function EmployeeInfoTab({
               <Input className={controlClass} />
             </FormFloatingField>
 
-            <FormFloatingField label="Office Phone" name="office no">
+            <FormFloatingField label="Office Phone" name="officePhoneNumber">
               <Input className={controlClass} />
             </FormFloatingField>
 

@@ -393,6 +393,7 @@ function EmployeeEntryFormContent({ editingEmployee }) {
     <div className="patient-registration-page employee-entry-page">
       <Form
         form={form}
+        name="employee-entry"
         layout="vertical"
         className="patient-registration-form employee-entry-form"
         requiredMark={false}
