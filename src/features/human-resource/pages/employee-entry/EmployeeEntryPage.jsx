@@ -1,4 +1,5 @@
-'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -71,9 +72,12 @@ function pickEmployeeInfoValues(values) {
 export default function EmployeeEntryPage() {
   const searchParams = useSearchParams();
   const editEmployeeId = searchParams.get("employeeId");
-  const { data: fetchedEmployee, isFetching } = useGetEmployeeQuery(editEmployeeId, {
-    skip: !editEmployeeId,
-  });
+  const { data: fetchedEmployee, isFetching } = useGetEmployeeQuery(
+    editEmployeeId,
+    {
+      skip: !editEmployeeId,
+    },
+  );
   const editingEmployee = editEmployeeId ? (fetchedEmployee ?? null) : null;
 
   if (editEmployeeId && isFetching && !editingEmployee) {
@@ -110,7 +114,9 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
   const [activeTab, setActiveTab] = useState(EMPLOYEE_ENTRY_TABS.INFO);
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
   const [fileList, setFileList] = useState([]);
-  const [photoPreview, setPhotoPreview] = useState(() => editingEmployee?.picture ?? "");
+  const [photoPreview, setPhotoPreview] = useState(
+    () => editingEmployee?.picture ?? "",
+  );
 
   const formInitialValues = useMemo(
     () => employeeToFormValues(editingEmployee),
@@ -324,7 +330,9 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     const resetRows = isEditMode ? (editingEmployee?.[listName] ?? []) : [];
     form.setFieldValue(listName, resetRows);
     message.info(
-      isEditMode ? `${TAB_SAVE_LABELS[tabKey]} reset` : `${TAB_SAVE_LABELS[tabKey]} cleared`,
+      isEditMode
+        ? `${TAB_SAVE_LABELS[tabKey]} reset`
+        : `${TAB_SAVE_LABELS[tabKey]} cleared`,
     );
   };
 
