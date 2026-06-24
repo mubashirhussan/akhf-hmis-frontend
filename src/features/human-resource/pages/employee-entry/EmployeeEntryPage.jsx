@@ -110,7 +110,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
   const [activeTab, setActiveTab] = useState(EMPLOYEE_ENTRY_TABS.INFO);
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
   const [fileList, setFileList] = useState([]);
-  const [photoPreview, setPhotoPreview] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(() => editingEmployee?.picture ?? "");
 
   const formInitialValues = useMemo(
     () => employeeToFormValues(editingEmployee),
@@ -152,6 +152,14 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     };
   }, [photoPreview]);
 
+  const restoreSavedPhoto = useCallback(() => {
+    if (photoPreview.startsWith("blob:")) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoPreview(editingEmployee?.picture ?? "");
+    setFileList([]);
+  }, [editingEmployee?.picture, photoPreview]);
+
   const handleValidationError = useCallback(
     (errorFields, tabKey) => {
       if (!errorFields?.length) {
@@ -190,7 +198,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
       const values = await form.validateFields(EMPLOYEE_INFO_FIELD_NAMES);
       const payload = {
         ...pickEmployeeInfoValues(values),
-        picture: fileList[0]?.name ?? null,
+        picture: photoPreview || null,
         age: ageLabel,
       };
 
@@ -290,7 +298,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
   const handleClearInfo = () => {
     if (isEditMode) {
       form.setFieldsValue(formInitialValues);
-      resetPhoto();
+      restoreSavedPhoto();
       setActivePanels(DEFAULT_OPEN_PANELS);
       setActiveTab(EMPLOYEE_ENTRY_TABS.INFO);
       message.info("Unsaved changes discarded");

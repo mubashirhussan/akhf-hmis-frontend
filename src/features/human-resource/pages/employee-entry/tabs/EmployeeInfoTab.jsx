@@ -177,18 +177,15 @@ export default function EmployeeInfoTab({
 
                   const latestFile = next[0]?.originFileObj;
                   if (!latestFile) {
-                    if (photoPreview.startsWith('blob:')) {
-                      URL.revokeObjectURL(photoPreview);
-                    }
                     onPhotoPreviewChange('');
                     return;
                   }
 
-                  if (photoPreview.startsWith('blob:')) {
-                    URL.revokeObjectURL(photoPreview);
-                  }
-
-                  onPhotoPreviewChange(URL.createObjectURL(latestFile));
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    onPhotoPreviewChange(typeof reader.result === 'string' ? reader.result : '');
+                  };
+                  reader.readAsDataURL(latestFile);
                 }}
               >
                 <div
