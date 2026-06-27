@@ -10,6 +10,7 @@ export default function EmployeeEntryListTab({
   addLabel,
   defaultRow = {},
   fields,
+  maxRows,
 }) {
   return (
     <Form.List name={name}>
@@ -21,18 +22,20 @@ export default function EmployeeEntryListTab({
             listFields.map((field, index) => (
               <div key={field.key} className="employee-entry-list-row">
                 <div className="employee-entry-list-row-header">
-                  <span className="employee-entry-list-row-title">Record {index + 1}</span>
-                  <button
-                    type="button"
-                    className="employee-entry-list-remove-btn"
-                    onClick={() => remove(field.name)}
-                    aria-label={`Remove record ${index + 1}`}
-                  >
-                    <DeleteOutlined />
-                  </button>
+                  <span className="employee-entry-list-row-title">{maxRows === 1 ? 'Record' : `Record ${index + 1}`}</span>
+                  {!maxRows && (
+                    <button
+                      type="button"
+                      className="employee-entry-list-remove-btn"
+                      onClick={() => remove(field.name)}
+                      aria-label={`Remove record ${index + 1}`}
+                    >
+                      <DeleteOutlined />
+                    </button>
+                  )}
                 </div>
                 <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-                  {fields.map((item) => (
+{fields.map((item) => (
                     <FormFloatingField
                       key={item.name}
                       name={[field.name, item.name]}
@@ -40,6 +43,8 @@ export default function EmployeeEntryListTab({
                       required={item.required}
                       rules={item.rules}
                       col={item.col}
+                      valuePropName={item.valuePropName}
+                      getValueFromEvent={item.getValueFromEvent}
                     >
                       {item.render()}
                     </FormFloatingField>
@@ -49,14 +54,16 @@ export default function EmployeeEntryListTab({
             ))
           )}
 
-          <Button
-            type="dashed"
-            className="employee-entry-list-add-btn"
-            icon={<PlusOutlined />}
-            onClick={() => add(defaultRow)}
-          >
-            {addLabel}
-          </Button>
+          {(!maxRows || listFields.length < maxRows) && (
+            <Button
+              type="dashed"
+              className="employee-entry-list-add-btn"
+              icon={<PlusOutlined />}
+              onClick={() => add(defaultRow)}
+            >
+              {addLabel}
+            </Button>
+          )}
         </div>
       )}
     </Form.List>

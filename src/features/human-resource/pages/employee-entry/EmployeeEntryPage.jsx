@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,10 +8,23 @@ import { ROUTES } from "@/config/routes";
 import {
   useCreateEmployeeMutation,
   useUpdateEmployeeInfoMutation,
+    useSaveEmployeeEducationsMutation,
   useSaveEmployeeCertificatesMutation,
   useSaveEmployeeDocumentsMutation,
   useSaveEmployeeSkillsMutation,
   useSaveEmployeeRelationshipsMutation,
+  useSaveEmployeeAdditionalInfosMutation,
+  useSaveEmployeeCardsMutation,
+  useSaveEmployeeEmpConfirmationsMutation,
+  useSaveEmployeeResignationsMutation,
+  useSaveEmployeeSuspensionsMutation,
+  useSaveEmployeeContractsMutation,
+  useSaveEmployeeAcImprovementsMutation,
+  useSaveEmployeeProImprovementsMutation,
+  useSaveEmployeeJobHistoriesMutation,
+  useSaveEmployeeFileLabelsMutation,
+  useSaveEmployeeEmpSummariesMutation,
+  useSaveEmployeePromotionsMutation,
   useGetEmployeeQuery,
 } from "@/features/human-resource/api/employeeApi";
 import EmployeeTabActions from "./components/EmployeeTabActions";
@@ -31,10 +43,23 @@ import {
 import EmployeeInfoTab, {
   EMPLOYEE_INFO_FIELD_PANEL_MAP,
 } from "./tabs/EmployeeInfoTab";
-import EmployeeCertificatesTab from "./tabs/EmployeeCertificatesTab";
-import EmployeeDocumentsTab from "./tabs/EmployeeDocumentsTab";
-import EmployeeSkillsTab from "./tabs/EmployeeSkillsTab";
-import EmployeeRelationshipTab from "./tabs/EmployeeRelationshipTab";
+import EmployeeEducationTab from './tabs/EmployeeEducationTab';
+import EmployeeCertificatesTab from './tabs/EmployeeCertificatesTab';
+import EmployeeDocumentsTab from './tabs/EmployeeDocumentsTab';
+import EmployeeSkillsTab from './tabs/EmployeeSkillsTab';
+import EmployeeRelationshipTab from './tabs/EmployeeRelationshipTab';
+import EmployeeAdditionalInfoTab from './tabs/EmployeeAdditionalInfoTab';
+import EmployeeCardTab from './tabs/EmployeeCardTab';
+import EmployeeEmpConfirmationTab from './tabs/EmployeeEmpConfirmationTab';
+import EmployeeResignationTab from './tabs/EmployeeResignationTab';
+import EmployeeSuspensionTab from './tabs/EmployeeSuspensionTab';
+import EmployeeContractTab from './tabs/EmployeeContractTab';
+import EmployeeAcImprovementTab from './tabs/EmployeeAcImprovementTab';
+import EmployeeProImprovementTab from './tabs/EmployeeProImprovementTab';
+import EmployeeJobHistoryTab from './tabs/EmployeeJobHistoryTab';
+import EmployeeFileLabelTab from './tabs/EmployeeFileLabelTab';
+import EmployeeEmpSummaryTab from './tabs/EmployeeEmpSummaryTab';
+import EmployeePromotionTab from './tabs/EmployeePromotionTab';
 
 function calculateAge(day, month, year) {
   if (!day || !month || !year) {
@@ -101,14 +126,42 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     useCreateEmployeeMutation();
   const [updateEmployeeInfo, { isLoading: isUpdatingInfo }] =
     useUpdateEmployeeInfoMutation();
+
+  const [saveEducations, { isLoading: isSavingEducations }] =
+    useSaveEmployeeEducationsMutation();
   const [saveCertificates, { isLoading: isSavingCertificates }] =
     useSaveEmployeeCertificatesMutation();
+
   const [saveDocuments, { isLoading: isSavingDocuments }] =
     useSaveEmployeeDocumentsMutation();
   const [saveSkills, { isLoading: isSavingSkills }] =
     useSaveEmployeeSkillsMutation();
   const [saveRelationships, { isLoading: isSavingRelationships }] =
     useSaveEmployeeRelationshipsMutation();
+    const [saveAdditionalInfos, { isLoading: isSavingAdditionalInfos }] =
+    useSaveEmployeeAdditionalInfosMutation();
+  const [saveCards, { isLoading: isSavingCards }] =
+    useSaveEmployeeCardsMutation();
+  const [saveEmpConfirmations, { isLoading: isSavingEmpConfirmations }] =
+    useSaveEmployeeEmpConfirmationsMutation();
+  const [saveResignations, { isLoading: isSavingResignations }] =
+    useSaveEmployeeResignationsMutation();
+  const [saveSuspensions, { isLoading: isSavingSuspensions }] =
+    useSaveEmployeeSuspensionsMutation();
+  const [saveContracts, { isLoading: isSavingContracts }] =
+    useSaveEmployeeContractsMutation();
+  const [saveAcImprovements, { isLoading: isSavingAcImprovements }] =
+    useSaveEmployeeAcImprovementsMutation();
+  const [saveProImprovements, { isLoading: isSavingProImprovements }] =
+    useSaveEmployeeProImprovementsMutation();
+  const [saveJobHistories, { isLoading: isSavingJobHistories }] =
+    useSaveEmployeeJobHistoriesMutation();
+  const [saveFileLabels, { isLoading: isSavingFileLabels }] =
+    useSaveEmployeeFileLabelsMutation();
+  const [saveEmpSummaries, { isLoading: isSavingEmpSummaries }] =
+    useSaveEmployeeEmpSummariesMutation();
+  const [savePromotions, { isLoading: isSavingPromotions }] =
+    useSaveEmployeePromotionsMutation();
 
   const [employeeId, setEmployeeId] = useState(editingEmployee?.id ?? null);
   const [activeTab, setActiveTab] = useState(EMPLOYEE_ENTRY_TABS.INFO);
@@ -134,20 +187,46 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     [birthDay, birthMonth, birthYear],
   );
 
-  const savingTab = useMemo(() => {
+ const savingTab = useMemo(() => {
     if (isCreating || isUpdatingInfo) return EMPLOYEE_ENTRY_TABS.INFO;
+        if (isSavingEducations) return EMPLOYEE_ENTRY_TABS.EDUCATION;
     if (isSavingCertificates) return EMPLOYEE_ENTRY_TABS.CERTIFICATES;
-    if (isSavingDocuments) return EMPLOYEE_ENTRY_TABS.DOCUMENTS;
     if (isSavingSkills) return EMPLOYEE_ENTRY_TABS.SKILLS;
+    if (isSavingAdditionalInfos) return EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO;
     if (isSavingRelationships) return EMPLOYEE_ENTRY_TABS.RELATIONSHIP;
+    if (isSavingDocuments) return EMPLOYEE_ENTRY_TABS.DOCUMENTS;
+    if (isSavingCards) return EMPLOYEE_ENTRY_TABS.CARD;
+    if (isSavingEmpConfirmations) return EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION;
+    if (isSavingResignations) return EMPLOYEE_ENTRY_TABS.RESIGNATION;
+    if (isSavingSuspensions) return EMPLOYEE_ENTRY_TABS.SUSPENSION;
+    if (isSavingContracts) return EMPLOYEE_ENTRY_TABS.CONTRACT;
+    if (isSavingAcImprovements) return EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT;
+    if (isSavingProImprovements) return EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT;
+    if (isSavingJobHistories) return EMPLOYEE_ENTRY_TABS.JOB_HISTORY;
+    if (isSavingFileLabels) return EMPLOYEE_ENTRY_TABS.FILE_LABEL;
+    if (isSavingEmpSummaries) return EMPLOYEE_ENTRY_TABS.EMP_SUMMARY;
+    if (isSavingPromotions) return EMPLOYEE_ENTRY_TABS.PROMOTION;
     return null;
   }, [
     isCreating,
     isUpdatingInfo,
+        isSavingEducations,
     isSavingCertificates,
-    isSavingDocuments,
     isSavingSkills,
+    isSavingAdditionalInfos,
     isSavingRelationships,
+    isSavingDocuments,
+    isSavingCards,
+    isSavingEmpConfirmations,
+    isSavingResignations,
+    isSavingSuspensions,
+    isSavingContracts,
+    isSavingAcImprovements,
+    isSavingProImprovements,
+    isSavingJobHistories,
+    isSavingFileLabels,
+    isSavingEmpSummaries,
+    isSavingPromotions,
   ]);
 
   useEffect(() => {
@@ -243,20 +322,50 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
 
     try {
       const rows = form.getFieldValue(listName) ?? [];
+
       if (rows.length > 0) {
-        await form.validateFields([listName]);
+        const nestedPaths = rows.flatMap((_, rowIndex) =>
+          Object.keys(rows[rowIndex]).map((fieldName) => [listName, rowIndex, fieldName])
+        );
+        await form.validateFields(nestedPaths);
       }
 
       const payload = { id: employeeId, [listName]: rows };
 
-      if (tabKey === EMPLOYEE_ENTRY_TABS.CERTIFICATES) {
+      if (tabKey === EMPLOYEE_ENTRY_TABS.EDUCATION) {
+        await saveEducations(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.CERTIFICATES) {
         await saveCertificates(payload).unwrap();
-      } else if (tabKey === EMPLOYEE_ENTRY_TABS.DOCUMENTS) {
-        await saveDocuments(payload).unwrap();
       } else if (tabKey === EMPLOYEE_ENTRY_TABS.SKILLS) {
         await saveSkills(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO) {
+        await saveAdditionalInfos(payload).unwrap();
       } else if (tabKey === EMPLOYEE_ENTRY_TABS.RELATIONSHIP) {
         await saveRelationships(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.DOCUMENTS) {
+        await saveDocuments(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.CARD) {
+        await saveCards(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION) {
+        await saveEmpConfirmations(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.RESIGNATION) {
+        await saveResignations(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.SUSPENSION) {
+        await saveSuspensions(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.CONTRACT) {
+        await saveContracts(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT) {
+        await saveAcImprovements(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT) {
+        await saveProImprovements(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.JOB_HISTORY) {
+        await saveJobHistories(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.FILE_LABEL) {
+        await saveFileLabels(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.EMP_SUMMARY) {
+        await saveEmpSummaries(payload).unwrap();
+      } else if (tabKey === EMPLOYEE_ENTRY_TABS.PROMOTION) {
+        await savePromotions(payload).unwrap();
       }
 
       message.success(TAB_SAVE_SUCCESS_MESSAGES[tabKey]);
@@ -313,10 +422,23 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
 
     form.setFieldsValue({
       ...initialValues,
+            educations: [],
       certificates: [],
-      documents: [],
       skills: [],
+      additionalInfos: [],
       relationships: [],
+      documents: [],
+      cards: [],
+      empConfirmations: [],
+      resignations: [],
+      suspensions: [],
+      contracts: [],
+      acImprovements: [],
+      proImprovements: [],
+      jobHistories: [],
+      fileLabels: [],
+      empSummaries: [],
+      promotions: [],
     });
     resetPhoto();
     setEmployeeId(null);
@@ -364,7 +486,22 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
           </>
         ),
       },
-      {
+          {
+        key: EMPLOYEE_ENTRY_TABS.EDUCATION,
+        label: "Education",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeEducationTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.EDUCATION]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.EDUCATION}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.EDUCATION)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.EDUCATION)}
+            />
+          </>
+        ),
+      },{
         key: EMPLOYEE_ENTRY_TABS.CERTIFICATES,
         label: "Certificates",
         disabled: !isEmployeeSaved,
@@ -378,6 +515,55 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
                 handleClearListTab(EMPLOYEE_ENTRY_TABS.CERTIFICATES)
               }
               onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.CERTIFICATES)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.SKILLS,
+        label: "Skills",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeSkillsTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.SKILLS]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.SKILLS}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.SKILLS)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.SKILLS)}
+            />
+          </>
+        ),
+      },
+ 
+      {
+        key: EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO,
+        label: "Additional Info",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeAdditionalInfoTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.RELATIONSHIP,
+        label: "Relationship",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeRelationshipTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.RELATIONSHIP]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.RELATIONSHIP}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.RELATIONSHIP)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.RELATIONSHIP)}
             />
           </>
         ),
@@ -399,41 +585,201 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
         ),
       },
       {
-        key: EMPLOYEE_ENTRY_TABS.SKILLS,
-        label: "Skills",
+        key: EMPLOYEE_ENTRY_TABS.CARD,
+        label: "Card",
+        disabled: !isEmployeeSaved,
+        children: (
+          <EmployeeCardTab
+            employeeName={[
+              form.getFieldValue('firstName'),
+              form.getFieldValue('middleName'),
+              form.getFieldValue('lastName'),
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          />
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION,
+        label: "Confirmation",
         disabled: !isEmployeeSaved,
         children: (
           <>
-            <EmployeeSkillsTab />
+            <EmployeeEmpConfirmationTab />
             <EmployeeTabActions
-              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.SKILLS]}
-              loading={savingTab === EMPLOYEE_ENTRY_TABS.SKILLS}
-              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.SKILLS)}
-              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.SKILLS)}
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION)}
             />
           </>
         ),
       },
       {
-        key: EMPLOYEE_ENTRY_TABS.RELATIONSHIP,
-        label: "Relationship",
+        key: EMPLOYEE_ENTRY_TABS.RESIGNATION,
+        label: "Resignation",
         disabled: !isEmployeeSaved,
         children: (
           <>
-            <EmployeeRelationshipTab />
+            <EmployeeResignationTab />
             <EmployeeTabActions
-              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.RELATIONSHIP]}
-              loading={savingTab === EMPLOYEE_ENTRY_TABS.RELATIONSHIP}
-              onClear={() =>
-                handleClearListTab(EMPLOYEE_ENTRY_TABS.RELATIONSHIP)
-              }
-              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.RELATIONSHIP)}
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.RESIGNATION]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.RESIGNATION}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.RESIGNATION)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.RESIGNATION)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.SUSPENSION,
+        label: "Suspension",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeSuspensionTab
+              employeeName={[
+                form.getFieldValue('firstName'),
+                form.getFieldValue('middleName'),
+                form.getFieldValue('lastName'),
+              ].filter(Boolean).join(' ')}
+            />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.SUSPENSION]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.SUSPENSION}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.SUSPENSION)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.SUSPENSION)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.CONTRACT,
+        label: "Contract",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeContractTab
+              employeeName={[
+                form.getFieldValue('firstName'),
+                form.getFieldValue('middleName'),
+                form.getFieldValue('lastName'),
+              ].filter(Boolean).join(' ')}
+            />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.CONTRACT]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.CONTRACT}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.CONTRACT)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.CONTRACT)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT,
+        label: "Academic Improvement",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeAcImprovementTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT,
+        label: "Professional Improvement",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeProImprovementTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.JOB_HISTORY,
+        label: "Job History",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeJobHistoryTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.JOB_HISTORY]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.JOB_HISTORY}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.JOB_HISTORY)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.JOB_HISTORY)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.FILE_LABEL,
+        label: "File Label",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeFileLabelTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.FILE_LABEL]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.FILE_LABEL}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.FILE_LABEL)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.FILE_LABEL)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.EMP_SUMMARY,
+        label: "Summary",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeeEmpSummaryTab />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.EMP_SUMMARY]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.EMP_SUMMARY}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.EMP_SUMMARY)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.EMP_SUMMARY)}
+            />
+          </>
+        ),
+      },
+      {
+        key: EMPLOYEE_ENTRY_TABS.PROMOTION,
+        label: "Promotion",
+        disabled: !isEmployeeSaved,
+        children: (
+          <>
+            <EmployeePromotionTab
+              employeeName={[
+                form.getFieldValue('firstName'),
+                form.getFieldValue('middleName'),
+                form.getFieldValue('lastName'),
+              ].filter(Boolean).join(' ')}
+            />
+            <EmployeeTabActions
+              saveLabel={TAB_SAVE_LABELS[EMPLOYEE_ENTRY_TABS.PROMOTION]}
+              loading={savingTab === EMPLOYEE_ENTRY_TABS.PROMOTION}
+              onClear={() => handleClearListTab(EMPLOYEE_ENTRY_TABS.PROMOTION)}
+              onSave={() => handleSaveListTab(EMPLOYEE_ENTRY_TABS.PROMOTION)}
             />
           </>
         ),
       },
     ],
-    [
+[
       activePanels,
       ageLabel,
       editingEmployee,
@@ -445,6 +791,18 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
       isEmployeeSaved,
       photoPreview,
       savingTab,
+      isSavingAdditionalInfos,
+      isSavingCards,
+      isSavingEmpConfirmations,
+      isSavingResignations,
+      isSavingSuspensions,
+      isSavingContracts,
+      isSavingAcImprovements,
+      isSavingProImprovements,
+      isSavingJobHistories,
+      isSavingFileLabels,
+      isSavingEmpSummaries,
+      isSavingPromotions,
     ],
   );
 

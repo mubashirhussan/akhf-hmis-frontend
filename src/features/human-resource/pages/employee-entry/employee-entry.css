@@ -317,3 +317,127 @@
     margin-top: 8px;
   }
 }
+.employee-additional-info-grid {
+  margin-top: 12px;
+}
+
+.employee-card-tab {
+  padding: 24px 0;
+}
+
+.employee-card-generate-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  border: 2px dashed var(--app-border, #d9d9d9);
+  border-radius: 12px;
+  background: var(--app-bg-subtle, #fafafa);
+}
+
+.employee-card-icon {
+  font-size: 48px;
+  color: var(--app-primary);
+}
+
+.employee-card-hint {
+  color: var(--app-text-secondary, #888);
+  font-size: 14px;
+  margin: 0;
+}
+
+.employee-card-generate-btn {
+  min-width: 160px;
+}
+
+.employee-card-confirm-text {
+  font-size: 15px;
+  margin: 8px 0;
+}
+
+.employee-entry-list-table {
+  margin-top: 20px;
+  border-top: 1px solid var(--app-border, #f0f0f0);
+  padding-top: 16px;
+}
+
+.employee-entry-list-table .ant-table-container {
+  overflow-x: auto;
+}
+.employee-entry-upload-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  /* bottom: 10px; */
+}
+
+.employee-entry-upload-slot .ant-upload {
+  width: 100%;
+}
+
+.employee-entry-upload-slot .ant-upload > button {
+  width: 100%;
+  height: var(--field-height, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-entry-upload-slot .ant-upload > button:hover {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+}
+
+
+.employee-entry-upload-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.employee-entry-upload-label {
+  font-size: var(--font-size-xs, 11px);
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.employee-entry-upload-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.hr-tab-modal-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hr-tab-modal-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.hr-tab-modal-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.hr-tab-modal-form-grid .field-control {
+  width: 100%;
+}

@@ -6,46 +6,77 @@ import EmployeeEntryListTab from './EmployeeEntryListTab';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-const RELATIONSHIP_TYPE_OPTIONS = [
-  { value: 'father', label: 'Father' },
-  { value: 'mother', label: 'Mother' },
-  { value: 'spouse', label: 'Spouse' },
-  { value: 'son', label: 'Son' },
-  { value: 'daughter', label: 'Daughter' },
-  { value: 'sibling', label: 'Sibling' },
-  { value: 'other', label: 'Other' },
+const TITLE_OPTIONS = [
+  { label: 'Mr', value: 'mr' },
+  { label: 'Mrs', value: 'mrs' },
+  { label: 'Miss', value: 'miss' },
+  { label: 'Dr', value: 'dr' },
+  { label: 'Prof', value: 'prof' },
+];
+
+const GENDER_OPTIONS = [
+  { label: 'Male', value: 'male' },
+  { label: 'Female', value: 'female' },
+  { label: 'Other', value: 'other' },
+];
+
+const RELATION_OPTIONS = [
+  { label: 'Father', value: 'father' },
+  { label: 'Mother', value: 'mother' },
+  { label: 'Spouse', value: 'spouse' },
+  { label: 'Son', value: 'son' },
+  { label: 'Daughter', value: 'daughter' },
+  { label: 'Brother', value: 'brother' },
+  { label: 'Sister', value: 'sister' },
+  { label: 'Guardian', value: 'guardian' },
 ];
 
 const RELATIONSHIP_FIELDS = [
   {
-    name: 'relationshipType',
-    label: 'Relationship',
-    required: true,
-    rules: [{ required: true, message: 'Relationship is required' }],
-    render: () => <Select className={controlClass} options={RELATIONSHIP_TYPE_OPTIONS} />,
+    name: 'title',
+    label: 'Title',
+    render: () => <Select className={controlClass} options={TITLE_OPTIONS} allowClear />,
   },
   {
-    name: 'fullName',
-    label: 'Full Name',
+    name: 'firstName',
+    label: 'First Name',
     required: true,
-    rules: [{ required: true, whitespace: true, message: 'Full name is required' }],
+    rules: [{ required: true, whitespace: true, message: 'First name is required' }],
+    render: () => <Input className={controlClass} />,
+  },
+  {
+    name: 'lastName',
+    label: 'Last Name',
+    required: true,
+    rules: [{ required: true, whitespace: true, message: 'Last name is required' }],
+    render: () => <Input className={controlClass} />,
+  },
+  {
+    name: 'relation',
+    label: 'Relation',
+    required: true,
+    rules: [{ required: true, message: 'Relation is required' }],
+    render: () => <Select className={controlClass} options={RELATION_OPTIONS} allowClear />,
+  },
+  {
+    name: 'gender',
+    label: 'Gender',
+    render: () => <Select className={controlClass} options={GENDER_OPTIONS} allowClear />,
+  },
+  {
+    name: 'age',
+    label: 'Age',
+    render: () => <Input className={controlClass} />,
+  },
+  {
+    name: 'cnic',
+    label: 'CNIC',
     render: () => <Input className={controlClass} />,
   },
   {
     name: 'contactNo',
     label: 'Contact No',
     render: () => <Input className={controlClass} />,
-  },
-  {
-    name: 'cnicNo',
-    label: 'CNIC No',
-    render: () => <Input className={controlClass} />,
-  },
-  {
-    name: 'address',
-    label: 'Address',
-    col: 'full',
-    render: () => <Input.TextArea className={controlClass} rows={2} />,
   },
 ];
 
@@ -55,11 +86,14 @@ export default function EmployeeRelationshipTab() {
       name="relationships"
       addLabel="Add Relationship"
       defaultRow={{
-        relationshipType: 'father',
-        fullName: '',
+        title: null,
+        firstName: '',
+        lastName: '',
+        relation: null,
+        gender: null,
+        age: '',
+        cnic: '',
         contactNo: '',
-        cnicNo: '',
-        address: '',
       }}
       fields={RELATIONSHIP_FIELDS}
     />
