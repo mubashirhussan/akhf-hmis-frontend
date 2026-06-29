@@ -164,7 +164,13 @@ export const navigation = [
         label: 'Search All Employee',
         href: '/human-resource/search-all-employee',
       },
+
       {
+        key: 'add-hospital',
+        label: 'Add Hospital',
+        href: '/human-resource/add-hospital',
+      },
+            {
         key: 'department-type',
         label: 'Add Department Type',
         href: '/human-resource/department-type',
