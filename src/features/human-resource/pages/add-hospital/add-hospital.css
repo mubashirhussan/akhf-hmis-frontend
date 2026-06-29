@@ -1,0 +1,110 @@
+.add-hospital-page {
+  padding: 8px 4px 24px;
+}
+
+.hospital-search-layout {
+  margin-bottom: 16px;
+}
+
+.hospital-search-form.form-grid {
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.hospital-search-form > .floating-field {
+  margin-top: 6px;
+}
+
+.hospital-search-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.hospital-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hospital-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hospital-table-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.hospital-table-no-logo {
+  color: #bbb;
+}
+
+.hospital-logo-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hospital-logo-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.hospital-logo-input {
+  padding: 4px 6px !important;
+  height: auto !important;
+}
+
+.hospital-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.hospital-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.hospital-save-btn {
+  min-width: 120px;
+}
+
+@media (max-width: 991px) {
+  .hospital-search-form.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .hospital-search-form.form-grid {
+    --form-cols: 1;
+  }
+
+  .hospital-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .hospital-save-btn {
+    width: 100%;
+  }
+
+  .hospital-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
