@@ -8,6 +8,12 @@ import {
   deleteEmployeeRow,
 } from '@/features/human-resource/api/mock-employees';
 import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
+import {
+  getDeptTypeRows,
+  createDeptTypeRow,
+  updateDeptTypeRow,
+  deleteDeptTypeRow,
+} from '@/features/human-resource/api/mock-department-types';
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -199,6 +205,28 @@ export const employeeApi = api.injectEndpoints({
       },
       invalidatesTags: ['Employee'],
     }),
+    getDeptTypes: builder.query({
+  queryFn: async () => ({ data: getDeptTypeRows() }),
+  providesTags: ['DeptType'],
+}),
+
+addDeptType: builder.mutation({
+  queryFn: async (payload) => ({ data: createDeptTypeRow(payload) }),
+  invalidatesTags: ['DeptType'],
+}),
+
+updateDeptType: builder.mutation({
+  queryFn: async ({ id, ...payload }) => ({ data: updateDeptTypeRow(id, payload) }),
+  invalidatesTags: ['DeptType'],
+}),
+
+deleteDeptType: builder.mutation({
+  queryFn: async (id) => {
+    deleteDeptTypeRow(id);
+    return { data: true };
+  },
+  invalidatesTags: ['DeptType'],
+}),
   }),
 });
 
@@ -227,4 +255,8 @@ export const {
   useSaveEmployeeEmpSummariesMutation,
   useSaveEmployeePromotionsMutation,
   useDeleteEmployeeMutation,
+  useGetDeptTypesQuery,
+  useAddDeptTypeMutation,
+  useUpdateDeptTypeMutation,
+  useDeleteDeptTypeMutation,
 } = employeeApi;
