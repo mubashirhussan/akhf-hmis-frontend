@@ -185,6 +185,11 @@ export const navigation = [
         label: 'Sub Department Type',
         href: '/human-resource/sub-department-type',
       },
+            {
+        key: 'add-sub-department',
+        label: 'Add Sub Department',
+        href: '/human-resource/add-sub-department',
+      },
     ],
   },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
