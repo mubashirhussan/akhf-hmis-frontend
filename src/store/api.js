@@ -27,6 +27,7 @@ export const api = createApi({
     'Department',
     'SubDeptType',
     'SubDepartment',
+    'Designation',
   ],
   endpoints: () => ({}),
 });
