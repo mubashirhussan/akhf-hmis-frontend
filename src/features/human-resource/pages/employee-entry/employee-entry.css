@@ -68,7 +68,7 @@
   padding: 20px 12px;
   border: 1px dashed #d8dee9;
   border-radius: 8px;
-  background: #f8fafc;
+  background: transparent;
   text-align: center;
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
@@ -79,7 +79,7 @@
   padding: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #fafbfc;
+  background: transparent;
 }
 
 .employee-entry-list-row-header {

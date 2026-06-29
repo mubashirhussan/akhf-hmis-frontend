@@ -22,21 +22,21 @@
   border: 0;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  background: #f5f5f5;
+  background: #eaf2ff;
   padding: 11px 22px;
   font-family: var(--font-family);
-  font-weight: 500;
+  font-weight: 600;
   font-size: var(--font-size-base);
   line-height: 100%;
   letter-spacing: 0.04em;
-  color: #7d7d7d;
+  color: #285c9f;
   opacity: 1;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .app-tabs-tab:hover:not(.app-tabs-tab--active) {
-  background: #ebebeb;
+  background: #dcecff;
 }
 
 .app-tabs-tab--active {
@@ -145,6 +145,14 @@
 .floating-control > .ant-picker,
 .floating-control > .ant-input-number {
   width: 100%;
+}
+
+.employee-entry-form .field-control.ant-input,
+.employee-entry-form .field-control.ant-input-affix-wrapper,
+.employee-entry-form .field-control.ant-select,
+.employee-entry-form .field-control.ant-picker,
+.employee-entry-form .field-control.ant-input-number {
+  background: transparent !important;
 }
 
 .dob-age-field {

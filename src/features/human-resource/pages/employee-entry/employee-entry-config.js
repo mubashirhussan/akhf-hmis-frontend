@@ -43,6 +43,41 @@ export const EMPLOYEE_LIST_TAB_FIELDS = {
   [EMPLOYEE_ENTRY_TABS.PROMOTION]: 'promotions',
 };
 
+export const DEFAULT_FIRST_RECORD_LIST_TABS = [
+  EMPLOYEE_ENTRY_TABS.EDUCATION,
+  EMPLOYEE_ENTRY_TABS.CERTIFICATES,
+  EMPLOYEE_ENTRY_TABS.SKILLS,
+  EMPLOYEE_ENTRY_TABS.ADDITIONAL_INFO,
+  EMPLOYEE_ENTRY_TABS.RELATIONSHIP,
+  EMPLOYEE_ENTRY_TABS.DOCUMENTS,
+  EMPLOYEE_ENTRY_TABS.EMP_CONFIRMATION,
+  EMPLOYEE_ENTRY_TABS.RESIGNATION,
+  EMPLOYEE_ENTRY_TABS.SUSPENSION,
+  EMPLOYEE_ENTRY_TABS.CONTRACT,
+  EMPLOYEE_ENTRY_TABS.AC_IMPROVEMENT,
+  EMPLOYEE_ENTRY_TABS.PRO_IMPROVEMENT,
+  EMPLOYEE_ENTRY_TABS.PROMOTION,
+];
+
+const LIST_FIELD_NAMES = DEFAULT_FIRST_RECORD_LIST_TABS
+  .map((tabKey) => EMPLOYEE_LIST_TAB_FIELDS[tabKey])
+  .filter(Boolean);
+
+export function shouldEnsureFirstListRecord(tabKey) {
+  return DEFAULT_FIRST_RECORD_LIST_TABS.includes(tabKey);
+}
+
+export function ensureFirstListRecord(values) {
+  const nextValues = { ...values };
+
+  for (const fieldName of LIST_FIELD_NAMES) {
+    const current = nextValues[fieldName] ?? [];
+    nextValues[fieldName] = current.length > 0 ? current : [{}];
+  }
+
+  return nextValues;
+}
+
 export const TAB_SAVE_LABELS = {
   [EMPLOYEE_ENTRY_TABS.INFO]: 'Save Employee Info',
   [EMPLOYEE_ENTRY_TABS.EDUCATION]: 'Save Education',
@@ -116,7 +151,7 @@ export function getNextEmployeeEntryTab(currentTab) {
 
 export const DEFAULT_OPEN_PANELS = ['general', 'address'];
 
-export const initialValues = {
+export const initialValues = ensureFirstListRecord({
   title: 'mr',
   relationType: 'so',
   gender: 'male',
@@ -138,7 +173,7 @@ export const initialValues = {
   shift: 'evening',
   salaryMode: 'cash',
   isConsultant: false,
-    educations: [],
+  educations: [],
   certificates: [],
   skills: [],
   additionalInfos: [],
@@ -155,7 +190,7 @@ export const initialValues = {
   fileLabels: [],
   empSummaries: [],
   promotions: [],
-};
+});
 
 export function employeeToFormValues(employee) {
   if (!employee) {
@@ -188,5 +223,5 @@ export function employeeToFormValues(employee) {
   nextValues.empSummaries = employee.empSummaries ?? [];
   nextValues.promotions = employee.promotions ?? [];
 
-  return nextValues;
+  return ensureFirstListRecord(nextValues);
 }
