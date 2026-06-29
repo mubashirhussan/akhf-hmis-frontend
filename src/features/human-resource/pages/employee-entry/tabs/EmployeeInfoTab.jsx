@@ -6,6 +6,7 @@ import { Avatar, Checkbox, Collapse, Form, Input, Select, Upload } from 'antd';
 import FormGrid from '@/components/ui/FormGrid';
 import FormFloatingField from '@/components/ui/FormFloatingField';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -96,10 +97,6 @@ const GRADE_OPTIONS = Array.from({ length: 10 }, (_, index) => ({
   label: String(index + 1),
 }));
 
-const HOSPITAL_OPTIONS = [
-  { value: 'alkhidmat-diagnostics-karachi', label: 'ALKHIDMAT DIAGNOSTICS KARACHI' },
-  { value: 'alkhidmat-hospital-peshawar', label: 'ALKHIDMAT HOSPITAL PESHAWAR' },
-];
 
 const DEPARTMENT_OPTIONS = [
   { value: 'administration', label: 'ADMINISTRATION' },
@@ -153,6 +150,16 @@ export default function EmployeeInfoTab({
   photoPreview,
   onPhotoPreviewChange,
 }) {
+const { data: hospitals = [] } = useGetHospitalsQuery();
+
+const HOSPITAL_OPTIONS = useMemo(
+  () =>
+    hospitals.map((hospital) => ({
+      value: hospital.id,
+      label: hospital.name,
+    })),
+  [hospitals]
+);
   const collapseItems = useMemo(
     () => [
       {

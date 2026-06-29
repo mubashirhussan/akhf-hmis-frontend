@@ -169,6 +169,36 @@ export const navigation = [
         label: 'Activate Employee',
         href: '/human-resource/activate-employee',
       },
+      {
+        key: 'add-hospital',
+        label: 'Add Hospital',
+        href: '/human-resource/add-hospital',
+      },
+            {
+        key: 'department-type',
+        label: 'Department Type',
+        href: '/human-resource/department-type',
+      },
+            {
+        key: 'add-department',
+        label: 'Add Department',
+        href: '/human-resource/add-department',
+      },
+            {
+        key: 'sub-department-type',
+        label: 'Sub Department Type',
+        href: '/human-resource/sub-department-type',
+      },
+            {
+        key: 'add-sub-department',
+        label: 'Add Sub Department',
+        href: '/human-resource/add-sub-department',
+      },
+            {
+        key: 'add-designation',
+        label: 'Add Designation',
+        href: '/human-resource/add-designation',
+      },
     ],
   },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
