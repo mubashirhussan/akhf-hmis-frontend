@@ -60,7 +60,7 @@ export default function EmployeeSearchFilterForm({
             id={fieldId('employee')}
             className={controlClass}
             value={filters.employeeQuery}
-            placeholder="Search by name, emp no, emp id or CNIC"
+            placeholder="Filter by name, emp no, emp id or CNIC"
             allowClear
             onChange={(event) => onPatchFilter({ employeeQuery: event.target.value })}
             autoComplete="off"

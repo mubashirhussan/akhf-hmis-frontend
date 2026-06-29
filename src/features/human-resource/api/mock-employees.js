@@ -270,16 +270,17 @@ export function updateEmployeeRow(id, updates) {
     return null;
   }
 
-  employeeRows[index] = {
-    ...employeeRows[index],
-    ...updates,
-  };
+  employeeRows = [
+    ...employeeRows.slice(0, index),
+    { ...employeeRows[index], ...updates },
+    ...employeeRows.slice(index + 1),
+  ];
 
   return employeeRows[index];
 }
 
 export function saveEmployeeSection(id, section, data) {
-  return updateEmployeeRow(id, { [section]: data });
+  return updateEmployeeRow(id, { [section]: JSON.parse(JSON.stringify(data)) });
 }
 
 export function deleteEmployeeRow(id) {
