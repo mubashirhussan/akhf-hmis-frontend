@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Tag, Tooltip } from 'antd';
+import { App, Button, Input, Select, Tag, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
@@ -18,6 +18,7 @@ import {
   useAddDeptTypeMutation,
   useUpdateDeptTypeMutation,
   useDeleteDeptTypeMutation,
+  useGetHospitalsQuery,
 } from '@/features/human-resource/api/employeeApi';
 import DeptTypeModal from './DeptTypeModal';
 import './department-type.css';
@@ -33,10 +34,11 @@ export default function DepartmentTypePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [deptTypeFilter, setDeptTypeFilter] = useState('');
-  const [appliedFilter, setAppliedFilter] = useState('');
+  const [deptTypeFilter, setDeptTypeFilter] = useState({ hospitalId: null, departmentType: '', status: null });
+  const [appliedFilter, setAppliedFilter] = useState({});
 
   const { data: rows = [], isLoading } = useGetDeptTypesQuery();
+  const { data: hospitals = [] } = useGetHospitalsQuery();
   const [addDeptType] = useAddDeptTypeMutation();
   const [updateDeptType] = useUpdateDeptTypeMutation();
   const [deleteDeptType] = useDeleteDeptTypeMutation();
@@ -120,8 +122,8 @@ export default function DepartmentTypePage() {
   const handleSearch = () => setAppliedFilter(deptTypeFilter);
 
   const handleClear = () => {
-    setDeptTypeFilter('');
-    setAppliedFilter('');
+    setDeptTypeFilter({ hospitalId: null, departmentType: '', status: null });
+    setAppliedFilter({});
   };
 
   const filteredRows = useMemo(
@@ -208,13 +210,40 @@ export default function DepartmentTypePage() {
           className="dept-type-search-form"
           onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
         >
+          <FloatingField label="Hospital Name">
+            <Select
+              className={controlClass}
+              value={deptTypeFilter.hospitalId}
+              allowClear
+              showSearch
+              optionFilterProp="label"
+              placeholder=""
+              options={hospitals.map((h) => ({ value: h.id, label: h.name }))}
+              onChange={(val) => setDeptTypeFilter((c) => ({ ...c, hospitalId: val ?? null }))}
+            />
+          </FloatingField>
+
           <FloatingField label="Department Type">
             <Input
               className={controlClass}
-              value={deptTypeFilter}
+              value={deptTypeFilter.departmentType}
               allowClear
-              onChange={(e) => setDeptTypeFilter(e.target.value)}
+              onChange={(e) => setDeptTypeFilter((c) => ({ ...c, departmentType: e.target.value }))}
               autoComplete="off"
+            />
+          </FloatingField>
+
+          <FloatingField label="Status">
+            <Select
+              className={controlClass}
+              value={deptTypeFilter.status}
+              allowClear
+              placeholder=""
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'disactive', label: 'Disactive' },
+              ]}
+              onChange={(val) => setDeptTypeFilter((c) => ({ ...c, status: val ?? null }))}
             />
           </FloatingField>
 

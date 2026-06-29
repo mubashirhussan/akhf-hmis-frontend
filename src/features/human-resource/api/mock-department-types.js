@@ -84,9 +84,18 @@ export function rowToDeptTypeForm(row) {
   };
 }
 
-export function filterDeptTypeRows(rows, deptTypeFilter) {
-  if (!deptTypeFilter?.trim()) return rows;
-  return rows.filter((r) =>
-    r.departmentType?.toLowerCase().includes(deptTypeFilter.trim().toLowerCase()),
-  );
+export function filterDeptTypeRows(rows, filters = {}) {
+  let result = rows;
+  if (filters.hospitalId) {
+    result = result.filter((r) => r.hospitalId === filters.hospitalId);
+  }
+  if (filters.departmentType?.trim()) {
+    result = result.filter((r) =>
+      r.departmentType?.toLowerCase().includes(filters.departmentType.trim().toLowerCase()),
+    );
+  }
+  if (filters.status) {
+    result = result.filter((r) => r.status === filters.status);
+  }
+  return result;
 }
