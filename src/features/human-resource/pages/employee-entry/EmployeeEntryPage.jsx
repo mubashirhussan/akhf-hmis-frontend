@@ -39,6 +39,8 @@ import {
   initialValues,
   getNextEmployeeEntryTab,
   employeeToFormValues,
+  ensureFirstListRecord,
+  shouldEnsureFirstListRecord,
 } from "./employee-entry-config";
 import EmployeeInfoTab, {
   EMPLOYEE_INFO_FIELD_PANEL_MAP,
@@ -321,7 +323,12 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     const listName = EMPLOYEE_LIST_TAB_FIELDS[tabKey];
 
     try {
-      const rows = form.getFieldValue(listName) ?? [];
+      const rawRows = form.getFieldValue(listName) ?? [];
+    const rows = rawRows.filter((row) =>
+      Object.values(row ?? {}).some(
+        (value) => value !== undefined && value !== null && value !== '',
+      ),
+    );
 
       if (rows.length > 0) {
         const nestedPaths = rows.flatMap((_, rowIndex) =>
@@ -420,26 +427,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
       return;
     }
 
-    form.setFieldsValue({
-      ...initialValues,
-            educations: [],
-      certificates: [],
-      skills: [],
-      additionalInfos: [],
-      relationships: [],
-      documents: [],
-      cards: [],
-      empConfirmations: [],
-      resignations: [],
-      suspensions: [],
-      contracts: [],
-      acImprovements: [],
-      proImprovements: [],
-      jobHistories: [],
-      fileLabels: [],
-      empSummaries: [],
-      promotions: [],
-    });
+    form.setFieldsValue(ensureFirstListRecord(initialValues));
     resetPhoto();
     setEmployeeId(null);
     setActivePanels(DEFAULT_OPEN_PANELS);
@@ -449,7 +437,8 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
 
   const handleClearListTab = (tabKey) => {
     const listName = EMPLOYEE_LIST_TAB_FIELDS[tabKey];
-    const resetRows = isEditMode ? (editingEmployee?.[listName] ?? []) : [];
+    const existingRows = isEditMode ? editingEmployee?.[listName] ?? [] : [];
+    const resetRows = existingRows.length > 0 ? existingRows : shouldEnsureFirstListRecord(tabKey) ? [{}] : [];
     form.setFieldValue(listName, resetRows);
     message.info(
       isEditMode
