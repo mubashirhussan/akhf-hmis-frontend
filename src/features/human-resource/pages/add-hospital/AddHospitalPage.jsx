@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
 import { App, Button, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
@@ -198,11 +199,6 @@ export default function AddHospitalPage() {
 
   return (
     <div className="services-billing-page add-hospital-page">
-            <div className="hospital-table-toolbar">
-        <Button type="primary" onClick={openModal}>
-          Add Hospital
-        </Button>
-      </div>
       <HospitalFilterForm
         filters={filters}
         onPatchFilter={patchFilter}
@@ -211,8 +207,13 @@ export default function AddHospitalPage() {
         loading={isLoading}
       />
 
-
       <section className="services-billing-results" aria-label="Hospitals">
+        <div className="hospital-table-toolbar">
+          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+            Add Hospital
+          </Button>
+        </div>
+
         <DataTable
           rowKey="id"
           columns={columns}

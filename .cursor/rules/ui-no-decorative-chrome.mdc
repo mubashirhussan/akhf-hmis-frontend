@@ -1,0 +1,71 @@
+---
+description: Avoid decorative headers, subtitles, gradients, and box-shadows in UI
+alwaysApply: true
+---
+
+# No Decorative UI Chrome
+
+Do not add generic "AI-style" page decoration unless the user explicitly asks for it.
+
+## Do not add
+
+- Section titles like "Search Filters", "Hospital Registry", "Overview"
+- Descriptive subtitles under section headers
+- Decorative header icons next to titles
+- Gradient backgrounds on panels or toolbars
+- **Box-shadow on panels, cards, sections, toolbars, or wrappers** — use flat borders only
+- Count/meta lines such as "12 hospitals registered" in toolbars
+
+## Box-shadow
+
+- Do not add `box-shadow` to new layout containers, filter panels, table sections, or toolbars
+- Prefer `border: 1px solid #d2d2d2` (or existing project border tokens) with `box-shadow: none`
+- Do not add shadows to make UI feel "premium" or "elevated"
+- Existing global field focus rings and framework defaults are fine — do not add extra decorative shadows on top
+
+## Prefer instead
+
+- Match existing page patterns in the codebase (filters, toolbar, table)
+- Use borders only when the user asks or when the surrounding feature already uses them
+- Keep toolbars minimal — e.g. a right-aligned action button above the table
+- Do not place multiple `type="primary"` buttons in the same page view — use one primary CTA for the main action (usually Add/Create) and `type="default"` for filter actions like Search
+- Group related page actions in one toolbar row above the table when Search is moved out of the filter panel; keep Search with Clear inside the filter form by default
+
+## Example
+
+```jsx
+// ❌ BAD — decorative chrome
+<section className="filter-panel" style={{ boxShadow: '0 1px 4px rgba(...)' }}>
+  <header>
+    <Icon />
+    <h2>Search Filters</h2>
+    <p>Refine results by name, location, or contact details</p>
+  </header>
+  ...
+</section>
+
+// ✅ GOOD — functional layout only
+<section className="filter-panel">
+  <FilterForm />
+</section>
+<div className="table-toolbar">
+  <Button type="primary">Add Hospital</Button>
+</div>
+<DataTable />
+```
+
+```css
+/* ❌ BAD */
+.filter-panel {
+  box-shadow: 0 1px 4px rgba(2, 107, 177, 0.06);
+  background: linear-gradient(180deg, #f8fbfe 0%, #ffffff 48%);
+}
+
+/* ✅ GOOD */
+.filter-panel {
+  border: 1px solid #d2d2d2;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: none;
+}
+```

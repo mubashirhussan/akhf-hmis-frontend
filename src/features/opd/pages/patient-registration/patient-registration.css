@@ -310,14 +310,14 @@
   min-width: auto;
   padding-inline: 8px;
   height: auto;
-  color: var(--app-primary) !important;
+  color: #64748b !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
 .patient-reg-btn-clear.ant-btn-link:hover {
-  color: #025a96 !important;
+  color: #475569 !important;
   background: transparent !important;
 }
 
