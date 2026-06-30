@@ -22,7 +22,7 @@ export default function HospitalFilterForm({
       <div className="walk-in-add-record-layout hospital-search-layout">
         <FormGrid
           as="form"
-          columns={3}
+          columns={4}
           className="walk-in-add-record-form hospital-search-form"
           onSubmit={(event) => {
             event.preventDefault();

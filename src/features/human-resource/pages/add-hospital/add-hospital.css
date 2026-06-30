@@ -97,6 +97,12 @@
   min-width: 120px;
 }
 
+@media (max-width: 1199px) {
+  .hospital-search-form.form-grid {
+    --form-cols: 3;
+  }
+}
+
 @media (max-width: 991px) {
   .hospital-search-form.form-grid {
     --form-cols: 2;
