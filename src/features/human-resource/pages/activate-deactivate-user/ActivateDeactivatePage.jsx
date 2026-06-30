@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Modal } from 'antd';
+
 import { ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons';
 import { App, Button } from 'antd';
 import DataTable from '@/components/ui/DataTable';
@@ -19,7 +19,7 @@ import './activate-deactivate-user.css';
 
 export default function ActivateDeactivatePage() {
   const { message, modal } = App.useApp();
-  const { message } = App.useApp();
+ 
   const { confirmDelete } = useConfirm();
   const [filters, setFilters] = useState(createActivateDeactivateFilters);
   const [appliedFilters, setAppliedFilters] = useState(createActivateDeactivateFilters);

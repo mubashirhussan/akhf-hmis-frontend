@@ -456,7 +456,6 @@ export const {
   useSaveEmployeeEmpSummariesMutation,
   useSaveEmployeePromotionsMutation,
   useDeleteEmployeeMutation,
-  useToggleEmployeeActiveMutation,
   useGetHospitalsQuery,
   useAddHospitalMutation,
   useUpdateHospitalMutation,

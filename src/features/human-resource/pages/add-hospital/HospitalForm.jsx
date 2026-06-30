@@ -51,7 +51,7 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
         label="City"
         required
         error={errors?.city}
-        className="hospital-form-field-full"
+       
       >
 <Input
     id={fieldId('city')}
@@ -66,23 +66,7 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
 />
       </FormField>
 
-      <FormField
-        label="Address"
-        style={{ gridColumn: '1 / -1' }}
-        help={errors?.address}
-        validateStatus={errors?.address ? 'error' : ''}
-      >
-        <Input.TextArea
-          id={fieldId('address')}
-          className={controlClass}
-          rows={3}
-          value={form.address}
-          onChange={(e) => {
-            onPatchForm({ address: e.target.value });
-            onClearError?.('address');
-          }}
-        />
-      </FormField>
+     
 
       <FormField
         label="Phone #"
@@ -120,7 +104,7 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
 
       <FormField
         label="Logo Image"
-        style={{ gridColumn: '1 / -1' }}
+      
         help={errors?.logo}
         validateStatus={errors?.logo ? 'error' : ''}
       >
@@ -149,6 +133,23 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
             }}
           />
         </div>
+      </FormField>
+       <FormField
+        label="Address"
+      className="hospital-form-field-full"
+        help={errors?.address}
+        validateStatus={errors?.address ? 'error' : ''}
+      >
+        <Input.TextArea
+          id={fieldId('address')}
+          className={controlClass}
+          rows={3}
+          value={form.address}
+          onChange={(e) => {
+            onPatchForm({ address: e.target.value });
+            onClearError?.('address');
+          }}
+        />
       </FormField>
     </FormGrid>
   );
