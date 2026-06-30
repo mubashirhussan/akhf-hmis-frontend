@@ -1,0 +1,87 @@
+.add-sub-department-page {
+  padding: 8px 4px 24px;
+}
+
+.sub-dept-search-layout {
+  margin-bottom: 16px;
+}
+
+.sub-dept-search-form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.sub-dept-search-form > .floating-field {
+  margin-top: 6px;
+}
+
+.sub-dept-search-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.sub-dept-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sub-dept-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sub-department-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.sub-department-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.sub-department-save-btn {
+  min-width: 120px;
+}
+
+@media (max-width: 1199px) {
+  .sub-dept-search-form {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 991px) {
+  .sub-dept-search-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .sub-dept-search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .sub-department-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .sub-department-save-btn {
+    width: 100%;
+  }
+
+  .sub-dept-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
