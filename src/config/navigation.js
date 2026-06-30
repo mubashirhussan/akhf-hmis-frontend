@@ -164,6 +164,11 @@ export const navigation = [
         label: 'Search All Employee',
         href: '/human-resource/search-all-employee',
       },
+      {
+        key: 'activate-employee',
+        label: 'Activate Employee',
+        href: '/human-resource/activate-employee',
+      },
     ],
   },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
