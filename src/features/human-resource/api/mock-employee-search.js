@@ -2,14 +2,19 @@ import {
   getEmployeeDisplayName,
   getEmployeeRows,
 } from '@/features/human-resource/api/mock-employees';
+import { getHospitalRows } from '@/features/human-resource/api/mock-hospitals';
 
 export const ALL_FILTER_VALUE = 'all';
 
-export const HOSPITAL_FILTER_OPTIONS = [
-  { value: ALL_FILTER_VALUE, label: 'All' },
-  { value: 'alkhidmat-diagnostics-karachi', label: 'ALKHIDMAT DIAGNOSTICS KARACHI' },
-  { value: 'alkhidmat-hospital-peshawar', label: 'ALKHIDMAT HOSPITAL PESHAWAR' },
-];
+
+export function getHospitalFilterOptions() {
+  return [
+    { value: ALL_FILTER_VALUE, label: 'All' },
+    ...getHospitalRows().map((h) => ({ value: h.id, label: h.name })),
+  ];
+}
+
+export const HOSPITAL_FILTER_OPTIONS = getHospitalFilterOptions();
 
 export const DEPARTMENT_FILTER_OPTIONS = [
   { value: ALL_FILTER_VALUE, label: 'All' },

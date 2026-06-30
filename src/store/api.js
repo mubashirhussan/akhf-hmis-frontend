@@ -22,6 +22,7 @@ export const api = createApi({
     'BillingVisitServices',
     'ServiceAdmin',
     'Employee',
+    'Hospital',
   ],
   endpoints: () => ({}),
 });

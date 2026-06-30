@@ -165,6 +165,10 @@ export const navigation = [
         href: '/human-resource/search-all-employee',
       },
       {
+        key: 'add-hospital',
+        label: 'Add Hospital',
+        href: '/human-resource/add-hospital',
+      {
         key: 'activate-employee',
         label: 'Activate Employee',
         href: '/human-resource/activate-employee',

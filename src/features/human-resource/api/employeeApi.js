@@ -9,6 +9,12 @@ import {
   toggleEmployeeActive,
 } from '@/features/human-resource/api/mock-employees';
 import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
+import {
+  getHospitalRows,
+  createHospitalRow,
+  updateHospitalRow,
+  deleteHospitalRow,
+} from '@/features/human-resource/api/mock-hospitals';
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -200,6 +206,34 @@ export const employeeApi = api.injectEndpoints({
       },
       invalidatesTags: ['Employee'],
     }),
+getHospitals: builder.query({
+    queryFn: async () => ({
+        data: getHospitalRows(),
+    }),
+    providesTags: ['Hospital'],
+}),
+
+addHospital: builder.mutation({
+    queryFn: async (payload) => ({
+        data: createHospitalRow(payload),
+    }),
+    invalidatesTags: ['Hospital'],
+}),
+
+updateHospital: builder.mutation({
+    queryFn: async ({ id, payload }) => ({
+        data: updateHospitalRow(id, payload),
+    }),
+    invalidatesTags: ['Hospital'],
+}),
+
+deleteHospital: builder.mutation({
+    queryFn: async (id) => {
+        deleteHospitalRow(id);
+        return { data: true };
+    },
+    invalidatesTags: ['Hospital'],
+}),
     toggleEmployeeActive: builder.mutation({
       queryFn: async (id) => {
         const employee = toggleEmployeeActive(id);
@@ -238,5 +272,9 @@ export const {
   useSaveEmployeeEmpSummariesMutation,
   useSaveEmployeePromotionsMutation,
   useDeleteEmployeeMutation,
+  useGetHospitalsQuery,
+  useAddHospitalMutation,
+  useUpdateHospitalMutation,
+  useDeleteHospitalMutation,
   useToggleEmployeeActiveMutation,
 } = employeeApi;
