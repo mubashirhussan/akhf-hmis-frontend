@@ -6,7 +6,10 @@ import {
   updateEmployeeRow,
   saveEmployeeSection,
   deleteEmployeeRow,
-} from "@/features/human-resource/api/mock-employees";
+
+  toggleEmployeeActive,
+} from '@/features/human-resource/api/mock-employees';
+import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
 import {
   getHospitalRows,
   createHospitalRow,
@@ -348,6 +351,16 @@ deleteSubDeptType: builder.mutation({
   invalidatesTags: ['SubDeptType'],
 }),
     
+    toggleEmployeeActive: builder.mutation({
+      queryFn: async (id) => {
+        const employee = toggleEmployeeActive(id);
+        if (!employee) {
+          return { error: { status: 404, data: 'Employee not found' } };
+        }
+        return { data: employee };
+      },
+      invalidatesTags: ['Employee'],
+    }),
   }),
 });
 
@@ -392,4 +405,5 @@ export const {
   useAddSubDeptTypeMutation,
   useUpdateSubDeptTypeMutation,
   useDeleteSubDeptTypeMutation,
+  useToggleEmployeeActiveMutation,
 } = employeeApi;
