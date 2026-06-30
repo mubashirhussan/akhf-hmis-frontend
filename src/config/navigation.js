@@ -176,13 +176,18 @@ export const navigation = [
       },
             {
         key: 'department-type',
-        label: 'Add Department Type',
+        label: 'Department Type',
         href: '/human-resource/department-type',
       },
             {
         key: 'add-department',
         label: 'Add Department',
         href: '/human-resource/add-department',
+      },
+            {
+        key: 'sub-department-type',
+        label: 'Sub Department Type',
+        href: '/human-resource/sub-department-type',
       },
     ],
   },

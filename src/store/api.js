@@ -25,6 +25,7 @@ export const api = createApi({
     'Hospital',
     'DeptType',
     'Department',
+    'SubDeptType'
   ],
   endpoints: () => ({}),
 });

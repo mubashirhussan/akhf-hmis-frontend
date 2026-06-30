@@ -28,6 +28,12 @@ import {
   updateDepartmentRow,
   deleteDepartmentRow,
 } from "@/features/human-resource/api/mock-departments";
+import {
+  getSubDeptTypeRows,
+  createSubDeptTypeRow,
+  updateSubDeptTypeRow,
+  deleteSubDeptTypeRow,
+} from "@/features/human-resource/api/mock-subdepartment-types";
 import { searchEmployees } from "@/features/human-resource/api/mock-employee-search";
 
 export const employeeApi = api.injectEndpoints({
@@ -321,6 +327,29 @@ deleteDepartment: builder.mutation({
   },
   invalidatesTags: ['Department'],
 }),
+
+getSubDeptTypes: builder.query({
+  queryFn: async () => ({ data: getSubDeptTypeRows() }),
+  providesTags: ['SubDeptType'],
+}),
+
+addSubDeptType: builder.mutation({
+  queryFn: async (payload) => ({ data: createSubDeptTypeRow(payload) }),
+  invalidatesTags: ['SubDeptType'],
+}),
+
+updateSubDeptType: builder.mutation({
+  queryFn: async ({ id, ...payload }) => ({ data: updateSubDeptTypeRow(id, payload) }),
+  invalidatesTags: ['SubDeptType'],
+}),
+
+deleteSubDeptType: builder.mutation({
+  queryFn: async (id) => {
+    deleteSubDeptTypeRow(id);
+    return { data: true };
+  },
+  invalidatesTags: ['SubDeptType'],
+}),
     
     toggleEmployeeActive: builder.mutation({
       queryFn: async (id) => {
@@ -372,5 +401,9 @@ export const {
   useAddDepartmentMutation,
   useUpdateDepartmentMutation,
   useDeleteDepartmentMutation,
+  useGetSubDeptTypesQuery,
+  useAddSubDeptTypeMutation,
+  useUpdateSubDeptTypeMutation,
+  useDeleteSubDeptTypeMutation,
   useToggleEmployeeActiveMutation,
 } = employeeApi;
