@@ -6,7 +6,10 @@ import {
   updateEmployeeRow,
   saveEmployeeSection,
   deleteEmployeeRow,
-} from "@/features/human-resource/api/mock-employees";
+
+  toggleEmployeeActive,
+} from '@/features/human-resource/api/mock-employees';
+import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
 import {
   getHospitalRows,
   createHospitalRow,
@@ -406,6 +409,16 @@ deleteDesignation: builder.mutation({
   invalidatesTags: ['Designation'],
 }),
     
+    toggleEmployeeActive: builder.mutation({
+      queryFn: async (id) => {
+        const employee = toggleEmployeeActive(id);
+        if (!employee) {
+          return { error: { status: 404, data: 'Employee not found' } };
+        }
+        return { data: employee };
+      },
+      invalidatesTags: ['Employee'],
+    }),
   }),
 });
 
@@ -458,4 +471,5 @@ export const {
   useAddDesignationMutation,
   useUpdateDesignationMutation,
   useDeleteDesignationMutation,
+  useToggleEmployeeActiveMutation,
 } = employeeApi;
