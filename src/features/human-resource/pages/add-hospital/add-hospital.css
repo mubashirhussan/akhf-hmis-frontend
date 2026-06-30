@@ -37,6 +37,26 @@
   min-width: 120px;
 }
 
+.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading) {
+  color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):hover,
+.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):focus-visible {
+  color: #ffffff !important;
+  border-color: var(--app-primary) !important;
+  background: var(--app-primary) !important;
+}
+
+.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):active {
+  color: #ffffff !important;
+  border-color: #015a9a !important;
+  background: #015a9a !important;
+}
+
 .hospital-table-toolbar {
   display: flex;
   justify-content: flex-end;
