@@ -46,6 +46,22 @@ export const EMPLOYEE_STATUS_FILTER_OPTIONS = [
   { value: 'inactive', label: 'In Active' },
 ];
 
+export const SUB_DEPARTMENT_FILTER_OPTIONS = [
+  { value: ALL_FILTER_VALUE, label: 'All' },
+  { value: 'administration', label: 'Administration' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'reception', label: 'Reception' },
+  { value: 'human-resource', label: 'Human Resource' },
+];
+
+export const EMPLOYEE_NAME_OPTIONS = [
+  { value: ALL_FILTER_VALUE, label: 'All' },
+  { value: '1', label: 'SOHAIL AHMAD' },
+  { value: '2', label: 'FATIMA KHAN' },
+  { value: '3', label: 'MUHAMMAD MEHTAB' },
+  { value: '4', label: 'ALI HUSSAIN' },
+];
+
 const DEPARTMENT_LABELS = Object.fromEntries(
   DEPARTMENT_FILTER_OPTIONS.filter((opt) => opt.value !== ALL_FILTER_VALUE).map((opt) => [
     opt.value,
@@ -147,8 +163,56 @@ export function searchEmployees(filters) {
   }
 
   if (filters.status && filters.status !== ALL_FILTER_VALUE) {
-    rows = rows.filter((row) => (row.status ?? 'active') === filters.status);
+    rows = rows.filter((row) => {
+      const active = row.isActive ?? (row.status === 'active');
+      return filters.status === 'active' ? active : !active;
+    });
   }
 
   return rows.map(mapEmployeeToSearchRow);
+}
+export function filterActivateDeactivateEmployees(filters) {
+  let rows = getEmployeeRows();
+
+  if (filters.hospital && filters.hospital !== ALL_FILTER_VALUE) {
+    rows = rows.filter((row) => row.hospital === filters.hospital);
+  }
+  if (filters.department && filters.department !== ALL_FILTER_VALUE) {
+    rows = rows.filter((row) => row.department === filters.department);
+  }
+  if (filters.subDepartment && filters.subDepartment !== ALL_FILTER_VALUE) {
+    rows = rows.filter((row) => row.subDepartment === filters.subDepartment);
+  }
+  if (filters.employeeNo?.trim()) {
+    rows = rows.filter((row) =>
+      String(row.employeeNo ?? '').toLowerCase().includes(filters.employeeNo.trim().toLowerCase()),
+    );
+  }
+  if (filters.employeeName && filters.employeeName !== ALL_FILTER_VALUE) {
+    rows = rows.filter((row) => row.id === filters.employeeName);
+  }
+
+  return rows.map((emp, index) => ({
+    id: emp.id,
+    serial: index + 1,
+    empId: emp.empId ?? emp.id,
+    empNo: emp.employeeNo ?? '',
+    empName: getEmployeeDisplayName(emp).toUpperCase(),
+    deptName: getDepartmentLabel(emp.department),
+    subDeptName: getSubDepartmentLabel(emp.subDepartment),
+    userName: emp.userName ?? '',
+    joiningDate: emp.doj ?? '',
+    designation: getDesignationLabel(emp.designation),
+    isActive: emp.isActive ?? true,
+  }));
+}
+
+export function createActivateDeactivateFilters() {
+  return {
+    hospital: ALL_FILTER_VALUE,
+    department: ALL_FILTER_VALUE,
+    subDepartment: ALL_FILTER_VALUE,
+    employeeNo: '',
+    employeeName: ALL_FILTER_VALUE,
+  };
 }

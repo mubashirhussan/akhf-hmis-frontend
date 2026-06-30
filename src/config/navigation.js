@@ -168,6 +168,10 @@ export const navigation = [
         key: 'add-hospital',
         label: 'Add Hospital',
         href: '/human-resource/add-hospital',
+      {
+        key: 'activate-employee',
+        label: 'Activate Employee',
+        href: '/human-resource/activate-employee',
       },
     ],
   },
