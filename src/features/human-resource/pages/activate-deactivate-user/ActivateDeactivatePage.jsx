@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Modal } from 'antd';
 import { ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons';
+import { App, Button } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import {
   createActivateDeactivateFilters,
@@ -12,11 +13,14 @@ import {
   useGetEmployeesQuery,
   useToggleEmployeeActiveMutation,
 } from '@/features/human-resource/api/employeeApi';
+import { useConfirm } from '@/hooks/useConfirm';
 import ActivateDeactivateFilterForm from './ActivateDeactivateFilterForm';
 import './activate-deactivate-user.css';
 
 export default function ActivateDeactivatePage() {
   const { message, modal } = App.useApp();
+  const { message } = App.useApp();
+  const { confirmDelete } = useConfirm();
   const [filters, setFilters] = useState(createActivateDeactivateFilters);
   const [appliedFilters, setAppliedFilters] = useState(createActivateDeactivateFilters);
 
@@ -77,6 +81,23 @@ const handleToggle = useCallback(
       });
     },
     [toggleActive, message, modal],
+    async (record) => {
+      const confirmed = await confirmDelete({
+        itemName: record.empName,
+      });
+      if (!confirmed) return;
+      try {
+        await toggleActive(record.id).unwrap();
+        message.success(
+          record.isActive
+            ? `${record.empName} deactivated successfully.`
+            : `${record.empName} activated successfully.`,
+        );
+      } catch {
+        message.error('Failed to update employee status.');
+      }
+    },
+    [toggleActive, message, confirmDelete],
   );
 
   const columns = useMemo(
