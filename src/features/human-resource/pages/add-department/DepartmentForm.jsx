@@ -35,8 +35,7 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
       <FormField
         label="Hospital Name"
         required
-        help={errors?.hospitalId}
-        validateStatus={errors?.hospitalId ? 'error' : ''}
+        error={errors?.hospitalId}
       >
         <Select
           id={fieldId('hospitalId')}
@@ -48,6 +47,7 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
           showSearch
           optionFilterProp="label"
           placeholder="Select hospital"
+          status={errors?.hospitalId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ hospitalId: val, hospitalName: opt?.label ?? '', deptTypeId: null, departmentType: '' });
             onClearError?.('hospitalId');
@@ -58,8 +58,7 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
       <FormField
         label="Department Type"
         required
-        help={errors?.deptTypeId}
-        validateStatus={errors?.deptTypeId ? 'error' : ''}
+        error={errors?.deptTypeId}
       >
         <Select
           id={fieldId('deptTypeId')}
@@ -71,6 +70,7 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
           showSearch
           optionFilterProp="label"
           placeholder={form.hospitalId ? 'Select department type' : 'Select hospital first'}
+          status={errors?.deptTypeId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ deptTypeId: val, departmentType: opt?.label ?? '' });
             onClearError?.('deptTypeId');
@@ -81,13 +81,13 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
       <FormField
         label="Department Name"
         required
-        help={errors?.departmentName}
-        validateStatus={errors?.departmentName ? 'error' : ''}
+        error={errors?.departmentName}
       >
         <Input
           id={fieldId('departmentName')}
           className={controlClass}
           value={form.departmentName}
+          status={errors?.departmentName ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ departmentName: e.target.value });
             onClearError?.('departmentName');

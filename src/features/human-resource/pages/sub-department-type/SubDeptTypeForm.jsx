@@ -44,8 +44,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
       <FormField
         label="Hospital Name"
         required
-        help={errors?.hospitalId}
-        validateStatus={errors?.hospitalId ? 'error' : ''}
+        error={errors?.hospitalId}
       >
         <Select
           id={fieldId('hospitalId')}
@@ -57,6 +56,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
           showSearch
           optionFilterProp="label"
           placeholder="Select hospital"
+          status={errors?.hospitalId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ hospitalId: val, hospitalName: opt?.label ?? '', deptTypeId: null, departmentType: '', departmentId: null, departmentName: '' });
             onClearError?.('hospitalId');
@@ -67,8 +67,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
       <FormField
         label="Department Type"
         required
-        help={errors?.deptTypeId}
-        validateStatus={errors?.deptTypeId ? 'error' : ''}
+        error={errors?.deptTypeId}
       >
         <Select
           id={fieldId('deptTypeId')}
@@ -80,6 +79,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
           showSearch
           optionFilterProp="label"
           placeholder={form.hospitalId ? 'Select department type' : 'Select hospital first'}
+          status={errors?.deptTypeId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ deptTypeId: val, departmentType: opt?.label ?? '', departmentId: null, departmentName: '' });
             onClearError?.('deptTypeId');
@@ -90,8 +90,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
       <FormField
         label="Department Name"
         required
-        help={errors?.departmentId}
-        validateStatus={errors?.departmentId ? 'error' : ''}
+        error={errors?.departmentId}
       >
         <Select
           id={fieldId('departmentId')}
@@ -103,6 +102,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
           showSearch
           optionFilterProp="label"
           placeholder={form.deptTypeId ? 'Select department' : 'Select department type first'}
+          status={errors?.departmentId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ departmentId: val, departmentName: opt?.label ?? '' });
             onClearError?.('departmentId');
@@ -120,6 +120,7 @@ export default function SubDeptTypeForm({ form, errors = {}, onPatchForm, onClea
           id={fieldId('subDepartmentType')}
           className={controlClass}
           value={form.subDepartmentType}
+          status={errors?.subDepartmentType ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ subDepartmentType: e.target.value });
             onClearError?.('subDepartmentType');

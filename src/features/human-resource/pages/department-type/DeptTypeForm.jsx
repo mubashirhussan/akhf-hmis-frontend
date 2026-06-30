@@ -21,8 +21,7 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
       <FormField
         label="Hospital Name"
         required
-        help={errors?.hospitalId}
-        validateStatus={errors?.hospitalId ? 'error' : ''}
+        error={errors?.hospitalId}
       >
         <Select
           id={fieldId('hospitalId')}
@@ -33,6 +32,7 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
           loading={hospitalsLoading}
           disabled={isEdit}
           placeholder="Select hospital"
+          status={errors?.hospitalId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ hospitalId: val, hospitalName: opt?.label ?? '' });
             onClearError?.('hospitalId');
@@ -43,13 +43,13 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
       <FormField
         label="Department Type"
         required
-        help={errors?.departmentType}
-        validateStatus={errors?.departmentType ? 'error' : ''}
+        error={errors?.departmentType}
       >
         <Input
           id={fieldId('departmentType')}
           className={controlClass}
           value={form.departmentType}
+          status={errors?.departmentType ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ departmentType: e.target.value });
             onClearError?.('departmentType');
@@ -62,8 +62,7 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
         <FormField
           label="Status"
           required
-          help={errors?.status}
-          validateStatus={errors?.status ? 'error' : ''}
+          error={errors?.status}
         >
           <Select
             id={fieldId('status')}
@@ -74,6 +73,7 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
               { value: 'active', label: 'Active' },
               { value: 'disactive', label: 'Disactive' },
             ]}
+            status={errors?.status ? 'error' : ''}
             onChange={(val) => {
               onPatchForm({ status: val });
               onClearError?.('status');

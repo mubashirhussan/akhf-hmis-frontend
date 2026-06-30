@@ -15,13 +15,13 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
       <FormField
         label="Hospital Name"
         required
-        help={errors?.name}
-        validateStatus={errors?.name ? 'error' : ''}
+        error={errors?.name}
       >
         <Input
           id={fieldId('name')}
           className={controlClass}
           value={form.name}
+          status={errors?.name ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ name: e.target.value });
             onClearError?.('name');
@@ -50,15 +50,15 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
       <FormField
         label="City"
         required
-        help={errors?.city}
-        validateStatus={errors?.city ? 'error' : ''}
-        style={{ gridColumn: '1 / -1' }}
+        error={errors?.city}
+        className="hospital-form-field-full"
       >
 <Input
     id={fieldId('city')}
     className={controlClass}
     value={form.city}
     placeholder="Enter city"
+    status={errors?.city ? 'error' : ''}
     onChange={(e) => {
         onPatchForm({ city: e.target.value });
         onClearError?.('city');

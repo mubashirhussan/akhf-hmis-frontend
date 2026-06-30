@@ -46,7 +46,6 @@ import {
   updateDesignationRow,
   deleteDesignationRow,
 } from "@/features/human-resource/api/mock-designations";
-import { searchEmployees } from "@/features/human-resource/api/mock-employee-search";
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -266,6 +265,16 @@ export const employeeApi = api.injectEndpoints({
       },
       invalidatesTags: ["Employee"],
  }),
+    toggleEmployeeActive: builder.mutation({
+      queryFn: async (id) => {
+        const employee = toggleEmployeeActive(id);
+        if (!employee) {
+          return { error: { status: 404, data: 'Employee not found' } };
+        }
+        return { data: employee };
+      },
+      invalidatesTags: ['Employee'],
+    }),
 getHospitals: builder.query({
     queryFn: async () => ({
         data: getHospitalRows(),
@@ -447,6 +456,7 @@ export const {
   useSaveEmployeeEmpSummariesMutation,
   useSaveEmployeePromotionsMutation,
   useDeleteEmployeeMutation,
+  useToggleEmployeeActiveMutation,
   useGetHospitalsQuery,
   useAddHospitalMutation,
   useUpdateHospitalMutation,

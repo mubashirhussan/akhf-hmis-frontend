@@ -16,13 +16,13 @@ export default function DesignationForm({ form, errors = {}, onPatchForm, onClea
       <FormField
         label="Designation"
         required
-        help={errors?.designation}
-        validateStatus={errors?.designation ? 'error' : ''}
+        error={errors?.designation}
       >
         <Input
           id={fieldId('designation')}
           className={controlClass}
           value={form.designation}
+          status={errors?.designation ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ designation: e.target.value });
             onClearError?.('designation');
@@ -34,8 +34,7 @@ export default function DesignationForm({ form, errors = {}, onPatchForm, onClea
       <FormField
         label="Minimum Pay Scale"
         required
-        help={errors?.minPayScale}
-        validateStatus={errors?.minPayScale ? 'error' : ''}
+        error={errors?.minPayScale}
       >
         <InputNumber
           id={fieldId('minPayScale')}
@@ -44,6 +43,7 @@ export default function DesignationForm({ form, errors = {}, onPatchForm, onClea
           value={form.minPayScale}
           min={0}
           precision={0}
+          status={errors?.minPayScale ? 'error' : ''}
           formatter={(val) => (val ? `${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '')}
           parser={(val) => val?.replace(/,/g, '') ?? ''}
           onChange={(val) => {
