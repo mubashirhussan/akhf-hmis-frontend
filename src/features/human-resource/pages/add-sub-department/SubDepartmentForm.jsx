@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import { Input, Select } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
@@ -25,7 +24,6 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
 
   const hospitalOptions = hospitals.map((h) => ({ value: h.id, label: h.name }));
 
-  // Dept type options filtered by selected hospital
   const deptTypeOptions = useMemo(() => {
     if (!form.hospitalId) return [];
     return deptTypes
@@ -33,7 +31,6 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       .map((d) => ({ value: d.id, label: d.departmentType }));
   }, [deptTypes, form.hospitalId]);
 
-  // Department options filtered by selected dept type
   const departmentOptions = useMemo(() => {
     if (!form.deptTypeId) return [];
     return departments
@@ -41,7 +38,6 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       .map((d) => ({ value: d.id, label: d.departmentName }));
   }, [departments, form.deptTypeId]);
 
-  // Sub dept type options filtered by selected department
   const subDeptTypeOptions = useMemo(() => {
     if (!form.departmentId) return [];
     return subDeptTypes
@@ -50,8 +46,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
   }, [subDeptTypes, form.departmentId]);
 
   return (
-    <FormGrid columns={1} className="sub-department-form-grid">
-
+    <FormGrid columns={2} className="sub-department-form-grid">
       <FormField
         label="Hospital Name"
         required
@@ -115,9 +110,9 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       </FormField>
 
       <FormField
-        label="Sub Department Type"
+        label="Department Name"
         required
-        error={errors?.subDeptTypeId}
+        error={errors?.departmentId}
       >
         <Select
           id={fieldId('departmentId')}
@@ -184,41 +179,6 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       </FormField>
 
       <FormField
-        label="Cost Center"
-        help={errors?.costCenter}
-        validateStatus={errors?.costCenter ? 'error' : ''}
-      >
-        <Input
-          id={fieldId('costCenter')}
-          className={controlClass}
-          value={form.costCenter}
-          onChange={(e) => {
-            onPatchForm({ costCenter: e.target.value });
-            onClearError?.('costCenter');
-          }}
-          autoComplete="off"
-        />
-      </FormField>
-
-      <FormField
-        label="Location"
-        help={errors?.location}
-        validateStatus={errors?.location ? 'error' : ''}
-      >
-        <TextArea
-          id={fieldId('location')}
-          className={controlClass}
-          value={form.location}
-          rows={2}
-          onChange={(e) => {
-            onPatchForm({ location: e.target.value });
-            onClearError?.('location');
-          }}
-          autoComplete="off"
-        />
-      </FormField>
-
-      <FormField
         label="Phone"
         help={errors?.phone}
         validateStatus={errors?.phone ? 'error' : ''}
@@ -230,6 +190,23 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
           onChange={(e) => {
             onPatchForm({ phone: e.target.value });
             onClearError?.('phone');
+          }}
+          autoComplete="off"
+        />
+      </FormField>
+
+      <FormField
+        label="Cost Center"
+        help={errors?.costCenter}
+        validateStatus={errors?.costCenter ? 'error' : ''}
+      >
+        <Input
+          id={fieldId('costCenter')}
+          className={controlClass}
+          value={form.costCenter}
+          onChange={(e) => {
+            onPatchForm({ costCenter: e.target.value });
+            onClearError?.('costCenter');
           }}
           autoComplete="off"
         />
@@ -252,6 +229,23 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
         />
       </FormField>
 
+      <FormField
+        label="Location"
+        className="sub-department-form-field-full"
+        help={errors?.location}
+        validateStatus={errors?.location ? 'error' : ''}
+      >
+        <Input
+          id={fieldId('location')}
+          className={controlClass}
+          value={form.location}
+          onChange={(e) => {
+            onPatchForm({ location: e.target.value });
+            onClearError?.('location');
+          }}
+          autoComplete="off"
+        />
+      </FormField>
     </FormGrid>
   );
 }

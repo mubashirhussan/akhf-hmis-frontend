@@ -1,7 +1,10 @@
+@import "./hr-list-page.css";
 @import "../pages/employee-entry/employee-entry.css";
 @import "../pages/search-all-employee/search-all-employee.css";
 @import "../pages/activate-deactivate-user/activate-deactivate-user.css";
 @import "../pages/department-type/department-type.css";
 @import "../pages/add-hospital/add-hospital.css";
-@import "../pages/add-hospital/add-hospital.css";
-@import "../pages/activate-deactivate-user/activate-deactivate-user.css";
+@import "../pages/add-department/add-department.css";
+@import "../pages/sub-department-type/subdepartment-type.css";
+@import "../pages/add-sub-department/add-sub-department.css";
+@import "../pages/add-designation/add-designation.css";

@@ -2,10 +2,11 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Input, Select, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { useConfirm } from '@/hooks/useConfirm';
 import {
@@ -195,74 +196,80 @@ export default function SubDeptTypePage() {
 
   return (
     <div className="services-billing-page sub-dept-type-page">
+      <section className="hr-filter-panel" aria-label="Sub department type search filters">
+        <div className="walk-in-add-record-layout hr-search-layout">
+          <FormGrid
+            as="form"
+            columns={4}
+            className="walk-in-add-record-form hr-search-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch();
+            }}
+          >
+            <FloatingField label="Department Type">
+              <Select
+                className={controlClass}
+                value={filters.deptTypeId}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                placeholder=""
+                options={filterDeptTypeOptions}
+                onChange={(val) => {
+                  patchFilter({ deptTypeId: val ?? null, departmentId: null });
+                }}
+              />
+            </FloatingField>
 
-      <div className="sub-dept-type-table-toolbar">
-        <Button type="primary" onClick={openModal}>
-          Add Sub Department Type
-        </Button>
-      </div>
+            <FloatingField label="Department Name">
+              <Select
+                className={controlClass}
+                value={filters.departmentId}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                placeholder=""
+                options={filterDepartmentOptions}
+                onChange={(val) => patchFilter({ departmentId: val ?? null })}
+              />
+            </FloatingField>
 
-      <div className="walk-in-add-record-layout sub-dept-type-search-layout">
-        <form
-          className="sub-dept-type-search-form"
-          onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-        >
-          <FloatingField label="Department Type">
-            <Select
-              className={controlClass}
-              value={filters.deptTypeId}
-              allowClear
-              showSearch
-              optionFilterProp="label"
-              placeholder=""
-              options={filterDeptTypeOptions}
-              onChange={(val) => {
-                patchFilter({ deptTypeId: val ?? null, departmentId: null });
-              }}
-            />
-          </FloatingField>
+            <FloatingField label="Sub Department Type">
+              <Input
+                className={controlClass}
+                value={filters.subDepartmentType}
+                allowClear
+                onChange={(e) => patchFilter({ subDepartmentType: e.target.value })}
+                autoComplete="off"
+              />
+            </FloatingField>
 
-          <FloatingField label="Department Name">
-            <Select
-              className={controlClass}
-              value={filters.departmentId}
-              allowClear
-              showSearch
-              optionFilterProp="label"
-              placeholder=""
-              options={filterDepartmentOptions}
-              onChange={(val) => patchFilter({ departmentId: val ?? null })}
-            />
-          </FloatingField>
-
-          <FloatingField label="Sub Department Type">
-            <Input
-              className={controlClass}
-              value={filters.subDepartmentType}
-              allowClear
-              onChange={(e) => patchFilter({ subDepartmentType: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <div className="sub-dept-type-search-actions">
-            <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
-              Clear
-            </Button>
-            <Button
-              type="primary"
-              className="patient-reg-btn-save"
-              icon={<SearchOutlined />}
-              htmlType="submit"
-              loading={isLoading}
-            >
-              Search
-            </Button>
-          </div>
-        </form>
-      </div>
+            <div className="hr-search-actions">
+              <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button
+                type="default"
+                className="hr-search-btn"
+                icon={<SearchOutlined />}
+                htmlType="submit"
+                loading={isLoading}
+              >
+                Search
+              </Button>
+            </div>
+          </FormGrid>
+        </div>
+      </section>
 
       <section className="services-billing-results" aria-label="Sub Department Types">
+        <div className="hr-table-toolbar">
+          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+            Add Sub Department Type
+          </Button>
+        </div>
+
         <DataTable
           rowKey="id"
           columns={columns}

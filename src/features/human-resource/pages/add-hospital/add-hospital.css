@@ -2,69 +2,6 @@
   padding: 8px 4px 24px;
 }
 
-.hospital-filter-panel {
-  border: 1px solid #d2d2d2;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: none;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-}
-
-.hospital-search-layout {
-  margin-bottom: 0;
-}
-
-.hospital-search-form.form-grid {
-  row-gap: 12px;
-  column-gap: 14px;
-}
-
-.hospital-search-form > .floating-field {
-  margin-top: 6px;
-}
-
-.hospital-search-actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  grid-column: 1 / -1;
-  margin-top: 4px;
-}
-
-.hospital-search-btn {
-  min-width: 120px;
-}
-
-.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading) {
-  color: var(--app-primary) !important;
-  border-color: var(--app-primary) !important;
-  background: #ffffff !important;
-  box-shadow: none !important;
-}
-
-.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):hover,
-.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):focus-visible {
-  color: #ffffff !important;
-  border-color: var(--app-primary) !important;
-  background: var(--app-primary) !important;
-}
-
-.hospital-search-btn.ant-btn-default:not(:disabled):not(.ant-btn-loading):active {
-  color: #ffffff !important;
-  border-color: #015a9a !important;
-  background: #015a9a !important;
-}
-
-.hospital-table-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
 .hospital-actions-cell {
   display: flex;
   align-items: center;
@@ -117,41 +54,12 @@
   min-width: 120px;
 }
 
-@media (max-width: 1199px) {
-  .hospital-search-form.form-grid {
-    --form-cols: 3;
-  }
-}
-
-@media (max-width: 991px) {
-  .hospital-search-form.form-grid {
-    --form-cols: 2;
-  }
-}
-
 @media (max-width: 767px) {
-  .hospital-search-form.form-grid {
-    --form-cols: 1;
-  }
-
   .hospital-form-grid.form-grid {
     --form-cols: 1;
   }
 
   .hospital-save-btn {
-    width: 100%;
-  }
-
-  .hospital-filter-panel {
-    padding: 14px 16px;
-  }
-
-  .hospital-table-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hospital-table-toolbar .ant-btn-primary {
     width: 100%;
   }
 }

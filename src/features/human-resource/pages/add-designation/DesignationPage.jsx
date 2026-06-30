@@ -2,10 +2,11 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Input, InputNumber, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { useConfirm } from '@/hooks/useConfirm';
 import {
@@ -182,46 +183,52 @@ export default function DesignationPage() {
 
   return (
     <div className="services-billing-page designation-page">
+      <section className="hr-filter-panel" aria-label="Designation search filters">
+        <div className="walk-in-add-record-layout hr-search-layout">
+          <FormGrid
+            as="form"
+            columns={4}
+            className="walk-in-add-record-form hr-search-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch();
+            }}
+          >
+            <FloatingField label="Designation Name">
+              <Input
+                className={controlClass}
+                value={designationFilter}
+                allowClear
+                onChange={(e) => setDesignationFilter(e.target.value)}
+                autoComplete="off"
+              />
+            </FloatingField>
 
-      <div className="designation-table-toolbar">
-        <Button type="primary" onClick={openModal}>
-          Add Designation
-        </Button>
-      </div>
-
-      <div className="walk-in-add-record-layout designation-search-layout">
-        <form
-          className="designation-search-form"
-          onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-        >
-          <FloatingField label="Designation Name">
-            <Input
-              className={controlClass}
-              value={designationFilter}
-              allowClear
-              onChange={(e) => setDesignationFilter(e.target.value)}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <div className="designation-search-actions">
-            <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
-              Clear
-            </Button>
-            <Button
-              type="primary"
-              className="patient-reg-btn-save"
-              icon={<SearchOutlined />}
-              htmlType="submit"
-              loading={isLoading}
-            >
-              Search
-            </Button>
-          </div>
-        </form>
-      </div>
+            <div className="hr-search-actions">
+              <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button
+                type="default"
+                className="hr-search-btn"
+                icon={<SearchOutlined />}
+                htmlType="submit"
+                loading={isLoading}
+              >
+                Search
+              </Button>
+            </div>
+          </FormGrid>
+        </div>
+      </section>
 
       <section className="services-billing-results" aria-label="Designations">
+        <div className="hr-table-toolbar">
+          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+            Add Designation
+          </Button>
+        </div>
+
         <DataTable
           rowKey="id"
           columns={columns}

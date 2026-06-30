@@ -18,12 +18,12 @@ export default function HospitalFilterForm({
   const fieldId = (name) => `hospital-filter-${name}`;
 
   return (
-    <section className="hospital-filter-panel" aria-label="Hospital search filters">
-      <div className="walk-in-add-record-layout hospital-search-layout">
+    <section className="hr-filter-panel" aria-label="Hospital search filters">
+      <div className="walk-in-add-record-layout hr-search-layout">
         <FormGrid
           as="form"
           columns={4}
-          className="walk-in-add-record-form hospital-search-form"
+          className="walk-in-add-record-form hr-search-form"
           onSubmit={(event) => {
             event.preventDefault();
             onSubmit();
@@ -96,13 +96,13 @@ export default function HospitalFilterForm({
             />
           </FloatingField>
 
-          <div className="hospital-search-actions">
+          <div className="hr-search-actions">
             <Button type="link" className="patient-reg-btn-clear" onClick={onClear}>
               Clear
             </Button>
             <Button
               type="default"
-              className="hospital-search-btn"
+              className="hr-search-btn"
               icon={<SearchOutlined />}
               htmlType="submit"
               loading={loading}

@@ -2,10 +2,11 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Input, Select, Tag, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { useConfirm } from '@/hooks/useConfirm';
 import {
@@ -198,73 +199,79 @@ export default function DepartmentTypePage() {
 
   return (
     <div className="services-billing-page dept-type-page">
+      <section className="hr-filter-panel" aria-label="Department type search filters">
+        <div className="walk-in-add-record-layout hr-search-layout">
+          <FormGrid
+            as="form"
+            columns={4}
+            className="walk-in-add-record-form hr-search-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch();
+            }}
+          >
+            <FloatingField label="Hospital Name">
+              <Select
+                className={controlClass}
+                value={deptTypeFilter.hospitalId}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                placeholder=""
+                options={hospitals.map((h) => ({ value: h.id, label: h.name }))}
+                onChange={(val) => setDeptTypeFilter((c) => ({ ...c, hospitalId: val ?? null }))}
+              />
+            </FloatingField>
 
-      <div className="dept-type-table-toolbar">
-        <Button type="primary" onClick={openModal}>
-          Add Department Type
-        </Button>
-      </div>
+            <FloatingField label="Department Type">
+              <Input
+                className={controlClass}
+                value={deptTypeFilter.departmentType}
+                allowClear
+                onChange={(e) => setDeptTypeFilter((c) => ({ ...c, departmentType: e.target.value }))}
+                autoComplete="off"
+              />
+            </FloatingField>
 
-      <div className="walk-in-add-record-layout dept-type-search-layout">
-        <form
-          className="dept-type-search-form"
-          onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-        >
-          <FloatingField label="Hospital Name">
-            <Select
-              className={controlClass}
-              value={deptTypeFilter.hospitalId}
-              allowClear
-              showSearch
-              optionFilterProp="label"
-              placeholder=""
-              options={hospitals.map((h) => ({ value: h.id, label: h.name }))}
-              onChange={(val) => setDeptTypeFilter((c) => ({ ...c, hospitalId: val ?? null }))}
-            />
-          </FloatingField>
+            <FloatingField label="Status">
+              <Select
+                className={controlClass}
+                value={deptTypeFilter.status}
+                allowClear
+                placeholder=""
+                options={[
+                  { value: 'active', label: 'Active' },
+                  { value: 'disactive', label: 'Disactive' },
+                ]}
+                onChange={(val) => setDeptTypeFilter((c) => ({ ...c, status: val ?? null }))}
+              />
+            </FloatingField>
 
-          <FloatingField label="Department Type">
-            <Input
-              className={controlClass}
-              value={deptTypeFilter.departmentType}
-              allowClear
-              onChange={(e) => setDeptTypeFilter((c) => ({ ...c, departmentType: e.target.value }))}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Status">
-            <Select
-              className={controlClass}
-              value={deptTypeFilter.status}
-              allowClear
-              placeholder=""
-              options={[
-                { value: 'active', label: 'Active' },
-                { value: 'disactive', label: 'Disactive' },
-              ]}
-              onChange={(val) => setDeptTypeFilter((c) => ({ ...c, status: val ?? null }))}
-            />
-          </FloatingField>
-
-          <div className="dept-type-search-actions">
-            <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
-              Clear
-            </Button>
-            <Button
-              type="primary"
-              className="patient-reg-btn-save"
-              icon={<SearchOutlined />}
-              htmlType="submit"
-              loading={isLoading}
-            >
-              Search
-            </Button>
-          </div>
-        </form>
-      </div>
+            <div className="hr-search-actions">
+              <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button
+                type="default"
+                className="hr-search-btn"
+                icon={<SearchOutlined />}
+                htmlType="submit"
+                loading={isLoading}
+              >
+                Search
+              </Button>
+            </div>
+          </FormGrid>
+        </div>
+      </section>
 
       <section className="services-billing-results" aria-label="Department Types">
+        <div className="hr-table-toolbar">
+          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+            Add Department Type
+          </Button>
+        </div>
+
         <DataTable
           rowKey="id"
           columns={columns}

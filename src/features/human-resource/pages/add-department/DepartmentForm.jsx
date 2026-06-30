@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import { Input, Select } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
@@ -30,7 +29,7 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
   }, [deptTypes, form.hospitalId]);
 
   return (
-    <FormGrid columns={1} className="department-form-grid">
+    <FormGrid columns={2} className="department-form-grid">
 
       <FormField
         label="Hospital Name"
@@ -97,24 +96,6 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
       </FormField>
 
       <FormField
-        label="Location"
-        help={errors?.location}
-        validateStatus={errors?.location ? 'error' : ''}
-      >
-        <TextArea
-          id={fieldId('location')}
-          className={controlClass}
-          value={form.location}
-          rows={2}
-          onChange={(e) => {
-            onPatchForm({ location: e.target.value });
-            onClearError?.('location');
-          }}
-          autoComplete="off"
-        />
-      </FormField>
-
-      <FormField
         label="Phone"
         help={errors?.phone}
         validateStatus={errors?.phone ? 'error' : ''}
@@ -143,6 +124,24 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
           onChange={(e) => {
             onPatchForm({ fax: e.target.value });
             onClearError?.('fax');
+          }}
+          autoComplete="off"
+        />
+      </FormField>
+
+      <FormField
+        label="Location"
+        className="department-form-field-full"
+        help={errors?.location}
+        validateStatus={errors?.location ? 'error' : ''}
+      >
+        <Input
+          id={fieldId('location')}
+          className={controlClass}
+          value={form.location}
+          onChange={(e) => {
+            onPatchForm({ location: e.target.value });
+            onClearError?.('location');
           }}
           autoComplete="off"
         />

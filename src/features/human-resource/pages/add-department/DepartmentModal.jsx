@@ -23,7 +23,7 @@ export default function DepartmentModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={520}
+      width={600}
       className="department-modal"
       rootClassName="department-modal-root"
       footer={

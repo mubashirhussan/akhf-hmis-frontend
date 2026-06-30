@@ -23,7 +23,7 @@ export default function SubDepartmentModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={520}
+      width={600}
       className="sub-department-modal"
       rootClassName="sub-department-modal-root"
       footer={

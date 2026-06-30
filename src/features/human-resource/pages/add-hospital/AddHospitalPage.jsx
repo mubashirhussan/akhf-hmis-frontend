@@ -208,7 +208,7 @@ export default function AddHospitalPage() {
       />
 
       <section className="services-billing-results" aria-label="Hospitals">
-        <div className="hospital-table-toolbar">
+        <div className="hr-table-toolbar">
           <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
             Add Hospital
           </Button>
