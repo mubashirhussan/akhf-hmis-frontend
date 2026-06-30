@@ -6,7 +6,12 @@ import { Avatar, Checkbox, Collapse, Form, Input, Select, Upload } from 'antd';
 import FormGrid from '@/components/ui/FormGrid';
 import FormFloatingField from '@/components/ui/FormFloatingField';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi';
+import {
+  useGetHospitalsQuery,
+  useGetDeptTypesQuery,
+  useGetDepartmentsQuery,
+  useGetDesignationsQuery,
+} from '@/features/human-resource/api/employeeApi';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -84,13 +89,7 @@ const TEHSIL_OPTIONS = [
   { value: 'bakot', label: 'Bakot' },
 ];
 
-const DESIGNATION_OPTIONS = [
-  { value: 'neuro-surgeon', label: 'Neuro Surgeon' },
-  { value: 'medical-officer', label: 'Medical Officer' },
-  { value: 'staff-nurse', label: 'Staff Nurse' },
-  { value: 'administrator', label: 'Administrator' },
-  { value: 'officer', label: 'Officer' },
-];
+
 
 const GRADE_OPTIONS = Array.from({ length: 10 }, (_, index) => ({
   value: String(index + 1),
@@ -98,18 +97,7 @@ const GRADE_OPTIONS = Array.from({ length: 10 }, (_, index) => ({
 }));
 
 
-const DEPARTMENT_OPTIONS = [
-  { value: 'administration', label: 'ADMINISTRATION' },
-  { value: 'human-resource', label: 'HUMAN RESOURCE' },
-  { value: 'medical', label: 'MEDICAL' },
-];
 
-const SUB_DEPARTMENT_OPTIONS = [
-  { value: 'administration', label: 'Administration' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'reception', label: 'Reception' },
-  { value: 'human-resource', label: 'Human Resource' },
-];
 
 const SHIFT_OPTIONS = [
   { value: 'morning', label: 'Morning (8AM-2PM)' },
@@ -151,15 +139,37 @@ export default function EmployeeInfoTab({
   onPhotoPreviewChange,
 }) {
 const { data: hospitals = [] } = useGetHospitalsQuery();
+const { data: deptTypes = [] } = useGetDeptTypesQuery();
+const { data: departments = [] } = useGetDepartmentsQuery();
+const { data: designations = [] } = useGetDesignationsQuery();
+
+const form = Form.useFormInstance();
+const selectedHospital = Form.useWatch('hospital', form);
+const selectedDepartment = Form.useWatch('department', form);
 
 const HOSPITAL_OPTIONS = useMemo(
-  () =>
-    hospitals.map((hospital) => ({
-      value: hospital.id,
-      label: hospital.name,
-    })),
-  [hospitals]
+  () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+  [hospitals],
 );
+
+const DESIGNATION_OPTIONS = useMemo(
+  () => designations.map((d) => ({ value: d.id, label: d.designation })),
+  [designations],
+);
+
+const DEPARTMENT_OPTIONS = useMemo(() => {
+  if (!selectedHospital) return [];
+  return deptTypes
+    .filter((d) => d.hospitalId === selectedHospital)
+    .map((d) => ({ value: d.id, label: d.departmentType }));
+}, [deptTypes, selectedHospital]);
+
+const SUB_DEPARTMENT_OPTIONS = useMemo(() => {
+  if (!selectedDepartment) return [];
+  return departments
+    .filter((d) => d.deptTypeId === selectedDepartment)
+    .map((d) => ({ value: d.id, label: d.departmentName }));
+}, [departments, selectedDepartment]);
   const collapseItems = useMemo(
     () => [
       {
@@ -417,7 +427,7 @@ const HOSPITAL_OPTIONS = useMemo(
         children: (
           <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
             <FormFloatingField name="designation" label="Designation">
-              <Select className={controlClass} options={DESIGNATION_OPTIONS} />
+              <Select className={controlClass} options={DESIGNATION_OPTIONS} showSearch optionFilterProp="label" allowClear />
             </FormFloatingField>
 
             <FormFloatingField name="grade" label="Grade (I-IX)">
@@ -429,11 +439,31 @@ const HOSPITAL_OPTIONS = useMemo(
             </FormFloatingField>
 
             <FormFloatingField name="hospital" label="Hospital">
-              <Select className={controlClass} options={HOSPITAL_OPTIONS} />
+              <Select
+                className={controlClass}
+                options={HOSPITAL_OPTIONS}
+                showSearch
+                optionFilterProp="label"
+                allowClear
+                onChange={() => {
+                  form.setFieldsValue({ department: null, subDepartment: null });
+                }}
+              />
             </FormFloatingField>
 
             <FormFloatingField name="department" label="Department">
-              <Select className={controlClass} options={DEPARTMENT_OPTIONS} />
+              <Select
+                className={controlClass}
+                options={DEPARTMENT_OPTIONS}
+                disabled={!selectedHospital}
+                showSearch
+                optionFilterProp="label"
+                allowClear
+                placeholder={selectedHospital ? 'Select department' : 'Select hospital first'}
+                onChange={() => {
+                  form.setFieldsValue({ subDepartment: null });
+                }}
+              />
             </FormFloatingField>
 
             <FormFloatingField name="ntnNo" label="NTN #">
@@ -441,7 +471,15 @@ const HOSPITAL_OPTIONS = useMemo(
             </FormFloatingField>
 
             <FormFloatingField name="subDepartment" label="Sub Department">
-              <Select className={controlClass} options={SUB_DEPARTMENT_OPTIONS} />
+              <Select
+                className={controlClass}
+                options={SUB_DEPARTMENT_OPTIONS}
+                disabled={!selectedDepartment}
+                showSearch
+                optionFilterProp="label"
+                allowClear
+                placeholder={selectedDepartment ? 'Select sub department' : 'Select department first'}
+              />
             </FormFloatingField>
 
             <FormFloatingField name="shift" label="Shift">
@@ -477,7 +515,7 @@ const HOSPITAL_OPTIONS = useMemo(
         ),
       },
     ],
-    [ageLabel, fileList, onFileListChange, onPhotoPreviewChange, photoPreview],
+    [ageLabel, fileList, onFileListChange, onPhotoPreviewChange, photoPreview, form, selectedHospital, selectedDepartment, HOSPITAL_OPTIONS, DESIGNATION_OPTIONS, DEPARTMENT_OPTIONS, SUB_DEPARTMENT_OPTIONS],
   );
 
   return (

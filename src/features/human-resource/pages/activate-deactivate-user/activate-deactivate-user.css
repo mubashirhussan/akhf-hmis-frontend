@@ -39,3 +39,23 @@
     --form-cols: 1;
   }
 }
+.activate-confirm-modal--blue .ant-modal-confirm-body > .anticon {
+  color: #1677ff;
+}
+
+.activate-confirm-modal--blue .ant-modal-confirm-title {
+  color: #1677ff;
+}
+
+.activate-confirm-modal--blue .ant-btn-primary {
+  background-color: #1677ff;
+  border-color: #1677ff;
+}
+
+.activate-confirm-modal--red .ant-modal-confirm-body > .anticon {
+  color: #ff4d4f;
+}
+
+.activate-confirm-modal--red .ant-modal-confirm-title {
+  color: #ff4d4f;
+}

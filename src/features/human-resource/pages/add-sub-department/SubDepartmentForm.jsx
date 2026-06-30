@@ -55,8 +55,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       <FormField
         label="Hospital Name"
         required
-        help={errors?.hospitalId}
-        validateStatus={errors?.hospitalId ? 'error' : ''}
+        error={errors?.hospitalId}
       >
         <Select
           id={fieldId('hospitalId')}
@@ -68,6 +67,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
           showSearch
           optionFilterProp="label"
           placeholder="Select hospital"
+          status={errors?.hospitalId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({
               hospitalId: val,
@@ -87,8 +87,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       <FormField
         label="Department Type"
         required
-        help={errors?.deptTypeId}
-        validateStatus={errors?.deptTypeId ? 'error' : ''}
+        error={errors?.deptTypeId}
       >
         <Select
           id={fieldId('deptTypeId')}
@@ -100,6 +99,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
           showSearch
           optionFilterProp="label"
           placeholder={form.hospitalId ? 'Select department type' : 'Select hospital first'}
+          status={errors?.deptTypeId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({
               deptTypeId: val,
@@ -115,10 +115,9 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       </FormField>
 
       <FormField
-        label="Department Name"
+        label="Sub Department Type"
         required
-        help={errors?.departmentId}
-        validateStatus={errors?.departmentId ? 'error' : ''}
+        error={errors?.subDeptTypeId}
       >
         <Select
           id={fieldId('departmentId')}
@@ -130,6 +129,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
           showSearch
           optionFilterProp="label"
           placeholder={form.deptTypeId ? 'Select department' : 'Select department type first'}
+          status={errors?.departmentId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({
               departmentId: val,
@@ -145,8 +145,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       <FormField
         label="Sub Department Type"
         required
-        help={errors?.subDeptTypeId}
-        validateStatus={errors?.subDeptTypeId ? 'error' : ''}
+        error={errors?.subDeptTypeId}
       >
         <Select
           id={fieldId('subDeptTypeId')}
@@ -158,6 +157,7 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
           showSearch
           optionFilterProp="label"
           placeholder={form.departmentId ? 'Select sub department type' : 'Select department first'}
+          status={errors?.subDeptTypeId ? 'error' : ''}
           onChange={(val, opt) => {
             onPatchForm({ subDeptTypeId: val, subDepartmentType: opt?.label ?? '' });
             onClearError?.('subDeptTypeId');
@@ -168,13 +168,13 @@ export default function SubDepartmentForm({ form, errors = {}, onPatchForm, onCl
       <FormField
         label="Sub Department Name"
         required
-        help={errors?.subDepartmentName}
-        validateStatus={errors?.subDepartmentName ? 'error' : ''}
+        error={errors?.subDepartmentName}
       >
         <Input
           id={fieldId('subDepartmentName')}
           className={controlClass}
           value={form.subDepartmentName}
+          status={errors?.subDepartmentName ? 'error' : ''}
           onChange={(e) => {
             onPatchForm({ subDepartmentName: e.target.value });
             onClearError?.('subDepartmentName');

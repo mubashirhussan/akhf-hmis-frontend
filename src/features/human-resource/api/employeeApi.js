@@ -45,7 +45,6 @@ import {
   updateDesignationRow,
   deleteDesignationRow,
 } from "@/features/human-resource/api/mock-designations";
-import { searchEmployees } from "@/features/human-resource/api/mock-employee-search";
 
 export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -265,10 +264,6 @@ export const employeeApi = api.injectEndpoints({
       },
       invalidatesTags: ["Employee"],
  }),
-getHospitals: builder.query({
-    queryFn: async () => ({
-        data: getHospitalRows(),
-    }),
     toggleEmployeeActive: builder.mutation({
       queryFn: async (id) => {
         const employee = toggleEmployeeActive(id);
@@ -278,6 +273,10 @@ getHospitals: builder.query({
         return { data: employee };
       },
       invalidatesTags: ['Employee'],
+    }),
+getHospitals: builder.query({
+    queryFn: async () => ({
+        data: getHospitalRows(),
     }),
     providesTags: ['Hospital'],
 }),

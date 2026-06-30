@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
+import { App, Button, Modal } from 'antd';
+import { ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons';
 import DataTable from '@/components/ui/DataTable';
 import {
   createActivateDeactivateFilters,
@@ -11,13 +12,11 @@ import {
   useGetEmployeesQuery,
   useToggleEmployeeActiveMutation,
 } from '@/features/human-resource/api/employeeApi';
-import { useConfirm } from '@/hooks/useConfirm';
 import ActivateDeactivateFilterForm from './ActivateDeactivateFilterForm';
 import './activate-deactivate-user.css';
 
 export default function ActivateDeactivatePage() {
-  const { message } = App.useApp();
-  const { confirmDelete } = useConfirm();
+  const { message, modal } = App.useApp();
   const [filters, setFilters] = useState(createActivateDeactivateFilters);
   const [appliedFilters, setAppliedFilters] = useState(createActivateDeactivateFilters);
 
@@ -45,23 +44,39 @@ export default function ActivateDeactivatePage() {
   };
 
 const handleToggle = useCallback(
-    async (record) => {
-      const confirmed = await confirmDelete({
-        itemName: record.empName,
+    (record) => {
+      const isActivating = !record.isActive;
+
+      modal.confirm({
+        title: isActivating
+          ? `Do you want to activate ${record.empName}?`
+          : `Do you want to deactivate ${record.empName}?`,
+        icon: isActivating ? (
+          <QuestionCircleFilled style={{ color: '#1677ff' }} />
+        ) : (
+          <ExclamationCircleFilled style={{ color: '#ff4d4f' }} />
+        ),
+        okText: isActivating ? 'Activate' : 'Deactivate',
+        okType: isActivating ? 'primary' : 'danger',
+        cancelText: 'Cancel',
+        className: isActivating
+          ? 'activate-confirm-modal activate-confirm-modal--blue'
+          : 'activate-confirm-modal activate-confirm-modal--red',
+        onOk: async () => {
+          try {
+            await toggleActive(record.id).unwrap();
+            message.success(
+              isActivating
+                ? `${record.empName} activated successfully.`
+                : `${record.empName} deactivated successfully.`,
+            );
+          } catch {
+            message.error('Failed to update employee status.');
+          }
+        },
       });
-      if (!confirmed) return;
-      try {
-        await toggleActive(record.id).unwrap();
-        message.success(
-          record.isActive
-            ? `${record.empName} deactivated successfully.`
-            : `${record.empName} activated successfully.`,
-        );
-      } catch {
-        message.error('Failed to update employee status.');
-      }
     },
-    [toggleActive, message, confirmDelete],
+    [toggleActive, message, modal],
   );
 
   const columns = useMemo(
