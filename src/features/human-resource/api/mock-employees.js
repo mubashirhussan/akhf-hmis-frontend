@@ -52,6 +52,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     picture: null,
     age: '42 Years',
     status: 'active',
+    isActive: true,
+    userName: 'sohail.ahmad',
     certificates: [],
     documents: [],
     skills: [],
@@ -110,6 +112,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     picture: null,
     age: '28 Years',
     status: 'active',
+    isActive: true,
+    userName: 'fatima.khan',
     certificates: [],
     documents: [],
     skills: [],
@@ -167,7 +171,9 @@ export const INITIAL_EMPLOYEE_ROWS = [
     isConsultant: false,
     picture: null,
     age: '35 Years',
-    status: 'active',
+    status: 'inactive',
+    isActive: false,
+    userName: 'muhammad.mehtab',
     certificates: [],
     documents: [],
     skills: [],
@@ -226,6 +232,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     picture: null,
     age: '30 Years',
     status: 'inactive',
+    isActive: false,
+    userName: 'ali.hussain',
     certificates: [],
     documents: [],
     skills: [],
@@ -298,4 +306,22 @@ export function getEmployeeDisplayName(employee) {
     .filter(Boolean)
     .join(' ')
     .trim();
+}
+
+export function toggleEmployeeActive(id) {
+  const index = employeeRows.findIndex((row) => row.id === id);
+  if (index === -1) return null;
+  const current = employeeRows[index];
+  const nextActive = !current.isActive;
+  const updated = {
+    ...current,
+    isActive: nextActive,
+    status: nextActive ? 'active' : 'inactive',
+  };
+  employeeRows = [
+    ...employeeRows.slice(0, index),
+    updated,
+    ...employeeRows.slice(index + 1),
+  ];
+  return updated;
 }
