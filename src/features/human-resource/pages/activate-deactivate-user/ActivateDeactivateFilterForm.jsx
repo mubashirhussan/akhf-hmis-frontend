@@ -26,7 +26,7 @@ export default function ActivateDeactivateFilterForm({
     <div className="walk-in-add-record-layout activate-deactivate-search-layout">
       <FormGrid
         as="form"
-        columns={3}
+        columns={4}
         className="walk-in-add-record-form activate-deactivate-search-form"
         onSubmit={(event) => {
           event.preventDefault();
@@ -75,31 +75,31 @@ export default function ActivateDeactivateFilterForm({
           />
         </FloatingField>
 
-<FloatingField label="Employee Name" htmlFor={fieldId('emp-name')}>
-  <Input
-    id={fieldId('emp-name')}
-    className={controlClass}
-    value={filters.employeeName}
-    placeholder=""
-    allowClear
-    onChange={(event) => onPatchFilter({ employeeName: event.target.value })}
-    autoComplete="off"
-  />
-</FloatingField>
+        <FloatingField label="Employee Name" htmlFor={fieldId('emp-name')}>
+          <Input
+            id={fieldId('emp-name')}
+            className={controlClass}
+            value={filters.employeeName}
+            placeholder=""
+            allowClear
+            onChange={(event) => onPatchFilter({ employeeName: event.target.value })}
+            autoComplete="off"
+          />
+        </FloatingField>
 
-<FloatingField label="Status">
-  <Select
-    aria-label="Status"
-    className={controlClass}
-    value={filters.status}
-    options={[
-      { value: 'all', label: 'All' },
-      { value: 'active', label: 'Active' },
-      { value: 'inactive', label: 'Inactive' },
-    ]}
-    onChange={(status) => onPatchFilter({ status })}
-  />
-</FloatingField>
+        <FloatingField label="Status">
+          <Select
+            aria-label="Status"
+            className={controlClass}
+            value={filters.status}
+            options={[
+              { value: 'all', label: 'All' },
+              { value: 'active', label: 'Active' },
+              { value: 'inactive', label: 'Inactive' },
+            ]}
+            onChange={(status) => onPatchFilter({ status })}
+          />
+        </FloatingField>
 
         <div className="activate-deactivate-search-actions">
           <Button type="link" className="patient-reg-btn-clear" onClick={onClear}>

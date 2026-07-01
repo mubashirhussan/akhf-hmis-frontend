@@ -339,9 +339,33 @@ export function changeDepartmentForEmployee(id, patch) {
   return updateEmployeeRow(id, patch);
 }
 
+export const INITIAL_RECEPTIONIST_ROWS = [
+  {
+    id: '1',
+    receptionistId: '1',
+    employeeId: '102',
+    employeeName: 'Fatima Khan',
+    counterType: 'hospital',
+  },
+  {
+    id: '2',
+    receptionistId: '2',
+    employeeId: '101',
+    employeeName: 'Sohail Ahmad',
+    counterType: 'pharmacy',
+  },
+  {
+    id: '3',
+    receptionistId: '3',
+    employeeId: '124',
+    employeeName: 'ALI HUSSAIN',
+    counterType: 'hospital',
+  },
+];
 
-let receptionistRows = [];
-let nextReceptionistId = 1;
+let receptionistRows = INITIAL_RECEPTIONIST_ROWS.map((row) => ({ ...row }));
+let nextReceptionistId =
+  Math.max(...INITIAL_RECEPTIONIST_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getReceptionistRows() {
   return receptionistRows;

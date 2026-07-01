@@ -1,12 +1,10 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Input, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
-import { createReceptionistFilters } from '@/features/human-resource/api/mock-employee-search';
 import {
   useGetEmployeesQuery,
   useGetReceptionistsQuery,
@@ -14,7 +12,6 @@ import {
   useUpdateReceptionistMutation,
   useDeleteReceptionistMutation,
 } from '@/features/human-resource/api/employeeApi';
-import MarkReceptionistFilterForm from './MarkReceptionistFilterForm';
 import MarkReceptionistModal from './MarkReceptionistModal';
 import './mark-receptionist.css';
 
@@ -28,8 +25,7 @@ export default function MarkReceptionistPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
 
-  const [filters, setFilters] = useState(createReceptionistFilters);
-  const [appliedFilters, setAppliedFilters] = useState(createReceptionistFilters);
+  const [employeeNameFilter, setEmployeeNameFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [form, setForm] = useState(createEmptyReceptionistForm);
@@ -42,25 +38,10 @@ export default function MarkReceptionistPage() {
   const [deleteReceptionist] = useDeleteReceptionistMutation();
 
   const filteredRows = useMemo(() => {
-    if (!appliedFilters.employeeName?.trim()) return rows;
-    return rows.filter((r) =>
-      r.employeeName
-        ?.toLowerCase()
-        .includes(appliedFilters.employeeName.trim().toLowerCase()),
-    );
-  }, [rows, appliedFilters]);
-
-  const patchFilter = useCallback((patch) => {
-    setFilters((cur) => ({ ...cur, ...patch }));
-  }, []);
-
-  const handleSearch = () => setAppliedFilters({ ...filters });
-
-  const handleClear = () => {
-    const reset = createReceptionistFilters();
-    setFilters(reset);
-    setAppliedFilters(reset);
-  };
+    const term = employeeNameFilter.trim().toLowerCase();
+    if (!term) return rows;
+    return rows.filter((r) => r.employeeName?.toLowerCase().includes(term));
+  }, [rows, employeeNameFilter]);
 
   const patchForm = useCallback((patch) => {
     setForm((cur) => ({ ...cur, ...patch }));
@@ -183,21 +164,26 @@ export default function MarkReceptionistPage() {
 
   return (
     <div className="services-billing-page mark-receptionist-page">
-      <MarkReceptionistFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
-        onSubmit={handleSearch}
-        onClear={handleClear}
-        loading={isFetching}
-      />
-
-      <section className="services-billing-results" aria-label="Receptionists">
-        <div className="hr-table-toolbar">
-          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
-            Mark Receptionist
-          </Button>
+      <div
+        className="mark-receptionist-table-toolbar"
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
+      >
+        <div className="mark-receptionist-filters" style={{ display: 'flex', gap: 12 }}>
+          <Input
+            placeholder="Filter by Employee Name"
+            value={employeeNameFilter}
+            onChange={(e) => setEmployeeNameFilter(e.target.value)}
+            allowClear
+            style={{ width: 260 }}
+          />
         </div>
 
+        <Button type="primary" onClick={openModal}>
+          Mark Receptionist
+        </Button>
+      </div>
+
+      <section className="services-billing-results" aria-label="Receptionists">
         <DataTable
           rowKey="id"
           columns={columns}
