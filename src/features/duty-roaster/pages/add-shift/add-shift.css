@@ -1,0 +1,34 @@
+.add-shift-page {
+  padding: 8px 4px 24px;
+}
+
+.shift-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.shift-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.shift-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.shift-save-btn {
+  min-width: 120px;
+}
+
+@media (max-width: 767px) {
+  .shift-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .shift-save-btn {
+    width: 100%;
+  }
+}
