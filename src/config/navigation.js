@@ -202,6 +202,51 @@ export const navigation = [
       },
     ],
   },
+   {
+    key: 'duty-roaster',
+    label: 'Duty Roaster',
+    href: '/duty-roaster',
+    icon: 'mdi:duty-group-outline',
+    children: [
+      {
+        key: 'add-shift',
+        label: 'Add Shift',
+        href: '/duty-roaster/add-shift',
+      },
+      {
+        key: 'admin-duty-roaster',
+        label: 'Admin Duty Roaster',
+        href: '/duty-roaster/admin-duty-roaster',
+      },
+      {
+        key: 'assign-duty-to-employee',
+        label: 'Assign Duty To Employee',
+        href: '/duty-roaster/assign-duty-to-employee',
+      },
+      {
+        key: 'search-duties',
+        label: 'Search Duties',
+        href: '/duty-roaster/search-duties',
+      },
+     
+            {
+        key: 'duty-roaster-reporting-authority',
+        label: 'Duty Roaster Reporting Authority',
+        href: '/duty-roaster/duty-roaster-reporting-authority',
+      },
+            {
+        key: 'assign-duty-to-department',
+        label: 'Assign Duty To Department',
+        href: '/duty-roaster/assign-duty-to-department',
+      },
+            {
+        key: 'assign-duty-to-single-employee',
+        label: 'Assign Duty To Single Employee',
+        href: '/duty-roaster/assign-duty-to-single-employee',
+      },
+           
+    ],
+  },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
   { key: 'financial-reports', label: 'Financial Reports', href: '/financial-reports', icon: 'mdi:calculator-variant-outline' },
   { key: 'user-role', label: 'User Role & Mng.', href: '/user-role', icon: 'carbon:user' },
