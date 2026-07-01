@@ -1,26 +1,31 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { footerLinks, navigation } from '@/config/navigation';
-import AppIcon from '@/components/icons/AppIcon';
-import { getExpandedKeys, hasActiveDescendant, isPathActive } from '@/lib/navigation-utils';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { footerLinks, navigation } from "@/config/navigation";
+import { ROUTES } from "@/config/routes";
+import AppIcon from "@/components/icons/AppIcon";
+import {
+  getExpandedKeys,
+  hasActiveDescendant,
+  isPathActive,
+} from "@/lib/navigation-utils";
 
 function NavChevron({ expanded }) {
   return (
     <AppIcon
       icon="mdi:chevron-down"
-      className={`sidebar-nav-chevron ${expanded ? 'rotate-180' : ''}`}
+      className={`sidebar-nav-chevron ${expanded ? "rotate-180" : ""}`}
     />
   );
 }
 
-function SidebarLink({ href, active, children, className = '' }) {
+function SidebarLink({ href, active, children, className = "" }) {
   return (
     <Link
       href={href}
-      className={`sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${active ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'} ${className}`}
+      className={`sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${active ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/95 hover:bg-white/10"} ${className}`}
     >
       {children}
     </Link>
@@ -39,7 +44,7 @@ function NavChildItem({ item, pathname, expandedKeys, onToggle }) {
         <button
           type="button"
           onClick={() => onToggle(item.key)}
-          className={`sidebar-nav-child flex w-full items-center gap-2 rounded-[8px] px-3 py-2.5 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
+          className={`sidebar-nav-child flex w-full items-center gap-2 rounded-[8px] px-3 py-2.5 transition-colors ${isParentActive || isExpanded ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/90 hover:bg-white/10"}`}
         >
           <span className="flex-1 text-left truncate">{item.label}</span>
           <NavChevron expanded={isExpanded} />
@@ -65,7 +70,7 @@ function NavChildItem({ item, pathname, expandedKeys, onToggle }) {
     <li className="relative before:absolute before:-left-4 before:top-1/2 before:h-px before:w-3 before:bg-white/40">
       <Link
         href={item.href}
-        className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${isSelfActive ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/90 hover:bg-white/10'}`}
+        className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${isSelfActive ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/90 hover:bg-white/10"}`}
       >
         {item.label}
       </Link>
@@ -85,7 +90,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
         <button
           type="button"
           onClick={() => onToggle(item.key)}
-          className={`sidebar-nav-parent flex w-full items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${isParentActive || isExpanded ? 'bg-white text-[var(--app-primary)] shadow-sm' : 'text-white/95 hover:bg-white/10'}`}
+          className={`sidebar-nav-parent flex w-full items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${isParentActive || isExpanded ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/95 hover:bg-white/10"}`}
         >
           {item.icon && <AppIcon icon={item.icon} />}
           {!collapsed && (
@@ -124,8 +129,11 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
 
 export default function AppSidebar({ collapsed, onCollapsedChange }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [hovering, setHovering] = useState(false);
-  const [expandedKeys, setExpandedKeys] = useState(() => getExpandedKeys(pathname));
+  const [expandedKeys, setExpandedKeys] = useState(() =>
+    getExpandedKeys(pathname),
+  );
   const isCollapsed = collapsed && !hovering;
   const isHoverExpanded = collapsed && hovering;
 
@@ -144,7 +152,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
 
   return (
     <aside
-      className={`app-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--app-primary)] text-white transition-[width] duration-200 ${isCollapsed ? 'w-[72px]' : 'w-[256px]'} ${isHoverExpanded ? 'app-sidebar--hover-expand' : ''}`}
+      className={`app-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--app-primary)] text-white transition-[width] duration-200 ${isCollapsed ? "w-[72px]" : "w-[256px]"} ${isHoverExpanded ? "app-sidebar--hover-expand" : ""}`}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
@@ -152,16 +160,16 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
         type="button"
         onClick={() => onCollapsedChange(!collapsed)}
         className="absolute -right-3 top-6 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-[24px] border border-white bg-[#026BB1] p-1.5 text-white transition hover:brightness-110"
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <AppIcon
-          icon={isCollapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'}
+          icon={isCollapsed ? "mdi:chevron-right" : "mdi:chevron-left"}
           className="h-4 w-4"
         />
       </button>
 
       <div
-        className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${isCollapsed ? 'justify-center px-2' : 'pr-6'}`}
+        className={`flex items-center gap-3 border-b border-white/20 px-4 py-4 ${isCollapsed ? "justify-center px-2" : "pr-6"}`}
       >
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--app-primary)]">
           <AppIcon icon="carbon:user" className="h-5 w-5" />
@@ -201,13 +209,24 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
           <ul className="space-y-0.5">
             {footerLinks.map((link) => (
               <li key={link.key}>
-                <Link
-                  href={link.href}
-                  className="sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
-                >
-                  <AppIcon icon={link.icon} />
-                  {!isCollapsed && <span>{link.label}</span>}
-                </Link>
+                {link.key === "logout" ? (
+                  <button
+                    type="button"
+                    onClick={() => router.push(ROUTES.login)}
+                    className="sidebar-nav-parent cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
+                  >
+                    <AppIcon icon={link.icon} />
+                    {!isCollapsed && <span>{link.label}</span>}
+                  </button>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className="sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
+                  >
+                    <AppIcon icon={link.icon} />
+                    {!isCollapsed && <span>{link.label}</span>}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

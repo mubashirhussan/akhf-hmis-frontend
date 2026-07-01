@@ -8,60 +8,22 @@
 
 .auth-visual {
   display: none;
-  position: relative;
+  position: relative; /* required for Image fill */
   flex: 1;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  background: var(--app-primary);
-  border-right: 1px solid #014d85;
-}
-
-.auth-visual__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 480px;
-  padding: 40px 32px;
-}
-
-.auth-visual__image-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  /* remove: background, align-items, justify-content */
+  /* border-right: 1px solid #014d85; */
 }
 
 .auth-visual__image {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  object-fit: contain;
+  object-fit: cover; /* fills panel, may crop edges */
   object-position: center;
 }
 
-.auth-visual__content {
-  width: 100%;
-  margin-top: 28px;
-  text-align: center;
-  color: #ffffff;
-}
-
-.auth-visual__heading {
-  margin: 0 0 12px;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.auth-visual__text {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.88);
-}
+/* remove or stop using:
+   .auth-visual__inner
+   .auth-visual__image-wrap
+*/
 
 .auth-panel {
   display: flex;
@@ -97,7 +59,7 @@
 
 .auth-panel__header {
   margin-bottom: 28px;
-  text-align: center;
+  text-align: start;
 }
 
 .auth-panel__title {
@@ -167,7 +129,10 @@
   font-size: var(--font-size-xs);
   color: #94a3b8;
 }
-
+.auth-form .ant-input,
+.auth-form .ant-input-affix-wrapper {
+  font-size: 14px;
+}
 @media (min-width: 900px) {
   .auth-visual {
     display: flex;

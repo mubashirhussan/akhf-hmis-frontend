@@ -206,7 +206,7 @@ export const navigation = [
     key: 'duty-roaster',
     label: 'Duty Roaster',
     href: '/duty-roaster',
-    icon: 'mdi:duty-group-outline',
+    icon: 'mdi:calendar-clock',
     children: [
       {
         key: 'add-shift',

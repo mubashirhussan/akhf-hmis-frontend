@@ -1,34 +1,43 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button, Checkbox, Form, Input } from 'antd';
-import AuthShell from '@/features/auth/components/AuthShell';
-import { ROUTES } from '@/config/routes';
-
-function preventAutofill(event) {
-  event.target.removeAttribute('readonly');
-}
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button, Checkbox, Form, Input } from "antd";
+import AuthShell from "@/features/auth/components/AuthShell";
+import { ROUTES } from "@/config/routes";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.push(ROUTES.dashboard);
+  };
+
   return (
-    <AuthShell title="Login">
-      <Form layout="vertical" requiredMark={false} className="auth-form" autoComplete="off">
-        <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Username is required' }]}>
-          <Input
-            size="large"
-            placeholder="Enter username"
-            autoComplete="off"
-            readOnly
-            onFocus={preventAutofill}
-          />
+    <AuthShell title="Sign In">
+      <Form
+        layout="vertical"
+        requiredMark={false}
+        className="auth-form"
+        autoComplete="off"
+        onFinish={handleLogin}
+      >
+        <Form.Item
+          label="Username or Email Address"
+          name="username"
+          rules={[{ required: true, message: "Username is required" }]}
+        >
+          <Input size="large" placeholder="Enter username" autoComplete="off" />
         </Form.Item>
-        <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Password is required' }]}>
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Password is required" }]}
+        >
           <Input.Password
             size="large"
             placeholder="Enter password"
             autoComplete="new-password"
-            readOnly
-            onFocus={preventAutofill}
           />
         </Form.Item>
         <div className="auth-form__actions-row">
@@ -45,7 +54,7 @@ export default function LoginPage() {
       </Form>
 
       <p className="auth-switch">
-        Don&apos;t have an account?{' '}
+        Don&apos;t have an account?{" "}
         <Link href={ROUTES.signup} className="auth-link auth-link--strong">
           Create account
         </Link>
