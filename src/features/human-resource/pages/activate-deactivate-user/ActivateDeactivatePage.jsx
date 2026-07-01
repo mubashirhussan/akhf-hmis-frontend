@@ -16,6 +16,9 @@ import {
 import { useConfirm } from '@/hooks/useConfirm';
 import ActivateDeactivateFilterForm from './ActivateDeactivateFilterForm';
 import './activate-deactivate-user.css';
+import { Tag } from 'antd';
+import { Tooltip } from 'antd';
+import AppIcon from '@/components/icons/AppIcon';
 
 export default function ActivateDeactivatePage() {
   const { message, modal } = App.useApp();
@@ -111,22 +114,34 @@ const handleToggle = useCallback(
       { title: 'Joining Date', dataIndex: 'joiningDate', key: 'joiningDate', width: 120 },
       { title: 'Designation', dataIndex: 'designation', key: 'designation', width: 140 },
       {
+  title: 'Status',
+  dataIndex: 'isActive',
+  key: 'status',
+  width: 100,
+  render: (isActive) => (
+    <Tag className={isActive ? 'status-active' : 'status-inactive'}>
+      {isActive ? 'Active' : 'Inactive'}
+    </Tag>
+  ),
+},
+      {
         title: 'Action',
         key: 'action',
         width: 110,
         align: 'center',
         fixed: 'right',
-        render: (_, record) => (
-          <Button
-            type="primary"
-            size="small"
-            danger={record.isActive}
-            disabled={isToggling}
-            onClick={() => handleToggle(record)}
-          >
-            {record.isActive ? 'Deactive' : 'Active'}
-          </Button>
-        ),
+render: (_, record) => (
+  <Tooltip title="Update Status">
+    <Button
+      type="link"
+      size="small"
+      disabled={isToggling}
+      aria-label={`Update status for ${record.empName}`}
+      icon={<AppIcon icon="mdi:pencil-outline" className="h-[16px] w-[16px] text-[var(--app-primary)]" />}
+      onClick={() => handleToggle(record)}
+    />
+  </Tooltip>
+),
       },
     ],
     [handleToggle, isToggling],

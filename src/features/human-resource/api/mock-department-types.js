@@ -29,7 +29,7 @@ export const INITIAL_DEPT_TYPE_ROWS = [
     hospitalId: '2',
     hospitalName: 'ALKHIDMAT HOSPITAL PESHAWAR',
     departmentType: 'Neurology',
-    status: 'disactive',
+    status: 'inactive',
   },
   {
     id: '5',

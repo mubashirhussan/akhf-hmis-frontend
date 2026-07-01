@@ -54,13 +54,6 @@ export const SUB_DEPARTMENT_FILTER_OPTIONS = [
   { value: 'human-resource', label: 'Human Resource' },
 ];
 
-export const EMPLOYEE_NAME_OPTIONS = [
-  { value: ALL_FILTER_VALUE, label: 'All' },
-  { value: '1', label: 'SOHAIL AHMAD' },
-  { value: '2', label: 'FATIMA KHAN' },
-  { value: '3', label: 'MUHAMMAD MEHTAB' },
-  { value: '4', label: 'ALI HUSSAIN' },
-];
 
 const DEPARTMENT_LABELS = Object.fromEntries(
   DEPARTMENT_FILTER_OPTIONS.filter((opt) => opt.value !== ALL_FILTER_VALUE).map((opt) => [
@@ -188,9 +181,17 @@ export function filterActivateDeactivateEmployees(filters) {
       String(row.employeeNo ?? '').toLowerCase().includes(filters.employeeNo.trim().toLowerCase()),
     );
   }
-  if (filters.employeeName && filters.employeeName !== ALL_FILTER_VALUE) {
-    rows = rows.filter((row) => row.id === filters.employeeName);
-  }
+if (filters.employeeName?.trim()) {
+  rows = rows.filter((row) =>
+    getEmployeeDisplayName(row).toLowerCase().includes(filters.employeeName.trim().toLowerCase()),
+  );
+}
+  if (filters.status && filters.status !== ALL_FILTER_VALUE) {
+  rows = rows.filter((row) => {
+    const active = row.isActive ?? (row.status === 'active');
+    return filters.status === 'active' ? active : !active;
+  });
+}
 
   return rows.map((emp, index) => ({
     id: emp.id,
@@ -213,6 +214,6 @@ export function createActivateDeactivateFilters() {
     department: ALL_FILTER_VALUE,
     subDepartment: ALL_FILTER_VALUE,
     employeeNo: '',
-    employeeName: ALL_FILTER_VALUE,
+    status: ALL_FILTER_VALUE,
   };
 }
