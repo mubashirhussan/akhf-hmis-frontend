@@ -26,6 +26,7 @@
 
 .employee-search-results {
   margin-top: 8px;
+  overflow: hidden;
 }
 
 .employee-search-actions-cell {
@@ -45,4 +46,12 @@
   .employee-search-form.form-grid {
     --form-cols: 1;
   }
+}
+.employee-search-table-wrap .ant-table-container {
+  overflow-x: auto !important;
+}
+
+.employee-search-table-wrap .data-table .ant-table-content,
+.employee-search-table-wrap .ant-table-body {
+  overflow-x: auto !important;
 }

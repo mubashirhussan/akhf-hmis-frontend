@@ -32,6 +32,26 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
     <FormGrid columns={2} className="department-form-grid">
 
       <FormField
+        label="Department ID"
+        required
+        error={errors?.departmentId}
+      >
+        <Input
+          id={fieldId('departmentId')}
+          className={controlClass}
+          type="number"
+          min="1"
+          value={form.departmentId}
+          status={errors?.departmentId ? 'error' : ''}
+          onChange={(e) => {
+            onPatchForm({ departmentId: e.target.value });
+            onClearError?.('departmentId');
+          }}
+          autoComplete="off"
+        />
+      </FormField>
+
+      <FormField
         label="Hospital Name"
         required
         error={errors?.hospitalId}

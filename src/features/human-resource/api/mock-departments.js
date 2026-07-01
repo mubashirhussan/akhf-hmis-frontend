@@ -33,7 +33,15 @@ export function getDepartmentRows() {
 }
 
 export function createDepartmentRow(payload) {
-  const departmentId = nextDepartmentId++;
+  const providedDepartmentId = payload?.departmentId ? Number(payload.departmentId) : undefined;
+  const departmentId = Number.isInteger(providedDepartmentId) && providedDepartmentId > 0
+    ? providedDepartmentId
+    : nextDepartmentId++;
+
+  if (departmentId >= nextDepartmentId) {
+    nextDepartmentId = departmentId + 1;
+  }
+
   const row = { id: String(departmentId), departmentId, ...payload };
   departmentRows = [row, ...departmentRows];
   return row;
@@ -55,6 +63,7 @@ export function createEmptyDepartmentForm() {
     hospitalId: null,
     hospitalName: '',
     deptTypeId: null,
+    departmentId: '',
     departmentType: '',
     departmentName: '',
     location: '',
@@ -68,6 +77,7 @@ export function rowToDepartmentForm(row) {
     hospitalId: row.hospitalId ?? null,
     hospitalName: row.hospitalName ?? '',
     deptTypeId: row.deptTypeId ?? null,
+    departmentId: row.departmentId ?? '',
     departmentType: row.departmentType ?? '',
     departmentName: row.departmentName ?? '',
     location: row.location ?? '',

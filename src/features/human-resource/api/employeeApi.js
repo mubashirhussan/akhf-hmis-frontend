@@ -12,6 +12,10 @@ import {
   createReceptionistRow,
   updateReceptionistRow,
   deleteReceptionistRow,
+    getVisitingRows,
+  createVisitingRow,
+  updateVisitingRow,
+  deleteVisitingRow,
 } from '@/features/human-resource/api/mock-employees';
 import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
 import {
@@ -492,6 +496,32 @@ deleteReceptionist: builder.mutation({
   },
   invalidatesTags: ['Receptionist'],
 }),
+getVisitings: builder.query({
+  queryFn: async () => ({ data: getVisitingRows() }),
+  providesTags: ['Visiting'],
+}),
+
+addVisiting: builder.mutation({
+  queryFn: async (payload) => ({ data: createVisitingRow(payload) }),
+  invalidatesTags: ['Visiting'],
+}),
+
+updateVisiting: builder.mutation({
+  queryFn: async ({ id, ...payload }) => {
+    const row = updateVisitingRow(id, payload);
+    if (!row) return { error: { status: 404, data: 'Visiting record not found' } };
+    return { data: row };
+  },
+  invalidatesTags: ['Visiting'],
+}),
+
+deleteVisiting: builder.mutation({
+  queryFn: async (id) => {
+    deleteVisitingRow(id);
+    return { data: true };
+  },
+  invalidatesTags: ['Visiting'],
+}),
   }),
 });
 
@@ -551,4 +581,8 @@ export const {
   useAddReceptionistMutation,
   useUpdateReceptionistMutation,
   useDeleteReceptionistMutation,
+  useGetVisitingsQuery,
+useAddVisitingMutation,
+useUpdateVisitingMutation,
+useDeleteVisitingMutation,
 } = employeeApi;

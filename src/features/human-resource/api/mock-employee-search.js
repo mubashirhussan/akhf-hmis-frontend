@@ -126,9 +126,28 @@ export function mapEmployeeToSearchRow(employee, index) {
     empNo: employee.employeeNo ?? '',
     empName: getEmployeeDisplayName(employee).toUpperCase(),
     cnic: employee.cnicNo ?? '',
+    hospitalId: employee.hospital ?? '',
+    hospitalName: getHospitalName(employee.hospital),
+    departmentId: employee.departmentId ?? '',
     department: getDepartmentLabel(employee.department),
     subDepartment: getSubDepartmentLabel(employee.subDepartment),
+    designationId: employee.designation ?? '',
     designation: getDesignationLabel(employee.designation),
+    relationName: [employee.relationFirstName, employee.relationMiddleName, employee.relationLastName]
+      .filter(Boolean).join(' '),
+    dob: employee.dob ?? '',
+    joiningDate: employee.doj ?? '',
+    gender: employee.gender ?? '',
+    payScale: employee.grade ?? '',
+    officeAddress: employee.officeAddress ?? '',
+    homeAddress: employee.permanentAddress ?? '',
+    presentAddress: employee.presentAddress ?? '',
+    email: employee.emailAddress ?? '',
+    phone: employee.mobileNo ?? '',
+    pmdc: employee.pmdc ? 'Yes' : 'No',
+    shift: employee.shift ?? '',
+    nationalityName: employee.nationality ?? '',
+    religionName: employee.religion ?? '',
   };
 }
 
@@ -280,8 +299,20 @@ export function filterChangeDepartmentEmployees(filters) {
     shift: emp.shift ?? '',
   }));
 }
-
+function getHospitalName(hospitalId) {
+  if (!hospitalId) return '';
+  const idString = String(hospitalId);
+  const hospital = getHospitalRows().find(
+    (h) => h.id === idString || String(h.hospitalId) === idString,
+  );
+  return hospital?.name ?? hospitalId;
+}
 
 export function createReceptionistFilters() {
   return { employeeName: '' };
 }
+export function createVisitingFilters() {
+  return { employeeName: '' };
+}
+
+
