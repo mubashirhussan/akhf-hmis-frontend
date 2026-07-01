@@ -71,7 +71,7 @@ export default function DeptTypeForm({ form, errors = {}, onPatchForm, onClearEr
             value={form.status}
             options={[
               { value: 'active', label: 'Active' },
-              { value: 'disactive', label: 'Disactive' },
+              { value: 'inactive', label: 'inactive' },
             ]}
             status={errors?.status ? 'error' : ''}
             onChange={(val) => {

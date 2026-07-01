@@ -32,3 +32,17 @@
     width: 100%;
   }
 }
+
+.status-active {
+  color: #1677ff !important;
+  /* background: transparent !important; */
+  border: none !important;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #ff4d4f !important;
+  /* background: transparent !important; */
+  border: none !important;
+  font-weight: 600;
+}

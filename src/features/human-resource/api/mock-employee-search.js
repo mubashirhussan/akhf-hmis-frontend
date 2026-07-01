@@ -4,7 +4,7 @@ import {
 } from '@/features/human-resource/api/mock-employees';
 import { getHospitalRows } from '@/features/human-resource/api/mock-hospitals';
 
-export const ALL_FILTER_VALUE = 'all';
+export const ALL_FILTER_VALUE = 'All';
 
 
 export function getHospitalFilterOptions() {
@@ -54,13 +54,6 @@ export const SUB_DEPARTMENT_FILTER_OPTIONS = [
   { value: 'human-resource', label: 'Human Resource' },
 ];
 
-export const EMPLOYEE_NAME_OPTIONS = [
-  { value: ALL_FILTER_VALUE, label: 'All' },
-  { value: '1', label: 'SOHAIL AHMAD' },
-  { value: '2', label: 'FATIMA KHAN' },
-  { value: '3', label: 'MUHAMMAD MEHTAB' },
-  { value: '4', label: 'ALI HUSSAIN' },
-];
 
 const DEPARTMENT_LABELS = Object.fromEntries(
   DEPARTMENT_FILTER_OPTIONS.filter((opt) => opt.value !== ALL_FILTER_VALUE).map((opt) => [
@@ -85,12 +78,12 @@ const DESIGNATION_LABELS = Object.fromEntries(
 
 export function createEmployeeSearchFilters() {
   return {
-    hospital: 'alkhidmat-diagnostics-karachi',
+    hospital: ALL_FILTER_VALUE,
     department: ALL_FILTER_VALUE,
     employeeQuery: '',
     designation: ALL_FILTER_VALUE,
     employeeType: ALL_FILTER_VALUE,
-    status: 'active',
+    status: ALL_FILTER_VALUE,
   };
 }
 
@@ -133,9 +126,28 @@ export function mapEmployeeToSearchRow(employee, index) {
     empNo: employee.employeeNo ?? '',
     empName: getEmployeeDisplayName(employee).toUpperCase(),
     cnic: employee.cnicNo ?? '',
+    hospitalId: employee.hospital ?? '',
+    hospitalName: getHospitalName(employee.hospital),
+    departmentId: employee.departmentId ?? '',
     department: getDepartmentLabel(employee.department),
     subDepartment: getSubDepartmentLabel(employee.subDepartment),
+    designationId: employee.designation ?? '',
     designation: getDesignationLabel(employee.designation),
+    relationName: [employee.relationFirstName, employee.relationMiddleName, employee.relationLastName]
+      .filter(Boolean).join(' '),
+    dob: employee.dob ?? '',
+    joiningDate: employee.doj ?? '',
+    gender: employee.gender ?? '',
+    payScale: employee.grade ?? '',
+    officeAddress: employee.officeAddress ?? '',
+    homeAddress: employee.permanentAddress ?? '',
+    presentAddress: employee.presentAddress ?? '',
+    email: employee.emailAddress ?? '',
+    phone: employee.mobileNo ?? '',
+    pmdc: employee.pmdc ? 'Yes' : 'No',
+    shift: employee.shift ?? '',
+    nationalityName: employee.nationality ?? '',
+    religionName: employee.religion ?? '',
   };
 }
 
@@ -188,9 +200,17 @@ export function filterActivateDeactivateEmployees(filters) {
       String(row.employeeNo ?? '').toLowerCase().includes(filters.employeeNo.trim().toLowerCase()),
     );
   }
-  if (filters.employeeName && filters.employeeName !== ALL_FILTER_VALUE) {
-    rows = rows.filter((row) => row.id === filters.employeeName);
-  }
+if (filters.employeeName?.trim()) {
+  rows = rows.filter((row) =>
+    getEmployeeDisplayName(row).toLowerCase().includes(filters.employeeName.trim().toLowerCase()),
+  );
+}
+  if (filters.status && filters.status !== ALL_FILTER_VALUE) {
+  rows = rows.filter((row) => {
+    const active = row.isActive ?? (row.status === 'active');
+    return filters.status === 'active' ? active : !active;
+  });
+}
 
   return rows.map((emp, index) => ({
     id: emp.id,
@@ -213,6 +233,86 @@ export function createActivateDeactivateFilters() {
     department: ALL_FILTER_VALUE,
     subDepartment: ALL_FILTER_VALUE,
     employeeNo: '',
-    employeeName: ALL_FILTER_VALUE,
+    status: ALL_FILTER_VALUE,
   };
 }
+
+
+export function createChangeDepartmentFilters() {
+  return {
+    hospital: ALL_FILTER_VALUE,
+    department: ALL_FILTER_VALUE,
+    designation: ALL_FILTER_VALUE,
+    employeeName: '',
+    cnicNo: '',
+    employeeNo: '',
+  };
+}
+
+export function filterChangeDepartmentEmployees(filters) {
+  let rows = getEmployeeRows();
+
+  if (filters.hospital && filters.hospital !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.hospital === filters.hospital);
+  }
+  if (filters.department && filters.department !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.department === filters.department);
+  }
+  if (filters.designation && filters.designation !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.designation === filters.designation);
+  }
+  if (filters.employeeName?.trim()) {
+    rows = rows.filter((r) =>
+      getEmployeeDisplayName(r)
+        .toLowerCase()
+        .includes(filters.employeeName.trim().toLowerCase()),
+    );
+  }
+  if (filters.cnicNo?.trim()) {
+    rows = rows.filter((r) =>
+      String(r.cnicNo ?? '').toLowerCase().includes(filters.cnicNo.trim().toLowerCase()),
+    );
+  }
+  if (filters.employeeNo?.trim()) {
+    rows = rows.filter((r) =>
+      String(r.employeeNo ?? '').toLowerCase().includes(filters.employeeNo.trim().toLowerCase()),
+    );
+  }
+
+  return rows.map((emp, index) => ({
+    id: emp.id,
+    serial: index + 1,
+    empId: emp.empId ?? emp.id,
+    empNo: emp.employeeNo ?? '',
+    empName: getEmployeeDisplayName(emp).toUpperCase(),
+    relationName: [emp.relationFirstName, emp.relationMiddleName, emp.relationLastName]
+      .filter(Boolean)
+      .join(' '),
+    cnic: emp.cnicNo ?? '',
+    joinDate: emp.doj ?? '',
+    designationName: getDesignationLabel(emp.designation),
+    departmentName: getDepartmentLabel(emp.department),
+    shiftName: emp.shift ?? '',
+    department: emp.department ?? '',
+    subDepartment: emp.subDepartment ?? '',
+    designation: emp.designation ?? '',
+    shift: emp.shift ?? '',
+  }));
+}
+function getHospitalName(hospitalId) {
+  if (!hospitalId) return '';
+  const idString = String(hospitalId);
+  const hospital = getHospitalRows().find(
+    (h) => h.id === idString || String(h.hospitalId) === idString,
+  );
+  return hospital?.name ?? hospitalId;
+}
+
+export function createReceptionistFilters() {
+  return { employeeName: '' };
+}
+export function createVisitingFilters() {
+  return { employeeName: '' };
+}
+
+

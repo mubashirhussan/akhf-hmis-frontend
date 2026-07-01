@@ -35,7 +35,15 @@ export function getHospitalRows() {
 }
 
 export function createHospitalRow(payload) {
-  const hospitalId = nextHospitalId++;
+  const providedHospitalId = payload?.hospitalId ? Number(payload.hospitalId) : undefined;
+  const hospitalId = Number.isInteger(providedHospitalId) && providedHospitalId > 0
+    ? providedHospitalId
+    : nextHospitalId++;
+
+  if (hospitalId >= nextHospitalId) {
+    nextHospitalId = hospitalId + 1;
+  }
+
   const row = { id: String(hospitalId), hospitalId, ...payload };
   hospitalRows = [row, ...hospitalRows];
   return row;
@@ -54,6 +62,7 @@ export function deleteHospitalRow(id) {
 
 export function createEmptyHospitalForm() {
   return {
+    hospitalId: '',
     name: '',
     abbreviation: '',
     address: '',
@@ -66,6 +75,7 @@ export function createEmptyHospitalForm() {
 
 export function rowToHospitalForm(row) {
   return {
+    hospitalId: row.hospitalId ?? '',
     name: row.name ?? '',
     abbreviation: row.abbreviation ?? '',
     address: row.address ?? '',
