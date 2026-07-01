@@ -49,27 +49,27 @@ export const navigation = [
       // },
       {
         key: 'pathology-main-group',
-        label: 'Pathology Main Group',
+        label: 'Main Group',
         href: '/admin-pathology/main-group',
       },
       {
         key: 'pathology-sub-group',
-        label: 'Pathology Sub Group',
+        label: 'Sub Group',
         href: '/admin-pathology/sub-group',
       },
       {
         key: 'pathology-test-name',
-        label: 'Pathology Test Name',
+        label: 'Test Name',
         href: '/admin-pathology/test-name',
       },
       {
         key: 'pathology-component',
-        label: 'Pathology Component',
+        label: 'Component',
         href: '/admin-pathology/pathology-component',
       },
       {
         key: 'pathology-test-range',
-        label: 'Pathology Test Range',
+        label: 'Test Range',
         href: '/admin-pathology/test-range',
       },
       // {
@@ -79,12 +79,12 @@ export const navigation = [
       // },
       {
         key: 'pathology-test-booking',
-        label: 'Pathology Test Booking',
+        label: 'Test Booking',
         href: '/admin-pathology/test-booking',
       },
       {
         key: 'map-pathology-services',
-        label: 'Map Pathology Services',
+        label: 'Map Services',
         href: '/admin-pathology/map-services',
       },
       // {
@@ -94,7 +94,7 @@ export const navigation = [
       // },
       {
         key: 'pathology-report-consultant',
-        label: 'Pathology Report Consultant',
+        label: 'Report Consultant',
         href: '/admin-pathology/report-consultant',
       },
       {
