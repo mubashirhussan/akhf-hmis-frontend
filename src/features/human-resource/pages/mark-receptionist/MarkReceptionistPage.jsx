@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
 import { App, Button, Input, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
@@ -178,7 +179,7 @@ export default function MarkReceptionistPage() {
           />
         </div>
 
-        <Button type="primary" onClick={openModal}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
           Mark Receptionist
         </Button>
       </div>

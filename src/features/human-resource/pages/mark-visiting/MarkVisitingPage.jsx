@@ -2,11 +2,10 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Input, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
-import { createVisitingFilters } from '@/features/human-resource/api/mock-employee-search';
 import {
   useGetEmployeesQuery,
   useGetVisitingsQuery,
@@ -14,7 +13,6 @@ import {
   useUpdateVisitingMutation,
   useDeleteVisitingMutation,
 } from '@/features/human-resource/api/employeeApi';
-import MarkVisitingFilterForm from './MarkVisitingFilterForm';
 import MarkVisitingModal from './MarkVisitingModal';
 import './mark-visiting.css';
 
@@ -28,8 +26,7 @@ export default function MarkVisitingPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
 
-  const [filters, setFilters] = useState(createVisitingFilters);
-  const [appliedFilters, setAppliedFilters] = useState(createVisitingFilters);
+  const [employeeNameFilter, setEmployeeNameFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [form, setForm] = useState(createEmptyVisitingForm);
@@ -42,25 +39,10 @@ export default function MarkVisitingPage() {
   const [deleteVisiting] = useDeleteVisitingMutation();
 
   const filteredRows = useMemo(() => {
-    if (!appliedFilters.employeeName?.trim()) return rows;
-    return rows.filter((r) =>
-      r.employeeName
-        ?.toLowerCase()
-        .includes(appliedFilters.employeeName.trim().toLowerCase()),
-    );
-  }, [rows, appliedFilters]);
-
-  const patchFilter = useCallback((patch) => {
-    setFilters((cur) => ({ ...cur, ...patch }));
-  }, []);
-
-  const handleSearch = () => setAppliedFilters({ ...filters });
-
-  const handleClear = () => {
-    const reset = createVisitingFilters();
-    setFilters(reset);
-    setAppliedFilters(reset);
-  };
+    const term = employeeNameFilter.trim().toLowerCase();
+    if (!term) return rows;
+    return rows.filter((r) => r.employeeName?.toLowerCase().includes(term));
+  }, [rows, employeeNameFilter]);
 
   const patchForm = useCallback((patch) => {
     setForm((cur) => ({ ...cur, ...patch }));
@@ -152,6 +134,15 @@ export default function MarkVisitingPage() {
         fixed: 'right',
         render: (_, record) => (
           <div className="mark-visiting-actions-cell">
+            <Tooltip title="Edit">
+              <Button
+                type="link"
+                size="small"
+                aria-label={`Edit ${record.employeeName}`}
+                icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
+                onClick={() => handleEditRow(record)}
+              />
+            </Tooltip>
             <Tooltip title="Delete">
               <Button
                 type="link"
@@ -171,21 +162,26 @@ export default function MarkVisitingPage() {
 
   return (
     <div className="services-billing-page mark-visiting-page">
-      <MarkVisitingFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
-        onSubmit={handleSearch}
-        onClear={handleClear}
-        loading={isFetching}
-      />
-
-      <section className="services-billing-results" aria-label="Visitings">
-        <div className="hr-table-toolbar">
-          <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
-            Mark Visiting
-          </Button>
+      <div
+        className="mark-visiting-table-toolbar"
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
+      >
+        <div className="mark-visiting-filters" style={{ display: 'flex', gap: 12 }}>
+          <Input
+            placeholder="Filter by Employee Name"
+            value={employeeNameFilter}
+            onChange={(e) => setEmployeeNameFilter(e.target.value)}
+            allowClear
+            style={{ width: 260 }}
+          />
         </div>
 
+        <Button type="primary" icon={<PlusOutlined />} onClick={openModal}>
+          Mark Visiting
+        </Button>
+      </div>
+
+      <section className="services-billing-results" aria-label="Visitings">
         <DataTable
           rowKey="id"
           columns={columns}

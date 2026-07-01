@@ -389,8 +389,30 @@ export function deleteReceptionistRow(id) {
   receptionistRows = receptionistRows.filter((r) => r.id !== id);
 }
 
-let visitingRows = [];
-let nextVisitingId = 1;
+export const INITIAL_VISITING_ROWS = [
+  {
+    id: '1',
+    visitingId: '1',
+    employeeId: '123',
+    employeeName: 'MUHAMMAD MEHTAB',
+  },
+  {
+    id: '2',
+    visitingId: '2',
+    employeeId: '101',
+    employeeName: 'Sohail Ahmad',
+  },
+  {
+    id: '3',
+    visitingId: '3',
+    employeeId: '124',
+    employeeName: 'ALI HUSSAIN',
+  },
+];
+
+let visitingRows = INITIAL_VISITING_ROWS.map((row) => ({ ...row }));
+let nextVisitingId =
+  Math.max(...INITIAL_VISITING_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getVisitingRows() {
   return visitingRows;
