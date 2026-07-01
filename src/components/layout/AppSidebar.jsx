@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { footerLinks, navigation } from "@/config/navigation";
 import { ROUTES } from "@/config/routes";
 import AppIcon from "@/components/icons/AppIcon";
@@ -131,23 +131,46 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
   const pathname = usePathname();
   const router = useRouter();
   const [hovering, setHovering] = useState(false);
-  const [expandedKeys, setExpandedKeys] = useState(() =>
-    getExpandedKeys(pathname),
-  );
+  const pathExpandedKeys = useMemo(() => getExpandedKeys(pathname), [pathname]);
+  const [userToggledKeys, setUserToggledKeys] = useState(() => new Set());
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setUserToggledKeys((prev) => {
+      const next = new Set(prev);
+      for (const key of pathExpandedKeys) {
+        next.delete(key);
+      }
+      return next;
+    });
+  }
+
+  const expandedKeys = useMemo(() => {
+    const expanded = new Set(pathExpandedKeys);
+    for (const key of userToggledKeys) {
+      if (expanded.has(key)) {
+        expanded.delete(key);
+      } else {
+        expanded.add(key);
+      }
+    }
+    return [...expanded];
+  }, [pathExpandedKeys, userToggledKeys]);
+
   const isCollapsed = collapsed && !hovering;
   const isHoverExpanded = collapsed && hovering;
 
-  useEffect(() => {
-    setExpandedKeys((prev) => {
-      const fromPath = getExpandedKeys(pathname);
-      return [...new Set([...prev, ...fromPath])];
-    });
-  }, [pathname]);
-
   const toggleExpanded = (key) => {
-    setExpandedKeys((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+    setUserToggledKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
   };
 
   return (
