@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import FormGrid from '@/components/ui/FormGrid';
 import FormFloatingField from '@/components/ui/FormFloatingField';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import { useGetEmployeesQuery } from '@/features/human-resource/api/employeeApi';
+import { useGetActiveEmployeesQuery } from '@/features/human-resource/api/employeeApi';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -16,7 +16,7 @@ const tableColumns = [
 ];
 
 export default function EmployeeEmpConfirmationTab() {
-  const { data: employees = [] } = useGetEmployeesQuery();
+  const { data: employees = [] } = useGetActiveEmployeesQuery();
   const form = Form.useFormInstance();
   const allRows = Form.useWatch('empConfirmations', form) ?? [];
 

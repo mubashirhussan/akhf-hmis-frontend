@@ -200,6 +200,16 @@ export const navigation = [
         label: 'Add Designation',
         href: '/human-resource/add-designation',
       },
+            {
+        key: 'change department',
+        label: 'Change Department',
+        href: '/human-resource/change-department',
+      },
+            {
+        key: 'mark-receptionist',
+        label: 'Mark Receptionist',
+        href: '/human-resource/mark-receptionist',
+      },
     ],
   },
    {

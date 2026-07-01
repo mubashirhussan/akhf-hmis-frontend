@@ -4,7 +4,7 @@ import {
 } from '@/features/human-resource/api/mock-employees';
 import { getHospitalRows } from '@/features/human-resource/api/mock-hospitals';
 
-export const ALL_FILTER_VALUE = 'all';
+export const ALL_FILTER_VALUE = 'All';
 
 
 export function getHospitalFilterOptions() {
@@ -78,12 +78,12 @@ const DESIGNATION_LABELS = Object.fromEntries(
 
 export function createEmployeeSearchFilters() {
   return {
-    hospital: 'alkhidmat-diagnostics-karachi',
+    hospital: ALL_FILTER_VALUE,
     department: ALL_FILTER_VALUE,
     employeeQuery: '',
     designation: ALL_FILTER_VALUE,
     employeeType: ALL_FILTER_VALUE,
-    status: 'active',
+    status: ALL_FILTER_VALUE,
   };
 }
 
@@ -216,4 +216,72 @@ export function createActivateDeactivateFilters() {
     employeeNo: '',
     status: ALL_FILTER_VALUE,
   };
+}
+
+
+export function createChangeDepartmentFilters() {
+  return {
+    hospital: ALL_FILTER_VALUE,
+    department: ALL_FILTER_VALUE,
+    designation: ALL_FILTER_VALUE,
+    employeeName: '',
+    cnicNo: '',
+    employeeNo: '',
+  };
+}
+
+export function filterChangeDepartmentEmployees(filters) {
+  let rows = getEmployeeRows();
+
+  if (filters.hospital && filters.hospital !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.hospital === filters.hospital);
+  }
+  if (filters.department && filters.department !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.department === filters.department);
+  }
+  if (filters.designation && filters.designation !== ALL_FILTER_VALUE) {
+    rows = rows.filter((r) => r.designation === filters.designation);
+  }
+  if (filters.employeeName?.trim()) {
+    rows = rows.filter((r) =>
+      getEmployeeDisplayName(r)
+        .toLowerCase()
+        .includes(filters.employeeName.trim().toLowerCase()),
+    );
+  }
+  if (filters.cnicNo?.trim()) {
+    rows = rows.filter((r) =>
+      String(r.cnicNo ?? '').toLowerCase().includes(filters.cnicNo.trim().toLowerCase()),
+    );
+  }
+  if (filters.employeeNo?.trim()) {
+    rows = rows.filter((r) =>
+      String(r.employeeNo ?? '').toLowerCase().includes(filters.employeeNo.trim().toLowerCase()),
+    );
+  }
+
+  return rows.map((emp, index) => ({
+    id: emp.id,
+    serial: index + 1,
+    empId: emp.empId ?? emp.id,
+    empNo: emp.employeeNo ?? '',
+    empName: getEmployeeDisplayName(emp).toUpperCase(),
+    relationName: [emp.relationFirstName, emp.relationMiddleName, emp.relationLastName]
+      .filter(Boolean)
+      .join(' '),
+    cnic: emp.cnicNo ?? '',
+    joinDate: emp.doj ?? '',
+    designationName: getDesignationLabel(emp.designation),
+    departmentName: getDepartmentLabel(emp.department),
+    shiftName: emp.shift ?? '',
+    department: emp.department ?? '',
+    subDepartment: emp.subDepartment ?? '',
+    designation: emp.designation ?? '',
+    shift: emp.shift ?? '',
+  }));
+}
+
+
+export function createReceptionistFilters() {
+  return { employeeName: '' };
 }

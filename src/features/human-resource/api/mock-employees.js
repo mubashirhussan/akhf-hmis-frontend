@@ -325,3 +325,34 @@ export function toggleEmployeeActive(id) {
   ];
   return updated;
 }
+
+
+export function changeDepartmentForEmployee(id, patch) {
+  return updateEmployeeRow(id, patch);
+}
+
+
+let receptionistRows = [];
+let nextReceptionistId = 1;
+
+export function getReceptionistRows() {
+  return receptionistRows;
+}
+
+export function createReceptionistRow(payload) {
+  const id = String(nextReceptionistId++);
+  const row = { id, receptionistId: id, ...payload };
+  receptionistRows = [row, ...receptionistRows];
+  return row;
+}
+
+export function updateReceptionistRow(id, payload) {
+  receptionistRows = receptionistRows.map((r) =>
+    r.id === id ? { ...r, ...payload } : r,
+  );
+  return receptionistRows.find((r) => r.id === id) ?? null;
+}
+
+export function deleteReceptionistRow(id) {
+  receptionistRows = receptionistRows.filter((r) => r.id !== id);
+}
