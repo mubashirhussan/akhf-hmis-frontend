@@ -4,9 +4,9 @@ Routes mirror the sidebar defined in `src/config/navigation.js`.
 
 ## Layout
 
-- `app/(dashboard)/` — authenticated shell (`AppShell`)
+- `app/(protected)/` — authenticated shell (`AppShell`)
 - `app/(auth)/` — login and forgot-password
-- `app/(dashboard)/[...path]/` — catch-all placeholder for unbuilt modules
+- `app/(protected)/[...path]/` — catch-all placeholder for unbuilt modules
 
 ## Feature pages
 
