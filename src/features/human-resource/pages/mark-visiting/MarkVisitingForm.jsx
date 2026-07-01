@@ -8,10 +8,6 @@ import { getEmployeeDisplayName } from '@/features/human-resource/api/mock-emplo
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-const COUNTER_TYPE_OPTIONS = [
-  { value: 'hospital', label: 'Hospital' },
-  { value: 'pharmacy', label: 'Pharmacy' },
-];
 
 export default function MarkVisitingForm({
   form,
@@ -43,7 +39,7 @@ export default function MarkVisitingForm({
           disabled={isEdit}
           options={employees.map((e) => ({
             value: e.empId ?? e.id,
-            label: `${e.empId ?? e.id} — ${getEmployeeDisplayName(e)}`,
+            label: `${e.empId ?? e.id}`,
           }))}
           onChange={handleEmployeeIdChange}
           placeholder=""
@@ -59,19 +55,7 @@ export default function MarkVisitingForm({
         />
       </FormField>
 
-      <FormField label="Counter Type" required error={errors?.counterType}>
-        <Select
-          id={fieldId('counter-type')}
-          className={controlClass}
-          value={form.counterType || undefined}
-          options={COUNTER_TYPE_OPTIONS}
-          status={errors?.counterType ? 'error' : ''}
-          onChange={(val) => {
-            onPatchForm({ counterType: val });
-            onClearError?.('counterType');
-          }}
-        />
-      </FormField>
+
     </FormGrid>
   );
 }

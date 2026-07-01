@@ -210,6 +210,11 @@ export const navigation = [
         label: 'Mark Receptionist',
         href: '/human-resource/mark-receptionist',
       },
+            {
+        key: 'mark-visiting',
+        label: 'Mark Visiting',
+        href: '/human-resource/mark-visiting',
+      },
     ],
   },
    {
