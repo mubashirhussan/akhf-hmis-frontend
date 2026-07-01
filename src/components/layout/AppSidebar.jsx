@@ -25,6 +25,7 @@ function SidebarLink({ href, active, children, className = "" }) {
   return (
     <Link
       href={href}
+      prefetch={false}
       className={`sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${active ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/95 hover:bg-white/10"} ${className}`}
     >
       {children}
@@ -70,6 +71,7 @@ function NavChildItem({ item, pathname, expandedKeys, onToggle }) {
     <li className="relative before:absolute before:-left-4 before:top-1/2 before:h-px before:w-3 before:bg-white/40">
       <Link
         href={item.href}
+        prefetch={false}
         className={`sidebar-nav-child block rounded-[8px] px-3 py-2.5 transition-colors ${isSelfActive ? "bg-white text-[var(--app-primary)] shadow-sm" : "text-white/90 hover:bg-white/10"}`}
       >
         {item.label}
@@ -244,6 +246,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                 ) : (
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className="sidebar-nav-parent flex items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
                   >
                     <AppIcon icon={link.icon} />
