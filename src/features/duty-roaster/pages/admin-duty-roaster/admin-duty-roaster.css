@@ -14,6 +14,10 @@
   column-gap: 16px;
 }
 
+.admin-duty-roaster-form-grid.form-grid > .form-grid-row {
+  grid-column: 1 / -1;
+}
+
 .admin-duty-duration-row {
   display: flex;
   align-items: center;

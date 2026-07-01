@@ -22,7 +22,7 @@ export default function AdminDutyRoasterModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={520}
+      width={640}
       className="admin-duty-roaster-modal"
       rootClassName="admin-duty-roaster-modal-root"
       footer={

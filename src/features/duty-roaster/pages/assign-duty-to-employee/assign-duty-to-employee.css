@@ -1,0 +1,38 @@
+.assign-duty-employee-page {
+  padding: 8px 4px 24px;
+}
+
+.assign-duty-employee-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.assign-duty-employee-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.assign-duty-employee-form-grid.form-grid > .form-grid-row {
+  grid-column: 1 / -1;
+}
+
+.assign-duty-employee-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.assign-duty-employee-save-btn {
+  min-width: 120px;
+}
+
+@media (max-width: 767px) {
+  .assign-duty-employee-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .assign-duty-employee-save-btn {
+    width: 100%;
+  }
+}

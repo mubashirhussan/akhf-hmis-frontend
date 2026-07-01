@@ -44,7 +44,7 @@ export default function AdminDutyRoasterForm({
   }));
 
   return (
-    <FormGrid columns={1} className="admin-duty-roaster-form-grid">
+    <FormGrid columns={2} className="admin-duty-roaster-form-grid">
       <FormField label="Department Name" required error={errors?.departmentId}>
         <Select
           id={fieldId('departmentId')}
@@ -132,6 +132,7 @@ export default function AdminDutyRoasterForm({
       <FormField
         label="Duration Time"
         required
+        className="form-grid-row"
         error={errors?.durationHours || errors?.durationMinutes}
       >
         <div className="admin-duty-duration-row">

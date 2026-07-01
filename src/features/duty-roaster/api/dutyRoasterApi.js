@@ -11,6 +11,12 @@ import {
   updateAdminDutyRoasterRow,
   deleteAdminDutyRoasterRow,
 } from '@/features/duty-roaster/api/mock-admin-duty-roaster';
+import {
+  getAssignDutyToEmployeeRows,
+  createAssignDutyToEmployeeRow,
+  updateAssignDutyToEmployeeRow,
+  deleteAssignDutyToEmployeeRow,
+} from '@/features/duty-roaster/api/mock-assign-duty-to-employee';
 
 export const dutyRoasterApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -61,6 +67,31 @@ export const dutyRoasterApi = api.injectEndpoints({
       },
       invalidatesTags: ['AdminDutyRoaster'],
     }),
+
+    getAssignDutyToEmployees: builder.query({
+      queryFn: async () => ({ data: getAssignDutyToEmployeeRows() }),
+      providesTags: ['AssignDutyToEmployee'],
+    }),
+
+    addAssignDutyToEmployee: builder.mutation({
+      queryFn: async (payload) => ({ data: createAssignDutyToEmployeeRow(payload) }),
+      invalidatesTags: ['AssignDutyToEmployee'],
+    }),
+
+    updateAssignDutyToEmployee: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({
+        data: updateAssignDutyToEmployeeRow(id, payload),
+      }),
+      invalidatesTags: ['AssignDutyToEmployee'],
+    }),
+
+    deleteAssignDutyToEmployee: builder.mutation({
+      queryFn: async (id) => {
+        deleteAssignDutyToEmployeeRow(id);
+        return { data: true };
+      },
+      invalidatesTags: ['AssignDutyToEmployee'],
+    }),
   }),
 });
 
@@ -73,4 +104,8 @@ export const {
   useAddAdminDutyRoasterMutation,
   useUpdateAdminDutyRoasterMutation,
   useDeleteAdminDutyRoasterMutation,
+  useGetAssignDutyToEmployeesQuery,
+  useAddAssignDutyToEmployeeMutation,
+  useUpdateAssignDutyToEmployeeMutation,
+  useDeleteAssignDutyToEmployeeMutation,
 } = dutyRoasterApi;

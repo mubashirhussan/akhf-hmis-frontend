@@ -2,12 +2,12 @@
 
 import { Button } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import ShiftForm from './ShiftForm';
+import AssignDutyToEmployeeForm from './AssignDutyToEmployeeForm';
 
-export default function ShiftModal({
+export default function AssignDutyToEmployeeModal({
   open,
   onClose,
-  title = 'Add Shift',
+  title = 'Assign Duty to Employee',
   form,
   errors,
   onPatchForm,
@@ -22,19 +22,19 @@ export default function ShiftModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={640}
-      className="shift-modal"
-      rootClassName="shift-modal-root"
+      width={720}
+      className="assign-duty-employee-modal"
+      rootClassName="assign-duty-employee-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" className="shift-save-btn" onClick={onSave}>
+          <Button type="primary" className="assign-duty-employee-save-btn" onClick={onSave}>
             Save
           </Button>
         </>
       }
     >
-      <ShiftForm
+      <AssignDutyToEmployeeForm
         form={form}
         errors={errors}
         onPatchForm={onPatchForm}

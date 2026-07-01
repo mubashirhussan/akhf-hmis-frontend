@@ -19,7 +19,7 @@ export default function ShiftForm({ form, errors = {}, onPatchForm, onClearError
   const fieldId = (name) => `shift-${name}`;
 
   return (
-    <FormGrid columns={1} className="shift-form-grid">
+    <FormGrid columns={2} className="shift-form-grid">
       <FormField label="Shift Name" required error={errors?.shiftName}>
         <Input
           id={fieldId('shiftName')}
@@ -34,7 +34,7 @@ export default function ShiftForm({ form, errors = {}, onPatchForm, onClearError
         />
       </FormField>
 
-      <FormField label="Shift Description" error={errors?.shiftDescription}>
+      <FormField label="Shift Description" className="form-grid-row" error={errors?.shiftDescription}>
         <Input
           id={fieldId('shiftDescription')}
           className={controlClass}
