@@ -5,6 +5,12 @@ import {
   updateShiftRow,
   deleteShiftRow,
 } from '@/features/duty-roaster/api/mock-shifts';
+import {
+  getAdminDutyRoasterRows,
+  createAdminDutyRoasterRow,
+  updateAdminDutyRoasterRow,
+  deleteAdminDutyRoasterRow,
+} from '@/features/duty-roaster/api/mock-admin-duty-roaster';
 
 export const dutyRoasterApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -30,6 +36,31 @@ export const dutyRoasterApi = api.injectEndpoints({
       },
       invalidatesTags: ['Shift'],
     }),
+
+    getAdminDutyRoasters: builder.query({
+      queryFn: async () => ({ data: getAdminDutyRoasterRows() }),
+      providesTags: ['AdminDutyRoaster'],
+    }),
+
+    addAdminDutyRoaster: builder.mutation({
+      queryFn: async (payload) => ({ data: createAdminDutyRoasterRow(payload) }),
+      invalidatesTags: ['AdminDutyRoaster'],
+    }),
+
+    updateAdminDutyRoaster: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({
+        data: updateAdminDutyRoasterRow(id, payload),
+      }),
+      invalidatesTags: ['AdminDutyRoaster'],
+    }),
+
+    deleteAdminDutyRoaster: builder.mutation({
+      queryFn: async (id) => {
+        deleteAdminDutyRoasterRow(id);
+        return { data: true };
+      },
+      invalidatesTags: ['AdminDutyRoaster'],
+    }),
   }),
 });
 
@@ -38,4 +69,8 @@ export const {
   useAddShiftMutation,
   useUpdateShiftMutation,
   useDeleteShiftMutation,
+  useGetAdminDutyRoastersQuery,
+  useAddAdminDutyRoasterMutation,
+  useUpdateAdminDutyRoasterMutation,
+  useDeleteAdminDutyRoasterMutation,
 } = dutyRoasterApi;
