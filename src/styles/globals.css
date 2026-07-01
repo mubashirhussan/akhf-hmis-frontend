@@ -16,6 +16,7 @@
 @import "../features/auth/styles/index.css";
 @import "../features/doctor/styles/index.css";
 @import "../features/appointment/styles/index.css";
+@import "../features/duty-roaster/styles/index.css";
 
 html,
 body {

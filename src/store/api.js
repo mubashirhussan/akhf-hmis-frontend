@@ -30,6 +30,9 @@ export const api = createApi({
     'Designation',
     'Receptionist',
     'Visiting',
+    'Shift',
+    'AdminDutyRoaster',
+    'AssignDutyToEmployee',
   ],
   endpoints: () => ({}),
 });

@@ -1,6 +1,8 @@
 export const ROUTES = {
   home: '/',
+  dashboard: '/dashboard',
   login: '/login',
+  signup: '/signup',
   forgotPassword: '/forgot-password',
   opd: {
     root: '/opd',
