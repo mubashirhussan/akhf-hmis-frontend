@@ -38,7 +38,7 @@ export const INITIAL_EMPLOYEE_ROWS = [
     designation: 'neuro-surgeon',
     grade: '5',
     doj: '01/01/2018',
-    hospital: 'alkhidmat-hospital-peshawar',
+    hospital: '2',
     department: 'medical',
     ntnNo: '1234567-8',
     subDepartment: 'administration',
@@ -49,6 +49,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     providentFundNo: 'PF-2001',
     eobiNo: 'EOBI-3001',
     isConsultant: true,
+    dob: '15/04/1980',
+    departmentId: 1,
     picture: null,
     age: '42 Years',
     status: 'active',
@@ -98,7 +100,7 @@ export const INITIAL_EMPLOYEE_ROWS = [
     designation: 'staff-nurse',
     grade: '3',
     doj: '15/06/2022',
-    hospital: 'alkhidmat-diagnostics-karachi',
+    hospital: '1',
     department: 'human-resource',
     ntnNo: '',
     subDepartment: 'reception',
@@ -109,6 +111,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     providentFundNo: '',
     eobiNo: '',
     isConsultant: false,
+    dob: '22/09/1995',
+    departmentId: 2,
     picture: null,
     age: '28 Years',
     status: 'active',
@@ -158,7 +162,7 @@ export const INITIAL_EMPLOYEE_ROWS = [
     designation: 'officer',
     grade: '4',
     doj: '10/03/2019',
-    hospital: 'alkhidmat-diagnostics-karachi',
+    hospital: '1',
     department: 'human-resource',
     ntnNo: '',
     subDepartment: 'human-resource',
@@ -169,6 +173,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     providentFundNo: '',
     eobiNo: '',
     isConsultant: false,
+    dob: '05/07/1989',
+    departmentId: 3,
     picture: null,
     age: '35 Years',
     status: 'inactive',
@@ -218,7 +224,7 @@ export const INITIAL_EMPLOYEE_ROWS = [
     designation: 'administrator',
     grade: '2',
     doj: '01/08/2023',
-    hospital: 'alkhidmat-diagnostics-karachi',
+    hospital: '1',
     department: 'administration',
     ntnNo: '',
     subDepartment: 'finance',
@@ -229,6 +235,8 @@ export const INITIAL_EMPLOYEE_ROWS = [
     providentFundNo: '',
     eobiNo: '',
     isConsultant: false,
+    dob: '11/12/1993',
+    departmentId: 4,
     picture: null,
     age: '30 Years',
     status: 'inactive',
@@ -324,4 +332,60 @@ export function toggleEmployeeActive(id) {
     ...employeeRows.slice(index + 1),
   ];
   return updated;
+}
+
+
+export function changeDepartmentForEmployee(id, patch) {
+  return updateEmployeeRow(id, patch);
+}
+
+
+let receptionistRows = [];
+let nextReceptionistId = 1;
+
+export function getReceptionistRows() {
+  return receptionistRows;
+}
+
+export function createReceptionistRow(payload) {
+  const id = String(nextReceptionistId++);
+  const row = { id, receptionistId: id, ...payload };
+  receptionistRows = [row, ...receptionistRows];
+  return row;
+}
+
+export function updateReceptionistRow(id, payload) {
+  receptionistRows = receptionistRows.map((r) =>
+    r.id === id ? { ...r, ...payload } : r,
+  );
+  return receptionistRows.find((r) => r.id === id) ?? null;
+}
+
+export function deleteReceptionistRow(id) {
+  receptionistRows = receptionistRows.filter((r) => r.id !== id);
+}
+
+let visitingRows = [];
+let nextVisitingId = 1;
+
+export function getVisitingRows() {
+  return visitingRows;
+}
+
+export function createVisitingRow(payload) {
+  const id = String(nextVisitingId++);
+  const row = { id, visitingId: id, ...payload };
+  visitingRows = [row, ...visitingRows];
+  return row;
+}
+
+export function updateVisitingRow(id, payload) {
+  visitingRows = visitingRows.map((r) =>
+    r.id === id ? { ...r, ...payload } : r,
+  );
+  return visitingRows.find((r) => r.id === id) ?? null;
+}
+
+export function deleteVisitingRow(id) {
+  visitingRows = visitingRows.filter((r) => r.id !== id);
 }

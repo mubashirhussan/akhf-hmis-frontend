@@ -59,3 +59,17 @@
 .activate-confirm-modal--red .ant-modal-confirm-title {
   color: #ff4d4f;
 }
+
+.status-active {
+  color: #1677ff !important;
+  /* background: transparent !important; */
+  border: none !important;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #ff4d4f !important;
+  /* background: transparent !important; */
+  border: none !important;
+  font-weight: 600;
+}

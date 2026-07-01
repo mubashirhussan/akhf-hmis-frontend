@@ -13,6 +13,26 @@ export default function HospitalForm({ form, errors = {}, onPatchForm, onClearEr
   return (
     <FormGrid columns={2} className="hospital-form-grid">
       <FormField
+        label="Hospital ID"
+        required
+        error={errors?.hospitalId}
+      >
+        <Input
+          id={fieldId('hospitalId')}
+          className={controlClass}
+          type="number"
+          min="1"
+          value={form.hospitalId}
+          status={errors?.hospitalId ? 'error' : ''}
+          onChange={(e) => {
+            onPatchForm({ hospitalId: e.target.value });
+            onClearError?.('hospitalId');
+          }}
+          autoComplete="off"
+        />
+      </FormField>
+
+      <FormField
         label="Hospital Name"
         required
         error={errors?.name}

@@ -28,6 +28,8 @@ export const api = createApi({
     'SubDeptType',
     'SubDepartment',
     'Designation',
+    'Receptionist',
+    'Visiting',
     'Shift',
     'AdminDutyRoaster',
     'AssignDutyToEmployee',

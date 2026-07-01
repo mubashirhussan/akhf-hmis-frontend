@@ -6,8 +6,16 @@ import {
   updateEmployeeRow,
   saveEmployeeSection,
   deleteEmployeeRow,
-
   toggleEmployeeActive,
+  changeDepartmentForEmployee,
+  getReceptionistRows,
+  createReceptionistRow,
+  updateReceptionistRow,
+  deleteReceptionistRow,
+    getVisitingRows,
+  createVisitingRow,
+  updateVisitingRow,
+  deleteVisitingRow,
 } from '@/features/human-resource/api/mock-employees';
 import { searchEmployees } from '@/features/human-resource/api/mock-employee-search';
 import {
@@ -51,6 +59,12 @@ export const employeeApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getEmployees: builder.query({
       queryFn: async () => ({ data: getEmployeeRows() }),
+      providesTags: ["Employee"],
+    }),
+    getActiveEmployees: builder.query({
+      queryFn: async () => ({
+        data: getEmployeeRows().filter((emp) => emp.isActive ?? emp.status === 'active'),
+      }),
       providesTags: ["Employee"],
     }),
     searchEmployees: builder.query({
@@ -428,11 +442,92 @@ deleteDesignation: builder.mutation({
       },
       invalidatesTags: ['Employee'],
     }),
+    changeDepartment: builder.mutation({
+  queryFn: async ({ id, ...patch }) => {
+    const { changeDepartmentForEmployee } = await import(
+      '@/features/human-resource/api/mock-employees'
+    );
+    const employee = changeDepartmentForEmployee(id, patch);
+    if (!employee) return { error: { status: 404, data: 'Employee not found' } };
+    return { data: employee };
+  },
+  invalidatesTags: (_result, _error, { id }) => [{ type: 'Employee', id }, 'Employee'],
+}),
+
+getReceptionists: builder.query({
+  queryFn: async () => {
+    const { getReceptionistRows } = await import(
+      '@/features/human-resource/api/mock-employees'
+    );
+    return { data: getReceptionistRows() };
+  },
+  providesTags: ['Receptionist'],
+}),
+
+addReceptionist: builder.mutation({
+  queryFn: async (payload) => {
+    const { createReceptionistRow } = await import(
+      '@/features/human-resource/api/mock-employees'
+    );
+    return { data: createReceptionistRow(payload) };
+  },
+  invalidatesTags: ['Receptionist'],
+}),
+
+updateReceptionist: builder.mutation({
+  queryFn: async ({ id, ...payload }) => {
+    const { updateReceptionistRow } = await import(
+      '@/features/human-resource/api/mock-employees'
+    );
+    const row = updateReceptionistRow(id, payload);
+    if (!row) return { error: { status: 404, data: 'Receptionist not found' } };
+    return { data: row };
+  },
+  invalidatesTags: ['Receptionist'],
+}),
+
+deleteReceptionist: builder.mutation({
+  queryFn: async (id) => {
+    const { deleteReceptionistRow } = await import(
+      '@/features/human-resource/api/mock-employees'
+    );
+    deleteReceptionistRow(id);
+    return { data: true };
+  },
+  invalidatesTags: ['Receptionist'],
+}),
+getVisitings: builder.query({
+  queryFn: async () => ({ data: getVisitingRows() }),
+  providesTags: ['Visiting'],
+}),
+
+addVisiting: builder.mutation({
+  queryFn: async (payload) => ({ data: createVisitingRow(payload) }),
+  invalidatesTags: ['Visiting'],
+}),
+
+updateVisiting: builder.mutation({
+  queryFn: async ({ id, ...payload }) => {
+    const row = updateVisitingRow(id, payload);
+    if (!row) return { error: { status: 404, data: 'Visiting record not found' } };
+    return { data: row };
+  },
+  invalidatesTags: ['Visiting'],
+}),
+
+deleteVisiting: builder.mutation({
+  queryFn: async (id) => {
+    deleteVisitingRow(id);
+    return { data: true };
+  },
+  invalidatesTags: ['Visiting'],
+}),
   }),
 });
 
 export const {
   useGetEmployeesQuery,
+  useGetActiveEmployeesQuery,
   useSearchEmployeesQuery,
   useLazySearchEmployeesQuery,
   useGetEmployeeQuery,
@@ -481,4 +576,13 @@ export const {
   useUpdateDesignationMutation,
   useDeleteDesignationMutation,
   useToggleEmployeeActiveMutation,
+   useChangeDepartmentMutation,
+  useGetReceptionistsQuery,
+  useAddReceptionistMutation,
+  useUpdateReceptionistMutation,
+  useDeleteReceptionistMutation,
+  useGetVisitingsQuery,
+useAddVisitingMutation,
+useUpdateVisitingMutation,
+useDeleteVisitingMutation,
 } = employeeApi;

@@ -42,7 +42,7 @@ export const BILLING_RECEIVABLE_PARTY_OPTIONS = [
 ];
 
 export const BILLING_DISCOUNT_HOSPITAL_OPTIONS = [
-  { value: 'alkhidmat-khi', label: 'ALKHIDMAT DIAGNOSTICS KARACHI' },
+  { value: 'alkhidmat-diagnostics-karachi', label: 'ALKHIDMAT DIAGNOSTICS KARACHI' },
   { value: 'akhf-main', label: 'AKHF Main Hospital' },
   { value: 'akhf-lab', label: 'AKHF Diagnostics Lab' },
 ];

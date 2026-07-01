@@ -93,6 +93,7 @@ export default function DeleteSavedComponentsModal({
       }
     >
       {savedParameters.length ? (
+        
         <DataTable
           className="result-entry-delete-modal-table py-4"
           wrapClassName="result-entry-delete-modal-table-wrap"

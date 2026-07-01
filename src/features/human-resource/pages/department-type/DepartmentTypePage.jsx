@@ -157,11 +157,11 @@ export default function DepartmentTypePage() {
         dataIndex: 'status',
         key: 'status',
         width: 100,
-        render: (status) => (
-          <Tag color={status === 'active' ? 'success' : 'default'}>
-            {status === 'active' ? 'Active' : 'Disactive'}
-          </Tag>
-        ),
+render: (status) => (
+  <Tag className={status === 'active' ? 'status-active' : 'status-inactive'}>
+    {status === 'active' ? 'Active' : 'inactive'}
+  </Tag>
+),
       },
       {
         title: 'Action',
@@ -241,7 +241,7 @@ export default function DepartmentTypePage() {
                 placeholder=""
                 options={[
                   { value: 'active', label: 'Active' },
-                  { value: 'disactive', label: 'Disactive' },
+                  { value: 'inactive', label: 'inactive' },
                 ]}
                 onChange={(val) => setDeptTypeFilter((c) => ({ ...c, status: val ?? null }))}
               />
