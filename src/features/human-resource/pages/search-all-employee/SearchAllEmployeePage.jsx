@@ -77,128 +77,128 @@ export default function SearchAllEmployeePage() {
         title: "#",
         dataIndex: "serial",
         key: "serial",
-        width: 56,
+        // width: 56,
       },
       {
         title: "Emp ID",
         dataIndex: "empId",
         key: "empId",
-        width: 90,
+        // width: 90,
       },
       {
         title: "Emp No",
         dataIndex: "empNo",
         key: "empNo",
-        width: 100,
+        // width: 100,
       },
       {
         title: "Emp Name",
         dataIndex: "empName",
         key: "empName",
-        width: 180,
+        // width: 180,
       },
       {
         title: "Relation Name",
         dataIndex: "relationName",
         key: "relationName",
-        width: 160,
+        // width: 160,
       },
-      {
-        title: "Hospital ID",
-        dataIndex: "hospitalId",
-        key: "hospitalId",
-        width: 90,
-      },
+      // {
+      //   title: "Hospital ID",
+      //   dataIndex: "hospitalId",
+      //   key: "hospitalId",
+      //   width: 90,
+      // },
       {
         title: "Hospital Name",
         dataIndex: "hospitalName",
         key: "hospitalName",
-        width: 260,
+        // width: 260,
       },
-      {
-        title: "Department ID",
-        dataIndex: "departmentId",
-        key: "departmentId",
-        width: 130,
-      },
+      // {
+      //   title: "Department ID",
+      //   dataIndex: "departmentId",
+      //   key: "departmentId",
+      //   width: 130,
+      // },
       {
         title: "Department",
         dataIndex: "department",
         key: "department",
-        width: 160,
+        // width: 160,
       },
       {
         title: "SubDepartment",
         dataIndex: "subDepartment",
         key: "subDepartment",
-        width: 150,
+        // width: 150,
       },
       {
         title: "CNIC",
         dataIndex: "cnic",
         key: "cnic",
-        width: 160,
+        // width: 160,
       },
-      {
-        title: "Designation ID",
-        dataIndex: "designationId",
-        key: "designationId",
-        width: 125,
-      },
+      // {
+      //   title: "Designation ID",
+      //   dataIndex: "designationId",
+      //   key: "designationId",
+      //   width: 125,
+      // },
       {
         title: "Designation",
         dataIndex: "designation",
         key: "designation",
-        width: 140,
+        // width: 140,
       },
-      { title: "Gender", dataIndex: "gender", key: "gender", width: 90 },
-      { title: "Date of Birth", dataIndex: "dob", key: "dob", width: 120 },
+      { title: "Gender", dataIndex: "gender", key: "gender",  },
+      { title: "DOB", dataIndex: "dob", key: "dob",  },
       {
         title: "Joining Date",
         dataIndex: "joiningDate",
         key: "joiningDate",
-        width: 120,
+        // width: 120,
       },
-      {
-        title: "Pay Scale",
-        dataIndex: "payScale",
-        key: "payScale",
-        width: 100,
-      },
-      {
-        title: "Office Address",
-        dataIndex: "officeAddress",
-        key: "officeAddress",
-        width: 200,
-      },
-      {
-        title: "Home Address",
-        dataIndex: "homeAddress",
-        key: "homeAddress",
-        width: 200,
-      },
-      {
-        title: "Present Address",
-        dataIndex: "presentAddress",
-        key: "presentAddress",
-        width: 200,
-      },
-      { title: "Email", dataIndex: "email", key: "email", width: 225 },
-      { title: "Phone Number", dataIndex: "phone", key: "phone", width: 130 },
-      { title: "PMDC", dataIndex: "pmdc", key: "pmdc", width: 80 },
-      { title: "Shift", dataIndex: "shift", key: "shift", width: 100 },
-      {
-        title: "Nationality",
-        dataIndex: "nationalityName",
-        key: "nationalityName",
-        width: 120,
-      },
-      {
-        title: "Religion",
-        dataIndex: "religionName",
-        key: "religionName",
-        width: 110,
-      },
+      // {
+      //   title: "Pay Scale",
+      //   dataIndex: "payScale",
+      //   key: "payScale",
+      //   width: 100,
+      // },
+      // {
+      //   title: "Office Address",
+      //   dataIndex: "officeAddress",
+      //   key: "officeAddress",
+      //   width: 200,
+      // },
+      // {
+      //   title: "Home Address",
+      //   dataIndex: "homeAddress",
+      //   key: "homeAddress",
+      //   width: 200,
+      // },
+      // {
+      //   title: "Present Address",
+      //   dataIndex: "presentAddress",
+      //   key: "presentAddress",
+      //   width: 200,
+      // },
+      { title: "Email", dataIndex: "email", key: "email",  },
+      { title: "Phone Number", dataIndex: "phone", key: "phone" },
+      { title: "PMDC", dataIndex: "pmdc", key: "pmdc",  },
+      { title: "Shift", dataIndex: "shift", key: "shift", className:"whitespace-nowrap" },
+      // {
+      //   title: "Nationality",
+      //   dataIndex: "nationalityName",
+      //   key: "nationalityName",
+      //   width: 120,
+      // },
+      // {
+      //   title: "Religion",
+      //   dataIndex: "religionName",
+      //   key: "religionName",
+      //   width: 110,
+      // },
       {
         title: "Action",
         key: "action",
@@ -221,7 +221,7 @@ export default function SearchAllEmployeePage() {
                 onClick={() => handleEdit(record)}
               />
             </Tooltip>
-            <Tooltip title="Delete">
+            {/* <Tooltip title="Delete">
               <Button
                 type="link"
                 danger
@@ -235,7 +235,7 @@ export default function SearchAllEmployeePage() {
                 }
                 onClick={() => handleDelete(record)}
               />
-            </Tooltip>
+            </Tooltip> */}
           </div>
         ),
       },
@@ -263,7 +263,7 @@ export default function SearchAllEmployeePage() {
           loading={isFetching}
           rowKey="id"
           columnAlign="left"
-          scroll={{ x: true }}
+          // scroll={{ x: true }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
