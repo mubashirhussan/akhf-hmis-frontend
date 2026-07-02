@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { App, Button, Input, Tooltip } from 'antd';
+import { App, Button, Input, Tooltip, Select } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -16,7 +16,13 @@ import {
 import MarkReceptionistModal from './MarkReceptionistModal';
 import './mark-receptionist.css';
 
+
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+
+const COUNTER_TYPE_OPTIONS = [
+  { value: 'hospital', label: 'Hospital' },
+  { value: 'pharmacy', label: 'Pharmacy' },
+];
 
 function createEmptyReceptionistForm() {
   return { employeeId: '', employeeName: '', counterType: '' };
@@ -27,6 +33,7 @@ export default function MarkReceptionistPage() {
   const { confirmDelete } = useConfirm();
 
   const [employeeNameFilter, setEmployeeNameFilter] = useState('');
+  const [counterTypeFilter, setCounterTypeFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [form, setForm] = useState(createEmptyReceptionistForm);
@@ -39,10 +46,17 @@ export default function MarkReceptionistPage() {
   const [deleteReceptionist] = useDeleteReceptionistMutation();
 
   const filteredRows = useMemo(() => {
-    const term = employeeNameFilter.trim().toLowerCase();
-    if (!term) return rows;
-    return rows.filter((r) => r.employeeName?.toLowerCase().includes(term));
-  }, [rows, employeeNameFilter]);
+    const employeeNameTerm = employeeNameFilter.trim().toLowerCase();
+    return rows.filter((r) => {
+      const matchesName = employeeNameTerm
+        ? r.employeeName?.toLowerCase().includes(employeeNameTerm)
+        : true;
+      const matchesCounterType = counterTypeFilter
+        ? r.counterType === counterTypeFilter
+        : true;
+      return matchesName && matchesCounterType;
+    });
+  }, [rows, employeeNameFilter, counterTypeFilter]);
 
   const patchForm = useCallback((patch) => {
     setForm((cur) => ({ ...cur, ...patch }));
@@ -177,6 +191,14 @@ export default function MarkReceptionistPage() {
             onChange={(e) => setEmployeeNameFilter(e.target.value)}
             allowClear
             style={{ width: 260 }}
+          />
+          <Select
+            placeholder="Filter by Counter Type"
+            value={counterTypeFilter || undefined}
+            onChange={(val) => setCounterTypeFilter(val)}
+            allowClear
+            options={COUNTER_TYPE_OPTIONS}
+            style={{ width: 220 }}
           />
         </div>
 
