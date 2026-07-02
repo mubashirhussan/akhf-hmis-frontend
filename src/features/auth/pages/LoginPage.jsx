@@ -52,13 +52,6 @@ export default function LoginPage() {
           Sign in
         </Button>
       </Form>
-
-      <p className="auth-switch">
-        Don&apos;t have an account?{" "}
-        <Link href={ROUTES.signup} className="auth-link auth-link--strong">
-          Create account
-        </Link>
-      </p>
     </AuthShell>
   );
 }
