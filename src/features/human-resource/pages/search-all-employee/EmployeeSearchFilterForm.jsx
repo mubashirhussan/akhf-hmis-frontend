@@ -28,7 +28,7 @@ export default function EmployeeSearchFilterForm({
     <div className="walk-in-add-record-layout employee-search-layout">
       <FormGrid
         as="form"
-        columns={3}
+        columns={4}
         className="walk-in-add-record-form employee-search-form"
         onSubmit={(event) => {
           event.preventDefault();
