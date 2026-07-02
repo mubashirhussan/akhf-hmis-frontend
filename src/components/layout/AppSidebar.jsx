@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { footerLinks, navigation } from "@/config/navigation";
 import { ROUTES } from "@/config/routes";
+import { logout } from "@/store/authSlice";
 import AppIcon from "@/components/icons/AppIcon";
 import {
   getExpandedKeys,
@@ -132,6 +134,7 @@ function NavItem({ item, pathname, collapsed, expandedKeys, onToggle }) {
 export default function AppSidebar({ collapsed, onCollapsedChange }) {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch();
   const [hovering, setHovering] = useState(false);
   const pathExpandedKeys = useMemo(() => getExpandedKeys(pathname), [pathname]);
   const [userToggledKeys, setUserToggledKeys] = useState(() => new Set());
@@ -237,7 +240,10 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                 {link.key === "logout" ? (
                   <button
                     type="button"
-                    onClick={() => router.push(ROUTES.login)}
+                    onClick={() => {
+                      dispatch(logout());
+                      router.push(ROUTES.login);
+                    }}
                     className="sidebar-nav-parent cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
                   >
                     <AppIcon icon={link.icon} />

@@ -1,5 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { api } from '@/store/api';
+import authReducer from '@/store/authSlice';
+import '@/features/auth/api/authApi';
 import '@/features/admin-pathology/api/pathologyApi';
 import '@/features/laboratory/api/laboratoryEndpoints';
 import '@/features/opd/api/opdEndpoints';
@@ -10,6 +12,7 @@ import '@/features/duty-roaster/api/dutyRoasterApi';
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),

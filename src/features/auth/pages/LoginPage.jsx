@@ -1,16 +1,38 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, Checkbox, Form, Input } from "antd";
+import { useSelector } from "react-redux";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import AuthShell from "@/features/auth/components/AuthShell";
+import { useLoginMutation } from "@/features/auth/api/authApi";
+import { selectIsAuthHydrated, selectIsAuthenticated } from "@/store/authSlice";
 import { ROUTES } from "@/config/routes";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [login, { isLoading }] = useLoginMutation();
+  const isHydrated = useSelector(selectIsAuthHydrated);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  const handleLogin = () => {
-    router.push(ROUTES.dashboard);
+  useEffect(() => {
+    if (isHydrated && isAuthenticated) {
+      router.replace(ROUTES.dashboard);
+    }
+  }, [isHydrated, isAuthenticated, router]);
+
+  const handleLogin = async (values) => {
+    try {
+      await login({
+        userName: values.username,
+        password: values.password,
+        remember: values.remember ?? false,
+      }).unwrap();
+      router.push(ROUTES.dashboard);
+    } catch (err) {
+      message.error(err?.message || "Invalid username or password");
+    }
   };
 
   return (
@@ -48,7 +70,13 @@ export default function LoginPage() {
             Forgot Password?
           </Link>
         </div>
-        <Button type="primary" htmlType="submit" size="large" block>
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          block
+          loading={isLoading}
+        >
           Sign in
         </Button>
       </Form>
