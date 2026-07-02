@@ -7,6 +7,10 @@ import {
   getHospitalServicesRows,
   setHospitalServicePrice,
   bulkUpdateHospitalServicePrices,
+  getPackageRows,
+  createPackageRow,
+  updatePackageRow,
+  deletePackageRow,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -56,6 +60,25 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['HospitalService'],
     }),
+    getPackages: builder.query({
+  queryFn: async () => ({ data: getPackageRows() }),
+  providesTags: ['Package'],
+}),
+createPackage: builder.mutation({
+  queryFn: async (payload) => ({ data: createPackageRow(payload) }),
+  invalidatesTags: ['Package'],
+}),
+updatePackage: builder.mutation({
+  queryFn: async ({ id, ...payload }) => ({ data: updatePackageRow(id, payload) }),
+  invalidatesTags: ['Package'],
+}),
+deletePackage: builder.mutation({
+  queryFn: async (id) => {
+    deletePackageRow(id);
+    return { data: { id } };
+  },
+  invalidatesTags: ['Package'],
+}),
   }),
 });
 
@@ -67,4 +90,8 @@ export const {
   useGetHospitalServicesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,
+  useGetPackagesQuery,
+  useCreatePackageMutation,
+  useUpdatePackageMutation,
+  useDeletePackageMutation,
 } = serviceAdminApi;

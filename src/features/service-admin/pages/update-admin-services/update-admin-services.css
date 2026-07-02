@@ -1,38 +1,38 @@
-.admin-services-form-grid.form-grid {
+.update-admin-services-form-grid.form-grid {
   row-gap: 14px;
   column-gap: 16px;
 }
 
-.admin-services-form-grid .field-control,
-.admin-services-form-grid .ant-select {
+.update-admin-services-form-grid .field-control,
+.update-admin-services-form-grid .ant-select {
   width: 100%;
 }
 
-.admin-services-form-grid .admin-services-charges-input {
+.update-admin-services-form-grid .update-admin-services-charges-input {
   width: 100%;
 }
 
-.admin-services-form-grid .admin-services-charges-input.ant-input-number {
+.update-admin-services-form-grid .update-admin-services-charges-input.ant-input-number {
   width: 100%;
 }
 
-.admin-services-form-grid .field-control.ant-input-status-error,
-.admin-services-form-grid .ant-input-status-error.field-control,
-.admin-services-form-grid .ant-select-status-error.field-control {
+.update-admin-services-form-grid .field-control.ant-input-status-error,
+.update-admin-services-form-grid .ant-input-status-error.field-control,
+.update-admin-services-form-grid .ant-select-status-error.field-control {
   border-color: #ff4d4f !important;
   box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
 }
 
-.admin-services-modal-root .ant-modal {
+.update-admin-services-modal-root .ant-modal {
   top: 20px;
   padding-bottom: 0;
 }
 
-.admin-services-save-btn {
+.update-admin-services-save-btn {
   min-width: 138px;
 }
 
-.admin-services-table-toolbar {
+.update-admin-services-table-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,36 +40,36 @@
   margin-bottom: 10px;
 }
 
-.admin-services-actions-cell .ant-btn-link {
+.update-admin-services-actions-cell .ant-btn-link {
   color: var(--app-primary) !important;
 }
 
-.admin-services-actions-cell .ant-btn-link .iconify {
+.update-admin-services-actions-cell .ant-btn-link .iconify {
   color: currentColor;
 }
 
 @media (max-width: 767px) {
-  .admin-services-form-grid.form-grid {
+  .update-admin-services-form-grid.form-grid {
     --form-cols: 1;
   }
 
-  .admin-services-save-btn {
+  .update-admin-services-save-btn {
     width: 100%;
   }
 
-  .admin-services-table-toolbar {
+  .update-admin-services-table-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .admin-services-filters {
+  .update-admin-services-filters {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .admin-services-filters .ant-select,
-  .admin-services-filters .ant-input-affix-wrapper,
-  .admin-services-filters .ant-input {
+  .update-admin-services-filters .ant-select,
+  .update-admin-services-filters .ant-input-affix-wrapper,
+  .update-admin-services-filters .ant-input {
     width: 100% !important;
   }
 }

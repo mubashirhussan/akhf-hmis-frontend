@@ -1,3 +1,4 @@
+
 export const SERVICE_CATEGORY_OPTIONS = [
   { label: 'Laboratory', value: 'laboratory' },
   { label: 'Radiology', value: 'radiology' },
@@ -260,6 +261,7 @@ export function deleteServiceAdminRow(id) {
 
 export function createEmptyServiceAdminForm() {
   return {
+    department: '',
     serviceName: '',
     serviceCategory: '',
     serviceCharges: 0,
@@ -271,6 +273,7 @@ export function createEmptyServiceAdminForm() {
 
 export function rowToServiceAdminForm(row) {
   return {
+    department: row.department ?? '',
     serviceName: row.serviceName ?? '',
     serviceCategory: row.serviceCategory ?? '',
     serviceCharges: row.serviceCharges ?? 0,
@@ -324,4 +327,124 @@ export function getHospitalServicesRows(hospitalId, categoryFilter, nameFilter) 
       price: override != null ? override.price : r.serviceCharges,
     };
   });
+}
+
+export const WARD_OPTIONS = [
+  { label: 'All', value: 'all' },
+  { label: 'Female Ward', value: 'female-ward' },
+  { label: 'Male Ward', value: 'male-ward' },
+];
+
+export const PACKAGE_SERVICE_HEAD_OPTIONS = [
+  { label: 'Cafe Income', value: 'cafe-income' },
+  { label: 'Clean Water', value: 'clean-water' },
+  { label: 'Rental Income', value: 'rental-income' },
+  { label: 'Radiology Income', value: 'radiology-income' },
+];
+
+export const INITIAL_PACKAGE_ROWS = [
+  {
+    id: '1',
+    ward: 'female-ward',
+    department: 'dept-1',
+    packageName: 'Basic Laboratory Package',
+    totalAmount: 5000,
+    doctorShare: 1000,
+    description: 'Core lab tests for outpatient care',
+    serviceHead: 'laboratory-income',
+    serviceCategory: 'laboratory',
+    services: ['Complete Blood Count', 'Blood Sugar Fasting'],
+  },
+  {
+    id: '2',
+    ward: 'male-ward',
+    department: 'dept-2',
+    packageName: 'Radiology Screening Pack',
+    totalAmount: 15000,
+    doctorShare: 3000,
+    description: 'Chest X-ray and ultrasound bundle',
+    serviceHead: 'radiology-income',
+    serviceCategory: 'radiology',
+    services: ['Chest X-Ray', 'Ultrasound Abdomen'],
+  },
+  {
+    id: '3',
+    ward: 'female-ward',
+    department: 'dept-3',
+    packageName: 'OPD Consultation Bundle',
+    totalAmount: 3200,
+    doctorShare: 800,
+    description: 'Consultation services for routine visits',
+    serviceHead: 'opd-income',
+    serviceCategory: 'opd-consultation',
+    services: ['General OPD Consultation', 'Follow Up Consultation'],
+  },
+  {
+    id: '4',
+    ward: 'male-ward',
+    department: 'dept-4',
+    packageName: 'Minor Procedure Package',
+    totalAmount: 7800,
+    doctorShare: 1500,
+    description: 'Procedure package for minor interventions',
+    serviceHead: 'procedure-income',
+    serviceCategory: 'procedure',
+    services: ['Minor Surgical Procedure', 'Dressing and Wound Care'],
+  },
+];
+
+let packageRows = INITIAL_PACKAGE_ROWS.map((row) => ({
+  ...row,
+  onDate: row.onDate ?? new Date().toISOString(),
+}));
+let nextPackageId = Math.max(...INITIAL_PACKAGE_ROWS.map((row) => Number(row.id ?? 0)), 0) + 1;
+
+export function getPackageRows() {
+  return packageRows;
+}
+
+export function createPackageRow(payload) {
+  const id = String(nextPackageId++);
+  const row = { id, onDate: new Date().toISOString(), ...payload };
+  packageRows = [row, ...packageRows];
+  return row;
+}
+
+export function updatePackageRow(id, payload) {
+  packageRows = packageRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return packageRows.find((row) => row.id === id) ?? null;
+}
+
+export function deletePackageRow(id) {
+  packageRows = packageRows.filter((row) => row.id !== id);
+}
+
+export function createEmptyPackageForm() {
+  return {
+    ward: '',
+    department: '',
+    packageName: '',
+    totalAmount: null,
+    doctorShare: null,
+    description: '',
+    serviceHead: '',
+    serviceCategory: '',
+    services: [],
+  };
+}
+
+export function rowToPackageForm(row) {
+  return {
+    ward: row.ward ?? '',
+    department: row.department ?? '',
+    packageName: row.packageName ?? '',
+    totalAmount: row.totalAmount ?? null,
+    doctorShare: row.doctorShare ?? null,
+    description: row.description ?? '',
+    serviceHead: row.serviceHead ?? '',
+    serviceCategory: row.serviceCategory ?? '',
+    services: row.services ?? [],
+  };
 }
