@@ -12,7 +12,7 @@ import {
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function DepartmentForm({ form, errors = {}, onPatchForm, onClearError }) {
+export default function DepartmentForm({ form, errors = {}, onPatchForm, onClearError, isEdit = false }) {
   const fieldId = (name) => `department-${name}`;
 
   const { data: hospitals = [], isLoading: hospitalsLoading } = useGetHospitalsQuery();
@@ -30,27 +30,6 @@ export default function DepartmentForm({ form, errors = {}, onPatchForm, onClear
 
   return (
     <FormGrid columns={2} className="department-form-grid">
-
-      <FormField
-        label="Department ID"
-        required
-        error={errors?.departmentId}
-      >
-        <Input
-          id={fieldId('departmentId')}
-          className={controlClass}
-          type="number"
-          min="1"
-          value={form.departmentId}
-          status={errors?.departmentId ? 'error' : ''}
-          onChange={(e) => {
-            onPatchForm({ departmentId: e.target.value });
-            onClearError?.('departmentId');
-          }}
-          autoComplete="off"
-        />
-      </FormField>
-
       <FormField
         label="Hospital Name"
         required
