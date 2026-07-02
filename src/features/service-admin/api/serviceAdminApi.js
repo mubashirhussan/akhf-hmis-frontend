@@ -4,6 +4,9 @@ import {
   createServiceAdminRow,
   updateServiceAdminRow,
   deleteServiceAdminRow,
+  getHospitalServicesRows,
+  setHospitalServicePrice,
+  bulkUpdateHospitalServicePrices,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -31,6 +34,28 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['ServiceAdmin'],
     }),
+
+    // ── Hospital Services ──────────────────────────────────────────────────
+    getHospitalServices: builder.query({
+      queryFn: async ({ hospitalId, categoryFilter = '', nameFilter = '' }) => ({
+        data: getHospitalServicesRows(hospitalId, categoryFilter, nameFilter),
+      }),
+      providesTags: ['HospitalService'],
+    }),
+    updateHospitalServicePrice: builder.mutation({
+      queryFn: async ({ hospitalId, serviceId, price }) => {
+        setHospitalServicePrice(hospitalId, serviceId, price);
+        return { data: { hospitalId, serviceId, price } };
+      },
+      invalidatesTags: ['HospitalService'],
+    }),
+    bulkUpdateHospitalServicePrices: builder.mutation({
+      queryFn: async ({ hospitalId, serviceIds, type, percentage }) => {
+        bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage);
+        return { data: { hospitalId, serviceIds, type, percentage } };
+      },
+      invalidatesTags: ['HospitalService'],
+    }),
   }),
 });
 
@@ -39,4 +64,7 @@ export const {
   useCreateServiceAdminMutation,
   useUpdateServiceAdminMutation,
   useDeleteServiceAdminMutation,
+  useGetHospitalServicesQuery,
+  useUpdateHospitalServicePriceMutation,
+  useBulkUpdateHospitalServicePricesMutation,
 } = serviceAdminApi;

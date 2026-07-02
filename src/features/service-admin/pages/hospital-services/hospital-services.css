@@ -1,0 +1,85 @@
+.hospital-services-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.hospital-services-form-grid .field-control,
+.hospital-services-form-grid .ant-select {
+  width: 100%;
+}
+
+.hospital-services-form-grid .hospital-services-percentage-input {
+  width: 100%;
+}
+
+.hospital-services-form-grid .hospital-services-percentage-input.ant-input-number {
+  width: 100%;
+}
+
+.hospital-services-form-grid .field-control.ant-input-status-error,
+.hospital-services-form-grid .ant-input-status-error.field-control,
+.hospital-services-form-grid .ant-select-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.hospital-services-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.hospital-services-save-btn {
+  min-width: 138px;
+}
+
+.hospital-services-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.hospital-services-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.hospital-services-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+.hospital-services-inline-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hospital-services-inline-edit .ant-input-number {
+  width: 120px;
+}
+
+@media (max-width: 767px) {
+  .hospital-services-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .hospital-services-save-btn {
+    width: 100%;
+  }
+
+  .hospital-services-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hospital-services-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hospital-services-filters .ant-select,
+  .hospital-services-filters .ant-input-affix-wrapper,
+  .hospital-services-filters .ant-input {
+    width: 100% !important;
+  }
+}

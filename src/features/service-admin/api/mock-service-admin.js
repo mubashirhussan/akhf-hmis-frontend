@@ -53,6 +53,36 @@ export const INITIAL_SERVICE_ADMIN_ROWS = [
   },
   {
     id: '2',
+    serviceName: 'Blood Sugar Fasting',
+    serviceCategory: 'laboratory',
+    serviceCharges: 400,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'laboratory-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '3',
+    serviceName: 'Liver Function Test',
+    serviceCategory: 'laboratory',
+    serviceCharges: 1800,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'true',
+    serviceHead: 'laboratory-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '4',
+    serviceName: 'Urine Routine Examination',
+    serviceCategory: 'laboratory',
+    serviceCharges: 350,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'laboratory-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '5',
     serviceName: 'Chest X-Ray',
     serviceCategory: 'radiology',
     serviceCharges: 2500,
@@ -62,14 +92,134 @@ export const INITIAL_SERVICE_ADMIN_ROWS = [
     activeStatus: 'active',
   },
   {
-    id: '3',
+    id: '6',
+    serviceName: 'Ultrasound Abdomen',
+    serviceCategory: 'radiology',
+    serviceCharges: 3500,
+    serviceChargesBefore: 'true',
+    serviceEditPrice: 'true',
+    serviceHead: 'radiology-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '7',
+    serviceName: 'CT Scan Brain',
+    serviceCategory: 'radiology',
+    serviceCharges: 12000,
+    serviceChargesBefore: 'true',
+    serviceEditPrice: 'true',
+    serviceHead: 'radiology-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '8',
+    serviceName: 'MRI Spine',
+    serviceCategory: 'radiology',
+    serviceCharges: 18000,
+    serviceChargesBefore: 'true',
+    serviceEditPrice: 'true',
+    serviceHead: 'radiology-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '9',
     serviceName: 'General OPD Consultation',
     serviceCategory: 'opd-consultation',
     serviceCharges: 500,
     serviceChargesBefore: 'false',
     serviceEditPrice: 'false',
     serviceHead: 'opd-income',
-    activeStatus: 'inactive',
+    activeStatus: 'active',
+  },
+  {
+    id: '10',
+    serviceName: 'Specialist Consultation',
+    serviceCategory: 'opd-consultation',
+    serviceCharges: 1500,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'opd-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '11',
+    serviceName: 'Follow Up Consultation',
+    serviceCategory: 'opd-consultation',
+    serviceCharges: 300,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'opd-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '12',
+    serviceName: 'Minor Surgical Procedure',
+    serviceCategory: 'procedure',
+    serviceCharges: 5000,
+    serviceChargesBefore: 'true',
+    serviceEditPrice: 'true',
+    serviceHead: 'procedure-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '13',
+    serviceName: 'Dressing and Wound Care',
+    serviceCategory: 'procedure',
+    serviceCharges: 800,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'procedure-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '14',
+    serviceName: 'IV Cannulation',
+    serviceCategory: 'procedure',
+    serviceCharges: 600,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'procedure-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '15',
+    serviceName: 'Nebulization',
+    serviceCategory: 'procedure',
+    serviceCharges: 400,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'procedure-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '16',
+    serviceName: 'Ambulance Service',
+    serviceCategory: 'miscellaneous',
+    serviceCharges: 2000,
+    serviceChargesBefore: 'true',
+    serviceEditPrice: 'true',
+    serviceHead: 'opd-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '17',
+    serviceName: 'Medical Certificate',
+    serviceCategory: 'miscellaneous',
+    serviceCharges: 500,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'false',
+    serviceHead: 'opd-income',
+    activeStatus: 'active',
+  },
+  {
+    id: '18',
+    serviceName: 'Physiotherapy Session',
+    serviceCategory: 'miscellaneous',
+    serviceCharges: 1200,
+    serviceChargesBefore: 'false',
+    serviceEditPrice: 'true',
+    serviceHead: 'ipd-income',
+    activeStatus: 'active',
   },
 ];
 
@@ -128,4 +278,50 @@ export function rowToServiceAdminForm(row) {
     serviceEditPrice: row.serviceEditPrice ?? 'false',
     serviceHead: row.serviceHead ?? 'opd-income',
   };
+}
+
+let hospitalServicePrices = {};
+
+export function getHospitalServicePrice(hospitalId, serviceId) {
+  const key = `${hospitalId}_${serviceId}`;
+  return hospitalServicePrices[key] ?? null;
+}
+
+export function setHospitalServicePrice(hospitalId, serviceId, price) {
+  const key = `${hospitalId}_${serviceId}`;
+  hospitalServicePrices[key] = { hospitalId, serviceId, price };
+}
+
+export function bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage) {
+  serviceIds.forEach((serviceId) => {
+    const key = `${hospitalId}_${serviceId}`;
+    const existing = hospitalServicePrices[key];
+    const basePrice = existing != null
+      ? existing.price
+      : (serviceAdminRows.find((r) => r.id === serviceId)?.serviceCharges ?? 0);
+    const delta = (basePrice * percentage) / 100;
+    const newPrice = type === 'increase'
+      ? Math.round(basePrice + delta)
+      : Math.max(0, Math.round(basePrice - delta));
+    hospitalServicePrices[key] = { hospitalId, serviceId, price: newPrice };
+  });
+}
+
+export function getHospitalServicesRows(hospitalId, categoryFilter, nameFilter) {
+  let result = serviceAdminRows;
+  if (categoryFilter) {
+    result = result.filter((r) => r.serviceCategory === categoryFilter);
+  }
+  if (nameFilter?.trim()) {
+    result = result.filter((r) =>
+      r.serviceName?.toLowerCase().includes(nameFilter.trim().toLowerCase()),
+    );
+  }
+  return result.map((r) => {
+    const override = hospitalServicePrices[`${hospitalId}_${r.id}`];
+    return {
+      ...r,
+      price: override != null ? override.price : r.serviceCharges,
+    };
+  });
 }

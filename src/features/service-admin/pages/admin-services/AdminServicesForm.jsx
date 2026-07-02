@@ -22,22 +22,6 @@ export default function AdminServicesForm({
 
   return (
     <FormGrid columns={1} className="admin-services-form-grid">
-      <FormField
-        label="Service Name"
-        required
-        error={errors?.serviceName}
-      >
-        <Input
-          id={fieldId('service-name')}
-          className={controlClass}
-          status={errors?.serviceName ? 'error' : ''}
-          value={form.serviceName}
-          onChange={(e) => {
-            onPatchForm({ serviceName: e.target.value });
-            onClearError?.('serviceName');
-          }}
-        />
-      </FormField>
 
       <FormField
         label="Service Category"
@@ -56,6 +40,22 @@ export default function AdminServicesForm({
           onChange={(serviceCategory) => {
             onPatchForm({ serviceCategory });
             onClearError?.('serviceCategory');
+          }}
+        />
+      </FormField>
+      <FormField
+        label="Service Name"
+        required
+        error={errors?.serviceName}
+      >
+        <Input
+          id={fieldId('service-name')}
+          className={controlClass}
+          status={errors?.serviceName ? 'error' : ''}
+          value={form.serviceName}
+          onChange={(e) => {
+            onPatchForm({ serviceName: e.target.value });
+            onClearError?.('serviceName');
           }}
         />
       </FormField>

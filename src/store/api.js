@@ -33,6 +33,7 @@ export const api = createApi({
     'Shift',
     'AdminDutyRoaster',
     'AssignDutyToEmployee',
+    'HospitalService'
   ],
   endpoints: () => ({}),
 });
