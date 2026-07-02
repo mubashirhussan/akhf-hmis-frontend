@@ -129,6 +129,7 @@ export default function MarkReceptionistPage() {
     () => [
       { title: 'Receptionist ID', dataIndex: 'receptionistId', key: 'receptionistId', width: 130 },
       { title: 'Employee Name', dataIndex: 'employeeName', key: 'employeeName', width: 220 },
+      { title: 'Counter Type', dataIndex: 'counterType', key: 'counterType', width: 160 },
       {
         title: 'Action',
         key: 'action',
