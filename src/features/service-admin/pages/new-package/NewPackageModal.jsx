@@ -2,18 +2,19 @@
 
 import { Button } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import AdminServicesForm from '@/features/service-admin/pages/admin-services/AdminServicesForm';
+import NewPackageForm from '@/features/service-admin/pages/new-package/NewPackageForm';
 
-export default function AdminServicesModal({
+export default function NewPackageModal({
   open,
   onClose,
-  title = 'Add Service',
+  title = 'Add Package',
   form,
   errors,
   onPatchForm,
   onClearError,
   onSave,
-  departmentOptions = [],
+  departmentOptions,
+  serviceOptions,
 }) {
   return (
     <AppModal
@@ -23,15 +24,15 @@ export default function AdminServicesModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={480}
-      className="admin-services-modal"
-      rootClassName="admin-services-modal-root"
+      width={760}
+      className="new-package-modal"
+      rootClassName="new-package-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
           <Button
             type="primary"
-            className="admin-services-save-btn"
+            className="new-package-save-btn"
             onClick={onSave}
           >
             Save
@@ -39,12 +40,13 @@ export default function AdminServicesModal({
         </>
       }
     >
-      <AdminServicesForm
+      <NewPackageForm
         form={form}
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
         departmentOptions={departmentOptions}
+        serviceOptions={serviceOptions}
       />
     </AppModal>
   );
