@@ -2,20 +2,17 @@
 
 import { Button } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import NewPackageForm from '@/features/service-admin/pages/new-package/NewPackageForm';
+import NewCategoryForm from '@/features/service-admin/pages/new-category/NewCategoryForm';
 
-export default function NewPackageModal({
+export default function NewCategoryModal({
   open,
   onClose,
-  title = 'Add Package',
+  title = 'Add Service Category',
   form,
   errors,
   onPatchForm,
   onClearError,
   onSave,
-  departmentOptions,
-  serviceCategoryOptions = [],
-  serviceOptions,
 }) {
   return (
     <AppModal
@@ -25,30 +22,23 @@ export default function NewPackageModal({
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={760}
-      className="new-package-modal"
-      rootClassName="new-package-modal-root"
+      width={480}
+      className="new-category-modal"
+      rootClassName="new-category-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button
-            type="primary"
-            className="new-package-save-btn"
-            onClick={onSave}
-          >
+          <Button type="primary" onClick={onSave}>
             Save
           </Button>
         </>
       }
     >
-      <NewPackageForm
+      <NewCategoryForm
         form={form}
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
-        departmentOptions={departmentOptions}
-        serviceCategoryOptions={serviceCategoryOptions}
-        serviceOptions={serviceOptions}
       />
     </AppModal>
   );

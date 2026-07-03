@@ -1,0 +1,15 @@
+.company-form-grid .ant-select,
+.company-form-grid .ant-input,
+.company-form-grid .ant-input-number,
+.company-form-grid .ant-input-textarea {
+  width: 100%;
+}
+
+.company-name-link {
+  color: var(--app-primary);
+}
+
+.company-name-link:hover,
+.company-name-link:focus {
+  text-decoration: none;
+}

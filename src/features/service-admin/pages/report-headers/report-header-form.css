@@ -1,0 +1,20 @@
+.report-header-form-grid .ant-select,
+.report-header-form-grid .ant-input,
+.report-header-form-grid .ant-input-number,
+.report-header-form-grid .ant-upload {
+  width: 100%;
+}
+
+.report-header-upload-preview {
+  margin-top: 8px;
+  max-width: 100px;
+}
+
+.report-header-upload-preview img {
+  width: 100%;
+  max-height: 80px;
+  object-fit: contain;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  display: block;
+}

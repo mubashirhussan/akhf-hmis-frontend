@@ -4,11 +4,7 @@ import { Input, InputNumber, Select } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import {
-  BOOLEAN_OPTIONS,
-  SERVICE_CATEGORY_OPTIONS,
-  SERVICE_HEAD_OPTIONS,
-} from '@/features/service-admin/api/mock-service-admin';
+import { BOOLEAN_OPTIONS, SERVICE_HEAD_OPTIONS } from '@/features/service-admin/api/mock-service-admin';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -18,6 +14,7 @@ export default function AdminServicesForm({
   onPatchForm,
   onClearError,
   departmentOptions = [],
+  serviceCategoryOptions = [],
 }) {
   const fieldId = (name) => `admin-services-${name}`;
 
@@ -34,8 +31,7 @@ export default function AdminServicesForm({
           className={controlClass}
           status={errors?.serviceCategory ? 'error' : ''}
           value={form.serviceCategory || undefined}
-          options={SERVICE_CATEGORY_OPTIONS}
-        
+          options={serviceCategoryOptions}
           showSearch
           optionFilterProp="label"
           onChange={(serviceCategory) => {
@@ -51,7 +47,6 @@ export default function AdminServicesForm({
           status={errors?.department ? 'error' : ''}
           value={form.department || undefined}
           options={departmentOptions}
-          placeholder="--- Select ---"
           showSearch
           optionFilterProp="label"
           onChange={(department) => {
@@ -128,7 +123,6 @@ export default function AdminServicesForm({
           status={errors?.serviceHead ? 'error' : ''}
           value={form.serviceHead || undefined}
           options={SERVICE_HEAD_OPTIONS}
-          placeholder="--- Select ---"
           showSearch
           optionFilterProp="label"
           onChange={(serviceHead) => {

@@ -159,6 +159,36 @@ export const navigation = [
         label: 'New Package',
         href: '/service-admin/new-package',
       },
+      {
+        key: 'new-category',
+        label: 'Service Category',
+        href: '/service-admin/new-category',
+      },
+      {
+        key: 'discount-authorities',
+        label: 'Discount Authorities',
+        href: '/service-admin/discount-authorities',
+      },
+      {
+        key: 'refund-authorities',
+        label: 'Refund Authorities',
+        href: '/service-admin/refund-authorities',
+      },
+      {
+        key: 'add-report-header',
+        label: 'Add Report Header',
+        href: '/service-admin/add-report-header',
+      },
+      {
+        key: 'new-company',
+        label: 'New Company',
+        href: '/service-admin/new-company',
+      },
+      {
+        key: 'assign-company-rates',
+        label: 'Company Rates',
+        href: '/service-admin/assign-company-rates',
+      },
     ],
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },

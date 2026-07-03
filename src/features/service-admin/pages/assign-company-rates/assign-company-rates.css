@@ -1,0 +1,78 @@
+.assign-company-rates-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.assign-company-rates-form-grid .field-control,
+.assign-company-rates-form-grid .ant-select {
+  width: 100%;
+}
+
+.assign-company-rates-form-grid .assign-company-rates-percentage-input {
+  width: 100%;
+}
+
+.assign-company-rates-form-grid .assign-company-rates-percentage-input.ant-input-number {
+  width: 100%;
+}
+
+.assign-company-rates-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.assign-company-rates-save-btn {
+  min-width: 138px;
+}
+
+.assign-company-rates-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.assign-company-rates-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.assign-company-rates-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+.assign-company-rates-inline-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assign-company-rates-inline-edit .ant-input-number {
+  width: 120px;
+}
+
+@media (max-width: 767px) {
+  .assign-company-rates-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .assign-company-rates-save-btn {
+    width: 100%;
+  }
+
+  .assign-company-rates-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assign-company-rates-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assign-company-rates-filters .ant-select,
+  .assign-company-rates-filters .ant-input-affix-wrapper,
+  .assign-company-rates-filters .ant-input {
+    width: 100% !important;
+  }
+}

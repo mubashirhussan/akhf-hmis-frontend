@@ -1,5 +1,13 @@
 /* Service admin feature styles */
 @import "../pages/admin-services/admin-services.css";
 @import "../pages/hospital-services/hospital-services.css";
+@import "../pages/new-category/new-category.css";
 @import "../pages/new-package/new-package.css";
 @import "../pages/update-admin-services/update-admin-services.css";
+@import "../pages/discount-authorities/discount-authorities.css";
+@import "../pages/refund-authorities/refund-authorities.css";
+@import "../pages/report-headers/report-headers.css";
+@import "../pages/report-headers/report-header-form.css";
+@import "../pages/companies/companies.css";
+@import "../pages/companies/company-form.css";
+@import "../pages/assign-company-rates/assign-company-rates.css";

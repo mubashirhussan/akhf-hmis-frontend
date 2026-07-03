@@ -2,53 +2,46 @@
 
 import { Button } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import NewPackageForm from '@/features/service-admin/pages/new-package/NewPackageForm';
+import AssignCompanyRatesForm from '@/features/service-admin/pages/assign-company-rates/AssignCompanyRatesForm';
 
-export default function NewPackageModal({
+export default function AssignCompanyRatesModal({
   open,
   onClose,
-  title = 'Add Package',
   form,
   errors,
   onPatchForm,
   onClearError,
   onSave,
-  departmentOptions,
-  serviceCategoryOptions = [],
-  serviceOptions,
 }) {
   return (
     <AppModal
       open={open}
       onClose={onClose}
-      title={title}
+      title="Adjust Prices"
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
-      width={760}
-      className="new-package-modal"
-      rootClassName="new-package-modal-root"
+      width={480}
+      className="assign-company-rates-modal"
+      rootClassName="assign-company-rates-modal-root"
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
           <Button
             type="primary"
-            className="new-package-save-btn"
+            className="assign-company-rates-save-btn"
             onClick={onSave}
           >
-            Save
+            Apply
           </Button>
         </>
       }
     >
-      <NewPackageForm
+      <AssignCompanyRatesForm
         form={form}
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
-        departmentOptions={departmentOptions}
-        serviceCategoryOptions={serviceCategoryOptions}
-        serviceOptions={serviceOptions}
       />
     </AppModal>
   );

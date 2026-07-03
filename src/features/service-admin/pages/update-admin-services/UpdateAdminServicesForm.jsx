@@ -4,11 +4,7 @@ import { Input, InputNumber, Select } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import {
-  BOOLEAN_OPTIONS,
-  SERVICE_CATEGORY_OPTIONS,
-  SERVICE_HEAD_OPTIONS,
-} from '@/features/service-admin/api/mock-service-admin';
+import { BOOLEAN_OPTIONS, SERVICE_HEAD_OPTIONS } from '@/features/service-admin/api/mock-service-admin';
 
 const controlClass = FIELD_CONTROL_CLASS;
 
@@ -17,6 +13,7 @@ export default function UpdateAdminServicesForm({
   errors = {},
   onPatchForm,
   onClearError,
+  serviceCategoryOptions = [],
 }) {
   const fieldId = (name) => `update-admin-services-${name}`;
 
@@ -28,13 +25,14 @@ export default function UpdateAdminServicesForm({
           className={controlClass}
           status={errors?.serviceCategory ? 'error' : ''}
           value={form.serviceCategory || undefined}
-          options={SERVICE_CATEGORY_OPTIONS}
+          options={serviceCategoryOptions}
           showSearch
           optionFilterProp="label"
           onChange={(serviceCategory) => {
             onPatchForm({ serviceCategory });
             onClearError?.('serviceCategory');
           }}
+          disabled={!serviceCategoryOptions.length}
         />
       </FormField>
 

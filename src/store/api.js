@@ -59,7 +59,13 @@ export const api = createApi({
     'AdminDutyRoaster',
     'AssignDutyToEmployee',
     'HospitalService',
-    'Package'
+    'Package',
+    'ServiceCategory',
+    'DiscountAuthority',
+    'RefundAuthority',
+    'ReportHeader',
+    'Company',
+    'CompanyService'
   ],
   endpoints: () => ({}),
 });

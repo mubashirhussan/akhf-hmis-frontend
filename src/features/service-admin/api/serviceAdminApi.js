@@ -4,6 +4,24 @@ import {
   createServiceAdminRow,
   updateServiceAdminRow,
   deleteServiceAdminRow,
+  getServiceCategoryRows,
+  createServiceCategoryRow,
+  updateServiceCategoryRow,
+  deleteServiceCategoryRow,
+  getDiscountAuthorityRows,
+  createDiscountAuthorityRow,
+  deleteDiscountAuthorityRow,
+  getRefundAuthorityRows,
+  createRefundAuthorityRow,
+  deleteRefundAuthorityRow,
+  getReportHeaderRows,
+  createReportHeaderRow,
+  updateReportHeaderRow,
+  deleteReportHeaderRow,
+  getCompanyRows,
+  createCompanyRow,
+  updateCompanyRow,
+  deleteCompanyRow,
   getHospitalServicesRows,
   setHospitalServicePrice,
   bulkUpdateHospitalServicePrices,
@@ -11,6 +29,9 @@ import {
   createPackageRow,
   updatePackageRow,
   deletePackageRow,
+  getCompanyServicesRows,
+  setCompanyServicePrice,
+  bulkUpdateCompanyServicePrices,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -38,8 +59,97 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['ServiceAdmin'],
     }),
-
-    // ── Hospital Services ──────────────────────────────────────────────────
+    getServiceCategories: builder.query({
+      queryFn: async () => ({ data: getServiceCategoryRows() }),
+      providesTags: ['ServiceCategory'],
+    }),
+    createServiceCategory: builder.mutation({
+      queryFn: async (serviceName) => ({
+        data: createServiceCategoryRow(serviceName),
+      }),
+      invalidatesTags: ['ServiceCategory'],
+    }),
+    updateServiceCategory: builder.mutation({
+      queryFn: async ({ id, serviceName }) => ({
+        data: updateServiceCategoryRow(id, serviceName),
+      }),
+      invalidatesTags: ['ServiceCategory'],
+    }),
+    deleteServiceCategory: builder.mutation({
+      queryFn: async (id) => {
+        deleteServiceCategoryRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['ServiceCategory'],
+    }),
+    getDiscountAuthorities: builder.query({
+      queryFn: async () => ({ data: getDiscountAuthorityRows() }),
+      providesTags: ['DiscountAuthority'],
+    }),
+    createDiscountAuthority: builder.mutation({
+      queryFn: async (payload) => ({ data: createDiscountAuthorityRow(payload) }),
+      invalidatesTags: ['DiscountAuthority'],
+    }),
+    deleteDiscountAuthority: builder.mutation({
+      queryFn: async (id) => {
+        deleteDiscountAuthorityRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['DiscountAuthority'],
+    }),
+    getRefundAuthorities: builder.query({
+      queryFn: async () => ({ data: getRefundAuthorityRows() }),
+      providesTags: ['RefundAuthority'],
+    }),
+    createRefundAuthority: builder.mutation({
+      queryFn: async (payload) => ({ data: createRefundAuthorityRow(payload) }),
+      invalidatesTags: ['RefundAuthority'],
+    }),
+    deleteRefundAuthority: builder.mutation({
+      queryFn: async (id) => {
+        deleteRefundAuthorityRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['RefundAuthority'],
+    }),
+    getReportHeaders: builder.query({
+      queryFn: async () => ({ data: getReportHeaderRows() }),
+      providesTags: ['ReportHeader'],
+    }),
+    createReportHeader: builder.mutation({
+      queryFn: async (payload) => ({ data: createReportHeaderRow(payload) }),
+      invalidatesTags: ['ReportHeader'],
+    }),
+    updateReportHeader: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateReportHeaderRow(id, payload) }),
+      invalidatesTags: ['ReportHeader'],
+    }),
+    deleteReportHeader: builder.mutation({
+      queryFn: async (id) => {
+        deleteReportHeaderRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['ReportHeader'],
+    }),
+    getCompanies: builder.query({
+      queryFn: async () => ({ data: getCompanyRows() }),
+      providesTags: ['Company'],
+    }),
+    createCompany: builder.mutation({
+      queryFn: async (payload) => ({ data: createCompanyRow(payload) }),
+      invalidatesTags: ['Company'],
+    }),
+    updateCompany: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateCompanyRow(id, payload) }),
+      invalidatesTags: ['Company'],
+    }),
+    deleteCompany: builder.mutation({
+      queryFn: async (id) => {
+        deleteCompanyRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['Company'],
+    }),
     getHospitalServices: builder.query({
       queryFn: async ({ hospitalId, categoryFilter = '', nameFilter = '' }) => ({
         data: getHospitalServicesRows(hospitalId, categoryFilter, nameFilter),
@@ -79,6 +189,26 @@ deletePackage: builder.mutation({
   },
   invalidatesTags: ['Package'],
 }),
+getCompanyServices: builder.query({
+  queryFn: async ({ companyId, categoryFilter = '', nameFilter = '' }) => ({
+    data: getCompanyServicesRows(companyId, categoryFilter, nameFilter),
+  }),
+  providesTags: ['CompanyService'],
+}),
+updateCompanyServicePrice: builder.mutation({
+  queryFn: async ({ companyId, serviceId, price }) => {
+    setCompanyServicePrice(companyId, serviceId, price);
+    return { data: { companyId, serviceId, price } };
+  },
+  invalidatesTags: ['CompanyService'],
+}),
+bulkUpdateCompanyServicePrices: builder.mutation({
+  queryFn: async ({ companyId, serviceIds, type, percentage }) => {
+    bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage);
+    return { data: { companyId, serviceIds, type, percentage } };
+  },
+  invalidatesTags: ['CompanyService'],
+}),
   }),
 });
 
@@ -87,6 +217,24 @@ export const {
   useCreateServiceAdminMutation,
   useUpdateServiceAdminMutation,
   useDeleteServiceAdminMutation,
+  useGetServiceCategoriesQuery,
+  useCreateServiceCategoryMutation,
+  useUpdateServiceCategoryMutation,
+  useDeleteServiceCategoryMutation,
+  useGetDiscountAuthoritiesQuery,
+  useCreateDiscountAuthorityMutation,
+  useDeleteDiscountAuthorityMutation,
+  useGetRefundAuthoritiesQuery,
+  useCreateRefundAuthorityMutation,
+  useDeleteRefundAuthorityMutation,
+  useGetReportHeadersQuery,
+  useCreateReportHeaderMutation,
+  useUpdateReportHeaderMutation,
+  useDeleteReportHeaderMutation,
+  useGetCompaniesQuery,
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation,
+  useDeleteCompanyMutation,
   useGetHospitalServicesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,
@@ -94,4 +242,7 @@ export const {
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,
+  useGetCompanyServicesQuery,
+  useUpdateCompanyServicePriceMutation,
+  useBulkUpdateCompanyServicePricesMutation,
 } = serviceAdminApi;

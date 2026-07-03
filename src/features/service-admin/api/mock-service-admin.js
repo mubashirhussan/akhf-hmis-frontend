@@ -7,6 +7,74 @@ export const SERVICE_CATEGORY_OPTIONS = [
   { label: 'Miscellaneous', value: 'miscellaneous' },
 ];
 
+export const INITIAL_SERVICE_CATEGORY_ROWS = [
+  { id: '1', serviceName: 'Laboratory', value: 'laboratory' },
+  { id: '2', serviceName: 'Radiology', value: 'radiology' },
+  { id: '3', serviceName: 'OPD Consultation', value: 'opd-consultation' },
+  { id: '4', serviceName: 'Procedure', value: 'procedure' },
+  { id: '5', serviceName: 'Miscellaneous', value: 'miscellaneous' },
+];
+
+let serviceCategoryRows = INITIAL_SERVICE_CATEGORY_ROWS.map((row) => ({ ...row }));
+let nextServiceCategoryId =
+  Math.max(...INITIAL_SERVICE_CATEGORY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getServiceCategoryRows() {
+  return serviceCategoryRows;
+}
+
+function createOptionValue(serviceName) {
+  return serviceName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || `category-${Date.now()}`;
+}
+
+export function createServiceCategoryRow(serviceName) {
+  const value = createOptionValue(serviceName);
+  const id = String(nextServiceCategoryId++);
+
+  const row = {
+    id,
+    serviceName: serviceName.trim(),
+    value,
+  };
+
+  serviceCategoryRows = [row, ...serviceCategoryRows];
+  SERVICE_CATEGORY_OPTIONS.unshift({ label: row.serviceName, value: row.value });
+
+  return row;
+}
+
+export function updateServiceCategoryRow(id, serviceName) {
+  serviceCategoryRows = serviceCategoryRows.map((row) =>
+    row.id === id ? { ...row, serviceName: serviceName.trim() } : row,
+  );
+
+  const updatedRow = serviceCategoryRows.find((row) => row.id === id);
+  if (updatedRow) {
+    const option = SERVICE_CATEGORY_OPTIONS.find((o) => o.value === updatedRow.value);
+    if (option) {
+      option.label = updatedRow.serviceName;
+    }
+  }
+
+  return updatedRow ?? null;
+}
+
+export function deleteServiceCategoryRow(id) {
+  const deletedRow = serviceCategoryRows.find((row) => row.id === id);
+  serviceCategoryRows = serviceCategoryRows.filter((row) => row.id !== id);
+
+  if (deletedRow) {
+    const index = SERVICE_CATEGORY_OPTIONS.findIndex((o) => o.value === deletedRow.value);
+    if (index !== -1) {
+      SERVICE_CATEGORY_OPTIONS.splice(index, 1);
+    }
+  }
+}
+
 export const BOOLEAN_OPTIONS = [
   { label: 'True', value: 'true' },
   { label: 'False', value: 'false' },
@@ -233,6 +301,183 @@ export function getServiceAdminRows() {
   return serviceAdminRows;
 }
 
+export const INITIAL_DISCOUNT_AUTHORITY_ROWS = [
+  {
+    id: '1',
+    employeeId: '101',
+    employeeName: 'Aisha Khan',
+  },
+  {
+    id: '2',
+    employeeId: '102',
+    employeeName: 'Bilal Ahmed',
+  },
+  {
+    id: '3',
+    employeeId: '103',
+    employeeName: 'Farah Siddiqui',
+  },
+];
+let discountAuthorityRows = INITIAL_DISCOUNT_AUTHORITY_ROWS.map((row) => ({ ...row }));
+let nextDiscountAuthorityId =
+  Math.max(...INITIAL_DISCOUNT_AUTHORITY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getDiscountAuthorityRows() {
+  return discountAuthorityRows;
+}
+
+export function createDiscountAuthorityRow(payload) {
+  const id = String(nextDiscountAuthorityId++);
+  const row = { id, ...payload };
+  discountAuthorityRows = [row, ...discountAuthorityRows];
+  return row;
+}
+
+export function deleteDiscountAuthorityRow(id) {
+  discountAuthorityRows = discountAuthorityRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_REFUND_AUTHORITY_ROWS = [
+  {
+    id: '1',
+    employeeId: '201',
+    employeeName: 'Hassan Raza',
+  },
+  {
+    id: '2',
+    employeeId: '202',
+    employeeName: 'Nida Mir',
+  },
+  {
+    id: '3',
+    employeeId: '203',
+    employeeName: 'Adil Sheikh',
+  },
+];
+let refundAuthorityRows = INITIAL_REFUND_AUTHORITY_ROWS.map((row) => ({ ...row }));
+let nextRefundAuthorityId =
+  Math.max(...INITIAL_REFUND_AUTHORITY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getRefundAuthorityRows() {
+  return refundAuthorityRows;
+}
+
+export function createRefundAuthorityRow(payload) {
+  const id = String(nextRefundAuthorityId++);
+  const row = { id, ...payload };
+  refundAuthorityRows = [row, ...refundAuthorityRows];
+  return row;
+}
+
+export function deleteRefundAuthorityRow(id) {
+  refundAuthorityRows = refundAuthorityRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_REPORT_HEADER_ROWS = [];
+let reportHeaderRows = INITIAL_REPORT_HEADER_ROWS.map((row) => ({ ...row }));
+let nextReportHeaderId = 1;
+
+export function getReportHeaderRows() {
+  return reportHeaderRows;
+}
+
+export function createReportHeaderRow(payload) {
+  const id = String(nextReportHeaderId++);
+  const row = { id, ...payload };
+  reportHeaderRows = [row, ...reportHeaderRows];
+  return row;
+}
+
+export function updateReportHeaderRow(id, payload) {
+  reportHeaderRows = reportHeaderRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return reportHeaderRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteReportHeaderRow(id) {
+  reportHeaderRows = reportHeaderRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_COMPANY_ROWS = [
+  {
+    id: '1',
+    companyType: 'gov',
+    companyName: 'National Health Services',
+    ntn: '1234567-8',
+    city: 'Lahore',
+    address: '123 Health Avenue, Lahore',
+    contactPersonName: 'Dr. Saima Iqbal',
+    cnic: '42101-1234567-1',
+    phone: '042-12345678',
+    fax: '042-87654321',
+    email: 'info@nhs.gov.pk',
+    website: 'www.nhs.gov.pk',
+    str: 'STR0012345',
+    bankAccount: '0011223344556677',
+    status: 'individuals',
+  },
+  {
+    id: '2',
+    companyType: 'semi-gov',
+    companyName: 'City Medical Supplies',
+    ntn: '2345678-9',
+    city: 'Karachi',
+    address: '45 Medical Plaza, Karachi',
+    contactPersonName: 'Sara Ali',
+    cnic: '42201-2345678-2',
+    phone: '021-23456789',
+    fax: '021-98765432',
+    email: 'contact@citymed.com',
+    website: 'www.citymed.com',
+    str: 'STR0023456',
+    bankAccount: '1122334455667788',
+    status: 'business',
+  },
+  {
+    id: '3',
+    companyType: 'priv',
+    companyName: 'Care Plus Diagnostics',
+    ntn: '3456789-0',
+    city: 'Islamabad',
+    address: '99 Diagnostic Road, Islamabad',
+    contactPersonName: 'Omar Khan',
+    cnic: '42301-3456789-3',
+    phone: '051-34567890',
+    fax: '051-09876543',
+    email: 'support@careplus.pk',
+    website: 'www.careplus.pk',
+    str: 'STR0034567',
+    bankAccount: '2233445566778899',
+    status: 'trust',
+  },
+];
+let companyRows = INITIAL_COMPANY_ROWS.map((row) => ({ ...row }));
+let nextCompanyId =
+  Math.max(...INITIAL_COMPANY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getCompanyRows() {
+  return companyRows;
+}
+
+export function createCompanyRow(payload) {
+  const id = String(nextCompanyId++);
+  const row = { id, ...payload };
+  companyRows = [row, ...companyRows];
+  return row;
+}
+
+export function updateCompanyRow(id, payload) {
+  companyRows = companyRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return companyRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteCompanyRow(id) {
+  companyRows = companyRows.filter((row) => row.id !== id);
+}
+
 export function createServiceAdminRow(rowPayload) {
   const id = String(nextServiceAdminId++);
 
@@ -322,6 +567,52 @@ export function getHospitalServicesRows(hospitalId, categoryFilter, nameFilter) 
   }
   return result.map((r) => {
     const override = hospitalServicePrices[`${hospitalId}_${r.id}`];
+    return {
+      ...r,
+      price: override != null ? override.price : r.serviceCharges,
+    };
+  });
+}
+
+let companyServicePrices = {};
+
+export function getCompanyServicePrice(companyId, serviceId) {
+  const key = `${companyId}_${serviceId}`;
+  return companyServicePrices[key] ?? null;
+}
+
+export function setCompanyServicePrice(companyId, serviceId, price) {
+  const key = `${companyId}_${serviceId}`;
+  companyServicePrices[key] = { companyId, serviceId, price };
+}
+
+export function bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage) {
+  serviceIds.forEach((serviceId) => {
+    const key = `${companyId}_${serviceId}`;
+    const existing = companyServicePrices[key];
+    const basePrice = existing != null
+      ? existing.price
+      : (serviceAdminRows.find((r) => r.id === serviceId)?.serviceCharges ?? 0);
+    const delta = (basePrice * percentage) / 100;
+    const newPrice = type === 'increase'
+      ? Math.round(basePrice + delta)
+      : Math.max(0, Math.round(basePrice - delta));
+    companyServicePrices[key] = { companyId, serviceId, price: newPrice };
+  });
+}
+
+export function getCompanyServicesRows(companyId, categoryFilter, nameFilter) {
+  let result = serviceAdminRows;
+  if (categoryFilter) {
+    result = result.filter((r) => r.serviceCategory === categoryFilter);
+  }
+  if (nameFilter?.trim()) {
+    result = result.filter((r) =>
+      r.serviceName?.toLowerCase().includes(nameFilter.trim().toLowerCase()),
+    );
+  }
+  return result.map((r) => {
+    const override = companyServicePrices[`${companyId}_${r.id}`];
     return {
       ...r,
       price: override != null ? override.price : r.serviceCharges,

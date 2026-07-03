@@ -4,15 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { App, Button, Input, InputNumber, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import HospitalServicesModal from '@/features/service-admin/pages/hospital-services/HospitalServicesModal';
+import AssignCompanyRatesModal from '@/features/service-admin/pages/assign-company-rates/AssignCompanyRatesModal';
 import { getServiceHeadLabel } from '@/features/service-admin/api/mock-service-admin';
 import {
-  useGetHospitalServicesQuery,
+  useGetCompaniesQuery,
   useGetServiceCategoriesQuery,
-  useUpdateHospitalServicePriceMutation,
-  useBulkUpdateHospitalServicePricesMutation,
+  useGetCompanyServicesQuery,
+  useUpdateCompanyServicePriceMutation,
+  useBulkUpdateCompanyServicePricesMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
-import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
@@ -20,11 +20,11 @@ function createEmptyBulkForm() {
   return { adjustType: '', percentage: null };
 }
 
-export default function HospitalServicesPage() {
+export default function AssignCompanyRatesPage() {
   const { message } = App.useApp();
 
-const [hospitalId, setHospitalId] = useState(undefined);
-const [categoryFilter, setCategoryFilter] = useState('laboratory');
+  const [companyId, setCompanyId] = useState(undefined);
+  const [categoryFilter, setCategoryFilter] = useState(undefined);
   const [nameFilter, setNameFilter] = useState('');
 
   const [selectedIds, setSelectedIds] = useState([]);
@@ -36,32 +36,25 @@ const [categoryFilter, setCategoryFilter] = useState('laboratory');
   const [inlineEditId, setInlineEditId] = useState(null);
   const [inlineEditPrice, setInlineEditPrice] = useState(null);
 
-  const { data: hospitals = [] } = useGetHospitalsQuery();
-
-const hospitalOptions = useMemo(
-  () => hospitals.map((h) => ({ value: h.id, label: h.name })),
-  [hospitals],
-);
-
-useEffect(() => {
-  if (hospitalOptions.length > 0 && hospitalId === undefined) {
-    setHospitalId(hospitalOptions[0].value);
-  }
-}, [hospitalOptions, hospitalId]);
+  const { data: companies = [] } = useGetCompaniesQuery();
+  const companyOptions = useMemo(
+    () => companies.map((c) => ({ value: c.id, label: c.companyName })),
+    [companies],
+  );
 
   const { data: categories = [] } = useGetServiceCategoriesQuery();
   const categoryOptions = useMemo(
-    () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
+    () => categories.map((cat) => ({ value: cat.value, label: cat.serviceName })),
     [categories],
   );
 
-  const { data: rows = [], isLoading } = useGetHospitalServicesQuery(
-    { hospitalId, categoryFilter: categoryFilter ?? '', nameFilter },
-    { skip: !hospitalId },
+  const { data: rows = [], isLoading } = useGetCompanyServicesQuery(
+    { companyId, categoryFilter: categoryFilter ?? '', nameFilter },
+    { skip: !companyId },
   );
 
-  const [updateHospitalServicePrice] = useUpdateHospitalServicePriceMutation();
-  const [bulkUpdatePrices] = useBulkUpdateHospitalServicePricesMutation();
+  const [updateCompanyServicePrice] = useUpdateCompanyServicePriceMutation();
+  const [bulkUpdatePrices] = useBulkUpdateCompanyServicePricesMutation();
 
   const patchBulkForm = useCallback((patch) => {
     setBulkForm((current) => ({ ...current, ...patch }));
@@ -113,7 +106,7 @@ useEffect(() => {
     }
     setFieldErrors({});
     await bulkUpdatePrices({
-      hospitalId,
+      companyId,
       serviceIds: selectedIds,
       type: bulkForm.adjustType,
       percentage: bulkForm.percentage,
@@ -121,7 +114,7 @@ useEffect(() => {
     message.success('Prices updated successfully.');
     setSelectedIds([]);
     setIsModalOpen(false);
-  }, [bulkForm, hospitalId, selectedIds, bulkUpdatePrices, message]);
+  }, [bulkForm, companyId, selectedIds, bulkUpdatePrices, message]);
 
   const openInlineEdit = useCallback((record) => {
     setInlineEditId(record.id);
@@ -138,15 +131,15 @@ useEffect(() => {
       message.error('Please enter a valid price.');
       return;
     }
-    await updateHospitalServicePrice({
-      hospitalId,
+    await updateCompanyServicePrice({
+      companyId,
       serviceId: inlineEditId,
       price: inlineEditPrice,
     }).unwrap();
     message.success('Price updated.');
     setInlineEditId(null);
     setInlineEditPrice(null);
-  }, [hospitalId, inlineEditId, inlineEditPrice, updateHospitalServicePrice, message]);
+  }, [companyId, inlineEditId, inlineEditPrice, updateCompanyServicePrice, message]);
 
   const updatePricesEnabled = selectedIds.length >= 2;
   const singleSelected = selectedIds.length === 1;
@@ -189,7 +182,7 @@ useEffect(() => {
         render: (value, record) => {
           if (inlineEditId === record.id) {
             return (
-              <div className="hospital-services-inline-edit">
+              <div className="assign-company-rates-inline-edit">
                 <InputNumber
                   min={0}
                   value={inlineEditPrice}
@@ -234,13 +227,13 @@ useEffect(() => {
         render: (_, record) => {
           const isThisRowSelected = singleSelected && selectedIds[0] === record.id;
           return (
-            <div className="hospital-services-actions-cell">
+            <div className="assign-company-rates-actions-cell">
               <Tooltip title="Edit Price">
                 <Button
                   type="link"
                   size="small"
                   disabled={!isThisRowSelected || inlineEditId != null}
-                  className="hospital-services-actions-cell"
+                  className="assign-company-rates-actions-cell"
                   aria-label="Edit price"
                   icon={
                     <AppIcon
@@ -272,23 +265,23 @@ useEffect(() => {
   );
 
   return (
-    <div className="services-billing-page hospital-services-page">
+    <div className="services-billing-page assign-company-rates-page">
       <div
-        className="hospital-services-table-toolbar"
+        className="assign-company-rates-table-toolbar"
         style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
       >
-        <div className="hospital-services-filters" style={{ display: 'flex', gap: 12 }}>
+        <div className="assign-company-rates-filters" style={{ display: 'flex', gap: 12 }}>
           <Select
-            placeholder="Select Hospital"
-            value={hospitalId}
+            placeholder="Select Company"
+            value={companyId}
             onChange={(v) => {
-              setHospitalId(v);
+              setCompanyId(v);
               setSelectedIds([]);
               setInlineEditId(null);
             }}
             showSearch
             optionFilterProp="label"
-            options={hospitalOptions}
+            options={companyOptions}
             style={{ width: 240 }}
           />
           <Select
@@ -304,7 +297,7 @@ useEffect(() => {
             optionFilterProp="label"
             options={categoryOptions}
             style={{ width: 220 }}
-            disabled={!hospitalId}
+            disabled={!companyId}
           />
           <Input
             placeholder="Filter by Service Name"
@@ -316,25 +309,25 @@ useEffect(() => {
             }}
             allowClear
             style={{ width: 220 }}
-            disabled={!hospitalId}
+            disabled={!companyId}
           />
         </div>
 
-        <Tooltip title={!updatePricesEnabled ? 'Select 2 or more services to update prices' : ''}>
+        <Tooltip title={!updatePricesEnabled ? 'Select 2 or more services to adjust prices' : ''}>
           <Button
             type="primary"
             disabled={!updatePricesEnabled}
             onClick={openModal}
           >
-            Update Prices
+            Adjust Prices
           </Button>
         </Tooltip>
       </div>
 
-      <section className="services-billing-results" aria-label="hospital services">
-        {!hospitalId ? (
+      <section className="services-billing-results" aria-label="company services">
+        {!companyId ? (
           <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--app-text-secondary, #999)' }}>
-            Please select a hospital to view services.
+            Please select a company to view services.
           </div>
         ) : (
           <DataTable
@@ -353,7 +346,7 @@ useEffect(() => {
         )}
       </section>
 
-      <HospitalServicesModal
+      <AssignCompanyRatesModal
         open={isModalOpen}
         onClose={closeModal}
         form={bulkForm}

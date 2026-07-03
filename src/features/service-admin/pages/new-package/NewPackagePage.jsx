@@ -9,12 +9,12 @@ import NewPackageLinkageModal from '@/features/service-admin/pages/new-package/N
 import {
   WARD_OPTIONS,
   PACKAGE_SERVICE_HEAD_OPTIONS,
-  SERVICE_CATEGORY_OPTIONS,
   createEmptyPackageForm,
   rowToPackageForm,
 } from '@/features/service-admin/api/mock-service-admin';
 import {
   useGetServiceAdminsQuery,
+  useGetServiceCategoriesQuery,
   useGetPackagesQuery,
   useCreatePackageMutation,
   useUpdatePackageMutation,
@@ -42,6 +42,7 @@ export default function NewPackagePage() {
   const [selectedPkgId, setSelectedPkgId] = useState(null);
 
   const { data: allServiceRows = [] } = useGetServiceAdminsQuery();
+  const { data: categories = [] } = useGetServiceCategoriesQuery();
   const { data: departments = [] } = useGetDepartmentsQuery();
   const { data: packages = [], isLoading } = useGetPackagesQuery();
 
@@ -60,6 +61,11 @@ export default function NewPackagePage() {
       .filter((r) => r.serviceCategory === form.serviceCategory)
       .map((r) => ({ value: r.serviceName, label: r.serviceName }));
   }, [allServiceRows, form.serviceCategory]);
+
+  const serviceCategoryOptions = useMemo(
+    () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
+    [categories],
+  );
 
   const allServiceOptions = useMemo(
     () =>
@@ -339,6 +345,7 @@ export default function NewPackagePage() {
         onClearError={clearFieldError}
         onSave={handleSave}
         departmentOptions={departmentOptions}
+        serviceCategoryOptions={serviceCategoryOptions}
         serviceOptions={serviceOptionsByCategory}
       />
 

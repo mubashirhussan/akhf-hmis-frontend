@@ -11,11 +11,11 @@ import {
   getServiceCategoryLabel,
   getBooleanLabel,
   getActiveStatusLabel,
-  SERVICE_CATEGORY_OPTIONS,
 } from "@/features/service-admin/api/mock-service-admin";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetServiceAdminsQuery,
+  useGetServiceCategoriesQuery,
   useCreateServiceAdminMutation,
   useUpdateServiceAdminMutation,
   useDeleteServiceAdminMutation,
@@ -36,11 +36,17 @@ export default function AdminServicesPage() {
   const { confirmDelete } = useConfirm();
 
   const { data: rows = [], isLoading } = useGetServiceAdminsQuery();
+  const { data: categories = [] } = useGetServiceCategoriesQuery();
   const { data: departments = [] } = useGetDepartmentsQuery();
 
   const departmentOptions = useMemo(
     () => departments.map((d) => ({ value: d.id, label: d.departmentName })),
     [departments],
+  );
+
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
+    [categories],
   );
 
   const [createServiceAdmin] = useCreateServiceAdminMutation();
@@ -256,7 +262,7 @@ export default function AdminServicesPage() {
             allowClear
             showSearch
             optionFilterProp="label"
-            options={SERVICE_CATEGORY_OPTIONS}
+            options={categoryOptions}
             style={{ width: 260 }}
           />
         </div>
@@ -292,6 +298,7 @@ export default function AdminServicesPage() {
         onClearError={clearFieldError}
         onSave={handleSave}
         departmentOptions={departmentOptions}
+        serviceCategoryOptions={categoryOptions}
       />
     </div>
   );
