@@ -13,6 +13,7 @@ export default function HospitalModal({
   onPatchForm,
   onClearError,
   onSave,
+  isEdit = false,
 }) {
   return (
     <AppModal
@@ -39,6 +40,7 @@ export default function HospitalModal({
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
+        isEdit={isEdit}
       />
     </AppModal>
   );

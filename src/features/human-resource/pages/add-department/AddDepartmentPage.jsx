@@ -91,7 +91,7 @@ export default function AddDepartmentPage() {
   const handleSave = useCallback(async () => {
     const errors = {};
     const departmentIdValue = Number(form.departmentId);
-    if (!form.departmentId || !Number.isInteger(departmentIdValue) || departmentIdValue <= 0) {
+    if (editingRowId && (!form.departmentId || !Number.isInteger(departmentIdValue) || departmentIdValue <= 0)) {
       errors.departmentId = 'Department ID is required and must be a positive number.';
     }
     if (!form.hospitalId) errors.hospitalId = 'Hospital Name is required.';
@@ -109,7 +109,7 @@ export default function AddDepartmentPage() {
       hospitalId: form.hospitalId,
       hospitalName: form.hospitalName,
       deptTypeId: form.deptTypeId,
-      departmentId: departmentIdValue,
+      ...(editingRowId ? { departmentId: departmentIdValue } : {}),
       departmentType: form.departmentType,
       departmentName: form.departmentName.trim(),
       location: form.location.trim(),

@@ -86,7 +86,7 @@ export default function AddHospitalPage() {
   const handleSave = useCallback(async () => {
     const errors = {};
     const hospitalIdValue = Number(form.hospitalId);
-    if (!form.hospitalId || !Number.isInteger(hospitalIdValue) || hospitalIdValue <= 0) {
+    if (editingRowId && (!form.hospitalId || !Number.isInteger(hospitalIdValue) || hospitalIdValue <= 0)) {
       errors.hospitalId = 'Hospital ID is required and must be a positive number.';
     }
     if (!form.name.trim()) errors.name = 'Hospital Name is required.';
@@ -100,7 +100,7 @@ export default function AddHospitalPage() {
     setFieldErrors({});
 
     const payload = {
-      hospitalId: hospitalIdValue,
+      ...(editingRowId ? { hospitalId: hospitalIdValue } : {}),
       name: form.name.trim(),
       abbreviation: form.abbreviation.trim(),
       address: form.address.trim(),
@@ -244,6 +244,7 @@ export default function AddHospitalPage() {
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}
+        isEdit={Boolean(editingRowId)}
       />
     </div>
   );

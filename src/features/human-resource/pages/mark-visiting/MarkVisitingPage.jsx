@@ -134,15 +134,6 @@ export default function MarkVisitingPage() {
         fixed: 'right',
         render: (_, record) => (
           <div className="mark-visiting-actions-cell">
-            <Tooltip title="Edit">
-              <Button
-                type="link"
-                size="small"
-                aria-label={`Edit ${record.employeeName}`}
-                icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
-                onClick={() => handleEditRow(record)}
-              />
-            </Tooltip>
             <Tooltip title="Delete">
               <Button
                 type="link"
