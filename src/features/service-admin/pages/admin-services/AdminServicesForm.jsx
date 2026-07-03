@@ -47,7 +47,6 @@ export default function AdminServicesForm({
           status={errors?.department ? 'error' : ''}
           value={form.department || undefined}
           options={departmentOptions}
-          placeholder="--- Select ---"
           showSearch
           optionFilterProp="label"
           onChange={(department) => {
@@ -124,7 +123,6 @@ export default function AdminServicesForm({
           status={errors?.serviceHead ? 'error' : ''}
           value={form.serviceHead || undefined}
           options={SERVICE_HEAD_OPTIONS}
-          placeholder="--- Select ---"
           showSearch
           optionFilterProp="label"
           onChange={(serviceHead) => {

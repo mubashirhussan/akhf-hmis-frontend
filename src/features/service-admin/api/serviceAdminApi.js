@@ -8,6 +8,12 @@ import {
   createServiceCategoryRow,
   updateServiceCategoryRow,
   deleteServiceCategoryRow,
+  getDiscountAuthorityRows,
+  createDiscountAuthorityRow,
+  deleteDiscountAuthorityRow,
+  getRefundAuthorityRows,
+  createRefundAuthorityRow,
+  deleteRefundAuthorityRow,
   getHospitalServicesRows,
   setHospitalServicePrice,
   bulkUpdateHospitalServicePrices,
@@ -65,6 +71,36 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['ServiceCategory'],
     }),
+    getDiscountAuthorities: builder.query({
+      queryFn: async () => ({ data: getDiscountAuthorityRows() }),
+      providesTags: ['DiscountAuthority'],
+    }),
+    createDiscountAuthority: builder.mutation({
+      queryFn: async (payload) => ({ data: createDiscountAuthorityRow(payload) }),
+      invalidatesTags: ['DiscountAuthority'],
+    }),
+    deleteDiscountAuthority: builder.mutation({
+      queryFn: async (id) => {
+        deleteDiscountAuthorityRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['DiscountAuthority'],
+    }),
+    getRefundAuthorities: builder.query({
+      queryFn: async () => ({ data: getRefundAuthorityRows() }),
+      providesTags: ['RefundAuthority'],
+    }),
+    createRefundAuthority: builder.mutation({
+      queryFn: async (payload) => ({ data: createRefundAuthorityRow(payload) }),
+      invalidatesTags: ['RefundAuthority'],
+    }),
+    deleteRefundAuthority: builder.mutation({
+      queryFn: async (id) => {
+        deleteRefundAuthorityRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['RefundAuthority'],
+    }),
 
     // ── Hospital Services ──────────────────────────────────────────────────
     getHospitalServices: builder.query({
@@ -118,6 +154,12 @@ export const {
   useCreateServiceCategoryMutation,
   useUpdateServiceCategoryMutation,
   useDeleteServiceCategoryMutation,
+  useGetDiscountAuthoritiesQuery,
+  useCreateDiscountAuthorityMutation,
+  useDeleteDiscountAuthorityMutation,
+  useGetRefundAuthoritiesQuery,
+  useCreateRefundAuthorityMutation,
+  useDeleteRefundAuthorityMutation,
   useGetHospitalServicesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,

@@ -301,6 +301,44 @@ export function getServiceAdminRows() {
   return serviceAdminRows;
 }
 
+export const INITIAL_DISCOUNT_AUTHORITY_ROWS = [];
+let discountAuthorityRows = INITIAL_DISCOUNT_AUTHORITY_ROWS.map((row) => ({ ...row }));
+let nextDiscountAuthorityId = 1;
+
+export function getDiscountAuthorityRows() {
+  return discountAuthorityRows;
+}
+
+export function createDiscountAuthorityRow(payload) {
+  const id = String(nextDiscountAuthorityId++);
+  const row = { id, ...payload };
+  discountAuthorityRows = [row, ...discountAuthorityRows];
+  return row;
+}
+
+export function deleteDiscountAuthorityRow(id) {
+  discountAuthorityRows = discountAuthorityRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_REFUND_AUTHORITY_ROWS = [];
+let refundAuthorityRows = INITIAL_REFUND_AUTHORITY_ROWS.map((row) => ({ ...row }));
+let nextRefundAuthorityId = 1;
+
+export function getRefundAuthorityRows() {
+  return refundAuthorityRows;
+}
+
+export function createRefundAuthorityRow(payload) {
+  const id = String(nextRefundAuthorityId++);
+  const row = { id, ...payload };
+  refundAuthorityRows = [row, ...refundAuthorityRows];
+  return row;
+}
+
+export function deleteRefundAuthorityRow(id) {
+  refundAuthorityRows = refundAuthorityRows.filter((row) => row.id !== id);
+}
+
 export function createServiceAdminRow(rowPayload) {
   const id = String(nextServiceAdminId++);
 

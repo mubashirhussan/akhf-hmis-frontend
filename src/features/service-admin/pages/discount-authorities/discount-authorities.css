@@ -1,0 +1,32 @@
+.discount-authorities-page {
+  padding: 16px 0;
+}
+
+.discount-authorities-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.discount-authorities-page .services-billing-results {
+  margin-top: 8px;
+}
+
+.discount-authorities-table-toolbar .ant-input,
+.discount-authorities-table-toolbar .ant-btn {
+  min-width: 160px;
+}
+
+@media (max-width: 767px) {
+  .discount-authorities-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .discount-authorities-table-toolbar .ant-input,
+  .discount-authorities-table-toolbar .ant-btn {
+    width: 100% !important;
+  }
+}
