@@ -7,6 +7,74 @@ export const SERVICE_CATEGORY_OPTIONS = [
   { label: 'Miscellaneous', value: 'miscellaneous' },
 ];
 
+export const INITIAL_SERVICE_CATEGORY_ROWS = [
+  { id: '1', serviceName: 'Laboratory', value: 'laboratory' },
+  { id: '2', serviceName: 'Radiology', value: 'radiology' },
+  { id: '3', serviceName: 'OPD Consultation', value: 'opd-consultation' },
+  { id: '4', serviceName: 'Procedure', value: 'procedure' },
+  { id: '5', serviceName: 'Miscellaneous', value: 'miscellaneous' },
+];
+
+let serviceCategoryRows = INITIAL_SERVICE_CATEGORY_ROWS.map((row) => ({ ...row }));
+let nextServiceCategoryId =
+  Math.max(...INITIAL_SERVICE_CATEGORY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getServiceCategoryRows() {
+  return serviceCategoryRows;
+}
+
+function createOptionValue(serviceName) {
+  return serviceName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || `category-${Date.now()}`;
+}
+
+export function createServiceCategoryRow(serviceName) {
+  const value = createOptionValue(serviceName);
+  const id = String(nextServiceCategoryId++);
+
+  const row = {
+    id,
+    serviceName: serviceName.trim(),
+    value,
+  };
+
+  serviceCategoryRows = [row, ...serviceCategoryRows];
+  SERVICE_CATEGORY_OPTIONS.unshift({ label: row.serviceName, value: row.value });
+
+  return row;
+}
+
+export function updateServiceCategoryRow(id, serviceName) {
+  serviceCategoryRows = serviceCategoryRows.map((row) =>
+    row.id === id ? { ...row, serviceName: serviceName.trim() } : row,
+  );
+
+  const updatedRow = serviceCategoryRows.find((row) => row.id === id);
+  if (updatedRow) {
+    const option = SERVICE_CATEGORY_OPTIONS.find((o) => o.value === updatedRow.value);
+    if (option) {
+      option.label = updatedRow.serviceName;
+    }
+  }
+
+  return updatedRow ?? null;
+}
+
+export function deleteServiceCategoryRow(id) {
+  const deletedRow = serviceCategoryRows.find((row) => row.id === id);
+  serviceCategoryRows = serviceCategoryRows.filter((row) => row.id !== id);
+
+  if (deletedRow) {
+    const index = SERVICE_CATEGORY_OPTIONS.findIndex((o) => o.value === deletedRow.value);
+    if (index !== -1) {
+      SERVICE_CATEGORY_OPTIONS.splice(index, 1);
+    }
+  }
+}
+
 export const BOOLEAN_OPTIONS = [
   { label: 'True', value: 'true' },
   { label: 'False', value: 'false' },

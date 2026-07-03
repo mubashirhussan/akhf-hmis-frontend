@@ -7,7 +7,6 @@ import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import {
   WARD_OPTIONS,
   PACKAGE_SERVICE_HEAD_OPTIONS,
-  SERVICE_CATEGORY_OPTIONS,
 } from '@/features/service-admin/api/mock-service-admin';
 
 const controlClass = FIELD_CONTROL_CLASS;
@@ -19,6 +18,7 @@ export default function NewPackageForm({
   onClearError,
   departmentOptions = [],
   serviceOptions = [],
+  serviceCategoryOptions = [],
 }) {
   const fieldId = (name) => `new-package-${name}`;
 
@@ -132,13 +132,14 @@ export default function NewPackageForm({
           className={controlClass}
           status={errors?.serviceCategory ? 'error' : ''}
           value={form.serviceCategory || undefined}
-          options={SERVICE_CATEGORY_OPTIONS}
+          options={serviceCategoryOptions}
           showSearch
           optionFilterProp="label"
           onChange={(serviceCategory) => {
             onPatchForm({ serviceCategory, services: [] });
             onClearError?.('serviceCategory');
           }}
+          disabled={!serviceCategoryOptions.length}
         />
       </FormField>
 

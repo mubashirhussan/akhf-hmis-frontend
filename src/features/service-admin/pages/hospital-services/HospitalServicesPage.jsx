@@ -5,12 +5,10 @@ import { App, Button, Input, InputNumber, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import HospitalServicesModal from '@/features/service-admin/pages/hospital-services/HospitalServicesModal';
-import {
-  SERVICE_CATEGORY_OPTIONS,
-  getServiceHeadLabel,
-} from '@/features/service-admin/api/mock-service-admin';
+import { getServiceHeadLabel } from '@/features/service-admin/api/mock-service-admin';
 import {
   useGetHospitalServicesQuery,
+  useGetServiceCategoriesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
@@ -50,6 +48,12 @@ useEffect(() => {
     setHospitalId(hospitalOptions[0].value);
   }
 }, [hospitalOptions, hospitalId]);
+
+  const { data: categories = [] } = useGetServiceCategoriesQuery();
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
+    [categories],
+  );
 
   const { data: rows = [], isLoading } = useGetHospitalServicesQuery(
     { hospitalId, categoryFilter: categoryFilter ?? '', nameFilter },
@@ -298,7 +302,7 @@ useEffect(() => {
             allowClear
             showSearch
             optionFilterProp="label"
-            options={SERVICE_CATEGORY_OPTIONS}
+            options={categoryOptions}
             style={{ width: 220 }}
             disabled={!hospitalId}
           />

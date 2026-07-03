@@ -14,6 +14,7 @@ export default function AdminServicesModal({
   onClearError,
   onSave,
   departmentOptions = [],
+  serviceCategoryOptions = [],
 }) {
   return (
     <AppModal
@@ -45,6 +46,7 @@ export default function AdminServicesModal({
         onPatchForm={onPatchForm}
         onClearError={onClearError}
         departmentOptions={departmentOptions}
+        serviceCategoryOptions={serviceCategoryOptions}
       />
     </AppModal>
   );

@@ -13,6 +13,7 @@ export default function UpdateAdminServicesModal({
   onPatchForm,
   onClearError,
   onSave,
+  serviceCategoryOptions = [],
 }) {
   return (
     <AppModal
@@ -43,6 +44,7 @@ export default function UpdateAdminServicesModal({
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
+        serviceCategoryOptions={serviceCategoryOptions}
       />
     </AppModal>
   );

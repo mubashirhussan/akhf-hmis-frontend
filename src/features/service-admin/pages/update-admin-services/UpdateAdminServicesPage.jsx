@@ -11,10 +11,10 @@ import {
   getServiceCategoryLabel,
   getBooleanLabel,
   getActiveStatusLabel,
-  SERVICE_CATEGORY_OPTIONS,
 } from '@/features/service-admin/api/mock-service-admin';
 import {
   useGetServiceAdminsQuery,
+  useGetServiceCategoriesQuery,
   useUpdateServiceAdminMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
 
@@ -31,7 +31,13 @@ export default function UpdateAdminServicesPage() {
   const [categoryFilter, setCategoryFilter] = useState('');
 
   const { data: rows = [], isLoading } = useGetServiceAdminsQuery();
+  const { data: categories = [] } = useGetServiceCategoriesQuery();
   const [updateServiceAdmin] = useUpdateServiceAdminMutation();
+
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
+    [categories],
+  );
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -221,7 +227,7 @@ export default function UpdateAdminServicesPage() {
             allowClear
             showSearch
             optionFilterProp="label"
-            options={SERVICE_CATEGORY_OPTIONS}
+            options={categoryOptions}
             style={{ width: 260 }}
           />
         </div>
@@ -256,6 +262,7 @@ export default function UpdateAdminServicesPage() {
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}
+        serviceCategoryOptions={categoryOptions}
       />
     </div>
   );

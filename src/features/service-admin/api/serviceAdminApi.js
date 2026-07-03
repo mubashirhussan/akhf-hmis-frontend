@@ -4,6 +4,10 @@ import {
   createServiceAdminRow,
   updateServiceAdminRow,
   deleteServiceAdminRow,
+  getServiceCategoryRows,
+  createServiceCategoryRow,
+  updateServiceCategoryRow,
+  deleteServiceCategoryRow,
   getHospitalServicesRows,
   setHospitalServicePrice,
   bulkUpdateHospitalServicePrices,
@@ -37,6 +41,29 @@ export const serviceAdminApi = api.injectEndpoints({
         return { data: { id } };
       },
       invalidatesTags: ['ServiceAdmin'],
+    }),
+    getServiceCategories: builder.query({
+      queryFn: async () => ({ data: getServiceCategoryRows() }),
+      providesTags: ['ServiceCategory'],
+    }),
+    createServiceCategory: builder.mutation({
+      queryFn: async (serviceName) => ({
+        data: createServiceCategoryRow(serviceName),
+      }),
+      invalidatesTags: ['ServiceCategory'],
+    }),
+    updateServiceCategory: builder.mutation({
+      queryFn: async ({ id, serviceName }) => ({
+        data: updateServiceCategoryRow(id, serviceName),
+      }),
+      invalidatesTags: ['ServiceCategory'],
+    }),
+    deleteServiceCategory: builder.mutation({
+      queryFn: async (id) => {
+        deleteServiceCategoryRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['ServiceCategory'],
     }),
 
     // ── Hospital Services ──────────────────────────────────────────────────
@@ -87,6 +114,10 @@ export const {
   useCreateServiceAdminMutation,
   useUpdateServiceAdminMutation,
   useDeleteServiceAdminMutation,
+  useGetServiceCategoriesQuery,
+  useCreateServiceCategoryMutation,
+  useUpdateServiceCategoryMutation,
+  useDeleteServiceCategoryMutation,
   useGetHospitalServicesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,
