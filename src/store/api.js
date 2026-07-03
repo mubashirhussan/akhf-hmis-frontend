@@ -57,7 +57,9 @@ export const api = createApi({
     'Package',
     'ServiceCategory',
     'DiscountAuthority',
-    'RefundAuthority'
+    'RefundAuthority',
+    'ReportHeader',
+    'Company'
   ],
   endpoints: () => ({}),
 });

@@ -179,6 +179,11 @@ export const navigation = [
         label: 'Add Report Header',
         href: '/service-admin/add-report-header',
       },
+      {
+        key: 'new-company',
+        label: 'New Company',
+        href: '/service-admin/new-company',
+      },
     ],
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },

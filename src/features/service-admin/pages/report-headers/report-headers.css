@@ -1,0 +1,44 @@
+.report-headers-page {
+  padding: 16px 0;
+}
+
+.report-headers-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.report-headers-page .services-billing-results {
+  margin-top: 8px;
+}
+
+.report-headers-table-toolbar .ant-input,
+.report-headers-table-toolbar .ant-btn {
+  min-width: 160px;
+}
+
+.report-header-upload-preview {
+  margin-top: 8px;
+}
+
+.report-header-upload-preview img {
+  max-width: 100px;
+  max-height: 80px;
+  object-fit: contain;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+}
+
+@media (max-width: 767px) {
+  .report-headers-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-headers-table-toolbar .ant-input,
+  .report-headers-table-toolbar .ant-btn {
+    width: 100% !important;
+  }
+}

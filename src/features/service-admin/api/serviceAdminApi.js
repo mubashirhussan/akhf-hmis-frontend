@@ -14,6 +14,14 @@ import {
   getRefundAuthorityRows,
   createRefundAuthorityRow,
   deleteRefundAuthorityRow,
+  getReportHeaderRows,
+  createReportHeaderRow,
+  updateReportHeaderRow,
+  deleteReportHeaderRow,
+  getCompanyRows,
+  createCompanyRow,
+  updateCompanyRow,
+  deleteCompanyRow,
   getHospitalServicesRows,
   setHospitalServicePrice,
   bulkUpdateHospitalServicePrices,
@@ -101,6 +109,44 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['RefundAuthority'],
     }),
+    getReportHeaders: builder.query({
+      queryFn: async () => ({ data: getReportHeaderRows() }),
+      providesTags: ['ReportHeader'],
+    }),
+    createReportHeader: builder.mutation({
+      queryFn: async (payload) => ({ data: createReportHeaderRow(payload) }),
+      invalidatesTags: ['ReportHeader'],
+    }),
+    updateReportHeader: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateReportHeaderRow(id, payload) }),
+      invalidatesTags: ['ReportHeader'],
+    }),
+    deleteReportHeader: builder.mutation({
+      queryFn: async (id) => {
+        deleteReportHeaderRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['ReportHeader'],
+    }),
+    getCompanies: builder.query({
+      queryFn: async () => ({ data: getCompanyRows() }),
+      providesTags: ['Company'],
+    }),
+    createCompany: builder.mutation({
+      queryFn: async (payload) => ({ data: createCompanyRow(payload) }),
+      invalidatesTags: ['Company'],
+    }),
+    updateCompany: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateCompanyRow(id, payload) }),
+      invalidatesTags: ['Company'],
+    }),
+    deleteCompany: builder.mutation({
+      queryFn: async (id) => {
+        deleteCompanyRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['Company'],
+    }),
 
     // ── Hospital Services ──────────────────────────────────────────────────
     getHospitalServices: builder.query({
@@ -160,6 +206,14 @@ export const {
   useGetRefundAuthoritiesQuery,
   useCreateRefundAuthorityMutation,
   useDeleteRefundAuthorityMutation,
+  useGetReportHeadersQuery,
+  useCreateReportHeaderMutation,
+  useUpdateReportHeaderMutation,
+  useDeleteReportHeaderMutation,
+  useGetCompaniesQuery,
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation,
+  useDeleteCompanyMutation,
   useGetHospitalServicesQuery,
   useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,

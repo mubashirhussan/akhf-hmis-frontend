@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input } from 'antd';
+import { App, Button, Input, Tooltip } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import DiscountAuthorityModal from '@/features/service-admin/pages/discount-authorities/DiscountAuthorityModal';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -11,6 +11,7 @@ import {
   useDeleteDiscountAuthorityMutation,
   useGetDiscountAuthoritiesQuery,
 } from '@/features/service-admin/api/serviceAdminApi';
+import AppIcon from '@/components/icons/AppIcon';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
@@ -92,7 +93,7 @@ export default function DiscountAuthoritiesPage() {
     closeModal();
   }, [form.employeeId, activeEmployees, createDiscountAuthority, closeModal, message]);
 
-  const handleDelete = useCallback(
+  const handleDeleteRow = useCallback(
     async (row) => {
       const confirmed = await confirmDelete({ itemName: row.employeeName });
       if (!confirmed) return;
@@ -122,18 +123,25 @@ export default function DiscountAuthoritiesPage() {
         width: 100,
         align: 'center',
         render: (_, record) => (
-          <Button
-            type="link"
-            danger
-            size="small"
-            onClick={() => handleDelete(record)}
-          >
-            Delete
-          </Button>
+                              <Tooltip title="Delete">
+                        <Button
+                          type="link"
+                          danger
+                          size="small"
+                          aria-label="Delete service"
+                          icon={
+                            <AppIcon
+                              icon="mdi:delete-outline"
+                              className={ACTION_ICON_CLASS}
+                            />
+                          }
+                          onClick={() => handleDeleteRow(record)}
+                        />
+                      </Tooltip>
         ),
       },
     ],
-    [handleDelete],
+    [handleDeleteRow],
   );
 
   return (

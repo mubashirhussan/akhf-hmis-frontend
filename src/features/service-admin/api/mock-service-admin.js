@@ -301,9 +301,26 @@ export function getServiceAdminRows() {
   return serviceAdminRows;
 }
 
-export const INITIAL_DISCOUNT_AUTHORITY_ROWS = [];
+export const INITIAL_DISCOUNT_AUTHORITY_ROWS = [
+  {
+    id: '1',
+    employeeId: '101',
+    employeeName: 'Aisha Khan',
+  },
+  {
+    id: '2',
+    employeeId: '102',
+    employeeName: 'Bilal Ahmed',
+  },
+  {
+    id: '3',
+    employeeId: '103',
+    employeeName: 'Farah Siddiqui',
+  },
+];
 let discountAuthorityRows = INITIAL_DISCOUNT_AUTHORITY_ROWS.map((row) => ({ ...row }));
-let nextDiscountAuthorityId = 1;
+let nextDiscountAuthorityId =
+  Math.max(...INITIAL_DISCOUNT_AUTHORITY_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getDiscountAuthorityRows() {
   return discountAuthorityRows;
@@ -320,9 +337,26 @@ export function deleteDiscountAuthorityRow(id) {
   discountAuthorityRows = discountAuthorityRows.filter((row) => row.id !== id);
 }
 
-export const INITIAL_REFUND_AUTHORITY_ROWS = [];
+export const INITIAL_REFUND_AUTHORITY_ROWS = [
+  {
+    id: '1',
+    employeeId: '201',
+    employeeName: 'Hassan Raza',
+  },
+  {
+    id: '2',
+    employeeId: '202',
+    employeeName: 'Nida Mir',
+  },
+  {
+    id: '3',
+    employeeId: '203',
+    employeeName: 'Adil Sheikh',
+  },
+];
 let refundAuthorityRows = INITIAL_REFUND_AUTHORITY_ROWS.map((row) => ({ ...row }));
-let nextRefundAuthorityId = 1;
+let nextRefundAuthorityId =
+  Math.max(...INITIAL_REFUND_AUTHORITY_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getRefundAuthorityRows() {
   return refundAuthorityRows;
@@ -337,6 +371,111 @@ export function createRefundAuthorityRow(payload) {
 
 export function deleteRefundAuthorityRow(id) {
   refundAuthorityRows = refundAuthorityRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_REPORT_HEADER_ROWS = [];
+let reportHeaderRows = INITIAL_REPORT_HEADER_ROWS.map((row) => ({ ...row }));
+let nextReportHeaderId = 1;
+
+export function getReportHeaderRows() {
+  return reportHeaderRows;
+}
+
+export function createReportHeaderRow(payload) {
+  const id = String(nextReportHeaderId++);
+  const row = { id, ...payload };
+  reportHeaderRows = [row, ...reportHeaderRows];
+  return row;
+}
+
+export function updateReportHeaderRow(id, payload) {
+  reportHeaderRows = reportHeaderRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return reportHeaderRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteReportHeaderRow(id) {
+  reportHeaderRows = reportHeaderRows.filter((row) => row.id !== id);
+}
+
+export const INITIAL_COMPANY_ROWS = [
+  {
+    id: '1',
+    companyType: 'gov',
+    companyName: 'National Health Services',
+    ntn: '1234567-8',
+    city: 'Lahore',
+    address: '123 Health Avenue, Lahore',
+    contactPersonName: 'Dr. Saima Iqbal',
+    cnic: '42101-1234567-1',
+    phone: '042-12345678',
+    fax: '042-87654321',
+    email: 'info@nhs.gov.pk',
+    website: 'www.nhs.gov.pk',
+    str: 'STR0012345',
+    bankAccount: '0011223344556677',
+    status: 'individuals',
+  },
+  {
+    id: '2',
+    companyType: 'semi-gov',
+    companyName: 'City Medical Supplies',
+    ntn: '2345678-9',
+    city: 'Karachi',
+    address: '45 Medical Plaza, Karachi',
+    contactPersonName: 'Sara Ali',
+    cnic: '42201-2345678-2',
+    phone: '021-23456789',
+    fax: '021-98765432',
+    email: 'contact@citymed.com',
+    website: 'www.citymed.com',
+    str: 'STR0023456',
+    bankAccount: '1122334455667788',
+    status: 'business',
+  },
+  {
+    id: '3',
+    companyType: 'priv',
+    companyName: 'Care Plus Diagnostics',
+    ntn: '3456789-0',
+    city: 'Islamabad',
+    address: '99 Diagnostic Road, Islamabad',
+    contactPersonName: 'Omar Khan',
+    cnic: '42301-3456789-3',
+    phone: '051-34567890',
+    fax: '051-09876543',
+    email: 'support@careplus.pk',
+    website: 'www.careplus.pk',
+    str: 'STR0034567',
+    bankAccount: '2233445566778899',
+    status: 'trust',
+  },
+];
+let companyRows = INITIAL_COMPANY_ROWS.map((row) => ({ ...row }));
+let nextCompanyId =
+  Math.max(...INITIAL_COMPANY_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getCompanyRows() {
+  return companyRows;
+}
+
+export function createCompanyRow(payload) {
+  const id = String(nextCompanyId++);
+  const row = { id, ...payload };
+  companyRows = [row, ...companyRows];
+  return row;
+}
+
+export function updateCompanyRow(id, payload) {
+  companyRows = companyRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return companyRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteCompanyRow(id) {
+  companyRows = companyRows.filter((row) => row.id !== id);
 }
 
 export function createServiceAdminRow(rowPayload) {

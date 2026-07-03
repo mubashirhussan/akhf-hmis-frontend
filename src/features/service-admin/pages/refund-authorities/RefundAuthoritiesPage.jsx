@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input } from 'antd';
+import { App, Button, Input,Tooltip } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import RefundAuthorityModal from '@/features/service-admin/pages/refund-authorities/RefundAuthorityModal';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -11,11 +11,13 @@ import {
   useDeleteRefundAuthorityMutation,
   useGetRefundAuthoritiesQuery,
 } from '@/features/service-admin/api/serviceAdminApi';
+import AppIcon from '@/components/icons/AppIcon';
 
 export default function RefundAuthoritiesPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
 
+  const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({ employeeId: '' });
@@ -90,7 +92,7 @@ export default function RefundAuthoritiesPage() {
     closeModal();
   }, [form.employeeId, activeEmployees, createRefundAuthority, closeModal, message]);
 
-  const handleDelete = useCallback(
+  const handleDeleteRow = useCallback(
     async (row) => {
       const confirmed = await confirmDelete({ itemName: row.employeeName });
       if (!confirmed) return;
@@ -120,18 +122,25 @@ export default function RefundAuthoritiesPage() {
         width: 100,
         align: 'center',
         render: (_, record) => (
-          <Button
-            type="link"
-            danger
-            size="small"
-            onClick={() => handleDelete(record)}
-          >
-            Delete
-          </Button>
+                      <Tooltip title="Delete">
+                        <Button
+                          type="link"
+                          danger
+                          size="small"
+                          aria-label="Delete service"
+                          icon={
+                            <AppIcon
+                              icon="mdi:delete-outline"
+                              className={ACTION_ICON_CLASS}
+                            />
+                          }
+                          onClick={() => handleDeleteRow(record)}
+                        />
+                      </Tooltip>
         ),
       },
     ],
-    [handleDelete],
+    [handleDeleteRow],
   );
 
   return (
