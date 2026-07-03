@@ -12,6 +12,7 @@ import { ROUTES } from "@/config/routes";
 import LoadingSpinner from "@/components/feedback/LoadingSpinner";
 
 function getLoginErrorMessage(err) {
+  debugger
   if (err?.status === "FETCH_ERROR") {
     return "Unable to reach the server. Check that the API is running and try again.";
   }
