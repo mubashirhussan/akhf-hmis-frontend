@@ -17,7 +17,7 @@ import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi'
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 function createEmptyBulkForm() {
-  return { adjustType: '', percentage: null };
+  return { adjustType: '', adjustMode: '', percentage: null, fixedAmount: null };
 }
 
 export default function HospitalServicesPage() {
@@ -106,7 +106,13 @@ useEffect(() => {
   const handleBulkSave = useCallback(async () => {
     const errors = {};
     if (!bulkForm.adjustType) errors.adjustType = 'Adjustment Type is required.';
-    if (!bulkForm.percentage || bulkForm.percentage <= 0) errors.percentage = 'Percentage is required.';
+    if (!bulkForm.adjustMode) errors.adjustMode = 'Adjustment Mode is required.';
+    if (bulkForm.adjustMode === 'percentage' && (!bulkForm.percentage || bulkForm.percentage <= 0)) {
+      errors.percentage = 'Percentage is required.';
+    }
+    if (bulkForm.adjustMode === 'fixed' && (!bulkForm.fixedAmount || bulkForm.fixedAmount <= 0)) {
+      errors.fixedAmount = 'Fixed Amount is required.';
+    }
     if (Object.keys(errors).length) {
       setFieldErrors(errors);
       return;
@@ -116,7 +122,8 @@ useEffect(() => {
       hospitalId,
       serviceIds: selectedIds,
       type: bulkForm.adjustType,
-      percentage: bulkForm.percentage,
+      percentage: bulkForm.adjustMode === 'percentage' ? bulkForm.percentage : null,
+      fixedAmount: bulkForm.adjustMode === 'fixed' ? bulkForm.fixedAmount : null,
     }).unwrap();
     message.success('Prices updated successfully.');
     setSelectedIds([]);

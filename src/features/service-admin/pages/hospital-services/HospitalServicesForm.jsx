@@ -10,6 +10,11 @@ const ADJUST_TYPE_OPTIONS = [
   { label: 'Decrease', value: 'decrease' },
 ];
 
+const ADJUST_MODE_OPTIONS = [
+  { label: 'Percentage', value: 'percentage' },
+  { label: 'Fixed Amount', value: 'fixed' },
+];
+
 const controlClass = FIELD_CONTROL_CLASS;
 
 export default function HospitalServicesForm({
@@ -41,23 +46,65 @@ export default function HospitalServicesForm({
       </FormField>
 
       <FormField
-        label="Percentage"
+        label="Adjustment Mode"
         required
-        error={errors?.percentage}
+        error={errors?.adjustMode}
       >
-        <InputNumber
-          id={fieldId('percentage')}
-          className={`${controlClass} hospital-services-percentage-input`}
-          status={errors?.percentage ? 'error' : ''}
-          value={form.percentage}
-          min={0.01}
-          max={100}
-          onChange={(percentage) => {
-            onPatchForm({ percentage: percentage ?? null });
+        <Select
+          id={fieldId('adjust-mode')}
+          className={controlClass}
+          status={errors?.adjustMode ? 'error' : ''}
+          value={form.adjustMode || undefined}
+          options={ADJUST_MODE_OPTIONS}
+          onChange={(adjustMode) => {
+            onPatchForm({ adjustMode, percentage: null, fixedAmount: null });
+            onClearError?.('adjustMode');
             onClearError?.('percentage');
+            onClearError?.('fixedAmount');
           }}
         />
       </FormField>
+
+      {form.adjustMode === 'percentage' && (
+        <FormField
+          label="Percentage"
+          required
+          error={errors?.percentage}
+        >
+          <InputNumber
+            id={fieldId('percentage')}
+            className={`${controlClass} hospital-services-percentage-input`}
+            status={errors?.percentage ? 'error' : ''}
+            value={form.percentage}
+            min={0.01}
+            max={100}
+            onChange={(percentage) => {
+              onPatchForm({ percentage: percentage ?? null });
+              onClearError?.('percentage');
+            }}
+          />
+        </FormField>
+      )}
+
+      {form.adjustMode === 'fixed' && (
+        <FormField
+          label="Fixed Amount"
+          required
+          error={errors?.fixedAmount}
+        >
+          <InputNumber
+            id={fieldId('fixed-amount')}
+            className={`${controlClass} hospital-services-percentage-input`}
+            status={errors?.fixedAmount ? 'error' : ''}
+            value={form.fixedAmount}
+            min={1}
+            onChange={(fixedAmount) => {
+              onPatchForm({ fixedAmount: fixedAmount ?? null });
+              onClearError?.('fixedAmount');
+            }}
+          />
+        </FormField>
+      )}
     </FormGrid>
   );
 }
