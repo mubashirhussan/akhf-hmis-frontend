@@ -29,6 +29,9 @@ import {
   createPackageRow,
   updatePackageRow,
   deletePackageRow,
+  getCompanyServicesRows,
+  setCompanyServicePrice,
+  bulkUpdateCompanyServicePrices,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -147,8 +150,6 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['Company'],
     }),
-
-    // ── Hospital Services ──────────────────────────────────────────────────
     getHospitalServices: builder.query({
       queryFn: async ({ hospitalId, categoryFilter = '', nameFilter = '' }) => ({
         data: getHospitalServicesRows(hospitalId, categoryFilter, nameFilter),
@@ -188,6 +189,26 @@ deletePackage: builder.mutation({
   },
   invalidatesTags: ['Package'],
 }),
+getCompanyServices: builder.query({
+  queryFn: async ({ companyId, categoryFilter = '', nameFilter = '' }) => ({
+    data: getCompanyServicesRows(companyId, categoryFilter, nameFilter),
+  }),
+  providesTags: ['CompanyService'],
+}),
+updateCompanyServicePrice: builder.mutation({
+  queryFn: async ({ companyId, serviceId, price }) => {
+    setCompanyServicePrice(companyId, serviceId, price);
+    return { data: { companyId, serviceId, price } };
+  },
+  invalidatesTags: ['CompanyService'],
+}),
+bulkUpdateCompanyServicePrices: builder.mutation({
+  queryFn: async ({ companyId, serviceIds, type, percentage }) => {
+    bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage);
+    return { data: { companyId, serviceIds, type, percentage } };
+  },
+  invalidatesTags: ['CompanyService'],
+}),
   }),
 });
 
@@ -221,4 +242,7 @@ export const {
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,
+  useGetCompanyServicesQuery,
+  useUpdateCompanyServicePriceMutation,
+  useBulkUpdateCompanyServicePricesMutation,
 } = serviceAdminApi;

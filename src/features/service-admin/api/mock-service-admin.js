@@ -574,6 +574,52 @@ export function getHospitalServicesRows(hospitalId, categoryFilter, nameFilter) 
   });
 }
 
+let companyServicePrices = {};
+
+export function getCompanyServicePrice(companyId, serviceId) {
+  const key = `${companyId}_${serviceId}`;
+  return companyServicePrices[key] ?? null;
+}
+
+export function setCompanyServicePrice(companyId, serviceId, price) {
+  const key = `${companyId}_${serviceId}`;
+  companyServicePrices[key] = { companyId, serviceId, price };
+}
+
+export function bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage) {
+  serviceIds.forEach((serviceId) => {
+    const key = `${companyId}_${serviceId}`;
+    const existing = companyServicePrices[key];
+    const basePrice = existing != null
+      ? existing.price
+      : (serviceAdminRows.find((r) => r.id === serviceId)?.serviceCharges ?? 0);
+    const delta = (basePrice * percentage) / 100;
+    const newPrice = type === 'increase'
+      ? Math.round(basePrice + delta)
+      : Math.max(0, Math.round(basePrice - delta));
+    companyServicePrices[key] = { companyId, serviceId, price: newPrice };
+  });
+}
+
+export function getCompanyServicesRows(companyId, categoryFilter, nameFilter) {
+  let result = serviceAdminRows;
+  if (categoryFilter) {
+    result = result.filter((r) => r.serviceCategory === categoryFilter);
+  }
+  if (nameFilter?.trim()) {
+    result = result.filter((r) =>
+      r.serviceName?.toLowerCase().includes(nameFilter.trim().toLowerCase()),
+    );
+  }
+  return result.map((r) => {
+    const override = companyServicePrices[`${companyId}_${r.id}`];
+    return {
+      ...r,
+      price: override != null ? override.price : r.serviceCharges,
+    };
+  });
+}
+
 export const WARD_OPTIONS = [
   { label: 'All', value: 'all' },
   { label: 'Female Ward', value: 'female-ward' },

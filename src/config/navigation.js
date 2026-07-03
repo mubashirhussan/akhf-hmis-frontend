@@ -184,6 +184,11 @@ export const navigation = [
         label: 'New Company',
         href: '/service-admin/new-company',
       },
+      {
+        key: 'assign-company-rates',
+        label: 'Company Rates',
+        href: '/service-admin/assign-company-rates',
+      },
     ],
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },
