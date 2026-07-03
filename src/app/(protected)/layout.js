@@ -1,10 +1,10 @@
-import AppShell from '@/components/layout/AppShell';
-import AuthGuard from '@/components/auth/AuthGuard';
+import AppShell from "@/components/layout/AppShell";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function ProtectedLayout({ children }) {
   return (
-    // <AuthGuard>
+     <AuthGuard>
       <AppShell>{children}</AppShell>
-    // </AuthGuard>
+     </AuthGuard>
   );
 }

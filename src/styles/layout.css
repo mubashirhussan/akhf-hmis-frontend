@@ -104,11 +104,22 @@ body::-webkit-scrollbar-thumb:hover,
 .app-sidebar button {
   color: inherit;
   text-decoration: none;
+  background-color: transparent;
+  border: none;
+}
+
+.app-sidebar .sidebar-nav-parent:not(.bg-white):hover,
+.app-sidebar .sidebar-nav-child:not(.bg-white):hover,
+.app-sidebar button.sidebar-nav-parent:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .app-sidebar .sidebar-nav-parent.bg-white,
 .app-sidebar .sidebar-nav-child.bg-white {
+  background-color: #ffffff !important;
   color: var(--app-primary) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
 .sidebar-scroll {

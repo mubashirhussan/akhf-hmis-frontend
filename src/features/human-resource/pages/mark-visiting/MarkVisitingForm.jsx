@@ -39,7 +39,7 @@ export default function MarkVisitingForm({
           disabled={isEdit}
           options={employees.map((e) => ({
             value: e.empId ?? e.id,
-            label: `${e.empId ?? e.id}`,
+            label: `${e.empId ?? e.id} — ${getEmployeeDisplayName(e)}`,
           }))}
           onChange={handleEmployeeIdChange}
           placeholder=""

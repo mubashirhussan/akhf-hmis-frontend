@@ -1,11 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const TOKEN_KEY = 'akhf_token';
+const LEGACY_TOKEN_KEY = 'akhf_access_token';
 const USER_KEY = 'akhf_user';
 
 function readStoredToken() {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
+  return (
+    sessionStorage.getItem(TOKEN_KEY) ||
+    localStorage.getItem(TOKEN_KEY) ||
+    sessionStorage.getItem(LEGACY_TOKEN_KEY) ||
+    localStorage.getItem(LEGACY_TOKEN_KEY)
+  );
 }
 
 function readStoredUser() {
@@ -23,8 +29,18 @@ function clearStoredAuth() {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(LEGACY_TOKEN_KEY);
+  localStorage.removeItem(LEGACY_TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
   localStorage.removeItem(USER_KEY);
+}
+
+export function getInitialAuthState() {
+  return {
+    token: readStoredToken(),
+    user: readStoredUser(),
+    isHydrated: true,
+  };
 }
 
 const initialState = {

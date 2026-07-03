@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
-import { ROUTES } from '@/config/routes';
+import HomeRedirect from '@/components/auth/HomeRedirect';
 
 export default function RootPage() {
-  redirect(ROUTES.login);
+  return <HomeRedirect />;
 }

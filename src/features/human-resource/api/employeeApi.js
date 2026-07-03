@@ -304,7 +304,7 @@ addHospital: builder.mutation({
 }),
 
 updateHospital: builder.mutation({
-    queryFn: async ({ id, payload }) => ({
+    queryFn: async ({ id, ...payload }) => ({
         data: updateHospitalRow(id, payload),
     }),
     invalidatesTags: ['Hospital'],
