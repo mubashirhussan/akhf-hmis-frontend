@@ -4,14 +4,24 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { Button, Checkbox, Form, Input, message } from "antd";
+import { App, Button, Checkbox, Form, Input } from "antd";
 import AuthShell from "@/features/auth/components/AuthShell";
 import { useLoginMutation } from "@/features/auth/api/authApi";
 import { selectIsAuthHydrated, selectIsAuthenticated } from "@/store/authSlice";
 import { ROUTES } from "@/config/routes";
+import LoadingSpinner from "@/components/feedback/LoadingSpinner";
 
-export default function LoginPage() {
+function getLoginErrorMessage(err) {
+  if (err?.status === "FETCH_ERROR") {
+    return "Unable to reach the server. Check that the API is running and try again.";
+  }
+
+  return err?.data?.message || err?.message || "Invalid username or password";
+}
+
+function LoginPageContent() {
   const router = useRouter();
+  const { message } = App.useApp();
   const [login, { isLoading }] = useLoginMutation();
   const isHydrated = useSelector(selectIsAuthHydrated);
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -22,6 +32,14 @@ export default function LoginPage() {
     }
   }, [isHydrated, isAuthenticated, router]);
 
+  if (!isHydrated) {
+    return <LoadingSpinner description="Checking session..." />;
+  }
+
+  if (isAuthenticated) {
+    return <LoadingSpinner description="Redirecting to dashboard..." />;
+  }
+
   const handleLogin = async (values) => {
     try {
       await login({
@@ -31,7 +49,7 @@ export default function LoginPage() {
       }).unwrap();
       router.push(ROUTES.dashboard);
     } catch (err) {
-      message.error(err?.message || "Invalid username or password");
+      message.error(getLoginErrorMessage(err));
     }
   };
 
@@ -81,5 +99,13 @@ export default function LoginPage() {
         </Button>
       </Form>
     </AuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <App>
+      <LoginPageContent />
+    </App>
   );
 }

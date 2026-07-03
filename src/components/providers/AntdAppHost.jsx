@@ -7,7 +7,9 @@ import { App } from 'antd';
  * not the sidebar, so layout and nav styles stay isolated.
  */
 export default function AntdAppHost({ children, className = '' }) {
-  return <App className={['app-host', className].filter(Boolean).join(' ')}
-  message = {{maxCount:1}}
-  >{children}</App>;
+  return (
+    <App className={['app-host', className].filter(Boolean).join(' ')} message={{ maxCount: 1 }}>
+      {children}
+    </App>
+  );
 }

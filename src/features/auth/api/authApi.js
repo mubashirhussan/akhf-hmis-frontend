@@ -20,14 +20,18 @@ export const authApi = api.injectEndpoints({
         };
       },
       async onQueryStarted({ remember }, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled;
-        dispatch(
-          setCredentials({
-            token: data.token,
-            user: data.user,
-            remember,
-          }),
-        );
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            setCredentials({
+              token: data.token,
+              user: data.user,
+              remember,
+            }),
+          );
+        } catch {
+          // LoginPage handles and displays the error.
+        }
       },
     }),
   }),

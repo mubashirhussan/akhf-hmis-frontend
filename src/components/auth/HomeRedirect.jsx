@@ -7,24 +7,15 @@ import LoadingSpinner from '@/components/feedback/LoadingSpinner';
 import { selectIsAuthHydrated, selectIsAuthenticated } from '@/store/authSlice';
 import { ROUTES } from '@/config/routes';
 
-export default function AuthGuard({ children }) {
+export default function HomeRedirect() {
   const router = useRouter();
   const isHydrated = useSelector(selectIsAuthHydrated);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
-    if (isHydrated && !isAuthenticated) {
-      router.replace(ROUTES.login);
-    }
+    if (!isHydrated) return;
+    router.replace(isAuthenticated ? ROUTES.dashboard : ROUTES.login);
   }, [isHydrated, isAuthenticated, router]);
 
-  if (!isHydrated) {
-    return <LoadingSpinner description="Checking session..." />;
-  }
-
-  if (!isAuthenticated) {
-    return <LoadingSpinner description="Redirecting to login..." />;
-  }
-
-  return children;
+  return <LoadingSpinner />;
 }

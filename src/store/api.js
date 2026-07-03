@@ -15,9 +15,14 @@ const baseQuery = fetchBaseQuery({
 
 async function baseQueryWithAuth(args, api, extraOptions) {
   const result = await baseQuery(args, api, extraOptions);
-  if (result.error?.status === 401) {
+
+  const url = typeof args === 'string' ? args : args?.url;
+  const isLoginRequest = url?.includes('/auth/login');
+
+  if (result.error?.status === 401 && !isLoginRequest) {
     api.dispatch(logout());
   }
+
   return result;
 }
 
