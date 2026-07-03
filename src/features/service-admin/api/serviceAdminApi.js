@@ -164,9 +164,9 @@ export const serviceAdminApi = api.injectEndpoints({
       invalidatesTags: ['HospitalService'],
     }),
     bulkUpdateHospitalServicePrices: builder.mutation({
-      queryFn: async ({ hospitalId, serviceIds, type, percentage }) => {
-        bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage);
-        return { data: { hospitalId, serviceIds, type, percentage } };
+      queryFn: async ({ hospitalId, serviceIds, type, percentage, fixedAmount }) => {
+        bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage, fixedAmount);
+        return { data: { hospitalId, serviceIds, type, percentage, fixedAmount } };
       },
       invalidatesTags: ['HospitalService'],
     }),
@@ -203,11 +203,18 @@ updateCompanyServicePrice: builder.mutation({
   invalidatesTags: ['CompanyService'],
 }),
 bulkUpdateCompanyServicePrices: builder.mutation({
-  queryFn: async ({ companyId, serviceIds, type, percentage }) => {
-    bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage);
-    return { data: { companyId, serviceIds, type, percentage } };
+  queryFn: async ({ companyId, serviceIds, type, percentage, fixedAmount }) => {
+    bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage, fixedAmount);
+    return { data: { companyId, serviceIds, type, percentage, fixedAmount } };
   },
   invalidatesTags: ['CompanyService'],
+}),
+bulkUpdateHospitalServicePrices: builder.mutation({
+  queryFn: async ({ hospitalId, serviceIds, type, percentage, fixedAmount }) => {
+    bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage, fixedAmount);
+    return { data: { hospitalId, serviceIds, type, percentage, fixedAmount } };
+  },
+  invalidatesTags: ['HospitalService'],
 }),
   }),
 });

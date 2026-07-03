@@ -11,13 +11,13 @@ import {
   useGetServiceCategoriesQuery,
   useGetCompanyServicesQuery,
   useUpdateCompanyServicePriceMutation,
-  useBulkUpdateCompanyServicePricesMutation,
+    useBulkUpdateCompanyServicePricesMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 function createEmptyBulkForm() {
-  return { adjustType: '', percentage: null };
+  return { adjustType: '', adjustMode: '', percentage: null, fixedAmount: null };
 }
 
 export default function AssignCompanyRatesPage() {
@@ -47,6 +47,18 @@ export default function AssignCompanyRatesPage() {
     () => categories.map((cat) => ({ value: cat.value, label: cat.serviceName })),
     [categories],
   );
+
+  useEffect(() => {
+    if (companyOptions.length > 0 && companyId === undefined) {
+      setCompanyId(companyOptions[0].value);
+    }
+  }, [companyOptions, companyId]);
+
+  useEffect(() => {
+    if (categoryOptions.length > 0 && categoryFilter === undefined) {
+      setCategoryFilter(categoryOptions[0].value);
+    }
+  }, [categoryOptions, categoryFilter]);
 
   const { data: rows = [], isLoading } = useGetCompanyServicesQuery(
     { companyId, categoryFilter: categoryFilter ?? '', nameFilter },
@@ -99,7 +111,13 @@ export default function AssignCompanyRatesPage() {
   const handleBulkSave = useCallback(async () => {
     const errors = {};
     if (!bulkForm.adjustType) errors.adjustType = 'Adjustment Type is required.';
-    if (!bulkForm.percentage || bulkForm.percentage <= 0) errors.percentage = 'Percentage is required.';
+    if (!bulkForm.adjustMode) errors.adjustMode = 'Adjustment Mode is required.';
+    if (bulkForm.adjustMode === 'percentage' && (!bulkForm.percentage || bulkForm.percentage <= 0)) {
+      errors.percentage = 'Percentage is required.';
+    }
+    if (bulkForm.adjustMode === 'fixed' && (!bulkForm.fixedAmount || bulkForm.fixedAmount <= 0)) {
+      errors.fixedAmount = 'Fixed Amount is required.';
+    }
     if (Object.keys(errors).length) {
       setFieldErrors(errors);
       return;
@@ -109,7 +127,8 @@ export default function AssignCompanyRatesPage() {
       companyId,
       serviceIds: selectedIds,
       type: bulkForm.adjustType,
-      percentage: bulkForm.percentage,
+      percentage: bulkForm.adjustMode === 'percentage' ? bulkForm.percentage : null,
+      fixedAmount: bulkForm.adjustMode === 'fixed' ? bulkForm.fixedAmount : null,
     }).unwrap();
     message.success('Prices updated successfully.');
     setSelectedIds([]);

@@ -540,14 +540,19 @@ export function setHospitalServicePrice(hospitalId, serviceId, price) {
   hospitalServicePrices[key] = { hospitalId, serviceId, price };
 }
 
-export function bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage) {
+export function bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage, fixedAmount) {
   serviceIds.forEach((serviceId) => {
     const key = `${hospitalId}_${serviceId}`;
     const existing = hospitalServicePrices[key];
     const basePrice = existing != null
       ? existing.price
       : (serviceAdminRows.find((r) => r.id === serviceId)?.serviceCharges ?? 0);
-    const delta = (basePrice * percentage) / 100;
+    let delta;
+    if (fixedAmount != null) {
+      delta = fixedAmount;
+    } else {
+      delta = (basePrice * percentage) / 100;
+    }
     const newPrice = type === 'increase'
       ? Math.round(basePrice + delta)
       : Math.max(0, Math.round(basePrice - delta));
@@ -586,14 +591,19 @@ export function setCompanyServicePrice(companyId, serviceId, price) {
   companyServicePrices[key] = { companyId, serviceId, price };
 }
 
-export function bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage) {
+export function bulkUpdateCompanyServicePrices(companyId, serviceIds, type, percentage, fixedAmount) {
   serviceIds.forEach((serviceId) => {
     const key = `${companyId}_${serviceId}`;
     const existing = companyServicePrices[key];
     const basePrice = existing != null
       ? existing.price
       : (serviceAdminRows.find((r) => r.id === serviceId)?.serviceCharges ?? 0);
-    const delta = (basePrice * percentage) / 100;
+    let delta;
+    if (fixedAmount != null) {
+      delta = fixedAmount;
+    } else {
+      delta = (basePrice * percentage) / 100;
+    }
     const newPrice = type === 'increase'
       ? Math.round(basePrice + delta)
       : Math.max(0, Math.round(basePrice - delta));
