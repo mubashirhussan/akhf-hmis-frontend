@@ -12,30 +12,23 @@ import {
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function AdminServicesForm({
+export default function UpdateAdminServicesForm({
   form,
   errors = {},
   onPatchForm,
   onClearError,
-  departmentOptions = [],
 }) {
-  const fieldId = (name) => `admin-services-${name}`;
+  const fieldId = (name) => `update-admin-services-${name}`;
 
   return (
-    <FormGrid columns={1} className="admin-services-form-grid">
-
-      <FormField
-        label="Service Category"
-        required
-        error={errors?.serviceCategory}
-      >
+    <FormGrid columns={1} className="update-admin-services-form-grid">
+      <FormField label="Service Category" required error={errors?.serviceCategory}>
         <Select
           id={fieldId('service-category')}
           className={controlClass}
           status={errors?.serviceCategory ? 'error' : ''}
           value={form.serviceCategory || undefined}
           options={SERVICE_CATEGORY_OPTIONS}
-        
           showSearch
           optionFilterProp="label"
           onChange={(serviceCategory) => {
@@ -44,27 +37,8 @@ export default function AdminServicesForm({
           }}
         />
       </FormField>
-      <FormField label="Department" error={errors?.department}>
-        <Select
-          id={fieldId('department')}
-          className={controlClass}
-          status={errors?.department ? 'error' : ''}
-          value={form.department || undefined}
-          options={departmentOptions}
-          placeholder="--- Select ---"
-          showSearch
-          optionFilterProp="label"
-          onChange={(department) => {
-            onPatchForm({ department });
-            onClearError?.('department');
-          }}
-        />
-      </FormField>
-      <FormField
-        label="Service Name"
-        required
-        error={errors?.serviceName}
-      >
+
+      <FormField label="Service Name" required error={errors?.serviceName}>
         <Input
           id={fieldId('service-name')}
           className={controlClass}
@@ -77,14 +51,10 @@ export default function AdminServicesForm({
         />
       </FormField>
 
-      <FormField
-        label="Service Charges"
-        required
-        error={errors?.serviceCharges}
-      >
+      <FormField label="Service Charges" required error={errors?.serviceCharges}>
         <InputNumber
           id={fieldId('service-charges')}
-          className={`${controlClass} admin-services-charges-input`}
+          className={`${controlClass} update-admin-services-charges-input`}
           status={errors?.serviceCharges ? 'error' : ''}
           value={form.serviceCharges}
           min={0}
@@ -101,9 +71,7 @@ export default function AdminServicesForm({
           className={controlClass}
           value={form.serviceChargesBefore}
           options={BOOLEAN_OPTIONS}
-          onChange={(serviceChargesBefore) =>
-            onPatchForm({ serviceChargesBefore })
-          }
+          onChange={(serviceChargesBefore) => onPatchForm({ serviceChargesBefore })}
         />
       </FormField>
 
@@ -117,18 +85,13 @@ export default function AdminServicesForm({
         />
       </FormField>
 
-      <FormField
-        label="Service Head"
-        required
-        error={errors?.serviceHead}
-      >
+      <FormField label="Service Head" required error={errors?.serviceHead}>
         <Select
           id={fieldId('service-head')}
           className={controlClass}
           status={errors?.serviceHead ? 'error' : ''}
           value={form.serviceHead || undefined}
           options={SERVICE_HEAD_OPTIONS}
-          placeholder="--- Select ---"
           showSearch
           optionFilterProp="label"
           onChange={(serviceHead) => {

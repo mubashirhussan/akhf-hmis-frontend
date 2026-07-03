@@ -1,2 +1,5 @@
 /* Service admin feature styles */
 @import "../pages/admin-services/admin-services.css";
+@import "../pages/hospital-services/hospital-services.css";
+@import "../pages/new-package/new-package.css";
+@import "../pages/update-admin-services/update-admin-services.css";

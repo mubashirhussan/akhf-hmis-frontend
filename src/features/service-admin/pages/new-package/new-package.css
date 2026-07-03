@@ -1,0 +1,113 @@
+.new-package-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.new-package-form-grid .field-control,
+.new-package-form-grid .ant-select,
+.new-package-form-grid .ant-input-number {
+  width: 100%;
+}
+
+.new-package-form-grid .field-control.ant-input-status-error,
+.new-package-form-grid .ant-input-status-error.field-control,
+.new-package-form-grid .ant-select-status-error.field-control {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.new-package-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.new-package-save-btn {
+  min-width: 138px;
+}
+
+.new-package-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.new-package-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.new-package-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+.new-package-name-link {
+  color: var(--app-primary);
+  cursor: pointer;
+}
+
+.new-package-linkage-table .ant-table-thead > tr > th {
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0 8px 10px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+.new-package-linkage-table .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.new-package-linkage-table .ant-table-tbody > tr > td {
+  padding: 12px 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: transparent !important;
+}
+
+.new-package-linkage-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+.new-package-linkage-table .ant-table-cell {
+  border-inline-end: none !important;
+}
+
+.new-package-linkage-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc !important;
+}
+
+@media (max-width: 991px) {
+  .new-package-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .new-package-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .new-package-save-btn {
+    width: 100%;
+  }
+
+  .new-package-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .new-package-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .new-package-filters .ant-select,
+  .new-package-filters .ant-input-affix-wrapper,
+  .new-package-filters .ant-input {
+    width: 100% !important;
+  }
+}

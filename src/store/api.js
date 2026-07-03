@@ -58,6 +58,8 @@ export const api = createApi({
     'Shift',
     'AdminDutyRoaster',
     'AssignDutyToEmployee',
+    'HospitalService',
+    'Package'
   ],
   endpoints: () => ({}),
 });

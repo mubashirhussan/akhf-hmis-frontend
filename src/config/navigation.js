@@ -144,6 +144,21 @@ export const navigation = [
         label: 'Admin Services',
         href: '/service-admin/admin-services',
       },
+      {
+        key: 'hospital-services',
+        label: 'Hospital Services',
+        href: '/service-admin/hospital-services',
+      },
+      {
+        key: 'update-admin-services',
+        label: 'Update Admin Services',
+        href: '/service-admin/update-admin-services',
+      },
+      {
+        key: 'new-package',
+        label: 'New Package',
+        href: '/service-admin/new-package',
+      },
     ],
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },

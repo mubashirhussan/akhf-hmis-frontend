@@ -20,6 +20,7 @@ import {
   useUpdateServiceAdminMutation,
   useDeleteServiceAdminMutation,
 } from "@/features/service-admin/api/serviceAdminApi";
+import { useGetDepartmentsQuery } from '@/features/human-resource/api/employeeApi';
 
 const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
@@ -35,6 +36,12 @@ export default function AdminServicesPage() {
   const { confirmDelete } = useConfirm();
 
   const { data: rows = [], isLoading } = useGetServiceAdminsQuery();
+  const { data: departments = [] } = useGetDepartmentsQuery();
+
+  const departmentOptions = useMemo(
+    () => departments.map((d) => ({ value: d.id, label: d.departmentName })),
+    [departments],
+  );
 
   const [createServiceAdmin] = useCreateServiceAdminMutation();
   const [updateServiceAdmin] = useUpdateServiceAdminMutation();
@@ -105,6 +112,7 @@ export default function AdminServicesPage() {
     setFieldErrors({});
 
     const rowPayload = {
+      department: form.department,
       serviceName,
       serviceCategory,
       serviceCharges: form.serviceCharges ?? 0,
@@ -283,6 +291,7 @@ export default function AdminServicesPage() {
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}
+        departmentOptions={departmentOptions}
       />
     </div>
   );
