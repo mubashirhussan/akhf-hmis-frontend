@@ -27,6 +27,17 @@ export default function HospitalServicesForm({
 
   return (
     <FormGrid columns={1} className="hospital-services-form-grid">
+      {form.currentAmount != null && (
+        <FormField label="Current Amount">
+          <InputNumber
+            id={fieldId('current-amount')}
+            className={`${controlClass} hospital-services-percentage-input`}
+            value={form.currentAmount}
+            disabled
+          />
+        </FormField>
+      )}
+
       <FormField
         label="Adjustment Type"
         required

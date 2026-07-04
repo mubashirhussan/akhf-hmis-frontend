@@ -89,8 +89,8 @@ useEffect(() => {
     );
   }, []);
 
-  const openModal = useCallback(() => {
-    setBulkForm(createEmptyBulkForm());
+  const openModal = useCallback((record) => {
+    setBulkForm({ ...createEmptyBulkForm(), currentAmount: record?.price ?? null });
     setFieldErrors({});
     setIsModalOpen(true);
   }, []);
@@ -196,7 +196,7 @@ useEffect(() => {
                       className={ACTION_ICON_CLASS}
                     />
                   }
-                  onClick={openModal}
+                  onClick={() => openModal(record)}
                 />
               </Tooltip>
             </div>
@@ -265,7 +265,7 @@ useEffect(() => {
           <Button
             type="primary"
             disabled={!updatePricesEnabled}
-            onClick={openModal}
+            onClick={() => openModal()}
           >
             Update Prices
           </Button>

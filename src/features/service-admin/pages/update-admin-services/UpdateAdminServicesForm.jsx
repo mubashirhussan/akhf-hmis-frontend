@@ -49,6 +49,15 @@ export default function UpdateAdminServicesForm({
         />
       </FormField>
 
+      <FormField label="Current Amount">
+        <InputNumber
+          id={fieldId('current-amount')}
+          className={`${controlClass} update-admin-services-charges-input`}
+          value={form.serviceCharges}
+          disabled
+        />
+      </FormField>
+
       <FormField label="Service Charges" required error={errors?.serviceCharges}>
         <InputNumber
           id={fieldId('service-charges')}

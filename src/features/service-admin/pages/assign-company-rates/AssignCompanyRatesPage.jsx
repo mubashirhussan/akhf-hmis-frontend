@@ -92,8 +92,8 @@ export default function AssignCompanyRatesPage() {
     );
   }, []);
 
-  const openModal = useCallback(() => {
-    setBulkForm(createEmptyBulkForm());
+  const openModal = useCallback((record) => {
+    setBulkForm({ ...createEmptyBulkForm(), currentAmount: record?.price ?? null });
     setFieldErrors({});
     setIsModalOpen(true);
   }, []);
@@ -201,7 +201,7 @@ export default function AssignCompanyRatesPage() {
                       className={ACTION_ICON_CLASS}
                     />
                   }
-                  onClick={openModal}
+                  onClick={() => openModal(record)}
                 />
               </Tooltip>
             </div>
@@ -270,7 +270,7 @@ export default function AssignCompanyRatesPage() {
           <Button
             type="primary"
             disabled={!updatePricesEnabled}
-            onClick={openModal}
+            onClick={() => openModal()}
           >
             Adjust Prices
           </Button>

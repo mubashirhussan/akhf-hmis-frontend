@@ -27,6 +27,17 @@ export default function AssignCompanyRatesForm({
 
   return (
     <FormGrid columns={1} className="assign-company-rates-form-grid">
+      {form.currentAmount != null && (
+        <FormField label="Current Amount">
+          <InputNumber
+            id={fieldId('current-amount')}
+            className={`${controlClass} assign-company-rates-percentage-input`}
+            value={form.currentAmount}
+            disabled
+          />
+        </FormField>
+      )}
+
       <FormField
         label="Adjustment Type"
         required
