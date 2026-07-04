@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { App, Button, Input, InputNumber, Select, Tooltip } from 'antd';
+import { App, Button, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import AssignCompanyRatesModal from '@/features/service-admin/pages/assign-company-rates/AssignCompanyRatesModal';
@@ -10,8 +10,7 @@ import {
   useGetCompaniesQuery,
   useGetServiceCategoriesQuery,
   useGetCompanyServicesQuery,
-  useUpdateCompanyServicePriceMutation,
-    useBulkUpdateCompanyServicePricesMutation,
+  useBulkUpdateCompanyServicePricesMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
@@ -33,8 +32,7 @@ export default function AssignCompanyRatesPage() {
   const [bulkForm, setBulkForm] = useState(createEmptyBulkForm);
   const [fieldErrors, setFieldErrors] = useState({});
 
-  const [inlineEditId, setInlineEditId] = useState(null);
-  const [inlineEditPrice, setInlineEditPrice] = useState(null);
+
 
   const { data: companies = [] } = useGetCompaniesQuery();
   const companyOptions = useMemo(
@@ -65,7 +63,6 @@ export default function AssignCompanyRatesPage() {
     { skip: !companyId },
   );
 
-  const [updateCompanyServicePrice] = useUpdateCompanyServicePriceMutation();
   const [bulkUpdatePrices] = useBulkUpdateCompanyServicePricesMutation();
 
   const patchBulkForm = useCallback((patch) => {
@@ -87,14 +84,12 @@ export default function AssignCompanyRatesPage() {
 
   const toggleSelectAll = useCallback(() => {
     setSelectedIds(allSelected ? [] : [...allIds]);
-    setInlineEditId(null);
   }, [allSelected, allIds]);
 
   const toggleRow = useCallback((id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
-    setInlineEditId(null);
   }, []);
 
   const openModal = useCallback(() => {
@@ -135,30 +130,7 @@ export default function AssignCompanyRatesPage() {
     setIsModalOpen(false);
   }, [bulkForm, companyId, selectedIds, bulkUpdatePrices, message]);
 
-  const openInlineEdit = useCallback((record) => {
-    setInlineEditId(record.id);
-    setInlineEditPrice(record.price);
-  }, []);
-
-  const cancelInlineEdit = useCallback(() => {
-    setInlineEditId(null);
-    setInlineEditPrice(null);
-  }, []);
-
-  const saveInlineEdit = useCallback(async () => {
-    if (inlineEditPrice == null || inlineEditPrice < 0) {
-      message.error('Please enter a valid price.');
-      return;
-    }
-    await updateCompanyServicePrice({
-      companyId,
-      serviceId: inlineEditId,
-      price: inlineEditPrice,
-    }).unwrap();
-    message.success('Price updated.');
-    setInlineEditId(null);
-    setInlineEditPrice(null);
-  }, [companyId, inlineEditId, inlineEditPrice, updateCompanyServicePrice, message]);
+  
 
   const updatePricesEnabled = selectedIds.length >= 2;
   const singleSelected = selectedIds.length === 1;
@@ -198,38 +170,7 @@ export default function AssignCompanyRatesPage() {
         dataIndex: 'price',
         key: 'price',
         width: 180,
-        render: (value, record) => {
-          if (inlineEditId === record.id) {
-            return (
-              <div className="assign-company-rates-inline-edit">
-                <InputNumber
-                  min={0}
-                  value={inlineEditPrice}
-                  onChange={(v) => setInlineEditPrice(v ?? 0)}
-                  autoFocus
-                />
-                <Tooltip title="Save">
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<AppIcon icon="mdi:check" className={ACTION_ICON_CLASS} />}
-                    onClick={saveInlineEdit}
-                  />
-                </Tooltip>
-                <Tooltip title="Cancel">
-                  <Button
-                    type="link"
-                    size="small"
-                    danger
-                    icon={<AppIcon icon="mdi:close" className={ACTION_ICON_CLASS} />}
-                    onClick={cancelInlineEdit}
-                  />
-                </Tooltip>
-              </div>
-            );
-          }
-          return value != null ? value.toLocaleString() : '';
-        },
+        render: (value) => (value != null ? value.toLocaleString() : ''),
       },
       {
         title: 'IPD/OPD',
@@ -251,7 +192,7 @@ export default function AssignCompanyRatesPage() {
                 <Button
                   type="link"
                   size="small"
-                  disabled={!isThisRowSelected || inlineEditId != null}
+                  disabled={!isThisRowSelected}
                   className="assign-company-rates-actions-cell"
                   aria-label="Edit price"
                   icon={
@@ -260,7 +201,7 @@ export default function AssignCompanyRatesPage() {
                       className={ACTION_ICON_CLASS}
                     />
                   }
-                  onClick={() => openInlineEdit(record)}
+                  onClick={openModal}
                 />
               </Tooltip>
             </div>
@@ -274,12 +215,8 @@ export default function AssignCompanyRatesPage() {
       toggleSelectAll,
       selectedIds,
       toggleRow,
-      inlineEditId,
-      inlineEditPrice,
       singleSelected,
-      saveInlineEdit,
-      cancelInlineEdit,
-      openInlineEdit,
+      openModal,
     ],
   );
 
@@ -296,7 +233,6 @@ export default function AssignCompanyRatesPage() {
             onChange={(v) => {
               setCompanyId(v);
               setSelectedIds([]);
-              setInlineEditId(null);
             }}
             showSearch
             optionFilterProp="label"
@@ -309,7 +245,6 @@ export default function AssignCompanyRatesPage() {
             onChange={(v) => {
               setCategoryFilter(v);
               setSelectedIds([]);
-              setInlineEditId(null);
             }}
             allowClear
             showSearch
@@ -324,7 +259,6 @@ export default function AssignCompanyRatesPage() {
             onChange={(e) => {
               setNameFilter(e.target.value);
               setSelectedIds([]);
-              setInlineEditId(null);
             }}
             allowClear
             style={{ width: 220 }}
