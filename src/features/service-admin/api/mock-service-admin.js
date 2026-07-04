@@ -749,3 +749,39 @@ export function rowToPackageForm(row) {
     services: row.services ?? [],
   };
 }
+
+export const B2B_LABS_OPTIONS = [
+  { label: 'Yes', value: 'yes' },
+  { label: 'No', value: 'no' },
+];
+
+const INITIAL_PATIENT_TYPE_ROWS = [
+  { id: '1', patientType: 'Indoor', b2bLabs: 'no', status: 'active' },
+  { id: '2', patientType: 'Outdoor', b2bLabs: 'yes', status: 'active' },
+];
+
+let patientTypeRows = INITIAL_PATIENT_TYPE_ROWS.map((row) => ({ ...row }));
+let nextPatientTypeId =
+  Math.max(...INITIAL_PATIENT_TYPE_ROWS.map((row) => Number(row.id)), 0) + 1;
+
+export function getPatientTypeRows() {
+  return patientTypeRows;
+}
+
+export function createPatientTypeRow(payload) {
+  const id = String(nextPatientTypeId++);
+  const row = { id, status: 'active', ...payload };
+  patientTypeRows = [row, ...patientTypeRows];
+  return row;
+}
+
+export function updatePatientTypeRow(id, payload) {
+  patientTypeRows = patientTypeRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return patientTypeRows.find((row) => row.id === id) ?? null;
+}
+
+export function deletePatientTypeRow(id) {
+  patientTypeRows = patientTypeRows.filter((row) => row.id !== id);
+}

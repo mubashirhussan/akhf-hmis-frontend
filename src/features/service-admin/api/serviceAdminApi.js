@@ -32,6 +32,10 @@ import {
   getCompanyServicesRows,
   setCompanyServicePrice,
   bulkUpdateCompanyServicePrices,
+    getPatientTypeRows,
+  createPatientTypeRow,
+  updatePatientTypeRow,
+  deletePatientTypeRow,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -216,6 +220,25 @@ bulkUpdateHospitalServicePrices: builder.mutation({
   },
   invalidatesTags: ['HospitalService'],
 }),
+getPatientTypes: builder.query({
+      queryFn: async () => ({ data: getPatientTypeRows() }),
+      providesTags: ['PatientType'],
+    }),
+    createPatientType: builder.mutation({
+      queryFn: async (payload) => ({ data: createPatientTypeRow(payload) }),
+      invalidatesTags: ['PatientType'],
+    }),
+    updatePatientType: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updatePatientTypeRow(id, payload) }),
+      invalidatesTags: ['PatientType'],
+    }),
+    deletePatientType: builder.mutation({
+      queryFn: async (id) => {
+        deletePatientTypeRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['PatientType'],
+    }),
   }),
 });
 
@@ -252,4 +275,8 @@ export const {
   useGetCompanyServicesQuery,
   useUpdateCompanyServicePriceMutation,
   useBulkUpdateCompanyServicePricesMutation,
+  useGetPatientTypesQuery,
+  useCreatePatientTypeMutation,
+  useUpdatePatientTypeMutation,
+  useDeletePatientTypeMutation,
 } = serviceAdminApi;
