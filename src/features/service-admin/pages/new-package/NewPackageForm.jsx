@@ -19,8 +19,14 @@ export default function NewPackageForm({
   departmentOptions = [],
   serviceOptions = [],
   serviceCategoryOptions = [],
+  serviceChargesMap = {},
 }) {
   const fieldId = (name) => `new-package-${name}`;
+
+  const servicesTotal = (form.services ?? []).reduce(
+    (sum, svc) => sum + (serviceChargesMap[svc] ?? 0),
+    0,
+  );
 
   return (
     <FormGrid columns={2} className="new-package-form-grid">
@@ -67,20 +73,6 @@ export default function NewPackageForm({
         />
       </FormField>
 
-      <FormField label="Total Amount" error={errors?.totalAmount}>
-        <InputNumber
-          id={fieldId('total-amount')}
-          className={controlClass}
-          status={errors?.totalAmount ? 'error' : ''}
-          value={form.totalAmount}
-          min={0}
-          onChange={(totalAmount) => {
-            onPatchForm({ totalAmount: totalAmount ?? null });
-            onClearError?.('totalAmount');
-          }}
-        />
-      </FormField>
-
       <FormField label="Doctor Share" error={errors?.doctorShare}>
         <InputNumber
           id={fieldId('doctor-share')}
@@ -100,7 +92,6 @@ export default function NewPackageForm({
           id={fieldId('service-head')}
           className={controlClass}
           status={errors?.serviceHead ? 'error' : ''}
-
           value={form.serviceHead || undefined}
           options={PACKAGE_SERVICE_HEAD_OPTIONS}
           showSearch
@@ -158,6 +149,29 @@ export default function NewPackageForm({
           onChange={(services) => {
             onPatchForm({ services });
             onClearError?.('services');
+          }}
+        />
+      </FormField>
+
+      <FormField label="Total Amount">
+        <InputNumber
+          id={fieldId('services-total')}
+          className={controlClass}
+          value={servicesTotal}
+          disabled
+        />
+      </FormField>
+
+      <FormField label="Package Amount" error={errors?.totalAmount}>
+        <InputNumber
+          id={fieldId('package-amount')}
+          className={controlClass}
+          status={errors?.totalAmount ? 'error' : ''}
+          value={form.totalAmount}
+          min={0}
+          onChange={(totalAmount) => {
+            onPatchForm({ totalAmount: totalAmount ?? null });
+            onClearError?.('totalAmount');
           }}
         />
       </FormField>

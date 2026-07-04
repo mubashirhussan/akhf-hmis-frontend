@@ -11,6 +11,7 @@ export default function NewPackageLinkageModal({
   onClose,
   pkg,
   allServices = [],
+  allServiceRows = [],
   onSave,
 }) {
   const { message } = App.useApp();
@@ -18,8 +19,19 @@ export default function NewPackageLinkageModal({
   const [addPanelOpen, setAddPanelOpen] = useState(false);
   const [selectedServiceToAdd, setSelectedServiceToAdd] = useState(null);
 
-  const attachedServices = pkg?.services ?? [];
+ const attachedServices = pkg?.services ?? [];
   const selectedCategory = pkg?.serviceCategory;
+
+  const servicePriceMap = useMemo(() => {
+    const map = {};
+    allServiceRows.forEach((r) => { map[r.serviceName] = r.serviceCharges ?? 0; });
+    return map;
+  }, [allServiceRows]);
+
+  const servicesTotal = useMemo(
+    () => attachedServices.reduce((sum, svc) => sum + (servicePriceMap[svc] ?? 0), 0),
+    [attachedServices, servicePriceMap],
+  );
 
   const availableOptions = useMemo(() => {
     const attached = new Set(attachedServices);
@@ -40,10 +52,19 @@ export default function NewPackageLinkageModal({
     serviceName: svc,
   }));
 
-  const columns = [
+ const columns = [
     {
       title: 'Service Name',
       dataIndex: 'serviceName',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'serviceName',
+      key: 'price',
+      width: 120,
+      align: 'right',
+      render: (svcName) =>
+        (servicePriceMap[svcName] ?? 0).toLocaleString(),
     },
     {
       title: 'Actions',
@@ -141,7 +162,7 @@ export default function NewPackageLinkageModal({
         </div>
       )}
 
-      <Table
+ <Table
         rowKey="key"
         columns={columns}
         dataSource={tableData}
@@ -150,6 +171,17 @@ export default function NewPackageLinkageModal({
         bordered={false}
         locale={{ emptyText: 'No services attached to this package.' }}
       />
+
+      <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+        <div style={{ display: 'flex', gap: 24 }}>
+          <span style={{ fontWeight: 500 }}>Total Amount:</span>
+          <span>{servicesTotal.toLocaleString()}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24 }}>
+          <span style={{ fontWeight: 500 }}>Package Amount:</span>
+          <span>{(pkg?.totalAmount ?? 0).toLocaleString()}</span>
+        </div>
+      </div>
     </AppModal>
   );
 }
