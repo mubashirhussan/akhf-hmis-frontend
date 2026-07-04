@@ -22,21 +22,17 @@
 .assign-bed-location-table-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.assign-bed-location-filters {
-  display: flex;
+  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
+  margin-bottom: 10px;
 }
 
-.assign-bed-location-actions-cell .ant-btn-link {
+.assign-bed-location-actions-cell .ant-btn-link:not(.ant-btn-dangerous) {
   color: var(--app-primary) !important;
+}
+
+.assign-bed-location-actions-cell .ant-btn-link.ant-btn-dangerous {
+  color: var(--ant-color-error, #ff4d4f) !important;
 }
 
 .assign-bed-location-actions-cell .ant-btn-link .iconify {
@@ -55,11 +51,12 @@
 
   .assign-bed-location-filters {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .assign-bed-location-filters .ant-select,
-  .assign-bed-location-filters .ant-input,
-  .assign-bed-location-table-toolbar .ant-btn {
+  .assign-bed-location-filters .ant-input-affix-wrapper,
+  .assign-bed-location-filters .ant-input {
     width: 100% !important;
   }
 }

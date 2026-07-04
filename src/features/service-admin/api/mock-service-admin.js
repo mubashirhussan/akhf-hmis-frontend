@@ -925,8 +925,57 @@ export function deleteWardBedRow(id) {
 
 // ─── Assign Bed Location & Fees ───────────────────────────────────────────────
 
-let bedLocationRows = [];
-let nextBedLocationId = 1;
+const INITIAL_BED_LOCATION_ROWS = [
+  {
+    id: '1',
+    wardBedId: '1',
+    wardName: 'General Ward A',
+    hospitalId: '1',
+    hospitalName: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    departmentId: '1',
+    departmentName: 'Cardiac Care Unit',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    roomNumber: '1',
+    bedNumber: '1',
+    location: 'Block A, Row 1',
+    price: 2500,
+  },
+  {
+    id: '2',
+    wardBedId: '1',
+    wardName: 'General Ward A',
+    hospitalId: '1',
+    hospitalName: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    departmentId: '1',
+    departmentName: 'Cardiac Care Unit',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    roomNumber: '1',
+    bedNumber: '2',
+    location: 'Block A, Row 2',
+    price: 2500,
+  },
+  {
+    id: '3',
+    wardBedId: '2',
+    wardName: 'ICU Ward',
+    hospitalId: '1',
+    hospitalName: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    departmentId: '1',
+    departmentName: 'Cardiac Care Unit',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    roomNumber: '1',
+    bedNumber: '1',
+    location: 'ICU Bay 1',
+    price: 5000,
+  },
+];
+
+let bedLocationRows = INITIAL_BED_LOCATION_ROWS.map((r) => ({ ...r }));
+let nextBedLocationId =
+  Math.max(...INITIAL_BED_LOCATION_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getBedLocationRows() {
   return bedLocationRows;

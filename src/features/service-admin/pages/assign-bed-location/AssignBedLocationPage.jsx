@@ -23,7 +23,7 @@ import '@/features/service-admin/pages/assign-bed-location/assign-bed-location.c
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 function createEmptyForm() {
-  return { wardBedId: '', roomNumber: '', bedNumber: '', location: '' };
+  return { wardBedId: '', roomNumber: '', bedNumber: '', location: '', price: null };
 }
 
 function makeNumberOptions(n) {
@@ -63,41 +63,31 @@ const { data: rows = [], isLoading } = useGetBedLocationsQuery();
   [hospitals],
 );
 
-const filterHospitalOptions = useMemo(
-  () => [{ label: 'All Hospitals', value: '' }, ...hospitalOptions],
-  [hospitalOptions],
-);
-
 const filterDeptOptions = useMemo(
-  () => [
-    { label: 'All Departments', value: '' },
-    ...allDepartments
+  () =>
+    allDepartments
       .filter((d) => !fHospital || d.hospitalId === fHospital)
       .map((d) => ({ value: d.id, label: d.departmentName })),
-  ],
   [allDepartments, fHospital],
 );
 
 const filterSubDeptOptions = useMemo(
-  () => [
-    { label: 'All Sub Departments', value: '' },
-    ...allSubDepartments
+  () =>
+    allSubDepartments
       .filter((s) => !fDepartment || s.departmentId === fDepartment)
       .map((s) => ({ value: s.id, label: s.subDepartmentName })),
-  ],
   [allSubDepartments, fDepartment],
 );
+
   const filterWardOptions = useMemo(() => {
-    const base = wardBeds.filter((w) => {
-      if (fHospital && w.hospitalId !== fHospital) return false;
-      if (fDepartment && w.departmentId !== fDepartment) return false;
-      if (fSubDepartment && w.subDepartmentId !== fSubDepartment) return false;
-      return true;
-    });
-    return [
-      { label: 'All Wards', value: '' },
-      ...base.map((w) => ({ value: w.id, label: w.wardName })),
-    ];
+    return wardBeds
+      .filter((w) => {
+        if (fHospital && w.hospitalId !== fHospital) return false;
+        if (fDepartment && w.departmentId !== fDepartment) return false;
+        if (fSubDepartment && w.subDepartmentId !== fSubDepartment) return false;
+        return true;
+      })
+      .map((w) => ({ value: w.id, label: w.wardName }));
   }, [wardBeds, fHospital, fDepartment, fSubDepartment]);
 
   const usableWardOptions = useMemo(
@@ -150,6 +140,7 @@ const filterSubDeptOptions = useMemo(
       roomNumber: String(record.roomNumber ?? ''),
       bedNumber: String(record.bedNumber ?? ''),
       location: record.location ?? '',
+      price: record.price ?? null,
     });
     setEditingRowId(record.id);
     setFieldErrors({});
@@ -173,6 +164,8 @@ const filterSubDeptOptions = useMemo(
     if (!form.roomNumber) errors.roomNumber = 'Room Number is required.';
     if (!form.bedNumber) errors.bedNumber = 'Bed Number is required.';
     if (!form.location?.trim()) errors.location = 'Location is required.';
+    if (form.price === null || form.price === undefined || form.price === '')
+      errors.price = 'Price is required.';
 
     if (Object.keys(errors).length) {
       setFieldErrors(errors);
@@ -195,10 +188,15 @@ const filterSubDeptOptions = useMemo(
       roomNumber: form.roomNumber,
       bedNumber: form.bedNumber,
       location: form.location.trim(),
+      price: form.price,
     };
 
     if (editingRowId) {
-      await updateBedLocation({ id: editingRowId, location: form.location.trim() }).unwrap();
+      await updateBedLocation({
+        id: editingRowId,
+        location: form.location.trim(),
+        price: form.price,
+      }).unwrap();
       message.success('Bed location updated.');
     } else {
       await createBedLocation(payload).unwrap();
@@ -227,6 +225,13 @@ const filterSubDeptOptions = useMemo(
       { title: 'Room No.', dataIndex: 'roomNumber', key: 'roomNumber', width: 90, align: 'center' },
       { title: 'Bed No.', dataIndex: 'bedNumber', key: 'bedNumber', width: 90, align: 'center' },
       { title: 'Location', dataIndex: 'location', key: 'location', width: 160 },
+      {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+        width: 110,
+        render: (val) => (val != null ? val.toLocaleString() : '—'),
+      },
       {
         title: 'Action',
         key: 'action',
@@ -265,16 +270,19 @@ const filterSubDeptOptions = useMemo(
 
   return (
     <div className="services-billing-page assign-bed-location-page">
-      <div className="assign-bed-location-table-toolbar">
-        <div className="assign-bed-location-filters">
+      <div
+        className="assign-bed-location-table-toolbar"
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
+      >
+        <div className="assign-bed-location-filters" style={{ display: 'flex', gap: 12 }}>
           <Select
             placeholder="Hospital"
             value={fHospital || undefined}
-            options={filterHospitalOptions}
+            options={hospitalOptions}
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 170 }}
+            style={{ width: 220 }}
             onChange={(val) => {
               setFHospital(val ?? '');
               setFDepartment('');
@@ -289,8 +297,7 @@ const filterSubDeptOptions = useMemo(
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 170 }}
-            disabled={!fHospital}
+            style={{ width: 220 }}
             onChange={(val) => {
               setFDepartment(val ?? '');
               setFSubDepartment('');
@@ -304,8 +311,7 @@ const filterSubDeptOptions = useMemo(
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 170 }}
-            disabled={!fDepartment}
+            style={{ width: 220 }}
             onChange={(val) => {
               setFSubDepartment(val ?? '');
               setFWard('');
@@ -318,7 +324,7 @@ const filterSubDeptOptions = useMemo(
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 160 }}
+            style={{ width: 220 }}
             onChange={(val) => setFWard(val ?? '')}
           />
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Select } from 'antd';
+import { Input, InputNumber, Select } from 'antd';
 import FormField from '@/components/ui/FormField';
 import FormGrid from '@/components/ui/FormGrid';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
@@ -84,6 +84,21 @@ export default function AssignBedLocationForm({
           onChange={(e) => {
             onPatchForm({ location: e.target.value });
             onClearError?.('location');
+          }}
+        />
+      </FormField>
+
+      <FormField label="Price" required error={errors?.price}>
+        <InputNumber
+          id={fieldId('price')}
+          className={controlClass}
+          status={errors?.price ? 'error' : ''}
+          value={form.price}
+          min={0}
+          placeholder="Enter Price"
+          onChange={(val) => {
+            onPatchForm({ price: val ?? null });
+            onClearError?.('price');
           }}
         />
       </FormField>
