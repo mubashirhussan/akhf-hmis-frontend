@@ -24,13 +24,6 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.patient-type-table-toolbar .toolbar-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
 }
 
 @media (max-width: 767px) {
@@ -43,9 +36,14 @@
     align-items: stretch;
   }
 
-  .patient-type-table-toolbar .ant-input,
-  .patient-type-table-toolbar .ant-select,
-  .patient-type-table-toolbar .ant-btn {
+  .patient-type-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patient-type-filters .ant-select,
+  .patient-type-filters .ant-input-affix-wrapper,
+  .patient-type-filters .ant-input {
     width: 100% !important;
   }
 }

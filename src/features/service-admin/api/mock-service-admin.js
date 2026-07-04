@@ -786,10 +786,54 @@ export function deletePatientTypeRow(id) {
   patientTypeRows = patientTypeRows.filter((row) => row.id !== id);
 }
 
-const INITIAL_ASSIGN_OPD_ROWS = [];
+const INITIAL_ASSIGN_OPD_ROWS = [
+  {
+    id: '1',
+    hospital: '1',
+    hospitalLabel: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    patientType: '1',
+    patientTypeLabel: 'Indoor',
+    serviceCategory: 'opd-consultation',
+    serviceCategoryLabel: 'OPD Consultation',
+    service: '9',
+    serviceLabel: 'General OPD Consultation',
+    subDepartment: '1',
+    subDepartmentLabel: 'Cath Lab',
+    amount: 500,
+  },
+  {
+    id: '2',
+    hospital: '1',
+    hospitalLabel: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    patientType: '2',
+    patientTypeLabel: 'Outdoor',
+    serviceCategory: 'opd-consultation',
+    serviceCategoryLabel: 'OPD Consultation',
+    service: '10',
+    serviceLabel: 'Specialist Consultation',
+    subDepartment: '1',
+    subDepartmentLabel: 'Cath Lab',
+    amount: 1500,
+  },
+  {
+    id: '3',
+    hospital: '2',
+    hospitalLabel: 'ALKHIDMAT HOSPITAL PESHAWAR',
+    patientType: '1',
+    patientTypeLabel: 'Indoor',
+    serviceCategory: 'opd-consultation',
+    serviceCategoryLabel: 'OPD Consultation',
+    service: '11',
+    serviceLabel: 'Follow Up Consultation',
+    subDepartment: '1',
+    subDepartmentLabel: 'Cath Lab',
+    amount: 300,
+  },
+];
 
 let assignOpdRows = INITIAL_ASSIGN_OPD_ROWS.map((row) => ({ ...row }));
-let nextAssignOpdId = 1;
+let nextAssignOpdId =
+  Math.max(...INITIAL_ASSIGN_OPD_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getAssignOpdRows() {
   return assignOpdRows;
@@ -815,9 +859,48 @@ export function deleteAssignOpdRow(id) {
 
 // ─── Ward Beds ────────────────────────────────────────────────────────────────
 
-const INITIAL_WARD_BED_ROWS = [];
+const INITIAL_WARD_BED_ROWS = [
+  {
+    id: '1',
+    hospitalId: '1',
+    hospitalName: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    departmentId: '1',
+    departmentName: 'Cardiac Care Unit',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    wardName: 'General Ward A',
+    rooms: 10,
+    maxBeds: 30,
+  },
+  {
+    id: '2',
+    hospitalId: '1',
+    hospitalName: 'ALKHIDMAT DIAGNOSTICS KARACHI',
+    departmentId: '1',
+    departmentName: 'Cardiac Care Unit',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    wardName: 'ICU Ward',
+    rooms: 5,
+    maxBeds: 15,
+  },
+  {
+    id: '3',
+    hospitalId: '2',
+    hospitalName: 'ALKHIDMAT HOSPITAL PESHAWAR',
+    departmentId: '2',
+    departmentName: 'Bone & Joint Clinic',
+    subDepartmentId: '1',
+    subDepartmentName: 'Cath Lab',
+    wardName: 'Orthopedic Ward',
+    rooms: 8,
+    maxBeds: 24,
+  },
+];
+
 let wardBedRows = INITIAL_WARD_BED_ROWS.map((r) => ({ ...r }));
-let nextWardBedId = 1;
+let nextWardBedId =
+  Math.max(...INITIAL_WARD_BED_ROWS.map((row) => Number(row.id)), 0) + 1;
 
 export function getWardBedRows() {
   return wardBedRows;

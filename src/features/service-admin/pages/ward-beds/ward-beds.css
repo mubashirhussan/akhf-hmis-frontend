@@ -22,21 +22,17 @@
 .ward-beds-table-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.ward-beds-filters {
-  display: flex;
+  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
+  margin-bottom: 10px;
 }
 
-.ward-beds-actions-cell .ant-btn-link {
+.ward-beds-actions-cell .ant-btn-link:not(.ant-btn-dangerous) {
   color: var(--app-primary) !important;
+}
+
+.ward-beds-actions-cell .ant-btn-link.ant-btn-dangerous {
+  color: var(--ant-color-error, #ff4d4f) !important;
 }
 
 .ward-beds-actions-cell .ant-btn-link .iconify {
@@ -55,11 +51,12 @@
 
   .ward-beds-filters {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .ward-beds-filters .ant-select,
-  .ward-beds-filters .ant-input,
-  .ward-beds-table-toolbar .ant-btn {
+  .ward-beds-filters .ant-input-affix-wrapper,
+  .ward-beds-filters .ant-input {
     width: 100% !important;
   }
 }

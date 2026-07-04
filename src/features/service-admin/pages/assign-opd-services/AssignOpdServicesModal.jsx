@@ -13,9 +13,11 @@ export default function AssignOpdServicesModal({
   onPatchForm,
   onClearError,
   onSave,
+  hospitalOptions = [],
   patientTypeOptions = [],
   serviceCategoryOptions = [],
   serviceOptions = [],
+  subDepartmentOptions = [],
 }) {
   return (
     <AppModal
@@ -42,9 +44,11 @@ export default function AssignOpdServicesModal({
         errors={errors}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
+        hospitalOptions={hospitalOptions}
         patientTypeOptions={patientTypeOptions}
         serviceCategoryOptions={serviceCategoryOptions}
         serviceOptions={serviceOptions}
+        subDepartmentOptions={subDepartmentOptions}
       />
     </AppModal>
   );

@@ -22,21 +22,17 @@
 .assign-opd-services-table-toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.assign-opd-services-filters {
-  display: flex;
+  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
+  margin-bottom: 10px;
 }
 
-.assign-opd-services-actions-cell .ant-btn-link {
+.assign-opd-services-actions-cell .ant-btn-link:not(.ant-btn-dangerous) {
   color: var(--app-primary) !important;
+}
+
+.assign-opd-services-actions-cell .ant-btn-link.ant-btn-dangerous {
+  color: var(--ant-color-error, #ff4d4f) !important;
 }
 
 .assign-opd-services-actions-cell .ant-btn-link .iconify {
@@ -55,11 +51,12 @@
 
   .assign-opd-services-filters {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .assign-opd-services-filters .ant-select,
-  .assign-opd-services-filters .ant-input,
-  .assign-opd-services-table-toolbar .ant-btn {
+  .assign-opd-services-filters .ant-input-affix-wrapper,
+  .assign-opd-services-filters .ant-input {
     width: 100% !important;
   }
 }

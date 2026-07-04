@@ -10,6 +10,7 @@ export default function PatientTypeModal({
   title = 'Add Patient Type',
   form,
   errors,
+  isEdit = false,
   onPatchForm,
   onClearError,
   onSave,
@@ -37,6 +38,7 @@ export default function PatientTypeModal({
       <PatientTypeForm
         form={form}
         errors={errors}
+        isEdit={isEdit}
         onPatchForm={onPatchForm}
         onClearError={onClearError}
       />

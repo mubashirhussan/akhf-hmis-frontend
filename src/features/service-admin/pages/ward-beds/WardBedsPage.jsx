@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Select, Tooltip } from 'antd';
+import { App, Button, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import WardBedsModal from '@/features/service-admin/pages/ward-beds/WardBedsModal';
@@ -78,28 +78,19 @@ const modalSubDeptOptions = useMemo(
   [allSubDepartments, form.departmentId],
 );
 
-const filterHospitalOptions = useMemo(
-  () => [{ label: 'All', value: '' }, ...hospitalOptions],
-  [hospitalOptions],
-);
-
 const filterDeptOptions = useMemo(
-  () => [
-    { label: 'All', value: '' },
-    ...allDepartments
+  () =>
+    allDepartments
       .filter((d) => !fHospital || d.hospitalId === fHospital)
       .map((d) => ({ value: d.id, label: d.departmentName })),
-  ],
   [allDepartments, fHospital],
 );
 
 const filterSubDeptOptions = useMemo(
-  () => [
-    { label: 'All', value: '' },
-    ...allSubDepartments
+  () =>
+    allSubDepartments
       .filter((s) => !fDepartment || s.departmentId === fDepartment)
       .map((s) => ({ value: s.id, label: s.subDepartmentName })),
-  ],
   [allSubDepartments, fDepartment],
 );
 
@@ -264,16 +255,19 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
 
   return (
     <div className="services-billing-page ward-beds-page">
-      <div className="ward-beds-table-toolbar">
-        <div className="ward-beds-filters">
+      <div
+        className="ward-beds-table-toolbar"
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
+      >
+        <div className="ward-beds-filters" style={{ display: 'flex', gap: 12 }}>
           <Select
             placeholder="Hospital"
             value={fHospital || undefined}
-            options={filterHospitalOptions}
+            options={hospitalOptions}
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 180 }}
+            style={{ width: 220 }}
             onChange={(val) => {
               setFHospital(val ?? '');
               setFDepartment('');
@@ -287,8 +281,7 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 180 }}
-            disabled={!fHospital}
+            style={{ width: 220 }}
             onChange={(val) => {
               setFDepartment(val ?? '');
               setFSubDepartment('');
@@ -301,16 +294,15 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
             allowClear
             showSearch
             optionFilterProp="label"
-            style={{ width: 180 }}
-            disabled={!fDepartment}
+            style={{ width: 220 }}
             onChange={(val) => setFSubDepartment(val ?? '')}
           />
-          <input
-            className="ant-input"
-            placeholder="Ward Name"
+          <Input
+            placeholder="Filter by Ward Name"
             value={fWardName}
             onChange={(e) => setFWardName(e.target.value)}
-            style={{ width: 160 }}
+            allowClear
+            style={{ width: 220 }}
           />
         </div>
         <Button type="primary" onClick={openModal}>

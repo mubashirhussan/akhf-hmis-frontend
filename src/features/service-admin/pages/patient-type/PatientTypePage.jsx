@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Select, Tag, Tooltip } from 'antd';
+import { App, Button, Input, Select, Tag, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import PatientTypeModal from '@/features/service-admin/pages/patient-type/PatientTypeModal';
@@ -20,11 +20,8 @@ import '@/features/service-admin/pages/patient-type/patient-type.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-const B2B_FILTER_OPTIONS = [{ label: 'All', value: '' }, ...B2B_LABS_OPTIONS];
-const STATUS_FILTER_OPTIONS = [{ label: 'All', value: '' }, ...ACTIVE_STATUS_OPTIONS];
-
 function createEmptyForm() {
-  return { patientType: '', b2bLabs: '' };
+  return { patientType: '', b2bLabs: '', status: 'active' };
 }
 
 export default function PatientTypePage() {
@@ -73,7 +70,11 @@ export default function PatientTypePage() {
   }, []);
 
   const handleEditRow = useCallback((record) => {
-    setForm({ patientType: record.patientType ?? '', b2bLabs: record.b2bLabs ?? '' });
+    setForm({
+      patientType: record.patientType ?? '',
+      b2bLabs: record.b2bLabs ?? '',
+      status: record.status ?? 'active',
+    });
     setEditingRowId(record.id);
     setFieldErrors({});
     setIsModalOpen(true);
@@ -95,6 +96,7 @@ export default function PatientTypePage() {
 
     if (!patientType) errors.patientType = 'Patient Type is required.';
     if (!form.b2bLabs) errors.b2bLabs = 'B2B LABS is required.';
+    if (editingRowId && !form.status) errors.status = 'Status is required.';
 
     if (Object.keys(errors).length) {
       setFieldErrors(errors);
@@ -108,6 +110,7 @@ export default function PatientTypePage() {
         id: editingRowId,
         patientType,
         b2bLabs: form.b2bLabs,
+        status: form.status,
       }).unwrap();
       message.success('Patient type updated.');
     } else {
@@ -200,28 +203,35 @@ export default function PatientTypePage() {
 
   return (
     <div className="services-billing-page patient-type-page">
-      <div className="patient-type-table-toolbar">
-        <div className="toolbar-filters">
-          <input
-            className="ant-input"
+      <div
+        className="patient-type-table-toolbar"
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
+      >
+        <div className="patient-type-filters" style={{ display: 'flex', gap: 12 }}>
+          <Input
             placeholder="Filter by Patient Type"
             value={filterPatientType}
             onChange={(e) => setFilterPatientType(e.target.value)}
-            style={{ width: 200 }}
+            allowClear
+            style={{ width: 220 }}
           />
           <Select
             placeholder="B2B LABS"
             value={filterB2b || undefined}
-            options={B2B_FILTER_OPTIONS}
+            options={B2B_LABS_OPTIONS}
             allowClear
+            showSearch
+            optionFilterProp="label"
             style={{ width: 140 }}
             onChange={(val) => setFilterB2b(val ?? '')}
           />
           <Select
             placeholder="Status"
             value={filterStatus || undefined}
-            options={STATUS_FILTER_OPTIONS}
+            options={ACTIVE_STATUS_OPTIONS}
             allowClear
+            showSearch
+            optionFilterProp="label"
             style={{ width: 140 }}
             onChange={(val) => setFilterStatus(val ?? '')}
           />
@@ -253,6 +263,7 @@ export default function PatientTypePage() {
         title={editingRowId ? 'Edit Patient Type' : 'Add Patient Type'}
         form={form}
         errors={fieldErrors}
+        isEdit={Boolean(editingRowId)}
         onPatchForm={patchForm}
         onClearError={clearFieldError}
         onSave={handleSave}
