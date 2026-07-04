@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Input, InputNumber, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import UpdateAdminServicesModal from '@/features/service-admin/pages/update-admin-services/UpdateAdminServicesModal';
@@ -27,8 +27,10 @@ export default function UpdateAdminServicesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [searchTerm, setSearchTerm] = useState('');
+   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [editingAmountId, setEditingAmountId] = useState(null);
+  const [editingAmount, setEditingAmount] = useState(null);
 
   const { data: rows = [], isLoading } = useGetServiceAdminsQuery();
   const { data: categories = [] } = useGetServiceCategoriesQuery();
@@ -64,6 +66,14 @@ export default function UpdateAdminServicesPage() {
     setFieldErrors({});
     setIsModalOpen(true);
   }, []);
+
+  const handleAmountSave = useCallback(async (record) => {
+    if (editingAmount == null || editingAmount < 0) return;
+    await updateServiceAdmin({ id: record.id, serviceCharges: editingAmount }).unwrap();
+    message.success('Amount updated.');
+    setEditingAmountId(null);
+    setEditingAmount(null);
+  }, [editingAmount, updateServiceAdmin, message]);
 
   const handleExport = useCallback(() => {
     const exportRows = rows.filter((row) => {
@@ -160,8 +170,20 @@ export default function UpdateAdminServicesPage() {
         title: 'Service Amount',
         dataIndex: 'serviceCharges',
         key: 'serviceCharges',
-        width: 140,
-        render: (value) => (value != null ? value.toLocaleString() : ''),
+        width: 180,
+        render: (value, record) =>
+          editingAmountId === record.id ? (
+            <InputNumber
+              autoFocus
+              min={0}
+              value={editingAmount}
+              onChange={(v) => setEditingAmount(v ?? 0)}
+              onPressEnter={() => handleAmountSave(record)}
+              style={{ width: '100%' }}
+            />
+          ) : (
+            value != null ? value.toLocaleString() : ''
+          ),
       },
       {
         title: 'Edit Status',
@@ -180,30 +202,70 @@ export default function UpdateAdminServicesPage() {
       {
         title: 'Action',
         key: 'action',
-        width: 90,
+        width: 110,
         align: 'center',
         render: (_, record) => (
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-            <Tooltip title="Edit">
-              <Button
-                type="link"
-                size="small"
-                className="update-admin-services-actions-cell"
-                aria-label="Edit service"
-                icon={
-                  <AppIcon
-                    icon="mdi:pencil-outline"
-                    className={ACTION_ICON_CLASS}
+            {editingAmountId === record.id ? (
+              <>
+                <Tooltip title="Save">
+                  <Button
+                    type="link"
+                    size="small"
+                    aria-label="Save amount"
+                    icon={
+                      <AppIcon
+                        icon="mdi:check"
+                        className={ACTION_ICON_CLASS}
+                      />
+                    }
+                    onClick={() => handleAmountSave(record)}
                   />
-                }
-                onClick={() => handleEditRow(record)}
-              />
-            </Tooltip>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <Button
+                    type="link"
+                    size="small"
+                    danger
+                    aria-label="Cancel edit"
+                    icon={
+                      <AppIcon
+                        icon="mdi:close"
+                        className={ACTION_ICON_CLASS}
+                      />
+                    }
+                    onClick={() => {
+                      setEditingAmountId(null);
+                      setEditingAmount(null);
+                    }}
+                  />
+                </Tooltip>
+              </>
+            ) : (
+              <Tooltip title="Edit">
+                <Button
+                  type="link"
+                  size="small"
+                  className="update-admin-services-actions-cell"
+                  aria-label="Edit amount"
+                  icon={
+                    <AppIcon
+                      icon="mdi:pencil-outline"
+                      className={ACTION_ICON_CLASS}
+                    />
+                  }
+                  onClick={() => {
+                    setEditingAmountId(record.id);
+                    setEditingAmount(record.serviceCharges ?? 0);
+                  }}
+                />
+              </Tooltip>
+            )}
           </div>
         ),
       },
     ],
-    [handleEditRow],
+    [handleEditRow, handleAmountSave, editingAmountId, editingAmount],
   );
 
   return (

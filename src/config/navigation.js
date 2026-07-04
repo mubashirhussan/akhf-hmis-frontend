@@ -140,6 +140,11 @@ export const navigation = [
     icon: 'mdi:account-cog-outline',
     children: [
       {
+        key: 'new-category',
+        label: 'Service Category',
+        href: '/service-admin/new-category',
+      },
+      {
         key: 'admin-services',
         label: 'Admin Services',
         href: '/service-admin/admin-services',
@@ -158,11 +163,6 @@ export const navigation = [
         key: 'new-package',
         label: 'New Package',
         href: '/service-admin/new-package',
-      },
-      {
-        key: 'new-category',
-        label: 'Service Category',
-        href: '/service-admin/new-category',
       },
       {
         key: 'discount-authorities',

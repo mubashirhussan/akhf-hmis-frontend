@@ -16,6 +16,7 @@ export default function NewPackageModal({
   departmentOptions,
   serviceCategoryOptions = [],
   serviceOptions,
+  serviceChargesMap = {},
 }) {
   return (
     <AppModal
@@ -49,6 +50,7 @@ export default function NewPackageModal({
         departmentOptions={departmentOptions}
         serviceCategoryOptions={serviceCategoryOptions}
         serviceOptions={serviceOptions}
+        serviceChargesMap={serviceChargesMap}
       />
     </AppModal>
   );

@@ -67,7 +67,7 @@ export default function NewPackagePage() {
     [categories],
   );
 
-  const allServiceOptions = useMemo(
+   const allServiceOptions = useMemo(
     () =>
       allServiceRows.map((r) => ({
         value: r.serviceName,
@@ -76,6 +76,13 @@ export default function NewPackagePage() {
       })),
     [allServiceRows],
   );
+
+  const serviceChargesMap = useMemo(() => {
+    const map = {};
+    allServiceRows.forEach((r) => { map[r.serviceName] = r.serviceCharges ?? 0; });
+    return map;
+  }, [allServiceRows]);
+
 
   const selectedPkg = useMemo(
     () => packages.find((p) => p.id === selectedPkgId) ?? null,
@@ -180,7 +187,7 @@ export default function NewPackagePage() {
     [],
   );
 
-  const columns = useMemo(
+const columns = useMemo(
     () => [
       {
         title: 'Department',
@@ -209,10 +216,35 @@ export default function NewPackagePage() {
       },
       {
         title: 'Total Amount',
-        dataIndex: 'totalAmount',
         key: 'totalAmount',
         width: 130,
+        render: (_, record) => {
+          const total = (record.services ?? []).reduce(
+            (sum, svc) => sum + (serviceChargesMap[svc] ?? 0),
+            0,
+          );
+          return total > 0 ? total.toLocaleString() : '—';
+        },
+      },
+      {
+        title: 'Package Amount',
+        dataIndex: 'totalAmount',
+        key: 'packageAmount',
+        width: 140,
         render: (value) => (value != null ? value.toLocaleString() : '—'),
+      },
+      {
+        title: 'Discount Given',
+        key: 'discountGiven',
+        width: 140,
+        render: (_, record) => {
+          const servicesTotal = (record.services ?? []).reduce(
+            (sum, svc) => sum + (serviceChargesMap[svc] ?? 0),
+            0,
+          );
+          const discount = servicesTotal - (record.totalAmount ?? 0);
+          return discount > 0 ? discount.toLocaleString() : '—';
+        },
       },
       {
         title: 'Doctor Share',
@@ -277,7 +309,7 @@ export default function NewPackagePage() {
         ),
       },
     ],
-    [handleEditRow, handleDeleteRow, departmentOptions],
+    [handleEditRow, handleDeleteRow, departmentOptions, serviceChargesMap],
   );
 
   return (
@@ -347,9 +379,10 @@ export default function NewPackagePage() {
         departmentOptions={departmentOptions}
         serviceCategoryOptions={serviceCategoryOptions}
         serviceOptions={serviceOptionsByCategory}
+        serviceChargesMap={serviceChargesMap}
       />
 
-      <NewPackageLinkageModal
+<NewPackageLinkageModal
         open={linkageOpen}
         onClose={() => {
           setLinkageOpen(false);
@@ -357,6 +390,7 @@ export default function NewPackagePage() {
         }}
         pkg={selectedPkg}
         allServices={allServiceOptions}
+        allServiceRows={allServiceRows}
         onSave={handleLinkageSave}
       />
     </div>
