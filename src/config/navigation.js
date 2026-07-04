@@ -189,6 +189,26 @@ export const navigation = [
         label: 'Company Rates',
         href: '/service-admin/assign-company-rates',
       },
+      {
+        key: 'patient-type',
+        label: 'Patient Type',
+        href: '/service-admin/patient-type',
+      },
+      {
+        key: 'assign-opd-services',
+        label: 'Assign OPD Services',
+        href: '/service-admin/assign-opd-services',
+      },
+      {
+        key: 'ward-beds',
+        label: 'Ward Beds',
+        href: '/service-admin/ward-beds',
+      },
+      {
+        key: 'assign-bed-location',
+        label: 'Assign Bed Location',
+        href: '/service-admin/assign-bed-location',
+      },
     ],
   },
   { key: 'diagnosis', label: 'Diagnosis', href: '/diagnosis', icon: 'mdi:file-document-outline' },

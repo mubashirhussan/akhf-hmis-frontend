@@ -66,6 +66,10 @@ export const api = createApi({
     'ReportHeader',
     'Company',
     'CompanyService',
+    'PatientType',
+    'AssignOpdService',
+    'WardBed',
+    'BedLocation'
     'UserLogin',
   ],
   endpoints: () => ({}),
