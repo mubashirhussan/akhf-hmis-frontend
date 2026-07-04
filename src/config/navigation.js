@@ -309,7 +309,19 @@ export const navigation = [
   },
   { key: 'finance-admin', label: 'Finance Admin', href: '/finance-admin', icon: 'mdi:link-variant' },
   { key: 'financial-reports', label: 'Financial Reports', href: '/financial-reports', icon: 'mdi:calculator-variant-outline' },
-  { key: 'user-role', label: 'User Role & Mng.', href: '/user-role', icon: 'carbon:user' },
+  {
+    key: 'user-role',
+    label: 'User Role & Mng.',
+    href: '/user-role',
+    icon: 'carbon:user',
+    children: [
+      {
+        key: 'create-login',
+        label: 'Create Login',
+        href: '/user-role/create-login',
+      },
+    ],
+  },
   { key: 'patient-discharge', label: 'Patient Discharge', href: '/patient-discharge', icon: 'mdi:bed-empty' },
   { key: 'doctor-share', label: 'Doctor Share', href: '/doctor-share', icon: 'mdi:stethoscope' },
   { key: 'examination', label: 'Examination', href: '/examination', icon: 'mdi:clipboard-text-outline' },
