@@ -1,0 +1,65 @@
+.assign-bed-location-page {
+  padding: 16px 0;
+}
+
+.assign-bed-location-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.assign-bed-location-form-grid .field-control,
+.assign-bed-location-form-grid .ant-input,
+.assign-bed-location-form-grid .ant-select,
+.assign-bed-location-form-grid .ant-input-number {
+  width: 100%;
+}
+
+.assign-bed-location-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.assign-bed-location-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.assign-bed-location-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.assign-bed-location-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.assign-bed-location-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+@media (max-width: 767px) {
+  .assign-bed-location-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .assign-bed-location-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assign-bed-location-filters {
+    flex-direction: column;
+  }
+
+  .assign-bed-location-filters .ant-select,
+  .assign-bed-location-filters .ant-input,
+  .assign-bed-location-table-toolbar .ant-btn {
+    width: 100% !important;
+  }
+}

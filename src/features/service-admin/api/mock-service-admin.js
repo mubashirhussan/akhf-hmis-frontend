@@ -785,3 +785,82 @@ export function updatePatientTypeRow(id, payload) {
 export function deletePatientTypeRow(id) {
   patientTypeRows = patientTypeRows.filter((row) => row.id !== id);
 }
+
+const INITIAL_ASSIGN_OPD_ROWS = [];
+
+let assignOpdRows = INITIAL_ASSIGN_OPD_ROWS.map((row) => ({ ...row }));
+let nextAssignOpdId = 1;
+
+export function getAssignOpdRows() {
+  return assignOpdRows;
+}
+
+export function createAssignOpdRow(payload) {
+  const id = String(nextAssignOpdId++);
+  const row = { id, ...payload };
+  assignOpdRows = [row, ...assignOpdRows];
+  return row;
+}
+
+export function updateAssignOpdRow(id, payload) {
+  assignOpdRows = assignOpdRows.map((row) =>
+    row.id === id ? { ...row, ...payload } : row,
+  );
+  return assignOpdRows.find((row) => row.id === id) ?? null;
+}
+
+export function deleteAssignOpdRow(id) {
+  assignOpdRows = assignOpdRows.filter((row) => row.id !== id);
+}
+
+// ─── Ward Beds ────────────────────────────────────────────────────────────────
+
+const INITIAL_WARD_BED_ROWS = [];
+let wardBedRows = INITIAL_WARD_BED_ROWS.map((r) => ({ ...r }));
+let nextWardBedId = 1;
+
+export function getWardBedRows() {
+  return wardBedRows;
+}
+
+export function createWardBedRow(payload) {
+  const id = String(nextWardBedId++);
+  const row = { id, ...payload };
+  wardBedRows = [row, ...wardBedRows];
+  return row;
+}
+
+export function updateWardBedRow(id, payload) {
+  wardBedRows = wardBedRows.map((r) => (r.id === id ? { ...r, ...payload } : r));
+  return wardBedRows.find((r) => r.id === id) ?? null;
+}
+
+export function deleteWardBedRow(id) {
+  wardBedRows = wardBedRows.filter((r) => r.id !== id);
+  bedLocationRows = bedLocationRows.filter((r) => r.wardBedId !== id);
+}
+
+// ─── Assign Bed Location & Fees ───────────────────────────────────────────────
+
+let bedLocationRows = [];
+let nextBedLocationId = 1;
+
+export function getBedLocationRows() {
+  return bedLocationRows;
+}
+
+export function createBedLocationRow(payload) {
+  const id = String(nextBedLocationId++);
+  const row = { id, ...payload };
+  bedLocationRows = [row, ...bedLocationRows];
+  return row;
+}
+
+export function updateBedLocationRow(id, payload) {
+  bedLocationRows = bedLocationRows.map((r) => (r.id === id ? { ...r, ...payload } : r));
+  return bedLocationRows.find((r) => r.id === id) ?? null;
+}
+
+export function deleteBedLocationRow(id) {
+  bedLocationRows = bedLocationRows.filter((r) => r.id !== id);
+}

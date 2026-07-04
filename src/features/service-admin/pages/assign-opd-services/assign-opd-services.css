@@ -1,0 +1,65 @@
+.assign-opd-services-page {
+  padding: 16px 0;
+}
+
+.assign-opd-services-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.assign-opd-services-form-grid .field-control,
+.assign-opd-services-form-grid .ant-input,
+.assign-opd-services-form-grid .ant-select,
+.assign-opd-services-form-grid .ant-input-number {
+  width: 100%;
+}
+
+.assign-opd-services-modal-root .ant-modal {
+  top: 20px;
+  padding-bottom: 0;
+}
+
+.assign-opd-services-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.assign-opd-services-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.assign-opd-services-actions-cell .ant-btn-link {
+  color: var(--app-primary) !important;
+}
+
+.assign-opd-services-actions-cell .ant-btn-link .iconify {
+  color: currentColor;
+}
+
+@media (max-width: 767px) {
+  .assign-opd-services-form-grid.form-grid {
+    --form-cols: 1;
+  }
+
+  .assign-opd-services-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .assign-opd-services-filters {
+    flex-direction: column;
+  }
+
+  .assign-opd-services-filters .ant-select,
+  .assign-opd-services-filters .ant-input,
+  .assign-opd-services-table-toolbar .ant-btn {
+    width: 100% !important;
+  }
+}

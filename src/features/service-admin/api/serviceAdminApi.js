@@ -32,10 +32,42 @@ import {
   getCompanyServicesRows,
   setCompanyServicePrice,
   bulkUpdateCompanyServicePrices,
-    getPatientTypeRows,
+  getPatientTypeRows,
   createPatientTypeRow,
   updatePatientTypeRow,
   deletePatientTypeRow,
+  getAssignOpdRows,
+  createAssignOpdRow,
+  updateAssignOpdRow,
+  deleteAssignOpdRow,
+} from '@/features/service-admin/api/mock-service-admin';
+import {
+  getHospitalRows,
+  createHospitalRow,
+  updateHospitalRow,
+  deleteHospitalRow,
+} from '@/features/human-resource/api/mock-hospitals';
+import {
+  getDepartmentRows,
+  createDepartmentRow,
+  updateDepartmentRow,
+  deleteDepartmentRow,
+} from '@/features/human-resource/api/mock-departments';
+import {
+  getSubDepartmentRows,
+  createSubDepartmentRow,
+  updateSubDepartmentRow,
+  deleteSubDepartmentRow,
+} from '@/features/human-resource/api/mock-sub-departments';
+import {
+  getWardBedRows,
+  createWardBedRow,
+  updateWardBedRow,
+  deleteWardBedRow,
+  getBedLocationRows,
+  createBedLocationRow,
+  updateBedLocationRow,
+  deleteBedLocationRow,
 } from '@/features/service-admin/api/mock-service-admin';
 
 export const serviceAdminApi = api.injectEndpoints({
@@ -154,12 +186,7 @@ export const serviceAdminApi = api.injectEndpoints({
       },
       invalidatesTags: ['Company'],
     }),
-    getHospitalServices: builder.query({
-      queryFn: async ({ hospitalId, categoryFilter = '', nameFilter = '' }) => ({
-        data: getHospitalServicesRows(hospitalId, categoryFilter, nameFilter),
-      }),
-      providesTags: ['HospitalService'],
-    }),
+
     updateHospitalServicePrice: builder.mutation({
       queryFn: async ({ hospitalId, serviceId, price }) => {
         setHospitalServicePrice(hospitalId, serviceId, price);
@@ -193,6 +220,12 @@ deletePackage: builder.mutation({
   },
   invalidatesTags: ['Package'],
 }),
+    getHospitalServices: builder.query({
+      queryFn: async ({ hospitalId, categoryFilter = '', nameFilter = '' }) => ({
+        data: getHospitalServicesRows(hospitalId, categoryFilter, nameFilter),
+      }),
+      providesTags: ['HospitalService'],
+    }),
 getCompanyServices: builder.query({
   queryFn: async ({ companyId, categoryFilter = '', nameFilter = '' }) => ({
     data: getCompanyServicesRows(companyId, categoryFilter, nameFilter),
@@ -213,13 +246,6 @@ bulkUpdateCompanyServicePrices: builder.mutation({
   },
   invalidatesTags: ['CompanyService'],
 }),
-bulkUpdateHospitalServicePrices: builder.mutation({
-  queryFn: async ({ hospitalId, serviceIds, type, percentage, fixedAmount }) => {
-    bulkUpdateHospitalServicePrices(hospitalId, serviceIds, type, percentage, fixedAmount);
-    return { data: { hospitalId, serviceIds, type, percentage, fixedAmount } };
-  },
-  invalidatesTags: ['HospitalService'],
-}),
 getPatientTypes: builder.query({
       queryFn: async () => ({ data: getPatientTypeRows() }),
       providesTags: ['PatientType'],
@@ -238,6 +264,64 @@ getPatientTypes: builder.query({
         return { data: { id } };
       },
       invalidatesTags: ['PatientType'],
+    }),
+    getAssignOpdServices: builder.query({
+      queryFn: async () => ({ data: getAssignOpdRows() }),
+      providesTags: ['AssignOpdService'],
+    }),
+    createAssignOpdService: builder.mutation({
+      queryFn: async (payload) => ({ data: createAssignOpdRow(payload) }),
+      invalidatesTags: ['AssignOpdService'],
+    }),
+    updateAssignOpdService: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateAssignOpdRow(id, payload) }),
+      invalidatesTags: ['AssignOpdService'],
+    }),
+    deleteAssignOpdService: builder.mutation({
+      queryFn: async (id) => {
+        deleteAssignOpdRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['AssignOpdService'],
+    }),
+    
+    getWardBeds: builder.query({
+      queryFn: async () => ({ data: getWardBedRows() }),
+      providesTags: ['WardBed'],
+    }),
+    createWardBed: builder.mutation({
+      queryFn: async (payload) => ({ data: createWardBedRow(payload) }),
+      invalidatesTags: ['WardBed'],
+    }),
+    updateWardBed: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateWardBedRow(id, payload) }),
+      invalidatesTags: ['WardBed'],
+    }),
+    deleteWardBed: builder.mutation({
+      queryFn: async (id) => {
+        deleteWardBedRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['WardBed', 'BedLocation'],
+    }),
+    getBedLocations: builder.query({
+      queryFn: async () => ({ data: getBedLocationRows() }),
+      providesTags: ['BedLocation'],
+    }),
+    createBedLocation: builder.mutation({
+      queryFn: async (payload) => ({ data: createBedLocationRow(payload) }),
+      invalidatesTags: ['BedLocation'],
+    }),
+    updateBedLocation: builder.mutation({
+      queryFn: async ({ id, ...payload }) => ({ data: updateBedLocationRow(id, payload) }),
+      invalidatesTags: ['BedLocation'],
+    }),
+    deleteBedLocation: builder.mutation({
+      queryFn: async (id) => {
+        deleteBedLocationRow(id);
+        return { data: { id } };
+      },
+      invalidatesTags: ['BedLocation'],
     }),
   }),
 });
@@ -279,4 +363,16 @@ export const {
   useCreatePatientTypeMutation,
   useUpdatePatientTypeMutation,
   useDeletePatientTypeMutation,
+  useGetAssignOpdServicesQuery,
+  useCreateAssignOpdServiceMutation,
+  useUpdateAssignOpdServiceMutation,
+  useDeleteAssignOpdServiceMutation,
+    useGetWardBedsQuery,
+  useCreateWardBedMutation,
+  useUpdateWardBedMutation,
+  useDeleteWardBedMutation,
+  useGetBedLocationsQuery,
+  useCreateBedLocationMutation,
+  useUpdateBedLocationMutation,
+  useDeleteBedLocationMutation,
 } = serviceAdminApi;
