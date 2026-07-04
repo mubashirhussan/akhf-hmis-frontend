@@ -1,0 +1,58 @@
+.create-login-page {
+  padding: 4px 4px 24px;
+}
+
+.create-login-panel {
+  width: 100%;
+  border: 1px solid #d2d2d2;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: none;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.create-login-form-grid.form-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+
+.create-login-form-grid .field-control,
+.create-login-form-grid .ant-input,
+.create-login-form-grid .ant-select,
+.create-login-form-grid .ant-input-affix-wrapper {
+  width: 100%;
+}
+
+.create-login-form-grid .field-control.ant-input-status-error,
+.create-login-form-grid .ant-input-status-error.field-control,
+.create-login-form-grid .ant-select-status-error.field-control,
+.create-login-form-grid .field-control.ant-input-affix-wrapper-status-error {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.create-login-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.create-login-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1200px) {
+  .create-login-form-grid.form-grid {
+    --form-cols: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .create-login-form-grid.form-grid {
+    --form-cols: 1;
+  }
+}

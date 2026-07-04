@@ -70,6 +70,7 @@ export const api = createApi({
     'AssignOpdService',
     'WardBed',
     'BedLocation'
+    'UserLogin',
   ],
   endpoints: () => ({}),
 });

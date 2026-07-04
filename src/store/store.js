@@ -9,6 +9,7 @@ import '@/features/billing/api/billingEndpoints';
 import '@/features/service-admin/api/serviceAdminApi';
 import '@/features/human-resource/api/employeeApi';
 import '@/features/duty-roaster/api/dutyRoasterApi';
+import '@/features/user-role/api/userRoleApi';
 
 const preloadedState =
   typeof window !== 'undefined' ? { auth: getInitialAuthState() } : undefined;
