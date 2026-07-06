@@ -5,12 +5,6 @@ import { App, Button, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import SubGroupModal from "@/features/admin-pathology/pages/sub-group/SubGroupModal";
-import {
-  GROUP_OPTIONS,
-  createEmptySubGroupForm,
-  getOptionLabel,
-  rowToSubGroupForm,
-} from "@/features/admin-pathology/api/mock-sub-group";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetSubGroupsQuery,
@@ -24,7 +18,23 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function SubGroupPage() {
   const { message } = App.useApp();
-
+function createEmptySubGroupForm() {
+  return {
+    id: '',
+    TGID: null,
+    groupName: '',
+    subGroupName: '',
+    fee: 0,
+  };
+}
+ function rowToSubGroupForm(row) {
+  return {
+    TGID: row.TGID ?? null,
+    groupName: row.groupName ?? '',
+    subGroupName: row.subGroupName ?? '',
+    fee: row.fee ?? 0,
+  };
+}
   const [form, setForm] = useState(createEmptySubGroupForm);
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
@@ -99,27 +109,28 @@ export default function SubGroupPage() {
     [confirmDelete, deleteSubGroup, message],
   );
   const handleSave = useCallback(async () => {
-const groupId = form.groupId;
-const subGroupName = (form.subGroupName || "").trim();
-const selectedGroup = mainGroups.find(
-  (g) => g.groupId === form.groupId
-);
-if (!groupId || !subGroupName) {
-  setFieldErrors({
-    groupId: !groupId ? "Group Name is required." : "",
-    subGroupName: !subGroupName ? "Sub Group Name is required." : "",
-  });
-  return;
-}
+  const TGID = form.TGID;
+  const subGroupName = (form.subGroupName || "").trim();
+  const selectedGroup = mainGroups.find(
+    (g) => g.TGID === form.TGID
+  );
 
-    setFieldErrors({});
+  if (!TGID || !subGroupName) {
+    setFieldErrors({
+      TGID: !TGID ? "Group Name is required." : "",
+      subGroupName: !subGroupName ? "Sub Group Name is required." : "",
+    });
+    return;
+  }
 
-const rowPayload = {
-  groupId: form.groupId,
-  groupName: selectedGroup?.groupName,
-  subGroupName,
-  fee: form.fee ?? 0,
-};
+  setFieldErrors({});
+
+  const rowPayload = {
+    TGID: form.TGID,
+    groupName: selectedGroup?.groupName,
+    subGroupName,
+    fee: form.fee ?? 0,
+  };
     if (editingRowId) {
       await updateSubGroup({
         id: editingRowId,
@@ -163,12 +174,12 @@ const rowPayload = {
         key: "groupName",
         width: 140,
       },
-      {
-        title: "Test Group ID",
-        dataIndex: "groupId",
-        key: "groupId",
-        width: 140,
-      },
+{
+  title: "Test Group ID",
+  dataIndex: "TGID",
+  key: "TGID",
+  width: 140,
+},
       {
         title: "Test Sub Group",
         dataIndex: "subGroupName",

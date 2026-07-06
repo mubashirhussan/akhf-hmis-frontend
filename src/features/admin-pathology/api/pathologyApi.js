@@ -1,17 +1,5 @@
 import { api } from "@/store/api";
 import {
-  getMainGroupRows,
-  createMainGroupRow,
-  updateMainGroupRow,
-  deleteMainGroupRow,
-} from "@/features/admin-pathology/api/mock-main-group";
-import {
-  getSubGroupRows,
-  createSubGroupRow,
-  updateSubGroupRow,
-  deleteSubGroupRow,
-} from "@/features/admin-pathology/api/mock-sub-group";
-import {
   getTestNameRows,
   createTestNameRow,
   updateTestNameRow,
@@ -64,48 +52,92 @@ import {
 } from "@/features/admin-pathology/api/mock-machine-integration-compwise";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getMainGroups: builder.query({
-      queryFn: async () => ({ data: getMainGroupRows() }),
-      providesTags: ["MainGroup"],
-    }),
-    createMainGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createMainGroupRow(rowPayload) }),
-      invalidatesTags: ["MainGroup"],
-    }),
-    updateMainGroup: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateMainGroupRow(id, rowPayload),
-      }),
-      invalidatesTags: ["MainGroup"],
-    }),
-    deleteMainGroup: builder.mutation({
-      queryFn: async (id) => {
-        deleteMainGroupRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["MainGroup"],
-    }),
-    getSubGroups: builder.query({
-      queryFn: async () => ({ data: getSubGroupRows() }),
-      providesTags: ["SubGroup"],
-    }),
-    createSubGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createSubGroupRow(rowPayload) }),
-      invalidatesTags: ["SubGroup"],
-    }),
-    updateSubGroup: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateSubGroupRow(id, rowPayload),
-      }),
-      invalidatesTags: ["SubGroup"],
-    }),
-    deleteSubGroup: builder.mutation({
-      queryFn: async (id) => {
-        deleteSubGroupRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["SubGroup"],
-    }),
+getMainGroups: builder.query({
+  query: () => "/admin/pathology/groups",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TGID),
+      groupId: item.TGID,
+      groupName: item.TGName,
+      fee: item.Fee ?? 0,
+    })),
+  providesTags: ["MainGroup"],
+}),
+createMainGroup: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/groups",
+    method: "POST",
+    body: {
+      TGName: rowPayload.groupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+updateMainGroup: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/groups/${id}`,
+    method: "PUT",
+    body: {
+      TGName: rowPayload.groupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+deleteMainGroup: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/groups/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+  getSubGroups: builder.query({
+  query: () => "/admin/pathology/sub-groups",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TSGID),
+      TGID: item.TGID,
+      groupName: item.TGName,
+      TSGID: item.TSGID,
+      subGroupName: item.TSGName,
+      fee: item.Fee ?? 0,
+    })),
+  providesTags: ["SubGroup"],
+}),
+createSubGroup: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/sub-groups",
+    method: "POST",
+    body: {
+      TGName: rowPayload.groupName,
+      TGID: rowPayload.TGID,
+      TSGName: rowPayload.subGroupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
+updateSubGroup: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/sub-groups/${id}`,
+    method: "PUT",
+    body: {
+      TGName: rowPayload.groupName,
+      TGID: rowPayload.TGID,
+      TSGName: rowPayload.subGroupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
+deleteSubGroup: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/sub-groups/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
     getTestNames: builder.query({
       queryFn: async () => ({ data: getTestNameRows() }),
       providesTags: ["TestName"],

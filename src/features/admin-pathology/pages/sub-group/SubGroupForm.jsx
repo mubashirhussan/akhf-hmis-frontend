@@ -22,7 +22,7 @@ form, errors = {}, onPatchForm, onClearError
 const groupOptions = useMemo(() => {
   return rows.map((r) => ({
     label: r.groupName,
-    value: r.groupId,
+    value: r.TGID,
   }));
 }, [rows]);
 
@@ -32,9 +32,9 @@ const groupOptions = useMemo(() => {
         <Select
           id={fieldId('group-name')}
           className={controlClass}
-          value={form.groupId}
+          value={form.TGID}
           options={groupOptions}
-          onChange={(groupId) => onPatchForm({ groupId })}
+          onChange={(TGID) => onPatchForm({ TGID })}
         />
       </FormField>
 

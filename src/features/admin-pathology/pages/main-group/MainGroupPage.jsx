@@ -5,10 +5,6 @@ import { App, Button, Tooltip, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import MainGroupModal from "@/features/admin-pathology/pages/main-group/MainGroupModal";
-import {
-  createEmptyMainGroupForm,
-  rowToMainGroupForm,
-} from "@/features/admin-pathology/api/mock-main-group";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetMainGroupsQuery,
@@ -21,6 +17,20 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function MainGroupPage() {
   const { message } = App.useApp();
+
+  const createEmptyMainGroupForm = () => {
+  return {
+    groupName: "",
+    fee: 0,
+  };
+}
+
+const rowToMainGroupForm = (row) => {
+  return {
+    groupName: row.groupName ?? "",
+    fee: row.fee ?? 0,
+  };
+}
 
   const [form, setForm] = useState(createEmptyMainGroupForm);
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
@@ -126,12 +136,12 @@ export default function MainGroupPage() {
 
   const columns = useMemo(
     () => [
-      {
-        title: "Test Group ID",
-        dataIndex: "groupId",
-        key: "groupId",
-        width: 140,
-      },
+{
+  title: "Test Group ID",
+  dataIndex: "TGID",
+  key: "TGID",
+  width: 140,
+},
       {
         title: "Test Group",
         dataIndex: "groupName",
