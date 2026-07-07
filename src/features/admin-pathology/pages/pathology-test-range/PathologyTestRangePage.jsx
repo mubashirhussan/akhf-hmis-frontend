@@ -117,15 +117,14 @@ const handleSave = useCallback(async () => {
 
     const rowPayload = {
       tcId: Number(form.testComponent) || 0,
-      startValue: form.startValue.trim(),
-      endValue: form.endValue.trim(),
-      reportValues: form.reportValues.trim(),
+      startValue: form.startValue.trim() || 0,
+      endValue: form.endValue.trim() || 0,
+      reportValues: form.reportValues.trim() || 0,
       genderId: genderIdMap[form.gender?.toLowerCase()] ?? 77,
       minAgeVal: Number(form.ageStart) || 0,
       maxAgeVal: Number(form.ageEnd) || 0,
       ageUnit: form.ageStartUnit ?? "Y",
     };
-
     if (editingRowId) {
       await updateTestRange({ id: editingRowId, ...rowPayload }).unwrap();
       setIsTestRangeModalOpen(false);
