@@ -28,15 +28,24 @@ const groupOptions = useMemo(() => {
 
   return (
     <FormGrid columns={1} className="sub-group-form-grid">
-      <FormField label="Group Name">
-        <Select
-          id={fieldId('group-name')}
-          className={controlClass}
-          value={form.TGID}
-          options={groupOptions}
-          onChange={(TGID) => onPatchForm({ TGID })}
-        />
-      </FormField>
+<FormField
+  label="Group Name"
+  required
+  help={errors?.TGID}
+  validateStatus={errors?.TGID ? 'error' : ''}
+>
+  <Select
+    id={fieldId('group-name')}
+    className={controlClass}
+    status={errors?.TGID ? 'error' : ''}
+    value={form.TGID}
+    options={groupOptions}
+    onChange={(TGID) => {
+      onPatchForm({ TGID });
+      onClearError('TGID');
+    }}
+  />
+</FormField>
 
       <FormField 
   label="Sub Group Name" 

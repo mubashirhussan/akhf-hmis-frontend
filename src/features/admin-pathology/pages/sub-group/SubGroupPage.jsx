@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { App, Button, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
@@ -68,14 +68,12 @@ function createEmptySubGroupForm() {
     setFilters((prev) => ({ ...prev, ...patch }));
   }, []);
 
-  const groupOptions = useMemo(() => {
-    const uniqueGroups = [...new Set(rows.map((r) => r.groupName))];
-
-    return uniqueGroups.map((group) => ({
-      label: group,
-      value: group,
-    }));
-  }, [rows]);
+const groupOptions = useMemo(() => {
+  return mainGroups.map((g) => ({
+    label: g.groupName,
+    value: g.groupName,
+  }));
+}, [mainGroups]);
 
   const openComponentModal = useCallback(() => {
     setForm(createEmptySubGroupForm());
@@ -111,9 +109,9 @@ function createEmptySubGroupForm() {
   const handleSave = useCallback(async () => {
   const TGID = form.TGID;
   const subGroupName = (form.subGroupName || "").trim();
-  const selectedGroup = mainGroups.find(
-    (g) => g.TGID === form.TGID
-  );
+const selectedGroup = mainGroups.find(
+  (g) => g.groupId === form.TGID
+);
 
   if (!TGID || !subGroupName) {
     setFieldErrors({
@@ -149,7 +147,7 @@ function createEmptySubGroupForm() {
     setIsComponentModalOpen(false);
 
     message.success("Sub Group created.");
-  }, [form, editingRowId, createSubGroup, updateSubGroup, message]);
+  }, [form, editingRowId, mainGroups, createSubGroup, updateSubGroup, message]);;
 
   const filteredRows = useMemo(() => {
     const group = filters.groupName;
@@ -169,23 +167,29 @@ function createEmptySubGroupForm() {
   const columns = useMemo(
     () => [
       {
+        title: "Test Group ID",
+        dataIndex: "TGID",
+        key: "TGID",
+        width: 140,
+      },
+      {
         title: "Test Group",
         dataIndex: "groupName",
         key: "groupName",
         width: 140,
       },
 {
-  title: "Test Group ID",
-  dataIndex: "TGID",
-  key: "TGID",
+  title: "Test Sub Group ID",
+  dataIndex: "TSGID",
+  key: "TSGID",
+  width: 160,
+},
+{
+  title: "Test Sub Group",
+  dataIndex: "subGroupName",
+  key: "subGroupName",
   width: 140,
 },
-      {
-        title: "Test Sub Group",
-        dataIndex: "subGroupName",
-        key: "subGroupName",
-        width: 140,
-      },
       { title: "Fee", dataIndex: "fee", key: "fee", width: 140 },
       {
         title: "Action",
@@ -232,10 +236,10 @@ function createEmptySubGroupForm() {
 
   return (
     <div className="services-billing-page sub-group-page">
-      <div
-        className="sub-group-table-toolbar"
-        style={{ justifyContent: "space-between" }}
-      >
+       <div
+  className="sub-group-table-toolbar"
+  style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+>
         <div style={{ display: "flex", gap: 10 }}>
           <Select
             placeholder="Filter by Main Group"

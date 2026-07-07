@@ -13,6 +13,8 @@ export default function TestNameModal({
   onPatchForm,
   onClearError,
   onSave,
+  mainGroups,
+  subGroups,
 }) {
   return (
     <AppModal
@@ -33,12 +35,14 @@ export default function TestNameModal({
         </>
       }
     >
-      <TestNameForm
-        form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+ <TestNameForm
+  form={form}
+  errors={errors}
+  onPatchForm={onPatchForm}
+  onClearError={onClearError}
+  mainGroups={mainGroups}
+  subGroups={subGroups}
+/>
     </AppModal>
   );
 }

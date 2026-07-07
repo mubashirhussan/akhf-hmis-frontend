@@ -5,12 +5,6 @@ import { App, Button, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import TestNameModal from "@/features/admin-pathology/pages/test-name/TestNameModal";
-import {
-  GROUP_OPTIONS,
-  createEmptyTestNameForm,
-  getOptionLabel,
-  rowToTestNameForm,
-} from "@/features/admin-pathology/api/mock-test-name";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetTestNamesQuery,
@@ -18,6 +12,7 @@ import {
   useUpdateTestNameMutation,
   useDeleteTestNameMutation,
   useGetSubGroupsQuery,
+  useGetMainGroupsQuery,
 } from "@/features/admin-pathology/api/pathologyApi";
 
 const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
@@ -25,7 +20,16 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 export default function TestNamePage() {
   const { message } = App.useApp();
 
-  const [form, setForm] = useState(createEmptyTestNameForm);
+const [form, setForm] = useState(() => ({
+  TGID: null,
+  TSGID: null,
+  groupName: "",
+  subGroupName: "",
+  testName: "",
+  medicalName: "",
+  standardName: "",
+  fee: 0,
+}));
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -35,8 +39,9 @@ export default function TestNamePage() {
     testName: "",
   });
   const { confirmDelete } = useConfirm();
-  const { data: rows = [], isLoading } = useGetTestNamesQuery();
-  const { data: subGroups = [] } = useGetSubGroupsQuery();
+const { data: rows = [], isLoading } = useGetTestNamesQuery();
+const { data: subGroups = [] } = useGetSubGroupsQuery();
+const { data: mainGroups = [] } = useGetMainGroupsQuery();
   const [createTestName] = useCreateTestNameMutation();
   const [updateTestName] = useUpdateTestNameMutation();
   const [deleteTestName] = useDeleteTestNameMutation();
@@ -56,12 +61,21 @@ export default function TestNamePage() {
     });
   }, []);
 
-  const openComponentModal = useCallback(() => {
-    setForm(createEmptyTestNameForm());
-    setEditingRowId(null);
-    setFieldErrors({});
-    setIsComponentModalOpen(true);
-  }, []);
+const openComponentModal = useCallback(() => {
+  setForm({
+    TGID: null,
+    TSGID: null,
+    groupName: "",
+    subGroupName: "",
+    testName: "",
+    medicalName: "",
+    standardName: "",
+    fee: 0,
+  });
+  setEditingRowId(null);
+  setFieldErrors({});
+  setIsComponentModalOpen(true);
+}, []);
 
   const closeComponentModal = useCallback(() => {
     setIsComponentModalOpen(false);
@@ -69,12 +83,21 @@ export default function TestNamePage() {
     setFieldErrors({});
   }, []);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToTestNameForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsComponentModalOpen(true);
-  }, []);
+const handleEditRow = useCallback((record) => {
+  setForm({
+    TGID: record.TGID ?? null,
+    TSGID: record.TSGID ?? null,
+    groupName: record.groupName ?? "",
+    subGroupName: record.subGroupName ?? "",
+    testName: record.testName ?? "",
+    medicalName: record.medicalName ?? "",
+    standardName: record.standardName ?? "",
+    fee: record.fee ?? 0,
+  });
+  setEditingRowId(record.id);
+  setFieldErrors({});
+  setIsComponentModalOpen(true);
+}, []);
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.testName;
@@ -88,84 +111,60 @@ export default function TestNamePage() {
     [confirmDelete, deleteTestName, message],
   );
 
-  const handleSave = useCallback(async () => {
-    const testName = (form.testName || "").trim();
+const handleSave = useCallback(async () => {
+  const testName = (form.testName || "").trim();
 
-    if (!testName) {
-      setFieldErrors({
-        testName: "Test Name is required.",
-      });
+  const errors = {};
+  if (!form.TGID) errors.TGID = "Group Name is required.";
+  if (!form.TSGID) errors.TSGID = "Sub Group Name is required.";
+  if (!testName) errors.testName = "Test Name is required.";
 
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    return;
+  }
 
-    setFieldErrors({});
+  setFieldErrors({});
 
-    const rowPayload = {
-      groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-subGroupName:
-  subGroups.find(
-    (sg) =>
-      sg.groupId === form.groupId &&
-      sg.subGroupName === form.subGroupName
-  )?.subGroupName || form.subGroupName,
-      testName,
-      medicalName: form.medicalName ?? "",
-      standardName: form.standardName ?? "",
-      fieldType: "TextBox",
-      fee: form.fee ?? 0,
-    };
+  const rowPayload = {
+    TGID: form.TGID,
+    TSGID: form.TSGID,
+    testName,
+    medicalName: form.medicalName ?? "",
+    standardName: form.standardName ?? "",
+    fee: form.fee ?? 0,
+  };
 
-    if (editingRowId) {
-      await updateTestName({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
-
-      setIsComponentModalOpen(false);
-      setEditingRowId(null);
-
-      message.success("Test Name updated.");
-
-      return;
-    }
-
-    await createTestName(rowPayload).unwrap();
-
+  if (editingRowId) {
+    await updateTestName({ id: editingRowId, ...rowPayload }).unwrap();
     setIsComponentModalOpen(false);
-    
-    message.success("Test Name created.");
-  }, [form, editingRowId, createTestName, updateTestName, message]);
+    setEditingRowId(null);
+    message.success("Test Name updated.");
+    return;
+  }
 
-  const groupOptions = useMemo(() => {
-    const uniqueGroups = [
-      ...new Set(rows.map((row) => row.groupName).filter(Boolean)),
-    ];
+  await createTestName(rowPayload).unwrap();
+  setIsComponentModalOpen(false);
+  message.success("Test Name created.");
+}, [form, editingRowId, createTestName, updateTestName, message]);
 
-    return uniqueGroups.map((group) => ({
-      label: group,
-      value: group,
+const groupOptions = useMemo(() => {
+  return mainGroups.map((g) => ({
+    label: g.groupName,
+    value: g.groupName,
+  }));
+}, [mainGroups]);
+
+const subGroupOptions = useMemo(() => {
+  return subGroups
+    .filter((sg) =>
+      filters.groupName ? sg.groupName === filters.groupName : true,
+    )
+    .map((sg) => ({
+      label: sg.subGroupName,
+      value: sg.subGroupName,
     }));
-  }, [rows]);
-
-  const subGroupOptions = useMemo(() => {
-    let filteredRows = rows;
-
-    if (filters.groupName) {
-      filteredRows = filteredRows.filter(
-        (row) => row.groupName === filters.groupName,
-      );
-    }
-
-    const uniqueSubGroups = [
-      ...new Set(filteredRows.map((row) => row.subGroupName).filter(Boolean)),
-    ];
-
-    return uniqueSubGroups.map((subGroup) => ({
-      label: subGroup,
-      value: subGroup,
-    }));
-  }, [rows, filters.groupName]);
+}, [subGroups, filters.groupName]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -331,16 +330,18 @@ subGroupName:
         />
       </section>
 
-      <TestNameModal
-        open={isComponentModalOpen}
-        onClose={closeComponentModal}
-        title={editingRowId ? "Edit Test Name" : "Add Test Name"}
-        form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
-        onSave={handleSave}
-      />
+<TestNameModal
+  open={isComponentModalOpen}
+  onClose={closeComponentModal}
+  title={editingRowId ? "Edit Test Name" : "Add Test Name"}
+  form={form}
+  errors={fieldErrors}
+  onPatchForm={patchForm}
+  onClearError={clearFieldError}
+  onSave={handleSave}
+  mainGroups={mainGroups}
+  subGroups={subGroups}
+/>
     </div>
   );
 }

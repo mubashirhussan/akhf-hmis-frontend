@@ -1,11 +1,5 @@
 import { api } from "@/store/api";
 import {
-  getTestNameRows,
-  createTestNameRow,
-  updateTestNameRow,
-  deleteTestNameRow,
-} from "@/features/admin-pathology/api/mock-test-name";
-import {
   addPathologyUnitOption,
   createPathologyComponentRow,
   deletePathologyComponentRow,
@@ -55,12 +49,13 @@ export const pathologyApi = api.injectEndpoints({
 getMainGroups: builder.query({
   query: () => "/admin/pathology/groups",
   transformResponse: (response) =>
-    response.data.map((item) => ({
-      id: String(item.TGID),
-      groupId: item.TGID,
-      groupName: item.TGName,
-      fee: item.Fee ?? 0,
-    })),
+response.data.map((item) => ({
+  id: String(item.TGID),
+  groupId: item.TGID,
+  TGID: item.TGID,
+  groupName: item.TGName,
+  fee: item.Fee ?? 0,
+})),
   providesTags: ["MainGroup"],
 }),
 createMainGroup: builder.mutation({
@@ -138,27 +133,61 @@ deleteSubGroup: builder.mutation({
   }),
   invalidatesTags: ["SubGroup"],
 }),
-    getTestNames: builder.query({
-      queryFn: async () => ({ data: getTestNameRows() }),
-      providesTags: ["TestName"],
-    }),
-    createTestName: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createTestNameRow(rowPayload) }),
-      invalidatesTags: ["TestName"],
-    }),
-    updateTestName: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateTestNameRow(id, rowPayload),
-      }),
-      invalidatesTags: ["TestName"],
-    }),
-    deleteTestName: builder.mutation({
-      queryFn: async (id) => {
-        deleteTestNameRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["TestName"],
-    }),
+getTestNames: builder.query({
+  query: () => "/admin/pathology/tests",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TID),
+      tid: item.TID,
+      TGID: item.TGID ?? null,
+      TSGID: item.TSGID ?? null,
+      groupName: item.TGName,
+      subGroupName: item.TSGName,
+      testName: item.TestName,
+      fieldType: item.E_Field_Type ?? null,
+      fee: item.Fee ?? 0,
+      medicalName: item.MedicalName ?? "",
+      standardName: item.StandardName ?? "",
+    })),
+  providesTags: ["TestName"],
+}),
+createTestName: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/tests",
+    method: "POST",
+    body: {
+      tgid: rowPayload.TGID,
+      tsgid: rowPayload.TSGID,
+      testName: rowPayload.testName,
+      fee: rowPayload.fee,
+      medicalName: rowPayload.medicalName,
+      standardName: rowPayload.standardName,
+    },
+  }),
+  invalidatesTags: ["TestName"],
+}),
+updateTestName: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/tests/${id}`,
+    method: "PUT",
+    body: {
+      tgid: rowPayload.TGID,
+      tsgid: rowPayload.TSGID,
+      testName: rowPayload.testName,
+      fee: rowPayload.fee,
+      medicalName: rowPayload.medicalName,
+      standardName: rowPayload.standardName,
+    },
+  }),
+  invalidatesTags: ["TestName"],
+}),
+deleteTestName: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/tests/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["TestName"],
+}),
     getPathologyComponents: builder.query({
       queryFn: async () => ({ data: getPathologyComponentRows() }),
       providesTags: ["PathologyComponent"],
