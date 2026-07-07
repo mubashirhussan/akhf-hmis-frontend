@@ -5,15 +5,9 @@ import { App, Button, Space, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import {
-  GROUP_OPTIONS,
   createEmptyPathologyTestRangeForm,
-  formatAgeForDisplay,
-  getComponentOptions,
-  getOptionLabel,
-  getSubGroupOptions,
-  getTestMeta,
   rowToPathologyTestRangeForm,
-  GENDER_OPTIONS,
+  getOptionLabel,
 } from "@/features/admin-pathology/api/mock-pathology-test-range";
 import {
   useAddPathologyConditionMutation,
@@ -111,7 +105,7 @@ const [filters, setFilters] = useState({
     [confirmDelete, deleteTestRange, message],
   );
 
-  const handleSave = useCallback(async () => {
+const handleSave = useCallback(async () => {
     if (!form.testComponent) {
       setFieldErrors({ testComponent: "Test Component is required." });
       return;
@@ -119,38 +113,18 @@ const [filters, setFilters] = useState({
 
     setFieldErrors({});
 
-    const testMeta = getTestMeta(form.subGroupName, form.testName);
-    const componentOptions = getComponentOptions(
-      form.subGroupName,
-      form.testName,
-    );
-    const componentMeta = componentOptions.find(
-      (option) => option.value === form.testComponent,
-    );
+    const genderIdMap = { male: 1, female: 2, both: 77, child: 3 };
 
     const rowPayload = {
-      groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-      subGroupName: getOptionLabel(
-        getSubGroupOptions(form.groupName),
-        form.subGroupName,
-      ),
-      testName: testMeta?.label ?? form.testName,
-      componentName: form.testComponent ?? "",
-      tcid: componentMeta?.tcid ?? (Number(form.testComponent) || 0),
-      startValue: form.startValue.trim(),
-      endValue: form.endValue.trim(),
-      reportValues: form.reportValues.trim(),
-      gender: getOptionLabel(GENDER_OPTIONS, form.gender),
-      minAge: formatAgeForDisplay(form.ageStart, form.ageStartUnit),
-      maxAge: formatAgeForDisplay(form.ageEnd, form.ageEndUnit),
-      ageStart: form.ageStart,
-      ageStartUnit: form.ageStartUnit,
-      ageEnd: form.ageEnd,
-      ageEndUnit: form.ageEndUnit,
-      condition: getOptionLabel(conditionOptions, form.condition),
-      unit: getOptionLabel(unitOptions, form.unit) || "—",
+      tcId: Number(form.testComponent) || 0,
+      startValue: form.startValue.trim() || 0,
+      endValue: form.endValue.trim() || 0,
+      reportValues: form.reportValues.trim() || 0,
+      genderId: genderIdMap[form.gender?.toLowerCase()] ?? 77,
+      minAgeVal: Number(form.ageStart) || 0,
+      maxAgeVal: Number(form.ageEnd) || 0,
+      ageUnit: form.ageStartUnit ?? "Y",
     };
-
     if (editingRowId) {
       await updateTestRange({ id: editingRowId, ...rowPayload }).unwrap();
       setIsTestRangeModalOpen(false);
@@ -163,12 +137,10 @@ const [filters, setFilters] = useState({
     setIsTestRangeModalOpen(false);
     message.success("Test range saved to the table.");
   }, [
-    conditionOptions,
     createTestRange,
     editingRowId,
     form,
     message,
-    unitOptions,
     updateTestRange,
   ]);
 

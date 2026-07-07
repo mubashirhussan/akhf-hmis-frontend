@@ -1,74 +1,88 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Input, InputNumber, Select } from "antd";
 import FormField from "@/components/ui/FormField";
 import FormGrid from "@/components/ui/FormGrid";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
-import { getSubGroupOptions } from "@/features/admin-pathology/api/mock-test-name";
-import {
-  useGetMainGroupsQuery,
-  useGetSubGroupsQuery,
-} from "@/features/admin-pathology/api/pathologyApi";
 
 const controlClass = FIELD_CONTROL_CLASS;
 
-export default function SubGroupForm({
+export default function TestNameForm({
   form,
   errors = {},
   onPatchForm,
   onClearError,
+  mainGroups = [],
+  subGroups = [],
 }) {
-  const componentNameRef = useRef(null);
   const fieldId = (name) => `test-name-${name}`;
-
-  const { data: subGroups = [] } = useGetSubGroupsQuery();
-
-  const { data: mainGroups = [] } = useGetMainGroupsQuery();
 
   const groupOptions = useMemo(() => {
     return mainGroups.map((g) => ({
       label: g.groupName,
-      value: g.groupName,
+      value: g.TGID,
     }));
   }, [mainGroups]);
+
   const subGroupOptions = useMemo(() => {
     return subGroups
-      .filter((sg) => sg.groupName === form.groupName)
+      .filter((sg) => sg.TGID === form.TGID)
       .map((sg) => ({
         label: sg.subGroupName,
-        value: sg.subGroupName,
+        value: sg.TSGID,
       }));
-  }, [subGroups, form.groupName]);
+  }, [subGroups, form.TGID]);
 
   return (
     <FormGrid columns={2} className="pathology-component-form-grid">
-      <FormField label="Group Name">
+      <FormField
+        label="Group Name"
+        required
+        help={errors?.TGID}
+        validateStatus={errors?.TGID ? "error" : ""}
+      >
         <Select
           id={fieldId("group-name")}
           className={controlClass}
-          value={form.groupName}
+          status={errors?.TGID ? "error" : ""}
+          value={form.TGID}
           options={groupOptions}
-          onChange={(groupName) => {
+          onChange={(TGID) => {
+            const selectedGroup = mainGroups.find((g) => g.TGID === TGID);
             onPatchForm({
-              groupName,
+              TGID,
+              TSGID: null,
+              groupName: selectedGroup?.groupName ?? "",
               subGroupName: "",
             });
+            onClearError("TGID");
           }}
         />
       </FormField>
 
-      <FormField label="Sub-Group Name">
+      <FormField
+        label="Sub-Group Name"
+        required
+        help={errors?.TSGID}
+        validateStatus={errors?.TSGID ? "error" : ""}
+      >
         <Select
           id={fieldId("sub-group-name")}
           className={controlClass}
-          value={form.subGroupName}
+          status={errors?.TSGID ? "error" : ""}
+          value={form.TSGID}
           options={subGroupOptions}
-          disabled={!form.groupName}
-          onChange={(subGroupName) => {
+          disabled={!form.TGID}
+          onChange={(TSGID) => {
+            const selectedSubGroup = subGroups.find(
+              (sg) => sg.TSGID === TSGID,
+            );
             onPatchForm({
-              subGroupName,
+              TSGID,
+              subGroupName: selectedSubGroup?.subGroupName ?? "",
             });
+            onClearError("TSGID");
           }}
         />
       </FormField>
@@ -84,23 +98,26 @@ export default function SubGroupForm({
           className={controlClass}
           status={errors?.testName ? "error" : ""}
           value={form.testName}
-          onChange={(e) => onPatchForm({ testName: e.target.value })}
+          onChange={(e) => {
+            onPatchForm({ testName: e.target.value });
+            onClearError("testName");
+          }}
         />
       </FormField>
+
       <FormField label="Medical Name">
         <Input
           id={fieldId("medical-name")}
           className={controlClass}
-          status={errors?.medicalName ? "error" : ""}
           value={form.medicalName}
           onChange={(e) => onPatchForm({ medicalName: e.target.value })}
         />
       </FormField>
+
       <FormField label="Standard Name">
         <Input
           id={fieldId("standard-name")}
           className={controlClass}
-          status={errors?.standardName ? "error" : ""}
           value={form.standardName}
           onChange={(e) => onPatchForm({ standardName: e.target.value })}
         />

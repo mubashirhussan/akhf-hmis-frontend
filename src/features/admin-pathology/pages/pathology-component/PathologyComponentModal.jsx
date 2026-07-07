@@ -10,6 +10,10 @@ export default function PathologyComponentModal({
   title = 'Add Component',
   form,
   unitOptions,
+  fieldTypeOptions,
+  mainGroups,
+  subGroups,
+  testNames,
   errors,
   isEditing = false,
   onPatchForm,
@@ -36,15 +40,19 @@ export default function PathologyComponentModal({
         </>
       }
     >
-      <PathologyComponentForm
-        form={form}
-        unitOptions={unitOptions}
-        errors={errors}
-        isEditing={isEditing}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        onAddUnit={onAddUnit}
-      />
+<PathologyComponentForm
+  form={form}
+  unitOptions={unitOptions}
+  fieldTypeOptions={fieldTypeOptions}
+  mainGroups={mainGroups}
+  subGroups={subGroups}
+  testNames={testNames}
+  errors={errors}
+  isEditing={isEditing}
+  onPatchForm={onPatchForm}
+  onClearError={onClearError}
+  onAddUnit={onAddUnit}
+/>
     </AppModal>
   );
 }
