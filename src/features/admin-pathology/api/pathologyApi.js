@@ -1,42 +1,8 @@
 import { api } from "@/store/api";
 import {
-  getMainGroupRows,
-  createMainGroupRow,
-  updateMainGroupRow,
-  deleteMainGroupRow,
-} from "@/features/admin-pathology/api/mock-main-group";
-import {
-  getSubGroupRows,
-  createSubGroupRow,
-  updateSubGroupRow,
-  deleteSubGroupRow,
-} from "@/features/admin-pathology/api/mock-sub-group";
-import {
-  getTestNameRows,
-  createTestNameRow,
-  updateTestNameRow,
-  deleteTestNameRow,
-} from "@/features/admin-pathology/api/mock-test-name";
-import {
-  addPathologyUnitOption,
-  createPathologyComponentRow,
-  deletePathologyComponentRow,
-  FIELD_TYPE_OPTIONS,
-  getPathologyComponentRows,
-  getPathologyUnitOptions,
-  GROUP_OPTIONS,
-  SUB_GROUP_OPTIONS,
-  TEST_OPTIONS,
-  updatePathologyComponentRow,
-} from "@/features/admin-pathology/api/mock-pathology-component";
-import {
   addPathologyConditionOption,
-  createPathologyTestRangeRow,
-  deletePathologyTestRangeRow,
   getPathologyConditionOptions,
-  getPathologyTestRangeRows,
   GENDER_OPTIONS,
-  updatePathologyTestRangeRow,
 } from "@/features/admin-pathology/api/mock-pathology-test-range";
 import {
   getTestBookingRows,
@@ -64,131 +30,307 @@ import {
 } from "@/features/admin-pathology/api/mock-machine-integration-compwise";
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getMainGroups: builder.query({
-      queryFn: async () => ({ data: getMainGroupRows() }),
-      providesTags: ["MainGroup"],
-    }),
-    createMainGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createMainGroupRow(rowPayload) }),
-      invalidatesTags: ["MainGroup"],
-    }),
-    updateMainGroup: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateMainGroupRow(id, rowPayload),
-      }),
-      invalidatesTags: ["MainGroup"],
-    }),
-    deleteMainGroup: builder.mutation({
-      queryFn: async (id) => {
-        deleteMainGroupRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["MainGroup"],
-    }),
-    getSubGroups: builder.query({
-      queryFn: async () => ({ data: getSubGroupRows() }),
-      providesTags: ["SubGroup"],
-    }),
-    createSubGroup: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createSubGroupRow(rowPayload) }),
-      invalidatesTags: ["SubGroup"],
-    }),
-    updateSubGroup: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateSubGroupRow(id, rowPayload),
-      }),
-      invalidatesTags: ["SubGroup"],
-    }),
-    deleteSubGroup: builder.mutation({
-      queryFn: async (id) => {
-        deleteSubGroupRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["SubGroup"],
-    }),
-    getTestNames: builder.query({
-      queryFn: async () => ({ data: getTestNameRows() }),
-      providesTags: ["TestName"],
-    }),
-    createTestName: builder.mutation({
-      queryFn: async (rowPayload) => ({ data: createTestNameRow(rowPayload) }),
-      invalidatesTags: ["TestName"],
-    }),
-    updateTestName: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updateTestNameRow(id, rowPayload),
-      }),
-      invalidatesTags: ["TestName"],
-    }),
-    deleteTestName: builder.mutation({
-      queryFn: async (id) => {
-        deleteTestNameRow(id);
-        return { data: { id } };
-      },
-      invalidatesTags: ["TestName"],
-    }),
-    getPathologyComponents: builder.query({
-      queryFn: async () => ({ data: getPathologyComponentRows() }),
-      providesTags: ["PathologyComponent"],
-    }),
-    deletePathologyComponent: builder.mutation({
-  queryFn: async (id) => {
-    deletePathologyComponentRow(id);
-    return { data: { id } };
-  },
-  invalidatesTags: ["PathologyComponent", "PathologyLookups"],
+getMainGroups: builder.query({
+  query: () => "/admin/pathology/groups",
+  transformResponse: (response) =>
+response.data.map((item) => ({
+  id: String(item.TGID),
+  groupId: item.TGID,
+  TGID: item.TGID,
+  groupName: item.TGName,
+  fee: item.Fee ?? 0,
+})),
+  providesTags: ["MainGroup"],
 }),
-    getPathologyTestRanges: builder.query({
-      queryFn: async () => ({ data: getPathologyTestRangeRows() }),
+createMainGroup: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/groups",
+    method: "POST",
+    body: {
+      TGName: rowPayload.groupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+updateMainGroup: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/groups/${id}`,
+    method: "PUT",
+    body: {
+      TGName: rowPayload.groupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+deleteMainGroup: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/groups/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["MainGroup"],
+}),
+  getSubGroups: builder.query({
+  query: () => "/admin/pathology/sub-groups",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TSGID),
+      TGID: item.TGID,
+      groupName: item.TGName,
+      TSGID: item.TSGID,
+      subGroupName: item.TSGName,
+      fee: item.Fee ?? 0,
+    })),
+  providesTags: ["SubGroup"],
+}),
+createSubGroup: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/sub-groups",
+    method: "POST",
+    body: {
+      TGName: rowPayload.groupName,
+      TGID: rowPayload.TGID,
+      TSGName: rowPayload.subGroupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
+updateSubGroup: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/sub-groups/${id}`,
+    method: "PUT",
+    body: {
+      TGName: rowPayload.groupName,
+      TGID: rowPayload.TGID,
+      TSGName: rowPayload.subGroupName,
+      Fee: rowPayload.fee,
+    },
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
+deleteSubGroup: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/sub-groups/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["SubGroup"],
+}),
+getTestNames: builder.query({
+  query: () => "/admin/pathology/tests",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TID),
+      tid: item.TID,
+      TGID: item.TGID ?? null,
+      TSGID: item.TSGID ?? null,
+      groupName: item.TGName,
+      subGroupName: item.TSGName,
+      testName: item.TestName,
+      fieldType: item.E_Field_Type ?? null,
+      fee: item.Fee ?? 0,
+      medicalName: item.MedicalName ?? "",
+      standardName: item.StandardName ?? "",
+    })),
+  providesTags: ["TestName"],
+}),
+createTestName: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/tests",
+    method: "POST",
+    body: {
+      tgid: rowPayload.TGID,
+      tsgid: rowPayload.TSGID,
+      testName: rowPayload.testName,
+      fee: rowPayload.fee,
+      medicalName: rowPayload.medicalName,
+      standardName: rowPayload.standardName,
+    },
+  }),
+  invalidatesTags: ["TestName"],
+}),
+updateTestName: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/tests/${id}`,
+    method: "PUT",
+    body: {
+      tgid: rowPayload.TGID,
+      tsgid: rowPayload.TSGID,
+      testName: rowPayload.testName,
+      fee: rowPayload.fee,
+      medicalName: rowPayload.medicalName,
+      standardName: rowPayload.standardName,
+    },
+  }),
+  invalidatesTags: ["TestName"],
+}),
+deleteTestName: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/tests/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["TestName"],
+}),
+getPathologyComponents: builder.query({
+  query: () => "/admin/pathology/components",
+  transformResponse: (response) =>
+    response.data.map((item) => ({
+      id: String(item.TCID),
+      tcid: item.TCID,
+      tid: item.TID,
+      TID: item.TID,
+      TGID: item.TGID ?? null,
+      groupName: item.TGName ?? "",
+      subGroupName: item.TSGName ?? "",
+      testName: item.TestName ?? "",
+      componentName: item.ComponentName ?? "",
+      fieldType: item.E_Field_Type ?? "",
+      unit: item.TC_Range_Unit ?? "",
+      referenceMale: item.TC_Range_Unit ?? "",
+      referenceFemale: item.TC_Range_Unit_Female ?? "",
+      priority: item.Priority ?? 1,
+      toolTip: item.Critical_Values ?? "",
+      maxLength: item.MaxLength ?? 0,
+      minValue: item.Min_Value ?? "",
+      maxValue: item.Max_Value ?? "",
+      tmUnitID: item.TmUnitID ?? null,
+    })),
+  providesTags: ["PathologyComponent"],
+}),
+deletePathologyComponent: builder.mutation({
+  query: (id) => ({
+    url: `/admin/pathology/components/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["PathologyComponent"],
+}),
+getPathologyTestRanges: builder.query({
+      query: () => "/admin/pathology/ranges",
+      transformResponse: (response) =>
+        response.data.map((item) => ({
+          id: String(item.Refid),
+          refid: item.Refid,
+          tcId: item.TCId,
+          tid: item.TID,
+          testName: item.TestName ?? "",
+          componentName: item.ComponentName ?? "",
+          startValue: item.StartValue !== null && item.StartValue !== undefined ? String(item.StartValue) : "",
+          endValue: item.EndValue !== null && item.EndValue !== undefined ? String(item.EndValue) : "",
+          reportValues: item.Report_Values ?? "",
+          gender: item.Gender ?? "Both",
+          genderId: item.Gender_ID ?? 77,
+          minAge: item.Min_Age1 ?? "0 (0  Y  0  M  0  D )",
+          maxAge: item.Max_Age1 ?? "0 (0  Y  0  M  0  D )",
+          minAgeVal: item.Min_Age ?? 0,
+          maxAgeVal: item.Max_Age ?? 0,
+        })),
       providesTags: ["PathologyTestRange"],
     }),
-    getPathologyLookups: builder.query({
-      queryFn: async () => ({
-        data: {
-          groupOptions: GROUP_OPTIONS,
-          subGroupOptions: SUB_GROUP_OPTIONS,
-          testOptions: TEST_OPTIONS,
-          fieldTypeOptions: FIELD_TYPE_OPTIONS,
-          unitOptions: getPathologyUnitOptions(),
-          genderOptions: GENDER_OPTIONS,
-          conditionOptions: getPathologyConditionOptions(),
+getPathologyLookups: builder.query({
+  queryFn: async () => ({
+    data: {
+      fieldTypeOptions: [
+        { value: "Html", label: "Html" },
+        { value: "TextBox", label: "TextBox" },
+        { value: "RadioButtonList", label: "RadioButtonList" },
+        { value: "CheckBoxList", label: "CheckBoxList" },
+        { value: "RadioButton", label: "RadioButton" },
+        { value: "CheckBox", label: "CheckBox" },
+        { value: "DropDownList", label: "DropDownList" },
+      ],
+      unitOptions: [],
+      genderOptions: GENDER_OPTIONS,
+      conditionOptions: getPathologyConditionOptions(),
+    },
+  }),
+  providesTags: ["PathologyLookups"],
+}),
+createPathologyComponent: builder.mutation({
+  query: (rowPayload) => ({
+    url: "/admin/pathology/components",
+    method: "POST",
+    body: {
+      tid: rowPayload.TID,
+      tgid: rowPayload.TGID,
+      componentName: rowPayload.componentName,
+      tmUnitID: rowPayload.tmUnitID ?? 0,
+      e_Field_Type: rowPayload.fieldType,
+      tC_Range_Unit: rowPayload.referenceMale,
+      tC_Range_Unit_Female: rowPayload.referenceFemale,
+      priority: rowPayload.priority,
+      maxLength: rowPayload.maxLength ?? 0,
+      min_Value: rowPayload.minValue ?? "",
+      max_Value: rowPayload.maxValue ?? "",
+      critical_Values: rowPayload.toolTip ?? "",
+    },
+  }),
+  invalidatesTags: ["PathologyComponent"],
+}),
+updatePathologyComponent: builder.mutation({
+  query: ({ id, ...rowPayload }) => ({
+    url: `/admin/pathology/components/${id}`,
+    method: "PUT",
+    body: {
+      tid: rowPayload.TID,
+      tgid: rowPayload.TGID,
+      componentName: rowPayload.componentName,
+      tmUnitID: rowPayload.tmUnitID ?? 0,
+      e_Field_Type: rowPayload.fieldType,
+      tC_Range_Unit: rowPayload.referenceMale,
+      tC_Range_Unit_Female: rowPayload.referenceFemale,
+      priority: rowPayload.priority,
+      maxLength: rowPayload.maxLength ?? 0,
+      min_Value: rowPayload.minValue ?? "",
+      max_Value: rowPayload.maxValue ?? "",
+      critical_Values: rowPayload.toolTip ?? "",
+    },
+  }),
+  invalidatesTags: ["PathologyComponent"],
+}),
+addPathologyUnit: builder.mutation({
+  queryFn: async (option) => ({ data: option }),
+  invalidatesTags: ["PathologyLookups"],
+}),
+createPathologyTestRange: builder.mutation({
+      query: (rowPayload) => ({
+        url: "/admin/pathology/ranges",
+        method: "POST",
+        body: {
+          tcId: rowPayload.tcId ?? 0,
+          startValue: rowPayload.startValue !== "" ? Number(rowPayload.startValue) : null,
+          endValue: rowPayload.endValue !== "" ? Number(rowPayload.endValue) : null,
+          gender_ID: rowPayload.genderId ?? 77,
+          min_Age: rowPayload.minAgeVal ?? 0,
+          max_Age: rowPayload.maxAgeVal ?? 0,
+          age_Unit: rowPayload.ageUnit ?? "Y",
+          report_Values: rowPayload.reportValues ?? "",
         },
       }),
-      providesTags: ["PathologyLookups"],
+      invalidatesTags: ["PathologyTestRange"],
     }),
-    createPathologyComponent: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createPathologyComponentRow(rowPayload),
-      }),
-      invalidatesTags: ["PathologyComponent", "PathologyLookups"],
-    }),
-    updatePathologyComponent: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updatePathologyComponentRow(id, rowPayload),
-      }),
-      invalidatesTags: ["PathologyComponent", "PathologyLookups"],
-    }),
-    addPathologyUnit: builder.mutation({
-      queryFn: async (option) => ({ data: addPathologyUnitOption(option) }),
-      invalidatesTags: ["PathologyLookups"],
-    }),
-    createPathologyTestRange: builder.mutation({
-      queryFn: async (rowPayload) => ({
-        data: createPathologyTestRangeRow(rowPayload),
+updatePathologyTestRange: builder.mutation({
+      query: ({ id, ...rowPayload }) => ({
+        url: `/admin/pathology/ranges/${id}`,
+        method: "PUT",
+        body: {
+          tcId: rowPayload.tcId ?? 0,
+          startValue: rowPayload.startValue !== "" ? Number(rowPayload.startValue) : null,
+          endValue: rowPayload.endValue !== "" ? Number(rowPayload.endValue) : null,
+          gender_ID: rowPayload.genderId ?? 77,
+          min_Age: rowPayload.minAgeVal ?? 0,
+          max_Age: rowPayload.maxAgeVal ?? 0,
+          age_Unit: rowPayload.ageUnit ?? "Y",
+          report_Values: rowPayload.reportValues ?? "",
+        },
       }),
       invalidatesTags: ["PathologyTestRange"],
     }),
-    updatePathologyTestRange: builder.mutation({
-      queryFn: async ({ id, ...rowPayload }) => ({
-        data: updatePathologyTestRangeRow(id, rowPayload),
+deletePathologyTestRange: builder.mutation({
+      query: (id) => ({
+        url: `/admin/pathology/ranges/${id}`,
+        method: "DELETE",
       }),
-      invalidatesTags: ["PathologyTestRange"],
-    }),
-    deletePathologyTestRange: builder.mutation({
-      queryFn: async (id) => {
-        deletePathologyTestRangeRow(id);
-        return { data: { id } };
-      },
       invalidatesTags: ["PathologyTestRange"],
     }),
     getTestBookings: builder.query({

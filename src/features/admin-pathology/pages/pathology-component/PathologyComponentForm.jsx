@@ -5,45 +5,43 @@ import { Button, Input, InputNumber, Select } from "antd";
 import FormField from "@/components/ui/FormField";
 import FormGrid from "@/components/ui/FormGrid";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
-import { FIELD_TYPE_OPTIONS } from "@/features/admin-pathology/api/mock-pathology-component";
 
-import {
-  useGetMainGroupsQuery,
-  useGetSubGroupsQuery,
-  useGetTestNamesQuery,
-} from "@/features/admin-pathology/api/pathologyApi";
+const controlClass = FIELD_CONTROL_CLASS;
 
 export default function PathologyComponentForm({
   form,
-  unitOptions,
+  unitOptions = [],
+  fieldTypeOptions = [],
+  mainGroups = [],
+  subGroups = [],
+  testNames = [],
   errors = {},
   isEditing = false,
   onPatchForm,
   onClearError,
   onAddUnit,
 }) {
-  const { data: mainGroups = [] } = useGetMainGroupsQuery();
-  const { data: subGroups = [] } = useGetSubGroupsQuery();
-  const { data: testNames = [] } = useGetTestNamesQuery();
+  const componentNameRef = useRef(null);
+  const fieldId = (name) => `pathology-component-${name}`;
 
-  const controlClass = FIELD_CONTROL_CLASS;
   const groupOptions = useMemo(() => {
     return mainGroups.map((g) => ({
       label: g.groupName,
-      value: g.groupName,
+      value: g.TGID,
     }));
   }, [mainGroups]);
-  const componentNameRef = useRef(null);
-  const fieldId = (name) => `pathology-component-${name}`;
+
   const subGroupOptions = useMemo(() => {
     return subGroups
-      .filter((sg) => sg.groupName === form.groupName)
+      .filter((sg) => sg.TGID === form.TGID)
       .map((sg) => ({
         label: sg.subGroupName,
-        value: sg.subGroupName,
+        value: sg.TSGID,
       }));
-  }, [subGroups, form.groupName]);
+  }, [subGroups, form.TGID]);
+
   const testOptions = useMemo(() => {
+    if (!form.groupName) return [];
     return testNames
       .filter(
         (t) =>
@@ -52,32 +50,41 @@ export default function PathologyComponentForm({
       )
       .map((t) => ({
         label: t.testName,
-        value: t.testName,
+        value: t.tid,
       }));
   }, [testNames, form.groupName, form.subGroupName]);
-  const componentNameError = errors.componentName;
 
   useEffect(() => {
-    if (!componentNameError) return;
+    if (!errors.componentName) return;
     componentNameRef.current?.focus({ preventScroll: false });
-  }, [componentNameError]);
+  }, [errors.componentName]);
 
   return (
     <FormGrid columns={2} className="pathology-component-form-grid">
-      <FormField label="Group Name">
+      <FormField
+        label="Group Name"
+        required
+        help={errors?.TGID}
+        validateStatus={errors?.TGID ? "error" : ""}
+      >
         <Select
           id={fieldId("group-name")}
           className={controlClass}
-          value={form.groupName}
+          status={errors?.TGID ? "error" : ""}
+          value={form.TGID}
           options={groupOptions}
           disabled={isEditing}
-          onChange={(groupName) => {
-
+          onChange={(TGID) => {
+            const selectedGroup = mainGroups.find((g) => g.TGID === TGID);
             onPatchForm({
-              groupName,
-              subGroupName: '',
-              testName: '',
+              TGID,
+              TSGID: null,
+              TID: null,
+              groupName: selectedGroup?.groupName ?? "",
+              subGroupName: "",
+              testName: "",
             });
+            onClearError?.("TGID");
           }}
         />
       </FormField>
@@ -86,27 +93,42 @@ export default function PathologyComponentForm({
         <Select
           id={fieldId("sub-group-name")}
           className={controlClass}
-          value={form.subGroupName}
+          value={form.TSGID}
           options={subGroupOptions}
-          disabled={!form.groupName}
-          onChange={(subGroupName) => {
-
+          disabled={!form.TGID}
+          onChange={(TSGID) => {
+            const selectedSG = subGroups.find((sg) => sg.TSGID === TSGID);
             onPatchForm({
-              subGroupName,
-              testName: '',
+              TSGID,
+              TID: null,
+              subGroupName: selectedSG?.subGroupName ?? "",
+              testName: "",
             });
           }}
         />
       </FormField>
 
-      <FormField label="Test Name">
+      <FormField
+        label="Test Name"
+        required
+        help={errors?.TID}
+        validateStatus={errors?.TID ? "error" : ""}
+      >
         <Select
           id={fieldId("test-name")}
           className={controlClass}
-          value={form.testName}
+          status={errors?.TID ? "error" : ""}
+          value={form.TID}
           options={testOptions}
           disabled={!form.subGroupName}
-          onChange={(testName) => onPatchForm({ testName })}
+          onChange={(TID) => {
+            const selectedTest = testNames.find((t) => t.tid === TID);
+            onPatchForm({
+              TID,
+              testName: selectedTest?.testName ?? "",
+            });
+            onClearError?.("TID");
+          }}
         />
       </FormField>
 
@@ -115,23 +137,26 @@ export default function PathologyComponentForm({
           id={fieldId("field-type")}
           className={controlClass}
           value={form.fieldType}
-          options={FIELD_TYPE_OPTIONS}
+          options={fieldTypeOptions}
           onChange={(fieldType) => onPatchForm({ fieldType })}
         />
       </FormField>
 
-      <FormField label="Component Name" required error={componentNameError}>
+      <FormField
+        label="Component Name"
+        required
+        help={errors?.componentName}
+        validateStatus={errors?.componentName ? "error" : ""}
+      >
         <Input
           ref={componentNameRef}
           id={fieldId("component-name")}
           className={controlClass}
           value={form.componentName}
-          status={componentNameError ? "error" : undefined}
-          onChange={(event) => {
-            onPatchForm({ componentName: event.target.value });
-            if (componentNameError) {
-              onClearError?.("componentName");
-            }
+          status={errors?.componentName ? "error" : ""}
+          onChange={(e) => {
+            onPatchForm({ componentName: e.target.value });
+            onClearError?.("componentName");
           }}
           autoComplete="off"
         />
@@ -160,12 +185,12 @@ export default function PathologyComponentForm({
         />
       </FormField>
 
-      <FormField label="Tool Tip">
+      <FormField label="Tool Tip / Critical Values">
         <Input
           id={fieldId("tool-tip")}
           className={controlClass}
           value={form.toolTip}
-          onChange={(event) => onPatchForm({ toolTip: event.target.value })}
+          onChange={(e) => onPatchForm({ toolTip: e.target.value })}
           autoComplete="off"
         />
       </FormField>
@@ -175,9 +200,7 @@ export default function PathologyComponentForm({
           id={fieldId("reference-male")}
           className={controlClass}
           value={form.referenceMale}
-          onChange={(event) =>
-            onPatchForm({ referenceMale: event.target.value })
-          }
+          onChange={(e) => onPatchForm({ referenceMale: e.target.value })}
           autoComplete="off"
         />
       </FormField>
@@ -187,9 +210,7 @@ export default function PathologyComponentForm({
           id={fieldId("reference-female")}
           className={controlClass}
           value={form.referenceFemale}
-          onChange={(event) =>
-            onPatchForm({ referenceFemale: event.target.value })
-          }
+          onChange={(e) => onPatchForm({ referenceFemale: e.target.value })}
           autoComplete="off"
         />
       </FormField>
@@ -200,7 +221,7 @@ export default function PathologyComponentForm({
             id={fieldId("new-unit")}
             className={controlClass}
             value={form.newUnit}
-            onChange={(event) => onPatchForm({ newUnit: event.target.value })}
+            onChange={(e) => onPatchForm({ newUnit: e.target.value })}
             autoComplete="off"
           />
           <Button type="link" onClick={onAddUnit}>

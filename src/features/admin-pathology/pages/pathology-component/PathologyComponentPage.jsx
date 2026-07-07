@@ -6,36 +6,53 @@ import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import PathologyComponentModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentModal';
 import {
-  FIELD_TYPE_OPTIONS,
-  GROUP_OPTIONS,
-  createEmptyPathologyComponentForm,
-  getOptionLabel,
-  getSubGroupOptions,
-  getTestMeta,
-  rowToPathologyComponentForm,
-} from '@/features/admin-pathology/api/mock-pathology-component';
-import {
   useAddPathologyUnitMutation,
   useCreatePathologyComponentMutation,
+  useDeletePathologyComponentMutation,
   useGetPathologyComponentsQuery,
   useGetPathologyLookupsQuery,
   useUpdatePathologyComponentMutation,
   useGetTestNamesQuery,
+  useGetMainGroupsQuery,
+  useGetSubGroupsQuery,
 } from '@/features/admin-pathology/api/pathologyApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 export default function PathologyComponentPage() {
   const { message } = App.useApp();
-  const { data: rows = [], isLoading } = useGetPathologyComponentsQuery();
-  const { data: lookups } = useGetPathologyLookupsQuery();
-  const { data: testNames = [] } = useGetTestNamesQuery();
-  const unitOptions = lookups?.unitOptions ?? [];
-  const [createComponent] = useCreatePathologyComponentMutation();
-  const [updateComponent] = useUpdatePathologyComponentMutation();
-  const [addUnit] = useAddPathologyUnitMutation();
+const { data: rows = [], isLoading } = useGetPathologyComponentsQuery();
+const { data: lookups } = useGetPathologyLookupsQuery();
+const { data: testNames = [] } = useGetTestNamesQuery();
+const { data: mainGroups = [] } = useGetMainGroupsQuery();
+const { data: subGroups = [] } = useGetSubGroupsQuery();
+const unitOptions = lookups?.unitOptions ?? [];
+const fieldTypeOptions = lookups?.fieldTypeOptions ?? [];
+const [createComponent] = useCreatePathologyComponentMutation();
+const [updateComponent] = useUpdatePathologyComponentMutation();
+const [deleteComponent] = useDeletePathologyComponentMutation();
+const [addUnit] = useAddPathologyUnitMutation();
 
-  const [form, setForm] = useState(createEmptyPathologyComponentForm);
+const [form, setForm] = useState(() => ({
+  TGID: null,
+  TSGID: null,
+  TID: null,
+  groupName: "",
+  subGroupName: "",
+  testName: "",
+  fieldType: "",
+  componentName: "",
+  unit: "",
+  tmUnitID: 0,
+  priority: 1,
+  toolTip: "",
+  referenceMale: "",
+  referenceFemale: "",
+  minValue: "",
+  maxValue: "",
+  maxLength: 0,
+  newUnit: "",
+}));
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -65,12 +82,31 @@ export default function PathologyComponentPage() {
     });
   }, []);
 
-  const openComponentModal = useCallback(() => {
-    setForm(createEmptyPathologyComponentForm());
-    setEditingRowId(null);
-    setFieldErrors({});
-    setIsComponentModalOpen(true);
-  }, []);
+const openComponentModal = useCallback(() => {
+  setForm({
+    TGID: null,
+    TSGID: null,
+    TID: null,
+    groupName: "",
+    subGroupName: "",
+    testName: "",
+    fieldType: "",
+    componentName: "",
+    unit: "",
+    tmUnitID: 0,
+    priority: 1,
+    toolTip: "",
+    referenceMale: "",
+    referenceFemale: "",
+    minValue: "",
+    maxValue: "",
+    maxLength: 0,
+    newUnit: "",
+  });
+  setEditingRowId(null);
+  setFieldErrors({});
+  setIsComponentModalOpen(true);
+}, []);
 
   const closeComponentModal = useCallback(() => {
     setIsComponentModalOpen(false);
@@ -78,52 +114,83 @@ export default function PathologyComponentPage() {
     setFieldErrors({});
   }, []);
 
-  const handleEditRow = useCallback(
-    (record) => {
-      setForm(rowToPathologyComponentForm(record, unitOptions));
-      setEditingRowId(record.id);
-      setFieldErrors({});
-      setIsComponentModalOpen(true);
-    },
-    [unitOptions],
+const handleEditRow = useCallback((record) => {
+  const matchedSubGroup = subGroups.find(
+    (sg) =>
+      sg.subGroupName === record.subGroupName &&
+      sg.TGID === record.TGID,
   );
+  const resolvedTSGID = matchedSubGroup?.TSGID ?? null;
 
-  const handleSave = useCallback(async () => {
-    const componentName = form.componentName.trim();
-    if (!componentName) {
-      setFieldErrors({ componentName: 'Component Name is required.' });
-      return;
-    }
+  const matchedTest = testNames.find((t) => t.tid === record.TID);
+  const resolvedTID = record.TID ?? matchedTest?.tid ?? null;
 
-    setFieldErrors({});
+  setForm({
+    TGID: record.TGID ?? null,
+    TSGID: resolvedTSGID,
+    TID: resolvedTID,
+    groupName: record.groupName ?? "",
+    subGroupName: record.subGroupName ?? "",
+    testName: record.testName ?? "",
+    fieldType: record.fieldType ?? "",
+    componentName: record.componentName ?? "",
+    unit: record.unit ?? "",
+    tmUnitID: record.tmUnitID ?? 0,
+    priority: record.priority ?? 1,
+    toolTip: record.toolTip ?? "",
+    referenceMale: record.referenceMale ?? "",
+    referenceFemale: record.referenceFemale ?? "",
+    minValue: record.minValue ?? "",
+    maxValue: record.maxValue ?? "",
+    maxLength: record.maxLength ?? 0,
+    newUnit: "",
+  });
+  setEditingRowId(record.id);
+  setFieldErrors({});
+  setIsComponentModalOpen(true);
+}, [subGroups, testNames]);
 
-    const testMeta = getTestMeta(form.subGroupName, form.testName);
-    const rowPayload = {
-      groupName: getOptionLabel(GROUP_OPTIONS, form.groupName),
-      subGroupName: getOptionLabel(getSubGroupOptions(form.groupName), form.subGroupName),
-      tid: testNames.find((t) => t.testName === form.testName)?.tid ?? 0,
-testName: form.testName,
-      componentName,
-      fieldType: getOptionLabel(FIELD_TYPE_OPTIONS, form.fieldType),
-      unit: getOptionLabel(unitOptions, form.unit) || '—',
-      priority: form.priority ?? 1,
-      toolTip: form.toolTip.trim(),
-      referenceMale: form.referenceMale.trim(),
-      referenceFemale: form.referenceFemale.trim(),
-    };
+const handleSave = useCallback(async () => {
+  const componentName = (form.componentName || "").trim();
+  const errors = {};
+  if (!form.TGID) errors.TGID = "Group Name is required.";
+  if (!form.TID) errors.TID = "Test Name is required.";
+  if (!componentName) errors.componentName = "Component Name is required.";
 
-    if (editingRowId) {
-      await updateComponent({ id: editingRowId, ...rowPayload }).unwrap();
-      setIsComponentModalOpen(false);
-      setEditingRowId(null);
-      message.success('Component updated.');
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    return;
+  }
 
-    await createComponent(rowPayload).unwrap();
+  setFieldErrors({});
+
+  const rowPayload = {
+    TGID: form.TGID,
+    TID: form.TID,
+    componentName,
+    fieldType: form.fieldType,
+    tmUnitID: form.tmUnitID ?? 0,
+    referenceMale: (form.referenceMale || "").trim(),
+    referenceFemale: (form.referenceFemale || "").trim(),
+    priority: form.priority ?? 1,
+    toolTip: (form.toolTip || "").trim(),
+    minValue: (form.minValue || "").trim(),
+    maxValue: (form.maxValue || "").trim(),
+    maxLength: form.maxLength ?? 0,
+  };
+
+  if (editingRowId) {
+    await updateComponent({ id: editingRowId, ...rowPayload }).unwrap();
     setIsComponentModalOpen(false);
-    message.success('Component saved to the table.');
-  }, [createComponent, editingRowId, form, message, unitOptions, updateComponent]);
+    setEditingRowId(null);
+    message.success("Component updated.");
+    return;
+  }
+
+  await createComponent(rowPayload).unwrap();
+  setIsComponentModalOpen(false);
+  message.success("Component saved.");
+}, [createComponent, editingRowId, form, message, updateComponent]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
@@ -158,59 +225,39 @@ testName: form.testName,
 
 
 const groupOptions = useMemo(() => {
-  const uniqueGroups = [
-    ...new Set(rows.map((row) => row.groupName).filter(Boolean)),
-  ];
-
-  return uniqueGroups.map((group) => ({
-    label: group,
-    value: group,
+  return mainGroups.map((g) => ({
+    label: g.groupName,
+    value: g.groupName,
   }));
-}, [rows]);
+}, [mainGroups]);
 
 const subGroupOptions = useMemo(() => {
-  let filteredRows = rows;
-
-  if (filters.groupName) {
-    filteredRows = filteredRows.filter(
-      (row) => row.groupName === filters.groupName,
-    );
-  }
-
-  const uniqueSubGroups = [
-    ...new Set(filteredRows.map((row) => row.subGroupName).filter(Boolean)),
-  ];
-
-  return uniqueSubGroups.map((subGroup) => ({
-    label: subGroup,
-    value: subGroup,
-  }));
-}, [rows, filters.groupName]);
+  return subGroups
+    .filter((sg) =>
+      filters.groupName ? sg.groupName === filters.groupName : true,
+    )
+    .map((sg) => ({
+      label: sg.subGroupName,
+      value: sg.subGroupName,
+    }));
+}, [subGroups, filters.groupName]);
 
 const testNameOptions = useMemo(() => {
-  let filteredRows = rows;
-
-  if (filters.groupName) {
-    filteredRows = filteredRows.filter(
-      (row) => row.groupName === filters.groupName,
-    );
-  }
-
-  if (filters.subGroupName) {
-    filteredRows = filteredRows.filter(
-      (row) => row.subGroupName === filters.subGroupName,
-    );
-  }
-
-  const uniqueTests = [
-    ...new Set(filteredRows.map((row) => row.testName).filter(Boolean)),
-  ];
-
-  return uniqueTests.map((test) => ({
-    label: test,
-    value: test,
-  }));
-}, [rows, filters.groupName, filters.subGroupName]);
+  return testNames
+    .filter((t) => {
+      const matchGroup = filters.groupName
+        ? t.groupName === filters.groupName
+        : true;
+      const matchSubGroup = filters.subGroupName
+        ? t.subGroupName === filters.subGroupName
+        : true;
+      return matchGroup && matchSubGroup;
+    })
+    .map((t) => ({
+      label: t.testName,
+      value: t.testName,
+    }));
+}, [testNames, filters.groupName, filters.subGroupName]);
 
 const filteredRows = useMemo(() => {
   return rows.filter((row) => {
@@ -383,19 +430,23 @@ const filteredRows = useMemo(() => {
         />
       </section>
 
-      <PathologyComponentModal
-        open={isComponentModalOpen}
-        onClose={closeComponentModal}
-        title={editingRowId ? 'Edit Component' : 'Add Component'}
-        form={form}
-        unitOptions={unitOptions}
-        errors={fieldErrors}
-        isEditing={Boolean(editingRowId)}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
-        onSave={handleSave}
-        onAddUnit={handleAddUnit}
-      />
+<PathologyComponentModal
+  open={isComponentModalOpen}
+  onClose={closeComponentModal}
+  title={editingRowId ? 'Edit Component' : 'Add Component'}
+  form={form}
+  unitOptions={unitOptions}
+  fieldTypeOptions={fieldTypeOptions}
+  mainGroups={mainGroups}
+  subGroups={subGroups}
+  testNames={testNames}
+  errors={fieldErrors}
+  isEditing={Boolean(editingRowId)}
+  onPatchForm={patchForm}
+  onClearError={clearFieldError}
+  onSave={handleSave}
+  onAddUnit={handleAddUnit}
+/>
     </div>
   );
 }
