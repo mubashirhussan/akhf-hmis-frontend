@@ -232,7 +232,7 @@ export default function AssignOpdServicesPage() {
       message.success("OPD service assignment added.");
     }
 
-    closeModal();
+    // closeModal();
   }, [
     form,
     editingRowId,

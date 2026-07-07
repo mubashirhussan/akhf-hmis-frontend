@@ -19,7 +19,7 @@ export default function AuthGuard({ children }) {
   }, [isHydrated, isAuthenticated, router]);
 
   if (!isHydrated) {
-    return <LoadingSpinner description="Checking session..." />;
+    return <LoadingSpinner description="Alkhidmat Foundation" />;
   }
 
   if (!isAuthenticated) {
