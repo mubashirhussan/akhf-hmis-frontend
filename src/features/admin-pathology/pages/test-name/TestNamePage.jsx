@@ -84,9 +84,21 @@ const openComponentModal = useCallback(() => {
   }, []);
 
 const handleEditRow = useCallback((record) => {
+  const matchedGroup = mainGroups.find(
+    (g) => g.groupName === record.groupName,
+  );
+  const resolvedTGID = record.TGID ?? matchedGroup?.TGID ?? null;
+
+  const matchedSubGroup = subGroups.find(
+    (sg) =>
+      sg.subGroupName === record.subGroupName &&
+      sg.TGID === resolvedTGID,
+  );
+  const resolvedTSGID = record.TSGID ?? matchedSubGroup?.TSGID ?? null;
+
   setForm({
-    TGID: record.TGID ?? null,
-    TSGID: record.TSGID ?? null,
+    TGID: resolvedTGID,
+    TSGID: resolvedTSGID,
     groupName: record.groupName ?? "",
     subGroupName: record.subGroupName ?? "",
     testName: record.testName ?? "",
@@ -97,7 +109,8 @@ const handleEditRow = useCallback((record) => {
   setEditingRowId(record.id);
   setFieldErrors({});
   setIsComponentModalOpen(true);
-}, []);
+}, [mainGroups, subGroups]);
+
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.testName;
