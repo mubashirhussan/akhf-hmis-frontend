@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Select, Input } from "antd";
+import { App, Button, Form, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import SubGroupModal from "@/features/admin-pathology/pages/sub-group/SubGroupModal";
@@ -20,25 +20,21 @@ export default function SubGroupPage() {
   const { message } = App.useApp();
 function createEmptySubGroupForm() {
   return {
-    id: '',
     TGID: null,
-    groupName: '',
     subGroupName: '',
     fee: 0,
   };
 }
- function rowToSubGroupForm(row) {
+function rowToSubGroupForm(row) {
   return {
     TGID: row.TGID ?? null,
-    groupName: row.groupName ?? '',
     subGroupName: row.subGroupName ?? '',
     fee: row.fee ?? 0,
   };
 }
-  const [form, setForm] = useState(createEmptySubGroupForm);
+  const [form] = Form.useForm();
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const { confirmDelete } = useConfirm();
   const [filters, setFilters] = useState({
     groupName: "",
@@ -50,19 +46,6 @@ function createEmptySubGroupForm() {
   const [updateSubGroup] = useUpdateSubGroupMutation();
   const [deleteSubGroup] = useDeleteSubGroupMutation();
 
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
 
   const patchFilter = useCallback((patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
@@ -76,24 +59,22 @@ const groupOptions = useMemo(() => {
 }, [mainGroups]);
 
   const openComponentModal = useCallback(() => {
-    setForm(createEmptySubGroupForm());
+    form.setFieldsValue(createEmptySubGroupForm());
     setEditingRowId(null);
-    setFieldErrors({});
     setIsComponentModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeComponentModal = useCallback(() => {
     setIsComponentModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleEditRow = useCallback((record) => {
-    setForm(rowToSubGroupForm(record));
+    form.setFieldsValue(rowToSubGroupForm(record));
     setEditingRowId(record.id);
-    setFieldErrors({});
     setIsComponentModalOpen(true);
-  }, []);
+  }, [form]);
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.subGroupName;
@@ -107,47 +88,36 @@ const groupOptions = useMemo(() => {
     [confirmDelete, deleteSubGroup, message],
   );
   const handleSave = useCallback(async () => {
-  const TGID = form.TGID;
-  const subGroupName = (form.subGroupName || "").trim();
-const selectedGroup = mainGroups.find(
-  (g) => g.groupId === form.TGID
-);
+    try {
+      const values = await form.validateFields();
+      const selectedGroup = mainGroups.find((group) => group.TGID === values.TGID);
+      const rowPayload = {
+        TGID: values.TGID,
+        groupName: selectedGroup?.groupName,
+        subGroupName: values.subGroupName.trim(),
+        fee: values.fee ?? 0,
+      };
 
-  if (!TGID || !subGroupName) {
-    setFieldErrors({
-      TGID: !TGID ? "Group Name is required." : "",
-      subGroupName: !subGroupName ? "Sub Group Name is required." : "",
-    });
-    return;
-  }
+      if (editingRowId) {
+        await updateSubGroup({
+          id: editingRowId,
+          ...rowPayload,
+        }).unwrap();
+        setIsComponentModalOpen(false);
+        setEditingRowId(null);
+        form.resetFields();
+        message.success("Sub Group updated.");
+        return;
+      }
 
-  setFieldErrors({});
-
-  const rowPayload = {
-    TGID: form.TGID,
-    groupName: selectedGroup?.groupName,
-    subGroupName,
-    fee: form.fee ?? 0,
-  };
-    if (editingRowId) {
-      await updateSubGroup({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
+      await createSubGroup(rowPayload).unwrap();
       setIsComponentModalOpen(false);
-      setEditingRowId(null);
-
-      message.success("Sub Group updated.");
-
-      return;
+      form.resetFields();
+      message.success("Sub Group created.");
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    await createSubGroup(rowPayload).unwrap();
-
-    setIsComponentModalOpen(false);
-
-    message.success("Sub Group created.");
-  }, [form, editingRowId, mainGroups, createSubGroup, updateSubGroup, message]);;
+  }, [form, editingRowId, mainGroups, createSubGroup, updateSubGroup, message]);
 
   const filteredRows = useMemo(() => {
     const group = filters.groupName;
@@ -284,9 +254,6 @@ const selectedGroup = mainGroups.find(
         onClose={closeComponentModal}
         title={editingRowId ? "Edit Sub Group" : "Add Sub Group"}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

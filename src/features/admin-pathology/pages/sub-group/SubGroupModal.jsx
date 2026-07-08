@@ -1,20 +1,32 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import SubGroupForm from '@/features/admin-pathology/pages/sub-group/SubGroupForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import { useGetMainGroupsQuery } from '@/features/admin-pathology/api/pathologyApi';
+import { SUB_GROUP_FIELDS } from '@/features/admin-pathology/pages/sub-group/sub-group-fields';
 
 export default function SubGroupModal({
   open,
   onClose,
   title = 'Add Sub Group',
-
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
+  const { data: mainGroups = [] } = useGetMainGroupsQuery();
+
+  const fields = useMemo(() => {
+    const options = mainGroups.map((group) => ({
+      label: group.groupName,
+      value: group.TGID,
+    }));
+
+    return SUB_GROUP_FIELDS.map((field) =>
+      field.name === 'TGID' ? { ...field, options } : field,
+    );
+  }, [mainGroups]);
+
   return (
     <AppModal
       open={open}
@@ -35,12 +47,9 @@ export default function SubGroupModal({
         </>
       }
     >
-      <SubGroupForm
-        form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+      <Form form={form} layout="vertical" requiredMark preserve={false}>
+        <DynamicForm fields={fields} className="sub-group-form-grid" />
+      </Form>
     </AppModal>
   );
 }

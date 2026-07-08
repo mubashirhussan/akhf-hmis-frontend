@@ -1,10 +1,6 @@
-.sub-group-form-grid.form-grid {
-  row-gap: 14px;
-  column-gap: 16px;
-}
-
 .sub-group-form-grid .field-control,
 .sub-group-form-grid .ant-select,
+.sub-group-form-grid .ant-input-number,
 .sub-group-form-grid .sub-group-priority-input {
   width: 100%;
 }
