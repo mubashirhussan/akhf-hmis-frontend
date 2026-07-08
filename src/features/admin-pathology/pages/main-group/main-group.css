@@ -8,6 +8,7 @@
   width: 100%;
 }
 
+.main-group-form-grid .main-group-fee-input.ant-input-number,
 .main-group-form-grid .main-group-priority-input.ant-input-number {
   width: 100%;
 }

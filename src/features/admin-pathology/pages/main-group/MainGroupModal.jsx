@@ -1,17 +1,15 @@
-'use client';
+"use client";
 
-import { Button } from 'antd';
-import AppModal from '@/components/ui/AppModal';
-import MainGroupForm from '@/features/admin-pathology/pages/main-group/MainGroupForm';
+import { Button, Form } from "antd";
+import AppModal from "@/components/ui/AppModal";
+import DynamicForm from "@/components/form/DynamicForm";
+import { MAIN_GROUP_FIELDS } from "@/features/admin-pathology/pages/main-group/main-group-fields";
 
 export default function MainGroupModal({
   open,
   onClose,
-  title = 'Add Test Group Fee',
+  title = "Add Main Group",
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
   return (
@@ -28,18 +26,19 @@ export default function MainGroupModal({
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" className="main-group-save-btn" onClick={onSave}>
+          <Button
+            type="primary"
+            className="main-group-save-btn"
+            onClick={onSave}
+          >
             Save
           </Button>
         </>
       }
     >
-      <MainGroupForm
-        form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+      <Form form={form} layout="vertical" requiredMark preserve={false}>
+        <DynamicForm fields={MAIN_GROUP_FIELDS} className="main-group-form-grid" />
+      </Form>
     </AppModal>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Input } from "antd";
+import { App, Button, Form, Tooltip, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import MainGroupModal from "@/features/admin-pathology/pages/main-group/MainGroupModal";
@@ -32,10 +32,9 @@ const rowToMainGroupForm = (row) => {
   };
 }
 
-  const [form, setForm] = useState(createEmptyMainGroupForm);
+  const [form] = Form.useForm();
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const { confirmDelete } = useConfirm();
 
@@ -45,38 +44,23 @@ const rowToMainGroupForm = (row) => {
   const [updateMainGroup] = useUpdateMainGroupMutation();
   const [deleteMainGroup] = useDeleteMainGroupMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openComponentModal = useCallback(() => {
-    setForm(createEmptyMainGroupForm());
+    form.setFieldsValue(createEmptyMainGroupForm());
     setEditingRowId(null);
-    setFieldErrors({});
     setIsComponentModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeComponentModal = useCallback(() => {
     setIsComponentModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleEditRow = useCallback((record) => {
-    setForm(rowToMainGroupForm(record));
+    form.setFieldsValue(rowToMainGroupForm(record));
     setEditingRowId(record.id);
-    setFieldErrors({});
     setIsComponentModalOpen(true);
-  }, []);
+  }, [form]);
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.groupName;
@@ -89,41 +73,36 @@ const rowToMainGroupForm = (row) => {
   );
 
   const handleSave = useCallback(async () => {
-    const groupName = form.groupName.trim();
+    try {
+      const values = await form.validateFields();
+      const rowPayload = {
+        groupName: values.groupName.trim(),
+        fee: values.fee ?? 0,
+      };
 
-    if (!groupName) {
-      setFieldErrors({
-        groupName: "Group Name is required.",
-      });
-      return;
-    }
+      if (editingRowId) {
+        await updateMainGroup({
+          id: editingRowId,
+          ...rowPayload,
+        }).unwrap();
 
-    setFieldErrors({});
+        setIsComponentModalOpen(false);
+        setEditingRowId(null);
+        form.resetFields();
 
-    const rowPayload = {
-      groupName,
-      fee: form.fee ?? 0,
-    };
+        message.success("Main Group updated.");
+        return;
+      }
 
-    if (editingRowId) {
-      await updateMainGroup({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
+      await createMainGroup(rowPayload).unwrap();
 
       setIsComponentModalOpen(false);
-      setEditingRowId(null);
+      form.resetFields();
 
-      message.success("Main Group updated.");
-
-      return;
+      message.success("Main Group created.");
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    await createMainGroup(rowPayload).unwrap();
-
-    setIsComponentModalOpen(false);
-
-    message.success("Main Group created.");
   }, [form, editingRowId, createMainGroup, updateMainGroup, message]);
 
   const filteredRows = useMemo(() => {
@@ -232,9 +211,6 @@ const rowToMainGroupForm = (row) => {
         onClose={closeComponentModal}
         title={editingRowId ? "Edit Main Group" : "Add Main Group"}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>
