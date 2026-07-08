@@ -5,18 +5,12 @@ import AppModal from "@/components/ui/AppModal";
 import DynamicForm from "@/components/form/DynamicForm";
 import { MAIN_GROUP_FIELDS } from "@/features/admin-pathology/pages/main-group/main-group-fields";
 
-export default function MainGroupModal({
-  open,
-  onClose,
-  title = "Add Main Group",
-  form,
-  onSave,
-}) {
+export default function MainGroupAddModal({ open, onClose, form, onSave }) {
   return (
     <AppModal
       open={open}
       onClose={onClose}
-      title={title}
+      title="Add Main Group"
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}

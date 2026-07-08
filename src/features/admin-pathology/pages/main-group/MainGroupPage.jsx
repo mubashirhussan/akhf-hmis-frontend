@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { App, Button, Form, Tooltip, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
-import MainGroupModal from "@/features/admin-pathology/pages/main-group/MainGroupModal";
+import MainGroupAddModal from "@/features/admin-pathology/pages/main-group/MainGroupAddModal";
+import MainGroupEditModal from "@/features/admin-pathology/pages/main-group/MainGroupEditModal";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetMainGroupsQuery,
@@ -19,22 +20,25 @@ export default function MainGroupPage() {
   const { message } = App.useApp();
 
   const createEmptyMainGroupForm = () => {
-  return {
-    groupName: "",
-    fee: 0,
+    return {
+      groupName: "",
+      fee: 0,
+    };
   };
-}
 
-const rowToMainGroupForm = (row) => {
-  return {
-    groupName: row.groupName ?? "",
-    fee: row.fee ?? 0,
+  const rowToMainGroupForm = (row) => {
+    return {
+      groupName: row.groupName ?? "",
+      fee: row.fee ?? 0,
+    };
   };
-}
 
-  const [form] = Form.useForm();
-  const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
+  const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
+  const [editInitialValues, setEditInitialValues] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const { confirmDelete } = useConfirm();
@@ -45,23 +49,29 @@ const rowToMainGroupForm = (row) => {
   const [updateMainGroup] = useUpdateMainGroupMutation();
   const [deleteMainGroup] = useDeleteMainGroupMutation();
 
-  const openComponentModal = useCallback(() => {
-    form.setFieldsValue(createEmptyMainGroupForm());
-    setEditingRowId(null);
-    setIsComponentModalOpen(true);
-  }, [form]);
+  const openAddModal = useCallback(() => {
+    addForm.setFieldsValue(createEmptyMainGroupForm());
+    setIsAddModalOpen(true);
+  }, [addForm]);
 
-  const closeComponentModal = useCallback(() => {
-    setIsComponentModalOpen(false);
-    setEditingRowId(null);
-    form.resetFields();
-  }, [form]);
+  const closeAddModal = useCallback(() => {
+    setIsAddModalOpen(false);
+    addForm.resetFields();
+  }, [addForm]);
 
-  const handleEditRow = useCallback((record) => {
-    form.setFieldsValue(rowToMainGroupForm(record));
+  const openEditModal = useCallback((record) => {
+    setEditInitialValues(rowToMainGroupForm(record));
     setEditingRowId(record.id);
-    setIsComponentModalOpen(true);
-  }, [form]);
+    setIsEditModalOpen(true);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setIsEditModalOpen(false);
+    setEditingRowId(null);
+    setEditInitialValues(null);
+    editForm.resetFields();
+  }, [editForm]);
+
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.groupName;
@@ -73,38 +83,47 @@ const rowToMainGroupForm = (row) => {
     [confirmDelete, deleteMainGroup, message],
   );
 
-  const handleSave = useCallback(async () => {
+  const handleAddSave = useCallback(async () => {
     try {
-      const values = await form.validateFields();
+      const values = await addForm.validateFields();
       const rowPayload = {
         groupName: values.groupName.trim(),
         fee: values.fee ?? 0,
       };
 
-      if (editingRowId) {
-        await updateMainGroup({
-          id: editingRowId,
-          ...rowPayload,
-        }).unwrap();
-
-        setIsComponentModalOpen(false);
-        setEditingRowId(null);
-        form.resetFields();
-
-        message.success("Main Group updated.");
-        return;
-      }
-
       await createMainGroup(rowPayload).unwrap();
 
-      setIsComponentModalOpen(false);
-      form.resetFields();
+      setIsAddModalOpen(false);
+      addForm.resetFields();
 
       message.success("Main Group created.");
     } catch {
       // validation errors are shown by antd Form
     }
-  }, [form, editingRowId, createMainGroup, updateMainGroup, message]);
+  }, [addForm, createMainGroup, message]);
+
+  const handleEditSave = useCallback(async () => {
+    try {
+      const values = await editForm.validateFields();
+      const rowPayload = {
+        groupName: values.groupName.trim(),
+        fee: values.fee ?? 0,
+      };
+
+      await updateMainGroup({
+        id: editingRowId,
+        ...rowPayload,
+      }).unwrap();
+
+      setIsEditModalOpen(false);
+      setEditingRowId(null);
+      editForm.resetFields();
+
+      message.success("Main Group updated.");
+    } catch {
+      // validation errors are shown by antd Form
+    }
+  }, [editForm, editingRowId, updateMainGroup, message]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -116,12 +135,12 @@ const rowToMainGroupForm = (row) => {
 
   const columns = useMemo(
     () => [
-{
-  title: "Test Group ID",
-  dataIndex: "TGID",
-  key: "TGID",
-  width: 140,
-},
+      {
+        title: "Test Group ID",
+        dataIndex: "TGID",
+        key: "TGID",
+        width: 140,
+      },
       {
         title: "Test Group",
         dataIndex: "groupName",
@@ -148,7 +167,7 @@ const rowToMainGroupForm = (row) => {
                     className={ACTION_ICON_CLASS}
                   />
                 }
-                onClick={() => handleEditRow(record)}
+                onClick={() => openEditModal(record)}
               />
             </Tooltip>
             <Tooltip title="Delete">
@@ -169,7 +188,7 @@ const rowToMainGroupForm = (row) => {
         ),
       },
     ],
-    [handleEditRow, handleDeleteRow],
+    [openEditModal, handleDeleteRow],
   );
 
   return (
@@ -189,7 +208,7 @@ const rowToMainGroupForm = (row) => {
           style={{ width: 260 }}
         />
 
-        <Button type="primary" onClick={openComponentModal}>
+        <Button type="primary" onClick={openAddModal}>
           Add Main Group
         </Button>
       </div>
@@ -213,12 +232,19 @@ const rowToMainGroupForm = (row) => {
         />
       </section>
 
-      <MainGroupModal
-        open={isComponentModalOpen}
-        onClose={closeComponentModal}
-        title={editingRowId ? "Edit Main Group" : "Add Main Group"}
-        form={form}
-        onSave={handleSave}
+      <MainGroupAddModal
+        open={isAddModalOpen}
+        onClose={closeAddModal}
+        form={addForm}
+        onSave={handleAddSave}
+      />
+
+      <MainGroupEditModal
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        form={editForm}
+        onSave={handleEditSave}
+        initialValues={editInitialValues}
       />
     </div>
   );
