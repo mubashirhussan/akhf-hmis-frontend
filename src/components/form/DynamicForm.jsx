@@ -115,6 +115,9 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
             );
             break;
           }
+          case 'custom':
+            control = controlProps.render ? controlProps.render() : null;
+            break;
           default:
             control = <Input className={cls} {...controlProps} />;
         }
