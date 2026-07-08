@@ -7,13 +7,7 @@ import DynamicForm from '@/components/form/DynamicForm';
 import { useGetMainGroupsQuery } from '@/features/admin-pathology/api/pathologyApi';
 import { SUB_GROUP_FIELDS } from '@/features/admin-pathology/pages/sub-group/sub-group-fields';
 
-export default function SubGroupModal({
-  open,
-  onClose,
-  title = 'Add Sub Group',
-  form,
-  onSave,
-}) {
+export default function SubGroupEditModal({ open, onClose, form, onSave, record }) {
   const { data: mainGroups = [] } = useGetMainGroupsQuery();
 
   const fields = useMemo(() => {
@@ -27,17 +21,27 @@ export default function SubGroupModal({
     );
   }, [mainGroups]);
 
+  const loadRecord = (opened) => {
+    if (!opened || !record) return;
+    form.setFieldsValue({
+      TGID: record.TGID ?? null,
+      subGroupName: record.subGroupName ?? '',
+      fee: record.fee ?? 0,
+    });
+  };
+
   return (
     <AppModal
       open={open}
       onClose={onClose}
-      title={title}
+      title="Edit Sub Group"
       centered={false}
       mask={{ closable: false }}
       style={{ top: 20 }}
       width={480}
       className="sub-group-modal"
       rootClassName="sub-group-modal-root"
+      afterOpenChange={loadRecord}
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>

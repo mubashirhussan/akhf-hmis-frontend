@@ -7,7 +7,7 @@ import { MAIN_GROUP_FIELDS } from "@/features/admin-pathology/pages/main-group/m
 
 export default function MainGroupEditModal({ open, onClose, form, onSave, record }) {
   const loadRecord = (opened) => {
-    if (!opened || !record) return;
+    if (!opened) return;
     form.setFieldsValue({
       groupName: record.groupName ?? "",
       fee: record.fee ?? 0,
