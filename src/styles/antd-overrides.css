@@ -165,6 +165,22 @@
   }
 }
 
+.dynamic-form .ant-form-item-label > label.ant-form-item-required {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dynamic-form .ant-form-item-label > label.ant-form-item-required::before {
+  order: 1;
+  margin-inline-start: 2px;
+  margin-inline-end: 0;
+}
+
+.dynamic-form .ant-form-item .ant-form-item-label > label::after {
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+}
+
 .ant-table-thead > tr > th {
   background: var(--data-table-header-bg) !important;
   color: var(--data-table-header-color) !important;

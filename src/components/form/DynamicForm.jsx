@@ -18,7 +18,7 @@ const cls = FIELD_CONTROL_CLASS;
 
 export default function DynamicForm({ fields = [], gutter = [16, 12], className = '' }) {
   return (
-    <Row gutter={gutter} className={className}>
+    <Row gutter={gutter} className={['dynamic-form', className].filter(Boolean).join(' ')}>
       {fields.map((field) => {
         const {
           type = 'text',
