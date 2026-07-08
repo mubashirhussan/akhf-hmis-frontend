@@ -5,13 +5,15 @@ import AppModal from "@/components/ui/AppModal";
 import DynamicForm from "@/components/form/DynamicForm";
 import { MAIN_GROUP_FIELDS } from "@/features/admin-pathology/pages/main-group/main-group-fields";
 
-export default function MainGroupEditModal({
-  open,
-  onClose,
-  form,
-  onSave,
-  initialValues,
-}) {
+export default function MainGroupEditModal({ open, onClose, form, onSave, record }) {
+  const loadRecord = (opened) => {
+    if (!opened || !record) return;
+    form.setFieldsValue({
+      groupName: record.groupName ?? "",
+      fee: record.fee ?? 0,
+    });
+  };
+
   return (
     <AppModal
       open={open}
@@ -23,6 +25,7 @@ export default function MainGroupEditModal({
       width={480}
       className="main-group-modal"
       rootClassName="main-group-modal-root"
+      afterOpenChange={loadRecord}
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
@@ -36,13 +39,7 @@ export default function MainGroupEditModal({
         </>
       }
     >
-      <Form
-        form={form}
-        layout="vertical"
-        requiredMark
-        preserve={false}
-        initialValues={initialValues}
-      >
+      <Form form={form} layout="vertical" requiredMark preserve={false}>
         <DynamicForm
           fields={MAIN_GROUP_FIELDS}
           className="main-group-form-grid"

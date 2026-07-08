@@ -47,17 +47,3 @@ export function updateMainGroupRow(id, rowPayload) {
 export function deleteMainGroupRow(id) {
   groupRows = groupRows.filter((row) => row.id !== id);
 }
-
-export function createEmptyMainGroupForm() {
-  return {
-    groupName: '',
-    fee: 0,
-  };
-}
-
-export function rowToMainGroupForm(row) {
-  return {
-    groupName: row.groupName ?? '',
-    fee: row.fee ?? 0,
-  };
-}

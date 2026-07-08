@@ -3,7 +3,10 @@
 import { Button, Form } from "antd";
 import AppModal from "@/components/ui/AppModal";
 import DynamicForm from "@/components/form/DynamicForm";
-import { MAIN_GROUP_FIELDS } from "@/features/admin-pathology/pages/main-group/main-group-fields";
+import {
+  MAIN_GROUP_FIELDS,
+  MAIN_GROUP_INITIAL_VALUES,
+} from "@/features/admin-pathology/pages/main-group/main-group-fields";
 
 export default function MainGroupAddModal({ open, onClose, form, onSave }) {
   return (
@@ -30,7 +33,13 @@ export default function MainGroupAddModal({ open, onClose, form, onSave }) {
         </>
       }
     >
-      <Form form={form} layout="vertical" requiredMark preserve={false}>
+      <Form
+        form={form}
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={MAIN_GROUP_INITIAL_VALUES}
+      >
         <DynamicForm fields={MAIN_GROUP_FIELDS} className="main-group-form-grid" />
       </Form>
     </AppModal>

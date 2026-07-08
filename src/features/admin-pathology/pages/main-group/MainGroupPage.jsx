@@ -18,41 +18,18 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function MainGroupPage() {
   const { message } = App.useApp();
-
-  const createEmptyMainGroupForm = () => {
-    return {
-      groupName: "",
-      fee: 0,
-    };
-  };
-
-  const rowToMainGroupForm = (row) => {
-    return {
-      groupName: row.groupName ?? "",
-      fee: row.fee ?? 0,
-    };
-  };
-
   const [addForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [editInitialValues, setEditInitialValues] = useState(null);
+  const [editingRow, setEditingRow] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const { confirmDelete } = useConfirm();
-
   const { data: rows = [], isLoading } = useGetMainGroupsQuery();
-
   const [createMainGroup] = useCreateMainGroupMutation();
   const [updateMainGroup] = useUpdateMainGroupMutation();
   const [deleteMainGroup] = useDeleteMainGroupMutation();
-
-  const openAddModal = useCallback(() => {
-    addForm.setFieldsValue(createEmptyMainGroupForm());
-    setIsAddModalOpen(true);
-  }, [addForm]);
 
   const closeAddModal = useCallback(() => {
     setIsAddModalOpen(false);
@@ -60,15 +37,13 @@ export default function MainGroupPage() {
   }, [addForm]);
 
   const openEditModal = useCallback((record) => {
-    setEditInitialValues(rowToMainGroupForm(record));
-    setEditingRowId(record.id);
+    setEditingRow(record);
     setIsEditModalOpen(true);
   }, []);
 
   const closeEditModal = useCallback(() => {
     setIsEditModalOpen(false);
-    setEditingRowId(null);
-    setEditInitialValues(null);
+    setEditingRow(null);
     editForm.resetFields();
   }, [editForm]);
 
@@ -111,19 +86,19 @@ export default function MainGroupPage() {
       };
 
       await updateMainGroup({
-        id: editingRowId,
+        id: editingRow.id,
         ...rowPayload,
       }).unwrap();
 
       setIsEditModalOpen(false);
-      setEditingRowId(null);
+      setEditingRow(null);
       editForm.resetFields();
 
       message.success("Main Group updated.");
     } catch {
       // validation errors are shown by antd Form
     }
-  }, [editForm, editingRowId, updateMainGroup, message]);
+  }, [editForm, editingRow, updateMainGroup, message]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -208,7 +183,7 @@ export default function MainGroupPage() {
           style={{ width: 260 }}
         />
 
-        <Button type="primary" onClick={openAddModal}>
+        <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
           Add Main Group
         </Button>
       </div>
@@ -244,7 +219,7 @@ export default function MainGroupPage() {
         onClose={closeEditModal}
         form={editForm}
         onSave={handleEditSave}
-        initialValues={editInitialValues}
+        record={editingRow}
       />
     </div>
   );

@@ -1,3 +1,8 @@
+export const MAIN_GROUP_INITIAL_VALUES = {
+  groupName: "",
+  fee: 0,
+};
+
 export const MAIN_GROUP_FIELDS = [
   {
     type: "text",
