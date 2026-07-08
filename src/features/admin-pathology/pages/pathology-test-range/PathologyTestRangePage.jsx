@@ -1,14 +1,10 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Space, Tooltip, Select, Input } from "antd";
+import { App, Button, Form, Space, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
-import {
-  createEmptyPathologyTestRangeForm,
-  rowToPathologyTestRangeForm,
-  getOptionLabel,
-} from "@/features/admin-pathology/api/mock-pathology-test-range";
+import { getOptionLabel } from "@/features/admin-pathology/api/mock-pathology-test-range";
 import {
   useAddPathologyConditionMutation,
   useCreatePathologyTestRangeMutation,
@@ -17,7 +13,8 @@ import {
   useGetPathologyTestRangesQuery,
   useUpdatePathologyTestRangeMutation,
 } from "@/features/admin-pathology/api/pathologyApi";
-import PathologyTestRangeModal from "@/features/admin-pathology/pages/pathology-test-range/PathologyTestRangeModal";
+import PathologyTestRangeAddModal from "@/features/admin-pathology/pages/pathology-test-range/PathologyTestRangeAddModal";
+import PathologyTestRangeEditModal from "@/features/admin-pathology/pages/pathology-test-range/PathologyTestRangeEditModal";
 import ConversionRateModal from "@/features/admin-pathology/pages/pathology-test-range/ConversionRateModal";
 import { useConfirm } from "@/hooks/useConfirm";
 
@@ -36,59 +33,36 @@ export default function PathologyTestRangePage() {
   const [deleteTestRange] = useDeletePathologyTestRangeMutation();
   const [addCondition] = useAddPathologyConditionMutation();
 
-  const [form, setForm] = useState(createEmptyPathologyTestRangeForm);
-  const [isTestRangeModalOpen, setIsTestRangeModalOpen] = useState(false);
-  const [isConversionRateModalOpen, setIsConversionRateModalOpen] =
-    useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-const [filters, setFilters] = useState({
-  testName: "",
-  componentName: "",
-});
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
+  const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConversionRateModalOpen, setIsConversionRateModalOpen] = useState(false);
+  const [editingRow, setEditingRow] = useState(null);
+  const [filters, setFilters] = useState({
+    testName: "",
+    componentName: "",
+  });
 
   const patchFilter = useCallback((patch) => {
-  setFilters((prev) => ({
-    ...prev,
-    ...patch,
-  }));
-}, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
+    setFilters((prev) => ({ ...prev, ...patch }));
   }, []);
 
-  const openTestRangeModal = useCallback(() => {
-    setForm(createEmptyPathologyTestRangeForm());
-    setEditingRowId(null);
-    setFieldErrors({});
-    setIsTestRangeModalOpen(true);
+  const closeAddModal = useCallback(() => {
+    setIsAddModalOpen(false);
+    addForm.resetFields();
+  }, [addForm]);
+
+  const openEditModal = useCallback((record) => {
+    setEditingRow(record);
+    setIsEditModalOpen(true);
   }, []);
 
-  const closeTestRangeModal = useCallback(() => {
-    setIsTestRangeModalOpen(false);
-    setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
-
-  const handleEditRow = useCallback(
-    (record) => {
-      setForm(rowToPathologyTestRangeForm(record, unitOptions));
-      setEditingRowId(record.id);
-      setFieldErrors({});
-      setIsTestRangeModalOpen(true);
-    },
-    [unitOptions],
-  );
+  const closeEditModal = useCallback(() => {
+    setIsEditModalOpen(false);
+    setEditingRow(null);
+    editForm.resetFields();
+  }, [editForm]);
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -105,44 +79,58 @@ const [filters, setFilters] = useState({
     [confirmDelete, deleteTestRange, message],
   );
 
-const handleSave = useCallback(async () => {
-    if (!form.testComponent) {
-      setFieldErrors({ testComponent: "Test Component is required." });
-      return;
+const genderIdMap = { male: 1, female: 2, both: 77, child: 3 };
+
+  const handleAddSave = useCallback(async () => {
+    try {
+      const values = await addForm.validateFields();
+      const rowPayload = {
+        tcId: Number(values.testComponent) || 0,
+        startValue: (values.startValue ?? '').trim() || 0,
+        endValue: (values.endValue ?? '').trim() || 0,
+        reportValues: (values.reportValues ?? '').trim() || 0,
+        genderId: genderIdMap[values.gender?.toLowerCase()] ?? 77,
+        minAgeVal: Number(values.ageStart) || 0,
+        maxAgeVal: Number(values.ageEnd) || 0,
+        ageUnit: values.ageStartUnit ?? 'Y',
+      };
+
+      await createTestRange(rowPayload).unwrap();
+
+      setIsAddModalOpen(false);
+      addForm.resetFields();
+
+      message.success("Test range saved to the table.");
+    } catch {
+      // validation errors are shown by antd Form
     }
+  }, [addForm, createTestRange, message]);
 
-    setFieldErrors({});
+  const handleEditSave = useCallback(async () => {
+    try {
+      const values = await editForm.validateFields();
+      const rowPayload = {
+        tcId: Number(values.testComponent) || 0,
+        startValue: (values.startValue ?? '').trim() || 0,
+        endValue: (values.endValue ?? '').trim() || 0,
+        reportValues: (values.reportValues ?? '').trim() || 0,
+        genderId: genderIdMap[values.gender?.toLowerCase()] ?? 77,
+        minAgeVal: Number(values.ageStart) || 0,
+        maxAgeVal: Number(values.ageEnd) || 0,
+        ageUnit: values.ageStartUnit ?? 'Y',
+      };
 
-    const genderIdMap = { male: 1, female: 2, both: 77, child: 3 };
+      await updateTestRange({ id: editingRow.id, ...rowPayload }).unwrap();
 
-    const rowPayload = {
-      tcId: Number(form.testComponent) || 0,
-      startValue: form.startValue.trim() || 0,
-      endValue: form.endValue.trim() || 0,
-      reportValues: form.reportValues.trim() || 0,
-      genderId: genderIdMap[form.gender?.toLowerCase()] ?? 77,
-      minAgeVal: Number(form.ageStart) || 0,
-      maxAgeVal: Number(form.ageEnd) || 0,
-      ageUnit: form.ageStartUnit ?? "Y",
-    };
-    if (editingRowId) {
-      await updateTestRange({ id: editingRowId, ...rowPayload }).unwrap();
-      setIsTestRangeModalOpen(false);
-      setEditingRowId(null);
+      setIsEditModalOpen(false);
+      setEditingRow(null);
+      editForm.resetFields();
+
       message.success("Test range updated.");
-      return;
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    await createTestRange(rowPayload).unwrap();
-    setIsTestRangeModalOpen(false);
-    message.success("Test range saved to the table.");
-  }, [
-    createTestRange,
-    editingRowId,
-    form,
-    message,
-    updateTestRange,
-  ]);
+  }, [editForm, editingRow, updateTestRange, message]);
 
   const handleExport = useCallback(() => {
     if (rows.length === 0) {
@@ -153,7 +141,9 @@ const handleSave = useCallback(async () => {
   }, [message, rows.length]);
 
   const handleAddCondition = useCallback(async () => {
-    const label = form.newCondition.trim();
+    const activeForm = isAddModalOpen ? addForm : editForm;
+    const label = (activeForm.getFieldValue('newCondition') ?? '').trim();
+
     if (!label) {
       message.error("Enter a condition name first.");
       return;
@@ -167,15 +157,15 @@ const handleSave = useCallback(async () => {
     );
 
     if (existing) {
-      patchForm({ condition: existing.value, newCondition: "" });
+      activeForm.setFieldsValue({ condition: existing.value, newCondition: "" });
       message.info(`Condition "${existing.label}" already exists.`);
       return;
     }
 
     await addCondition({ value, label }).unwrap();
-    patchForm({ condition: value, newCondition: "" });
+    activeForm.setFieldsValue({ condition: value, newCondition: "" });
     message.success(`Condition "${label}" added.`);
-  }, [addCondition, conditionOptions, form.newCondition, message, patchForm]);
+  }, [addForm, editForm, isAddModalOpen, addCondition, conditionOptions, message]);
 
   const handleAddConversionRate = useCallback(() => {
     setIsConversionRateModalOpen(true);
@@ -185,10 +175,11 @@ const handleSave = useCallback(async () => {
     setIsConversionRateModalOpen(false);
   }, []);
 
-  const conversionRateDefaultUnit = useMemo(
-    () => getOptionLabel(unitOptions, form.unit) || "Null",
-    [form.unit, unitOptions],
-  );
+  const conversionRateDefaultUnit = useMemo(() => {
+    const activeForm = isAddModalOpen ? addForm : editForm;
+    const unit = activeForm.getFieldValue('unit');
+    return getOptionLabel(unitOptions, unit) || "Null";
+  }, [isAddModalOpen, addForm, editForm, unitOptions]);
 
   const testNameOptions = useMemo(() => {
   const uniqueTests = [
@@ -262,7 +253,7 @@ const filteredRows = useMemo(() => {
                     className={ACTION_ICON_CLASS}
                   />
                 }
-                onClick={() => handleEditRow(record)}
+                onClick={() => openEditModal(record)}
               />
             </Tooltip>
             <Tooltip title="Delete">
@@ -326,7 +317,7 @@ const filteredRows = useMemo(() => {
   </div>
 
   <div style={{ display: "flex", gap: 10 }}>
-    <Button type="primary" onClick={openTestRangeModal}>
+    <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
       Add Test Range
     </Button>
 
@@ -359,18 +350,21 @@ const filteredRows = useMemo(() => {
         />
       </section>
 
-      <PathologyTestRangeModal
-        open={isTestRangeModalOpen}
-        onClose={closeTestRangeModal}
-        title={editingRowId ? "Edit Test Range" : "Add Test Range"}
-        form={form}
-        unitOptions={unitOptions}
-        conditionOptions={conditionOptions}
-        errors={fieldErrors}
-        isEditing={Boolean(editingRowId)}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
-        onSave={handleSave}
+      <PathologyTestRangeAddModal
+        open={isAddModalOpen}
+        onClose={closeAddModal}
+        form={addForm}
+        onSave={handleAddSave}
+        onAddCondition={handleAddCondition}
+        onAddConversionRate={handleAddConversionRate}
+      />
+
+      <PathologyTestRangeEditModal
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        form={editForm}
+        onSave={handleEditSave}
+        record={editingRow}
         onAddCondition={handleAddCondition}
         onAddConversionRate={handleAddConversionRate}
       />

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Button,
   Checkbox,
   Col,
   DatePicker,
@@ -13,6 +14,7 @@ import {
   Switch,
 } from 'antd';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import AgeUnitField from '@/components/ui/AgeUnitField';
 
 const cls = FIELD_CONTROL_CLASS;
 
@@ -65,6 +67,54 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           case 'password':
             control = <Input.Password className={cls} {...controlProps} />;
             break;
+          case 'age': {
+            const { onChange: ageOnChange, ...ageProps } = controlProps;
+            control = (
+              <AgeUnitField
+                embedded
+                {...ageProps}
+                onChange={ageOnChange}
+              />
+            );
+            break;
+          }
+          case 'condition': {
+            const { options: conditionOptions, onAdd, newConditionName, ...conditionRest } = controlProps;
+            control = (
+              <div className="pathology-test-range-condition">
+                <Select className={cls} options={conditionOptions} {...conditionRest} />
+                <div className="pathology-test-range-new-condition">
+                  <Input
+                    className={cls}
+                    value={newConditionName}
+                    placeholder="Add New condition"
+                    autoComplete="off"
+                    onChange={(e) => conditionRest.onNewConditionChange?.(e.target.value)}
+                  />
+                  <Button type="link" className="pathology-test-range-new-link" onClick={onAdd}>
+                    Add
+                  </Button>
+                </div>
+              </div>
+            );
+            break;
+          }
+          case 'unit': {
+            const { options: unitOptions, onAddConversionRate, ...unitRest } = controlProps;
+            control = (
+              <div className="pathology-test-range-unit">
+                <Select className={cls} options={unitOptions} placeholder="Select unit" allowClear {...unitRest} />
+                <Button
+                  type="link"
+                  className="pathology-test-range-conversion-link text-left"
+                  onClick={onAddConversionRate}
+                >
+                  Add Conversion Rate
+                </Button>
+              </div>
+            );
+            break;
+          }
           default:
             control = <Input className={cls} {...controlProps} />;
         }
