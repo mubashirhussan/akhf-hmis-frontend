@@ -36,6 +36,7 @@ const rowToMainGroupForm = (row) => {
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const { confirmDelete } = useConfirm();
 
   const { data: rows = [], isLoading } = useGetMainGroupsQuery();
@@ -180,7 +181,10 @@ const rowToMainGroupForm = (row) => {
         <Input
           placeholder="Filter by Main Group"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPagination((prev) => ({ ...prev, current: 1 }));
+          }}
           allowClear
           style={{ width: 260 }}
         />
@@ -198,10 +202,13 @@ const rowToMainGroupForm = (row) => {
           loading={isLoading}
           columnAlign="left"
           pagination={{
-            pageSize: 10,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>
