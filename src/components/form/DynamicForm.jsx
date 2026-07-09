@@ -12,6 +12,7 @@ import {
   Row,
   Select,
   Switch,
+  TimePicker,
 } from 'antd';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import AgeUnitField from '@/components/ui/AgeUnitField';
@@ -50,6 +51,11 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           case 'date':
             control = (
               <DatePicker className={cls} style={{ width: '100%' }} {...controlProps} />
+            );
+            break;
+          case 'time':
+            control = (
+              <TimePicker className={cls} style={{ width: '100%' }} format="HH:mm" {...controlProps} />
             );
             break;
           case 'textarea':
