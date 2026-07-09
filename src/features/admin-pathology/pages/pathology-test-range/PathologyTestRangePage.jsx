@@ -29,6 +29,7 @@ export default function PathologyTestRangePage() {
   const unitOptions = lookups?.unitOptions ?? [];
   const conditionOptions = lookups?.conditionOptions ?? [];
   const [createTestRange] = useCreatePathologyTestRangeMutation();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [updateTestRange] = useUpdatePathologyTestRangeMutation();
   const [deleteTestRange] = useDeletePathologyTestRangeMutation();
   const [addCondition] = useAddPathologyConditionMutation();
@@ -342,10 +343,13 @@ const filteredRows = useMemo(() => {
           loading={isLoading}
           columnAlign="left"
           pagination={{
-            pageSize: 20,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["20", "50", "100"],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>

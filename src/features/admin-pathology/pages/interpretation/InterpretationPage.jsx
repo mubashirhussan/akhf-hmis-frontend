@@ -37,6 +37,7 @@ export default function InterpretationPage() {
   const [createInterpretation] = useCreateInterpretationMutation();
   const [updateInterpretation] = useUpdateInterpretationMutation();
   const [deleteInterpretation] = useDeleteInterpretationMutation();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -245,11 +246,14 @@ export default function InterpretationPage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-          pagination={{
-            pageSize: 20,
+           pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["20", "50", "100"],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>

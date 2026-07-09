@@ -42,6 +42,7 @@ export default function PathologyComponentPage() {
   const [updateComponent] = useUpdatePathologyComponentMutation();
   const [deleteComponent] = useDeletePathologyComponentMutation();
   const [addUnit] = useAddPathologyUnitMutation();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -359,11 +360,14 @@ export default function PathologyComponentPage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-          pagination={{
-            pageSize: 10,
+           pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ['10','20', '50', '100'],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>
