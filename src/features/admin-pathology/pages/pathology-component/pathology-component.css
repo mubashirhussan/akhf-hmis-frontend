@@ -89,8 +89,12 @@
   min-width: 88px;
 }
 
-.pathology-component-actions-cell .ant-btn-link {
+.pathology-component-actions-cell .pathology-component-edit-btn.ant-btn-link {
   color: var(--app-primary) !important;
+}
+
+.pathology-component-actions-cell .pathology-component-delete-btn.ant-btn-link {
+  color: #ff4d4f !important;
 }
 
 .pathology-component-actions-cell .ant-btn-link .iconify {

@@ -1,7 +1,8 @@
 'use client';
-
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Form, Tooltip, Select, Input } from 'antd';
+import { useConfirm } from '@/hooks/useConfirm';
+import { App, Button, Form, Space, Tooltip, Select, Input } from 'antd';
+
 import { SearchOutlined } from '@ant-design/icons';
 import FloatingField from '@/components/ui/FloatingField';
 import FormGrid from '@/components/ui/FormGrid';
@@ -23,10 +24,12 @@ import {
 } from '@/features/admin-pathology/api/pathologyApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+const DELETE_ICON_CLASS = 'h-[16px] w-[16px] text-[#ff4d4f]';
 const controlClass = FIELD_CONTROL_CLASS;
 
 export default function PathologyComponentPage() {
-  const { message } = App.useApp();
+const { message } = App.useApp();
+const { confirmDelete } = useConfirm();
   const [addForm] = Form.useForm();
   const [editForm] = Form.useForm();
 
@@ -186,6 +189,16 @@ export default function PathologyComponentPage() {
     message.success(`Unit "${rawLabel}" added.`);
   }, [addForm, editForm, isAddModalOpen, addUnit, unitOptions, message]);
 
+  const handleDeleteRow = useCallback(
+  async (record) => {
+    const confirmed = await confirmDelete({ itemName: record.componentName });
+    if (confirmed) {
+      await deleteComponent(record.id).unwrap();
+      message.success('Component deleted.');
+    }
+  },
+  [confirmDelete, deleteComponent, message],
+);
   const groupOptions = useMemo(
     () => mainGroups.map((g) => ({ label: g.groupName, value: g.groupName })),
     [mainGroups],
@@ -242,26 +255,38 @@ export default function PathologyComponentPage() {
       { title: 'Ref Value Female', dataIndex: 'referenceFemale', key: 'referenceFemale', width: 180 },
       { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 88, className: 'pathology-component-col-unit' },
       { title: 'Priority', dataIndex: 'priority', key: 'priority', width: 80 },
-      {
-        title: 'Action',
-        key: 'action',
-        width: 90,
-        align: 'center',
-        render: (_, record) => (
-          <Tooltip title="Edit">
-            <Button
-              type="link"
-              size="small"
-              className="pathology-component-actions-cell"
-              aria-label="Edit component"
-              icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
-              onClick={() => openEditModal(record)}
-            />
-          </Tooltip>
-        ),
-      },
+     {
+  title: 'Action',
+  key: 'action',
+  width: 96,
+  align: 'center',
+  render: (_, record) => (
+    <Space size={4} className="pathology-component-actions-cell">
+      <Tooltip title="Edit">
+<Button
+  type="link"
+  size="small"
+  className="pathology-component-edit-btn"
+  aria-label="Edit component"
+  icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
+  onClick={() => openEditModal(record)}
+/>
+      </Tooltip>
+      <Tooltip title="Delete">
+<Button
+  type="link"
+  size="small"
+  className="pathology-component-delete-btn"
+  aria-label="Delete component"
+  icon={<AppIcon icon="mdi:delete-outline" className={DELETE_ICON_CLASS} />}
+  onClick={() => handleDeleteRow(record)}
+/>
+      </Tooltip>
+    </Space>
+  ),
+},
     ],
-    [openEditModal],
+    [openEditModal, handleDeleteRow],
   );
 
   return (
