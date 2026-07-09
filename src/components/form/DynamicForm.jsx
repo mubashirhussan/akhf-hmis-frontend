@@ -85,18 +85,18 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
             break;
           }
           case 'condition': {
-            const { options: conditionOptions, onAdd, newConditionName, ...conditionRest } = controlProps;
+            const { options: conditionOptions, onAdd, newConditionName: _newConditionName, onNewConditionChange: _onNewConditionChange, ...conditionRest } = controlProps;
             control = (
               <div className="pathology-test-range-condition">
                 <Select className={cls} options={conditionOptions} {...conditionRest} />
                 <div className="pathology-test-range-new-condition">
-                  <Input
-                    className={cls}
-                    value={newConditionName}
-                    placeholder="Add New condition"
-                    autoComplete="off"
-                    onChange={(e) => conditionRest.onNewConditionChange?.(e.target.value)}
-                  />
+                  <Form.Item name="newCondition" noStyle>
+                    <Input
+                      className={cls}
+                      placeholder="Add New condition"
+                      autoComplete="off"
+                    />
+                  </Form.Item>
                   <Button type="link" className="pathology-test-range-new-link" onClick={onAdd}>
                     Add
                   </Button>

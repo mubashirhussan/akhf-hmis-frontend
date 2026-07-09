@@ -2,6 +2,10 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { App, Button, Form, Tooltip, Select, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import FloatingField from '@/components/ui/FloatingField';
+import FormGrid from '@/components/ui/FormGrid';
+import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import PathologyComponentAddModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentAddModal';
@@ -19,6 +23,7 @@ import {
 } from '@/features/admin-pathology/api/pathologyApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
+const controlClass = FIELD_CONTROL_CLASS;
 
 export default function PathologyComponentPage() {
   const { message } = App.useApp();
@@ -51,6 +56,15 @@ export default function PathologyComponentPage() {
 
   const patchFilter = useCallback((patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setFilters({
+      groupName: '',
+      subGroupName: '',
+      testName: '',
+      componentName: '',
+    });
   }, []);
 
   const closeAddModal = useCallback(() => {
@@ -251,46 +265,83 @@ export default function PathologyComponentPage() {
 
   return (
     <div className="services-billing-page pathology-component-page">
-      <div
-        className="pathology-component-table-toolbar"
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}
-      >
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Select
-            placeholder="Filter by Main Group"
-            allowClear
-            style={{ width: 220 }}
-            value={filters.groupName || undefined}
-            options={groupOptions}
-            onChange={(value) =>
-              patchFilter({ groupName: value || '', subGroupName: '', testName: '' })
-            }
-          />
-          <Select
-            placeholder="Filter by Sub Group"
-            allowClear
-            style={{ width: 220 }}
-            value={filters.subGroupName || undefined}
-            options={subGroupOptions}
-            onChange={(value) => patchFilter({ subGroupName: value || '', testName: '' })}
-          />
-          <Select
-            placeholder="Filter by Test Name"
-            allowClear
-            style={{ width: 220 }}
-            value={filters.testName || undefined}
-            options={testNameOptions}
-            onChange={(value) => patchFilter({ testName: value || '' })}
-          />
-          <Input
-            placeholder="Filter by Component Name"
-            allowClear
-            style={{ width: 250 }}
-            value={filters.componentName}
-            onChange={(e) => patchFilter({ componentName: e.target.value })}
-          />
+      <section className="pathology-component-filter-panel" aria-label="Pathology component search filters">
+        <div className="walk-in-add-record-layout pathology-component-search-layout">
+          <FormGrid
+            as="form"
+            columns={4}
+            className="walk-in-add-record-form pathology-component-search-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+            }}
+          >
+            <FloatingField label="Main Group" htmlFor="pathology-filter-group">
+              <Select
+                id="pathology-filter-group"
+                className={controlClass}
+                placeholder="Select group"
+                value={filters.groupName || undefined}
+                options={groupOptions}
+                onChange={(value) =>
+                  patchFilter({ groupName: value || '', subGroupName: '', testName: '' })
+                }
+                allowClear
+                autoComplete="off"
+              />
+            </FloatingField>
+
+            <FloatingField label="Sub Group" htmlFor="pathology-filter-subgroup">
+              <Select
+                id="pathology-filter-subgroup"
+                className={controlClass}
+                placeholder="Select sub group"
+                value={filters.subGroupName || undefined}
+                options={subGroupOptions}
+                onChange={(value) => patchFilter({ subGroupName: value || '', testName: '' })}
+                allowClear
+                autoComplete="off"
+              />
+            </FloatingField>
+
+            <FloatingField label="Test Name" htmlFor="pathology-filter-testname">
+              <Select
+                id="pathology-filter-testname"
+                className={controlClass}
+                placeholder="Select test name"
+                value={filters.testName || undefined}
+                options={testNameOptions}
+                onChange={(value) => patchFilter({ testName: value || '' })}
+                allowClear
+                autoComplete="off"
+              />
+            </FloatingField>
+
+            <FloatingField label="Component Name" htmlFor="pathology-filter-component">
+              <Input
+                id="pathology-filter-component"
+                className={controlClass}
+                placeholder="Enter component name"
+                value={filters.componentName}
+                onChange={(e) => patchFilter({ componentName: e.target.value })}
+                allowClear
+                autoComplete="off"
+              />
+            </FloatingField>
+
+            <div className="pathology-component-search-actions">
+              <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button type="default" className="hr-search-btn" icon={<SearchOutlined />} htmlType="submit" loading={isLoading}>
+                Search
+              </Button>
+            </div>
+          </FormGrid>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+      </section>
+
+      <section className="services-billing-results" aria-label="Pathology components">
+        <div className="pathology-component-table-toolbar">
           <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
             Add Component
           </Button>
@@ -302,9 +353,6 @@ export default function PathologyComponentPage() {
             Export
           </Button>
         </div>
-      </div>
-
-      <section className="services-billing-results" aria-label="Pathology components">
         <DataTable
           rowKey="id"
           columns={columns}

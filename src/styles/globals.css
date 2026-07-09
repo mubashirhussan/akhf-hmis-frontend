@@ -34,3 +34,11 @@ body {
 .ant-app {
   font-family: var(--font-family) !important;
 }
+.ant-table-container {
+  overflow-x: auto !important;
+}
+
+.data-table .ant-table-content,
+.ant-table-body {
+  overflow-x: auto !important;
+}

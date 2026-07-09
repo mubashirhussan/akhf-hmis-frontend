@@ -31,7 +31,7 @@ export default function PathologyTestRangeEditModal({
   const selectedGroupName = Form.useWatch('groupName', form);
   const selectedSubGroupName = Form.useWatch('subGroupName', form);
   const selectedTestName = Form.useWatch('testName', form);
-  const newCondition = Form.useWatch('newCondition', form) ?? '';
+  
 
   const groupOptions = useMemo(
     () => mainGroups.map((g) => ({ label: g.groupName, value: g.groupName })),
@@ -84,8 +84,6 @@ export default function PathologyTestRangeEditModal({
         disableMainGroup: true,
         onAddCondition,
         onAddConversionRate,
-        newCondition,
-        onNewConditionChange: (val) => form.setFieldsValue({ newCondition: val }),
       }),
     [
       groupOptions,
@@ -95,7 +93,6 @@ export default function PathologyTestRangeEditModal({
       lookups,
       onAddCondition,
       onAddConversionRate,
-      newCondition,
       form,
     ],
   );

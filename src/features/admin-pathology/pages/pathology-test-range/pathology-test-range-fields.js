@@ -29,9 +29,7 @@ export const getPathologyTestRangeFields = ({
   disableMainGroup = false,
   onAddCondition,
   onAddConversionRate,
-  newCondition = '',
-  onNewConditionChange,
-} = {}) => [
+  } = {}) => [
   {
     type: 'select',
     name: 'groupName',
@@ -119,8 +117,7 @@ export const getPathologyTestRangeFields = ({
       options: conditionOptions,
       placeholder: 'Select condition',
       onAdd: onAddCondition,
-      newConditionName: newCondition,
-      onNewConditionChange,
+      
     },
   },
   {
