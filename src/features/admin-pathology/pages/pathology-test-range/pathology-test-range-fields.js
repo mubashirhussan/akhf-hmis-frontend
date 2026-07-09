@@ -1,0 +1,135 @@
+import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
+import { ageRequired } from '@/lib/form-validation';
+
+
+export const PATHOLOGY_TEST_RANGE_INITIAL_VALUES = {
+  groupName: '',
+  subGroupName: '',
+  testName: '',
+  testComponent: '',
+  startValue: '',
+  endValue: '',
+  reportValues: '',
+  gender: 'both',
+ageStart: { age: '0', unit: DOB_AGE_UNITS.years },
+ageEnd: { age: '0', unit: DOB_AGE_UNITS.years },
+  condition: 'normal',
+  newCondition: '',
+  unit: '',
+};
+
+export const getPathologyTestRangeFields = ({
+  groupOptions = [],
+  subGroupOptions = [],
+  testOptions = [],
+  componentOptions = [],
+  genderOptions = [],
+  conditionOptions = [],
+  unitOptions = [],
+  disableMainGroup = false,
+  onAddCondition,
+  onAddConversionRate,
+  } = {}) => [
+  {
+    type: 'select',
+    name: 'groupName',
+    label: 'Main Group',
+    col: 12,
+    options: groupOptions,
+    props: { disabled: disableMainGroup },
+  },
+  {
+    type: 'select',
+    name: 'subGroupName',
+    label: 'Sub Group',
+    col: 12,
+    options: subGroupOptions,
+    props: { disabled: !subGroupOptions.length && !groupOptions.length },
+  },
+  {
+    type: 'select',
+    name: 'testName',
+    label: 'Test',
+    col: 12,
+    options: testOptions,
+    props: { disabled: !subGroupOptions.length },
+  },
+  {
+    type: 'select',
+    name: 'testComponent',
+    label: 'Test Component',
+    col: 12,
+    options: componentOptions,
+    rules: [{ required: true, message: 'Test Component is required.' }],
+    props: {
+      placeholder: 'Select component',
+      disabled: !testOptions.length,
+    },
+  },
+  {
+    type: 'text',
+    name: 'startValue',
+    label: 'Start Value',
+    col: 12,
+    props: { autoComplete: 'off' },
+  },
+  {
+    type: 'text',
+    name: 'endValue',
+    label: 'End Value',
+    col: 12,
+    props: { autoComplete: 'off' },
+  },
+  {
+    type: 'text',
+    name: 'reportValues',
+    label: 'Report Values',
+    col: 12,
+    props: { autoComplete: 'off' },
+  },
+  {
+    type: 'select',
+    name: 'gender',
+    label: 'Gender',
+    col: 12,
+    options: genderOptions,
+  },
+{
+  type: 'age',
+  name: 'ageStart',
+  label: 'Age Start',
+  col: 12,
+  rules: [ageRequired('Age Start is required.')],
+  props: { className: 'pathology-test-range-age-field' },
+},
+{
+  type: 'age',
+  name: 'ageEnd',
+  label: 'Age End',
+  col: 12,
+  rules: [ageRequired('Age End is required.')],
+  props: { className: 'pathology-test-range-age-field' },
+},
+  {
+    type: 'condition',
+    name: 'condition',
+    label: 'Condition',
+    col: 12,
+    props: {
+      options: conditionOptions,
+      placeholder: 'Select condition',
+      onAdd: onAddCondition,
+      
+    },
+  },
+  {
+    type: 'unit',
+    name: 'unit',
+    label: 'Unit',
+    col: 12,
+    props: {
+      options: unitOptions,
+      onAddConversionRate,
+    },
+  },
+];

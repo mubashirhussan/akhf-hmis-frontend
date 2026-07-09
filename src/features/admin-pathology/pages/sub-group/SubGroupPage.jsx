@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { App, Button, Form, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
-import SubGroupModal from "@/features/admin-pathology/pages/sub-group/SubGroupModal";
+import SubGroupAddModal from "@/features/admin-pathology/pages/sub-group/SubGroupAddModal";
+import SubGroupEditModal from "@/features/admin-pathology/pages/sub-group/SubGroupEditModal";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetSubGroupsQuery,
@@ -18,23 +19,12 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function SubGroupPage() {
   const { message } = App.useApp();
-function createEmptySubGroupForm() {
-  return {
-    TGID: null,
-    subGroupName: '',
-    fee: 0,
-  };
-}
-function rowToSubGroupForm(row) {
-  return {
-    TGID: row.TGID ?? null,
-    subGroupName: row.subGroupName ?? '',
-    fee: row.fee ?? 0,
-  };
-}
-  const [form] = Form.useForm();
-  const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
+  const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [editingRow, setEditingRow] = useState(null);
   const { confirmDelete } = useConfirm();
   const [filters, setFilters] = useState({
     groupName: "",
@@ -58,23 +48,21 @@ const groupOptions = useMemo(() => {
   }));
 }, [mainGroups]);
 
-  const openComponentModal = useCallback(() => {
-    form.setFieldsValue(createEmptySubGroupForm());
-    setEditingRowId(null);
-    setIsComponentModalOpen(true);
-  }, [form]);
+  const closeAddModal = useCallback(() => {
+    setIsAddModalOpen(false);
+    addForm.resetFields();
+  }, [addForm]);
 
-  const closeComponentModal = useCallback(() => {
-    setIsComponentModalOpen(false);
-    setEditingRowId(null);
-    form.resetFields();
-  }, [form]);
+  const openEditModal = useCallback((record) => {
+    setEditingRow(record);
+    setIsEditModalOpen(true);
+  }, []);
 
-  const handleEditRow = useCallback((record) => {
-    form.setFieldsValue(rowToSubGroupForm(record));
-    setEditingRowId(record.id);
-    setIsComponentModalOpen(true);
-  }, [form]);
+  const closeEditModal = useCallback(() => {
+    setIsEditModalOpen(false);
+    setEditingRow(null);
+    editForm.resetFields();
+  }, [editForm]);
   const handleDeleteRow = useCallback(
     async (record) => {
       const itemName = record.subGroupName;
@@ -87,9 +75,9 @@ const groupOptions = useMemo(() => {
     },
     [confirmDelete, deleteSubGroup, message],
   );
-  const handleSave = useCallback(async () => {
+  const handleAddSave = useCallback(async () => {
     try {
-      const values = await form.validateFields();
+      const values = await addForm.validateFields();
       const selectedGroup = mainGroups.find((group) => group.TGID === values.TGID);
       const rowPayload = {
         TGID: values.TGID,
@@ -98,26 +86,42 @@ const groupOptions = useMemo(() => {
         fee: values.fee ?? 0,
       };
 
-      if (editingRowId) {
-        await updateSubGroup({
-          id: editingRowId,
-          ...rowPayload,
-        }).unwrap();
-        setIsComponentModalOpen(false);
-        setEditingRowId(null);
-        form.resetFields();
-        message.success("Sub Group updated.");
-        return;
-      }
-
       await createSubGroup(rowPayload).unwrap();
-      setIsComponentModalOpen(false);
-      form.resetFields();
+
+      setIsAddModalOpen(false);
+      addForm.resetFields();
+
       message.success("Sub Group created.");
     } catch {
       // validation errors are shown by antd Form
     }
-  }, [form, editingRowId, mainGroups, createSubGroup, updateSubGroup, message]);
+  }, [addForm, mainGroups, createSubGroup, message]);
+
+  const handleEditSave = useCallback(async () => {
+    try {
+      const values = await editForm.validateFields();
+      const selectedGroup = mainGroups.find((group) => group.TGID === values.TGID);
+      const rowPayload = {
+        TGID: values.TGID,
+        groupName: selectedGroup?.groupName,
+        subGroupName: values.subGroupName.trim(),
+        fee: values.fee ?? 0,
+      };
+
+      await updateSubGroup({
+        id: editingRow.id,
+        ...rowPayload,
+      }).unwrap();
+
+      setIsEditModalOpen(false);
+      setEditingRow(null);
+      editForm.resetFields();
+
+      message.success("Sub Group updated.");
+    } catch {
+      // validation errors are shown by antd Form
+    }
+  }, [editForm, editingRow, mainGroups, updateSubGroup, message]);
 
   const filteredRows = useMemo(() => {
     const group = filters.groupName;
@@ -180,7 +184,7 @@ const groupOptions = useMemo(() => {
                     className={ACTION_ICON_CLASS}
                   />
                 }
-                onClick={() => handleEditRow(record)}
+                onClick={() => openEditModal(record)}
               />
             </Tooltip>
             <Tooltip title="Delete">
@@ -201,7 +205,7 @@ const groupOptions = useMemo(() => {
         ),
       },
     ],
-    [handleEditRow, handleDeleteRow],
+    [handleDeleteRow],
   );
 
   return (
@@ -228,7 +232,7 @@ const groupOptions = useMemo(() => {
             style={{ width: 240 }}
           />
         </div>
-        <Button type="primary" onClick={openComponentModal}>
+        <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
           Add Sub Group
         </Button>
       </div>
@@ -240,21 +244,31 @@ const groupOptions = useMemo(() => {
           loading={isLoading}
           dataSource={filteredRows}
           columnAlign="left"
-          pagination={{
-            pageSize: 10,
+ pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>
 
-      <SubGroupModal
-        open={isComponentModalOpen}
-        onClose={closeComponentModal}
-        title={editingRowId ? "Edit Sub Group" : "Add Sub Group"}
-        form={form}
-        onSave={handleSave}
+      <SubGroupAddModal
+        open={isAddModalOpen}
+        onClose={closeAddModal}
+        form={addForm}
+        onSave={handleAddSave}
+      />
+
+      <SubGroupEditModal
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        form={editForm}
+        onSave={handleEditSave}
+        record={editingRow}
       />
     </div>
   );

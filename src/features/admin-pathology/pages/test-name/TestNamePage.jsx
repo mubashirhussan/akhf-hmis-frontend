@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Select, Input } from "antd";
+import { App, Button, Form, Tooltip, Select, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
-import TestNameModal from "@/features/admin-pathology/pages/test-name/TestNameModal";
+import TestNameAddModal from "@/features/admin-pathology/pages/test-name/TestNameAddModal";
+import TestNameEditModal from "@/features/admin-pathology/pages/test-name/TestNameEditModal";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetTestNamesQuery,
@@ -19,97 +20,44 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function TestNamePage() {
   const { message } = App.useApp();
-
-const [form, setForm] = useState(() => ({
-  TGID: null,
-  TSGID: null,
-  groupName: "",
-  subGroupName: "",
-  testName: "",
-  medicalName: "",
-  standardName: "",
-  fee: 0,
-}));
-  const [isComponentModalOpen, setIsComponentModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRow, setEditingRow] = useState(null);
   const [filters, setFilters] = useState({
     groupName: "",
     subGroupName: "",
     testName: "",
   });
   const { confirmDelete } = useConfirm();
-const { data: rows = [], isLoading } = useGetTestNamesQuery();
-const { data: subGroups = [] } = useGetSubGroupsQuery();
-const { data: mainGroups = [] } = useGetMainGroupsQuery();
+  const { data: rows = [], isLoading } = useGetTestNamesQuery();
+  const { data: subGroups = [] } = useGetSubGroupsQuery();
+  const { data: mainGroups = [] } = useGetMainGroupsQuery();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [createTestName] = useCreateTestNameMutation();
   const [updateTestName] = useUpdateTestNameMutation();
   const [deleteTestName] = useDeleteTestNameMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
   const patchFilter = useCallback((patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
   }, []);
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
+
+  const closeAddModal = useCallback(() => {
+    setIsAddModalOpen(false);
+    addForm.resetFields();
+  }, [addForm]);
+
+  const openEditModal = useCallback((record) => {
+    setEditingRow(record);
+    setIsEditModalOpen(true);
   }, []);
 
-const openComponentModal = useCallback(() => {
-  setForm({
-    TGID: null,
-    TSGID: null,
-    groupName: "",
-    subGroupName: "",
-    testName: "",
-    medicalName: "",
-    standardName: "",
-    fee: 0,
-  });
-  setEditingRowId(null);
-  setFieldErrors({});
-  setIsComponentModalOpen(true);
-}, []);
-
-  const closeComponentModal = useCallback(() => {
-    setIsComponentModalOpen(false);
-    setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
-
-const handleEditRow = useCallback((record) => {
-  const matchedGroup = mainGroups.find(
-    (g) => g.groupName === record.groupName,
-  );
-  const resolvedTGID = record.TGID ?? matchedGroup?.TGID ?? null;
-
-  const matchedSubGroup = subGroups.find(
-    (sg) =>
-      sg.subGroupName === record.subGroupName &&
-      sg.TGID === resolvedTGID,
-  );
-  const resolvedTSGID = record.TSGID ?? matchedSubGroup?.TSGID ?? null;
-
-  setForm({
-    TGID: resolvedTGID,
-    TSGID: resolvedTSGID,
-    groupName: record.groupName ?? "",
-    subGroupName: record.subGroupName ?? "",
-    testName: record.testName ?? "",
-    medicalName: record.medicalName ?? "",
-    standardName: record.standardName ?? "",
-    fee: record.fee ?? 0,
-  });
-  setEditingRowId(record.id);
-  setFieldErrors({});
-  setIsComponentModalOpen(true);
-}, [mainGroups, subGroups]);
+  const closeEditModal = useCallback(() => {
+    setIsEditModalOpen(false);
+    setEditingRow(null);
+    editForm.resetFields();
+  }, [editForm]);
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -124,60 +72,76 @@ const handleEditRow = useCallback((record) => {
     [confirmDelete, deleteTestName, message],
   );
 
-const handleSave = useCallback(async () => {
-  const testName = (form.testName || "").trim();
+const handleAddSave = useCallback(async () => {
+    try {
+      const values = await addForm.validateFields();
+      const selectedGroup = mainGroups.find((g) => g.TGID === values.TGID);
+      const selectedSubGroup = subGroups.find((sg) => sg.TSGID === values.TSGID);
+      const rowPayload = {
+        TGID: values.TGID,
+        TSGID: values.TSGID,
+        groupName: selectedGroup?.groupName ?? '',
+        subGroupName: selectedSubGroup?.subGroupName ?? '',
+        testName: values.testName.trim(),
+        medicalName: values.medicalName ?? '',
+        standardName: values.standardName ?? '',
+        fee: values.fee ?? 0,
+      };
 
-  const errors = {};
-  if (!form.TGID) errors.TGID = "Group Name is required.";
-  if (!form.TSGID) errors.TSGID = "Sub Group Name is required.";
-  if (!testName) errors.testName = "Test Name is required.";
+      await createTestName(rowPayload).unwrap();
 
-  if (Object.keys(errors).length > 0) {
-    setFieldErrors(errors);
-    return;
-  }
+      setIsAddModalOpen(false);
+      addForm.resetFields();
 
-  setFieldErrors({});
+      message.success("Test Name created.");
+    } catch {
+      // validation errors are shown by antd Form
+    }
+  }, [addForm, mainGroups, subGroups, createTestName, message]);
 
-  const rowPayload = {
-    TGID: form.TGID,
-    TSGID: form.TSGID,
-    testName,
-    medicalName: form.medicalName ?? "",
-    standardName: form.standardName ?? "",
-    fee: form.fee ?? 0,
-  };
+  const handleEditSave = useCallback(async () => {
+    try {
+      const values = await editForm.validateFields();
+      const selectedGroup = mainGroups.find((g) => g.TGID === values.TGID);
+      const selectedSubGroup = subGroups.find((sg) => sg.TSGID === values.TSGID);
+      const rowPayload = {
+        TGID: values.TGID,
+        TSGID: values.TSGID,
+        groupName: selectedGroup?.groupName ?? '',
+        subGroupName: selectedSubGroup?.subGroupName ?? '',
+        testName: values.testName.trim(),
+        medicalName: values.medicalName ?? '',
+        standardName: values.standardName ?? '',
+        fee: values.fee ?? 0,
+      };
 
-  if (editingRowId) {
-    await updateTestName({ id: editingRowId, ...rowPayload }).unwrap();
-    setIsComponentModalOpen(false);
-    setEditingRowId(null);
-    message.success("Test Name updated.");
-    return;
-  }
+      await updateTestName({
+        id: editingRow.id,
+        ...rowPayload,
+      }).unwrap();
 
-  await createTestName(rowPayload).unwrap();
-  setIsComponentModalOpen(false);
-  message.success("Test Name created.");
-}, [form, editingRowId, createTestName, updateTestName, message]);
+      setIsEditModalOpen(false);
+      setEditingRow(null);
+      editForm.resetFields();
 
-const groupOptions = useMemo(() => {
-  return mainGroups.map((g) => ({
-    label: g.groupName,
-    value: g.groupName,
-  }));
-}, [mainGroups]);
+      message.success("Test Name updated.");
+    } catch {
+      // validation errors are shown by antd Form
+    }
+  }, [editForm, editingRow, mainGroups, subGroups, updateTestName, message]);
 
-const subGroupOptions = useMemo(() => {
-  return subGroups
-    .filter((sg) =>
-      filters.groupName ? sg.groupName === filters.groupName : true,
-    )
-    .map((sg) => ({
-      label: sg.subGroupName,
-      value: sg.subGroupName,
-    }));
-}, [subGroups, filters.groupName]);
+const groupOptions = useMemo(
+    () => mainGroups.map((g) => ({ label: g.groupName, value: g.groupName })),
+    [mainGroups],
+  );
+
+  const subGroupOptions = useMemo(
+    () =>
+      subGroups
+        .filter((sg) => (filters.groupName ? sg.groupName === filters.groupName : true))
+        .map((sg) => ({ label: sg.subGroupName, value: sg.subGroupName })),
+    [subGroups, filters.groupName],
+  );
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -246,7 +210,7 @@ const subGroupOptions = useMemo(() => {
                     className={ACTION_ICON_CLASS}
                   />
                 }
-                onClick={() => handleEditRow(record)}
+                onClick={() => openEditModal(record)}
               />
             </Tooltip>
             <Tooltip title="Delete">
@@ -267,7 +231,7 @@ const subGroupOptions = useMemo(() => {
         ),
       },
     ],
-    [handleEditRow, handleDeleteRow],
+    [ handleDeleteRow],
   );
 
   return (
@@ -322,7 +286,7 @@ const subGroupOptions = useMemo(() => {
           />
         </div>
 
-        <Button type="primary" onClick={openComponentModal}>
+        <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
           Add Test Name
         </Button>
       </div>
@@ -334,27 +298,32 @@ const subGroupOptions = useMemo(() => {
           loading={isLoading}
           dataSource={filteredRows}
           columnAlign="left"
-          pagination={{
-            pageSize: 10,
+           pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>
 
-<TestNameModal
-  open={isComponentModalOpen}
-  onClose={closeComponentModal}
-  title={editingRowId ? "Edit Test Name" : "Add Test Name"}
-  form={form}
-  errors={fieldErrors}
-  onPatchForm={patchForm}
-  onClearError={clearFieldError}
-  onSave={handleSave}
-  mainGroups={mainGroups}
-  subGroups={subGroups}
-/>
+<TestNameAddModal
+        open={isAddModalOpen}
+        onClose={closeAddModal}
+        form={addForm}
+        onSave={handleAddSave}
+      />
+
+      <TestNameEditModal
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        form={editForm}
+        onSave={handleEditSave}
+        record={editingRow}
+      />
     </div>
   );
 }

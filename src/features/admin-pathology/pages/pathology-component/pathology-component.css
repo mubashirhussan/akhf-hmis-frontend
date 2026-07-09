@@ -28,12 +28,46 @@
   min-width: 138px;
 }
 
+.pathology-component-filter-panel {
+  border: 1px solid #d2d2d2;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: none;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.pathology-component-search-layout {
+  margin-bottom: 0;
+}
+
+.pathology-component-search-form.form-grid,
+.pathology-component-search-form {
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.pathology-component-search-form.form-grid > .floating-field,
+.pathology-component-search-form > .floating-field {
+  margin-top: 6px;
+}
+
+.pathology-component-search-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+/* Table toolbar — Add Component + Export buttons above the table */
 .pathology-component-table-toolbar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .pathology-component-export-btn {
@@ -55,23 +89,29 @@
   min-width: 88px;
 }
 
-.pathology-component-actions-cell .ant-btn-link {
+.pathology-component-actions-cell .pathology-component-edit-btn.ant-btn-link {
   color: var(--app-primary) !important;
+}
+
+.pathology-component-actions-cell .pathology-component-delete-btn.ant-btn-link {
+  color: #ff4d4f !important;
 }
 
 .pathology-component-actions-cell .ant-btn-link .iconify {
   color: currentColor;
 }
 
-.pathology-component-new-unit {
+.pathology-component-new-unit-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
+  padding: 0 8px 12px;
 }
 
-.pathology-component-new-unit .field-control {
+.pathology-component-new-unit-row .ant-form-item {
   flex: 1;
   min-width: 0;
+  margin-bottom: 0;
 }
 
 @media (max-width: 991px) {
@@ -94,4 +134,16 @@
     flex-direction: column;
     align-items: stretch;
   }
+
+  .pathology-component-search-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pathology-component-search-form .ant-input,
+  .pathology-component-search-form .ant-btn,
+  .pathology-component-search-form .ant-select {
+    width: 100% !important;
+  }
 }
+

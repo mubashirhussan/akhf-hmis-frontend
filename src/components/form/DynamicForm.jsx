@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Button,
   Checkbox,
   Col,
   DatePicker,
@@ -11,8 +12,10 @@ import {
   Row,
   Select,
   Switch,
+  TimePicker,
 } from 'antd';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import AgeUnitInput from '@/components/ui/AgeUnitInput';
 
 const cls = FIELD_CONTROL_CLASS;
 
@@ -50,6 +53,11 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
               <DatePicker className={cls} style={{ width: '100%' }} {...controlProps} />
             );
             break;
+          case 'time':
+            control = (
+              <TimePicker className={cls} style={{ width: '100%' }} format="HH:mm" {...controlProps} />
+            );
+            break;
           case 'textarea':
             control = <Input.TextArea className={cls} {...controlProps} />;
             break;
@@ -64,6 +72,50 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
             break;
           case 'password':
             control = <Input.Password className={cls} {...controlProps} />;
+            break;
+case 'age': {
+  control = <AgeUnitInput className={controlProps.className} />;
+  break;
+}
+          case 'condition': {
+            const { options: conditionOptions, onAdd, newConditionName: _newConditionName, onNewConditionChange: _onNewConditionChange, ...conditionRest } = controlProps;
+            control = (
+              <div className="pathology-test-range-condition">
+                <Select className={cls} options={conditionOptions} {...conditionRest} />
+                <div className="pathology-test-range-new-condition">
+                  <Form.Item name="newCondition" noStyle>
+                    <Input
+                      className={cls}
+                      placeholder="Add New condition"
+                      autoComplete="off"
+                    />
+                  </Form.Item>
+                  <Button type="link" className="pathology-test-range-new-link" onClick={onAdd}>
+                    Add
+                  </Button>
+                </div>
+              </div>
+            );
+            break;
+          }
+          case 'unit': {
+            const { options: unitOptions, onAddConversionRate, ...unitRest } = controlProps;
+            control = (
+              <div className="pathology-test-range-unit">
+                <Select className={cls} options={unitOptions} placeholder="Select unit" allowClear {...unitRest} />
+                <Button
+                  type="link"
+                  className="pathology-test-range-conversion-link text-left"
+                  onClick={onAddConversionRate}
+                >
+                  Add Conversion Rate
+                </Button>
+              </div>
+            );
+            break;
+          }
+          case 'custom':
+            control = controlProps.render ? controlProps.render() : null;
             break;
           default:
             control = <Input className={cls} {...controlProps} />;

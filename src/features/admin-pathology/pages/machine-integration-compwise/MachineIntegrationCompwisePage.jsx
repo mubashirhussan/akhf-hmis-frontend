@@ -38,6 +38,7 @@ export default function MachineIntegrationCompwisePage() {
   const [createMachineIntegration] = useCreateMachineIntegrationCompwiseMutation();
   const [updateMachineIntegration] = useUpdateMachineIntegrationCompwiseMutation();
   const [deleteMachineIntegration] = useDeleteMachineIntegrationCompwiseMutation();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const patchForm = useCallback((patch) => {
     setForm((current) => ({ ...current, ...patch }));
@@ -275,11 +276,14 @@ export default function MachineIntegrationCompwisePage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-          pagination={{
-            pageSize: 10,
+           pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["10","20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
+            onChange: (current, pageSize) =>
+              setPagination({ current, pageSize }),
           }}
         />
       </section>

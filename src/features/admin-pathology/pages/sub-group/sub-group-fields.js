@@ -1,3 +1,9 @@
+export const SUB_GROUP_INITIAL_VALUES = {
+  TGID: null,
+  subGroupName: '',
+  fee: 0,
+};
+
 export const SUB_GROUP_FIELDS = [
   {
     type: 'select',
