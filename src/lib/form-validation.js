@@ -215,3 +215,9 @@ export function handleFormChangeClearErrors(form, changed, onExtraChange) {
     }
   }
 }
+export const ageRequired = (message) => ({
+  validator: (_, value) =>
+    value?.age !== '' && value?.age !== undefined
+      ? Promise.resolve()
+      : Promise.reject(new Error(message)),
+});

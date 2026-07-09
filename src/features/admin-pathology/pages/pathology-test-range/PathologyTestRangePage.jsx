@@ -90,9 +90,9 @@ const genderIdMap = { male: 1, female: 2, both: 77, child: 3 };
         endValue: (values.endValue ?? '').trim() || 0,
         reportValues: (values.reportValues ?? '').trim() || 0,
         genderId: genderIdMap[values.gender?.toLowerCase()] ?? 77,
-        minAgeVal: Number(values.ageStart) || 0,
-        maxAgeVal: Number(values.ageEnd) || 0,
-        ageUnit: values.ageStartUnit ?? 'Y',
+minAgeVal: Number(values.ageStart?.age) || 0,
+maxAgeVal: Number(values.ageEnd?.age) || 0,
+ageUnit: values.ageStart?.unit ?? 'Y',
       };
 
       await createTestRange(rowPayload).unwrap();

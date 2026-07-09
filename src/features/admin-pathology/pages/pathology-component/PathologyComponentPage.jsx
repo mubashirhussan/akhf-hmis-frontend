@@ -360,9 +360,9 @@ export default function PathologyComponentPage() {
           loading={isLoading}
           columnAlign="left"
           pagination={{
-            pageSize: 20,
+            pageSize: 10,
             showSizeChanger: true,
-            pageSizeOptions: ['20', '50', '100'],
+            pageSizeOptions: ['10','20', '50', '100'],
             showTotal: (total) => `Total ${total} items`,
           }}
         />

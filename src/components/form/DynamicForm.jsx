@@ -15,7 +15,7 @@ import {
   TimePicker,
 } from 'antd';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import AgeUnitField from '@/components/ui/AgeUnitField';
+import AgeUnitInput from '@/components/ui/AgeUnitInput';
 
 const cls = FIELD_CONTROL_CLASS;
 
@@ -73,17 +73,10 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           case 'password':
             control = <Input.Password className={cls} {...controlProps} />;
             break;
-          case 'age': {
-            const { onChange: ageOnChange, ...ageProps } = controlProps;
-            control = (
-              <AgeUnitField
-                embedded
-                {...ageProps}
-                onChange={ageOnChange}
-              />
-            );
-            break;
-          }
+case 'age': {
+  control = <AgeUnitInput className={controlProps.className} />;
+  break;
+}
           case 'condition': {
             const { options: conditionOptions, onAdd, newConditionName: _newConditionName, onNewConditionChange: _onNewConditionChange, ...conditionRest } = controlProps;
             control = (
