@@ -199,7 +199,7 @@ export default function MainGroupPage() {
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
             onChange: (current, pageSize) =>
               setPagination({ current, pageSize }),

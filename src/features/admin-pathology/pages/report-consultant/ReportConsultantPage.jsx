@@ -241,9 +241,9 @@ export default function ReportConsultantPage() {
           loading={isLoading}
           columnAlign="left"
           pagination={{
-            pageSize: 10,
+            pageSize: 20,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
           }}
         />
