@@ -29,6 +29,7 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           label,
           rules,
           options,
+          floating,
           props: controlProps = {},
           col,
           colStart,
@@ -75,6 +76,11 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
             break;
 case 'age': {
   control = <AgeUnitInput className={controlProps.className} />;
+  break;
+}
+case 'dobAge': {
+  const DobAgeFormControl = controlProps.component;
+  control = DobAgeFormControl ? <DobAgeFormControl {...controlProps} /> : null;
   break;
 }
           case 'condition': {
@@ -125,21 +131,32 @@ case 'age': {
           itemProps.valuePropName ??
           (type === 'checkbox' || type === 'switch' ? 'checked' : undefined);
 
+        const formItem = (
+          <Form.Item
+            {...itemProps}
+            name={name}
+            label={floating ? undefined : label}
+            rules={rules}
+            valuePropName={valuePropName}
+          >
+            {control}
+          </Form.Item>
+        );
+
         return (
           <Col
             key={name}
             span={span ?? col ?? 24}
             offset={offset ?? colStart}
           >
-            <Form.Item
-              {...itemProps}
-              name={name}
-              label={label}
-              rules={rules}
-              valuePropName={valuePropName}
-            >
-              {control}
-            </Form.Item>
+            {floating ? (
+              <div className="floating-field">
+                <span className="floating-label">{label}</span>
+                <div className="floating-control">{formItem}</div>
+              </div>
+            ) : (
+              formItem
+            )}
           </Col>
         );
       })}
