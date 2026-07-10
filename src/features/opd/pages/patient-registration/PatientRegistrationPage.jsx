@@ -2,199 +2,23 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { App, Button, Checkbox, Collapse, Form, Input, Select } from 'antd';
-import DobAgeField from '@/components/ui/DobAgeField';
-import FormGrid from '@/components/ui/FormGrid';
-import FormFloatingField from '@/components/ui/FormFloatingField';
+import { App, Button, Collapse, Form } from 'antd';
+import DynamicForm from '@/components/form/DynamicForm';
 import { FormFieldPrefixProvider } from '@/components/ui/FormFieldPrefixContext';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import {
   clearPatientRegValidationState,
   focusFormField,
   handleFormChangeClearErrors,
   highlightAllInvalidFields,
 } from '@/lib/form-validation';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
-const controlClass = FIELD_CONTROL_CLASS;
-
-const TITLE_OPTIONS = [
-  { value: 'mr', label: 'Mr.' },
-  { value: 'miss', label: 'Miss' },
-  { value: 'mrs', label: 'Mrs.' },
-  { value: 'b', label: 'B' },
-  { value: 'mas', label: 'Mas.' },
-];
-
-const RELATION_OPTIONS = [
-  { value: 'so', label: 'S/O' },
-  { value: 'do', label: 'D/O' },
-  { value: 'wo', label: 'W/O' },
-];
-
-const GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-];
-
-const CITY_OPTIONS = [
-  { value: 'peshawar', label: 'Peshawar' },
-  { value: 'islamabad', label: 'Islamabad' },
-  { value: 'lahore', label: 'Lahore' },
-];
-
-const TOWN_OPTIONS = [
-  { value: 'town-1', label: 'Peshawar Town-1' },
-  { value: 'town-2', label: 'Peshawar Town-2' },
-];
-
-const SPECIALITY_OPTIONS = [
-  { value: 'gynae', label: 'Gynae' },
-  { value: 'medicine', label: 'Medicine' },
-  { value: 'surgery', label: 'Surgery' },
-];
-
-const DOCTOR_OPTIONS = [
-  { value: 'nabeela', label: 'NABEELA RAUF' },
-  { value: 'ali', label: 'Dr. Ali' },
-  { value: 'khan', label: 'Dr. Khan' },
-];
-
-const PRIMARY_CATEGORY_OPTIONS = [
-  { value: 'general', label: 'General' },
-  { value: 'employee', label: 'Employee' },
-  { value: 'panel', label: 'Panel' },
-  { value: 'pwf', label: 'Patient Welfare Fund' },
-];
-
-const LAB_CATEGORY_OPTIONS = [
-  { value: 'b2b', label: 'B2B LABS' },
-  { value: 'friendMedical', label: 'Friend Medical Lab' },
-  { value: 'rdl', label: 'The real lab (RDL)' },
-];
-
-const CHECKUP_TYPE_OPTIONS = [
-  { value: 'routine', label: 'Routine' },
-  { value: 'emergency', label: 'Emergency' },
-];
-
-const COMPLAINT_OPTIONS = [
-  { value: 'fever', label: 'Fever' },
-  { value: 'pain', label: 'Pain' },
-  { value: 'checkup', label: 'General Checkup' },
-];
-
-const LAB_OPTIONS = [
-  { value: 'chughtai', label: 'Chughtai Lab' },
-  { value: 'excel', label: 'Excel Lab' },
-  { value: 'dr-essa', label: 'Dr. Essa Laboratory' },
-];
-
-const RELIGION_OPTIONS = [
-  { value: 'islam', label: 'Islam' },
-  { value: 'hindu', label: 'Hindu' },
-  { value: 'christian', label: 'Christian' },
-  { value: 'other', label: 'Other' },
-];
-
-const NATIONALITY_OPTIONS = [
-  { value: 'pakistani', label: 'Pakistani' },
-  { value: 'afghan', label: 'Afghan' },
-  { value: 'other', label: 'Other' },
-];
-
-const COUNTRY_OPTIONS = [{ value: 'pakistan', label: 'PAKISTAN' }];
-
-const PROVINCE_OPTIONS = [
-  { value: 'kp', label: 'Khyber Pakhtunkhwa' },
-  { value: 'punjab', label: 'Punjab' },
-  { value: 'sindh', label: 'Sindh' },
-];
-
-const DISTRICT_OPTIONS = [
-  { value: 'peshawar', label: 'Peshawar' },
-  { value: 'mardan', label: 'Mardan' },
-  { value: 'swat', label: 'Swat' },
-];
-
-const KIN_TITLE_OPTIONS = [
-  { value: 'mr', label: 'Mr.' },
-  { value: 'miss', label: 'Miss' },
-  { value: 'mrs', label: 'Mrs.' },
-];
-
-const KIN_GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-];
-
-const KIN_RELATION_OPTIONS = [
-  { value: 'son', label: 'Son' },
-  { value: 'daughter', label: 'Daughter' },
-  { value: 'spouse', label: 'Spouse' },
-  { value: 'parent', label: 'Parent' },
-  { value: 'sibling', label: 'Sibling' },
-  { value: 'other', label: 'Other' },
-];
-
-const REQUIRED_RULE = (msg) => [
-  {
-    required: true,
-    whitespace: true,
-    message: msg,
-    validateTrigger: ['onChange', 'onSubmit'],
-  },
-];
-
-const dobAgeValidator = (_, value) => {
-  const age = value?.age?.trim?.() ?? '';
-  if (!age || Number(age) <= 0) {
-    return Promise.reject(new Error('Age is required'));
-  }
-  return Promise.resolve();
-};
-
-const dobAgeRules = [
-  { validator: dobAgeValidator, validateTrigger: ['onChange', 'onSubmit'] },
-];
-
-function DobAgeFormControl({ value, onChange }) {
-  return (
-    <DobAgeField
-      embedded
-      className="patient-reg-dob-age"
-      age={value?.age ?? ''}
-      unit={value?.unit ?? DOB_AGE_UNITS.years}
-      onChange={onChange}
-    />
-  );
-}
-
-const initialValues = {
-  title: 'mr',
-  guardianRelation: 'so',
-  gender: 'male',
-  city: 'peshawar',
-  town: 'town-1',
-  dobAge: { age: '', unit: DOB_AGE_UNITS.years, dob: null },
-  religion: 'islam',
-  nationality: 'pakistani',
-  country: 'pakistan',
-  province: 'kp',
-  district: 'peshawar',
-  addressCity: 'peshawar',
-  kinTitle: 'mr',
-  kinGender: 'male',
-  kinRelation: 'son',
-  kinCountry: 'pakistan',
-  primaryCategory: 'general',
-  labCategory: 'friendMedical',
-  speciality: 'gynae',
-  doctor: 'nabeela',
-  checkupType: 'routine',
-  panelReference: '700',
-};
+import {
+  PATIENT_FORM_INITIAL_VALUES,
+  PATIENT_FIELDS,
+  ADDRESS_FIELDS,
+  KIN_FIELDS,
+  GENERAL_FIELDS,
+  GENERAL_B2B_FIELDS,
+} from './patient-registration-fields';
 
 const DEFAULT_OPEN_PANELS = ['patient', 'general'];
 
@@ -266,254 +90,44 @@ export default function PatientRegistrationForm() {
         key: 'patient',
         label: 'Patient Information',
         children: (
-          <FormGrid columns={4} className="patient-reg-section-grid">
-            <FormFloatingField name="title" label="Title">
-              <Select className={controlClass} options={TITLE_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField
-              name="firstName"
-              label="First Name"
-              required
-              rules={REQUIRED_RULE('First name is required')}
-              validateTrigger={['onChange', 'onSubmit']}
-            >
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="lastName" label="Last Name">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField
-              name="dobAge"
-              label="DOB / Age"
-              required
-              rules={dobAgeRules}
-              validateTrigger={['onChange', 'onSubmit']}
-            >
-              <DobAgeFormControl />
-            </FormFloatingField>
-
-            <FormFloatingField name="gender" label="Patient Gender">
-              <Select className={controlClass} options={GENDER_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="cnic" label="CNIC #">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField
-              name="contactNo"
-              label="Contact #"
-              required
-              rules={REQUIRED_RULE('Contact number is required')}
-              validateTrigger={['onChange', 'onSubmit']}
-            >
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="city" label="City">
-              <Select className={controlClass} options={CITY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="town" label="Town">
-              <Select className={controlClass} options={TOWN_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="guardianRelation" label="Guardian">
-              <Select className={controlClass} options={RELATION_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField
-              name="guardianFirstName"
-              label="Guardian First Name"
-              required
-              rules={REQUIRED_RULE('Gaurdian first name is required')}
-              validateTrigger={['onChange', 'onSubmit']}
-            >
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="guardianLastName" label="Guardian Last Name">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="email" label="Email">
-              <Input className={controlClass} type="email" />
-            </FormFloatingField>
-
-            <FormFloatingField name="presentAddress" label="Present Address">
-              <Input className={controlClass} />
-            </FormFloatingField>
-          </FormGrid>
+          <DynamicForm
+            fields={PATIENT_FIELDS}
+            gutter={[12, 0]}
+            className="patient-reg-section-grid"
+          />
         ),
       },
       {
         key: 'address',
         label: 'Address Information',
         children: (
-          <FormGrid columns={4} className="patient-reg-section-grid">
-            <FormFloatingField name="religion" label="Religion">
-              <Select className={controlClass} options={RELIGION_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="country" label="Country">
-              <Select className={controlClass} options={COUNTRY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="province" label="Province">
-              <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="district" label="District">
-              <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="addressCity" label="City">
-              <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="nationality" label="Nationality">
-              <Select className={controlClass} options={NATIONALITY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="addressEmail" label="Email">
-              <Input className={controlClass} type="email" />
-            </FormFloatingField>
-
-            <div className="patient-reg-checkbox-slot">
-              <Form.Item name="sameForNextOfKin" valuePropName="checked" noStyle>
-                <Checkbox>Same for Next of Kin</Checkbox>
-              </Form.Item>
-            </div>
-
-            <FormFloatingField name="permanentAddress" label="Permanent Address" col="full">
-              <Input.TextArea className={controlClass} rows={2} />
-            </FormFloatingField>
-          </FormGrid>
+          <DynamicForm
+            fields={ADDRESS_FIELDS}
+            gutter={[12, 0]}
+            className="patient-reg-section-grid"
+          />
         ),
       },
       {
         key: 'kin',
         label: 'Next of Kin Information',
         children: (
-          <FormGrid columns={4} className="patient-reg-section-grid">
-            <FormFloatingField name="kinTitle" label="Title">
-              <Select className={controlClass} options={KIN_TITLE_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinGender" label="Gender">
-              <Select className={controlClass} options={KIN_GENDER_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinRelation" label="Relation with patient">
-              <Select className={controlClass} options={KIN_RELATION_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinFirstName" label="First Name">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinMiddleName" label="Middle Name">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinLastName" label="Last Name">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinCnic" label="CNIC #">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinContact" label="Contact #">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinCountry" label="Country">
-              <Select className={controlClass} options={COUNTRY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinProvince" label="Province">
-              <Select className={controlClass} options={PROVINCE_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinDistrict" label="District">
-              <Select className={controlClass} options={DISTRICT_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinCity" label="City">
-              <Select className={controlClass} options={CITY_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinAddress1" label="Address 1">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="kinAddress2" label="Address 2">
-              <Input className={controlClass} />
-            </FormFloatingField>
-          </FormGrid>
+          <DynamicForm
+            fields={KIN_FIELDS}
+            gutter={[12, 0]}
+            className="patient-reg-section-grid"
+          />
         ),
       },
       {
         key: 'general',
         label: 'General Information',
-        children: isB2bLabCategory ? (
-          <FormGrid columns={4} className="patient-reg-section-grid">
-            <FormFloatingField name="labCategory" label="Lab Partner">
-              <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField
-              name="selectedLab"
-              label="Select Lab"
-              required
-              rules={REQUIRED_RULE('Please select a lab')}
-              validateTrigger={['onChange', 'onSubmit']}
-            >
-              <Select className={controlClass} options={LAB_OPTIONS} allowClear />
-            </FormFloatingField>
-          </FormGrid>
-        ) : (
-          <FormGrid columns={4} className="patient-reg-section-grid">
-            <FormFloatingField name="speciality" label="Speciality/Dept">
-              <Select className={controlClass} options={SPECIALITY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="doctor" label="Doctor">
-              <Select className={controlClass} options={DOCTOR_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="checkupType" label="Checkup Type">
-              <Select className={controlClass} options={CHECKUP_TYPE_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="panelReference" label="Reference #">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="primaryCategory" label="Category">
-              <Select className={controlClass} options={PRIMARY_CATEGORY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="labCategory" label="Lab Partner">
-              <Select className={controlClass} options={LAB_CATEGORY_OPTIONS} />
-            </FormFloatingField>
-
-            <FormFloatingField name="complaint" label="Complaint">
-              <Select className={controlClass} options={COMPLAINT_OPTIONS} allowClear />
-            </FormFloatingField>
-
-            <FormFloatingField name="complaintOther" label="Other">
-              <Input className={controlClass} />
-            </FormFloatingField>
-
-            <FormFloatingField name="comments" label="Comments">
-              <Input className={controlClass} />
-            </FormFloatingField>
-          </FormGrid>
+        children: (
+          <DynamicForm
+            fields={isB2bLabCategory ? GENERAL_B2B_FIELDS : GENERAL_FIELDS}
+            gutter={[12, 0]}
+            className="patient-reg-section-grid"
+          />
         ),
       },
     ],
@@ -585,7 +199,7 @@ export default function PatientRegistrationForm() {
         className="patient-registration-form"
         requiredMark={false}
         scrollToFirstError
-        initialValues={initialValues}
+        initialValues={PATIENT_FORM_INITIAL_VALUES}
         onValuesChange={(changed) => {
           handleFormChangeClearErrors(form, changed, (values) => {
             if ('labCategory' in values && values.labCategory === 'b2b') {
@@ -599,33 +213,33 @@ export default function PatientRegistrationForm() {
         }}
       >
         <FormFieldPrefixProvider prefix="patient-reg">
-        <Collapse
-          items={collapseItems}
-          activeKey={activePanels}
-          onChange={setActivePanels}
-          destroyOnHidden={false}
-          classNames={{
-            root: 'patient-registration-collapse',
-            header: 'patient-reg-collapse-header',
-            title: 'patient-reg-collapse-title',
-          }}
-          expandIconPlacement="end"
-          expandIcon={({ isActive }) =>
-            isActive ? (
-              <DownOutlined className="patient-reg-collapse-icon" aria-hidden />
-            ) : (
-              <UpOutlined className="patient-reg-collapse-icon" aria-hidden />
-            )
-          }
-        />
-        <div className="patient-registration-actions">
-          <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
-            Clear
-          </Button>
-          <Button type="primary" className="patient-reg-btn-save" onClick={handleSave}>
-            Save &amp; Print
-          </Button>
-        </div>
+          <Collapse
+            items={collapseItems}
+            activeKey={activePanels}
+            onChange={setActivePanels}
+            destroyOnHidden={false}
+            classNames={{
+              root: 'patient-registration-collapse',
+              header: 'patient-reg-collapse-header',
+              title: 'patient-reg-collapse-title',
+            }}
+            expandIconPlacement="end"
+            expandIcon={({ isActive }) =>
+              isActive ? (
+                <DownOutlined className="patient-reg-collapse-icon" aria-hidden />
+              ) : (
+                <UpOutlined className="patient-reg-collapse-icon" aria-hidden />
+              )
+            }
+          />
+          <div className="patient-registration-actions">
+            <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+              Clear
+            </Button>
+            <Button type="primary" className="patient-reg-btn-save" onClick={handleSave}>
+              Save &amp; Print
+            </Button>
+          </div>
         </FormFieldPrefixProvider>
       </Form>
     </div>

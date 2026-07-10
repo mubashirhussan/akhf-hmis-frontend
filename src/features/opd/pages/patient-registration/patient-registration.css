@@ -20,8 +20,7 @@
   column-gap: 12px;
 }
 
-.patient-registration-form .patient-reg-section-grid > .floating-field {
-  grid-column: span 1;
+.patient-registration-form .patient-reg-section-grid .floating-field {
   max-width: 100%;
   margin-top: 6px;
 }
@@ -34,18 +33,31 @@
   margin-bottom: 0;
 }
 
-.patient-registration-form .patient-reg-section-grid .ant-form-item-explain-error {
-  display: block !important;
-  margin-top: 4px;
-  font-size: var(--font-size-base);
-  line-height: 1.25;
-  color: var(--app-error);
+.patient-registration-form .patient-reg-section-grid .floating-field .ant-form-item-explain-error {
+  display: none !important;
 }
 
 .patient-registration-form .floating-field:has(.ant-input-status-error) .floating-label,
 .patient-registration-form .floating-field:has(.ant-select-status-error) .floating-label,
 .patient-registration-form .floating-field:has(.ant-input-affix-wrapper-status-error) .floating-label {
   color: var(--app-error) !important;
+}
+
+/* Red border via Ant Design's native status-error classes (onChange + onSubmit validation) */
+.patient-registration-form .floating-field .ant-input-status-error,
+.patient-registration-form .floating-field .ant-input-affix-wrapper-status-error,
+.patient-registration-form .floating-field .ant-select-status-error .ant-select-selector {
+  border-color: var(--app-error) !important;
+  box-shadow: none !important;
+}
+
+.patient-registration-form .floating-field .ant-input-status-error:focus,
+.patient-registration-form .floating-field .ant-input-status-error:hover,
+.patient-registration-form .floating-field .ant-input-affix-wrapper-status-error:focus-within,
+.patient-registration-form .floating-field .ant-select-status-error:hover .ant-select-selector,
+.patient-registration-form .floating-field .ant-select-status-error.ant-select-focused .ant-select-selector {
+  border-color: var(--app-error) !important;
+  box-shadow: none !important;
 }
 
 .patient-registration-form.patient-reg-validation-failed [data-invalid='true'] .floating-label,
@@ -159,6 +171,10 @@
 }
 
 .patient-registration-form .ant-form-item-label {
+  display: none !important;
+}
+
+.patient-registration-form .floating-field .ant-form-item-label {
   display: none !important;
 }
 
