@@ -131,3 +131,11 @@
 .test-booking-linkage-table .ant-table-tbody > tr:hover > td {
   background: #f8fafc !important;
 }
+
+/* Let modal body scroll; avoid nested table scrollbar from global overflow rules */
+.test-booking-modal-root .test-booking-linkage-table .ant-table-container,
+.test-booking-modal-root .test-booking-linkage-table .ant-table-content,
+.test-booking-modal-root .test-booking-linkage-table .ant-table-body {
+  overflow: visible !important;
+  max-height: none !important;
+}
