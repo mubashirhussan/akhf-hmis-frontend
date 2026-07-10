@@ -19,6 +19,14 @@ export const opdEndpoints = api.injectEndpoints({
       }),
       invalidatesTags: ['Patient'],
     }),
+    // Real API: GET /api/registration/patients/get-by-id?RegNo=...
+    getPatientById: builder.query({
+      query: (RegNo) => ({
+        url: '/registration/patients/get-by-id',
+        params: { RegNo },
+      }),
+      providesTags: ['Patient'],
+    }),
     searchWalkInPatients: builder.query({
       queryFn: async (filters) => ({
         data: searchWalkInPatients(MOCK_WALK_IN_PATIENTS, filters),
@@ -43,4 +51,5 @@ export const {
   useLazySearchWalkInServicesQuery,
   useGetWalkInDoctorsQuery,
   useCreatePatientMutation,
+  useLazyGetPatientByIdQuery,
 } = opdEndpoints;

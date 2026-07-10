@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { App, Checkbox, Col, Input, Row, Select } from "antd";
+import { useMemo, useState } from "react";
+import { App, Checkbox, Col, Row, Select } from "antd";
 import { useConfirm } from "@/hooks/useConfirm";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import AddedServicesPanel from "@/features/opd/components/AddedServicesPanel";
@@ -11,9 +10,7 @@ import {
   MOCK_SERVICES,
   formatPkr,
   formatServiceDateTime,
-  paginateServices,
 } from "@/features/opd/api/mock-walk-in-services";
-import { useLazySearchWalkInServicesQuery } from "@/features/opd/api/opdEndpoints";
 
 const SERVICE_CATEGORY_OPTIONS = [
   { value: "all", label: "All Category" },
@@ -40,38 +37,29 @@ export default function SearchServicesSection({ variant = "full" }) {
   const { confirmDelete } = useConfirm();
   const isSidebar = variant === "sidebar";
   const [category, setCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [resultsPage, setResultsPage] = useState(1);
   const [addedServices, setAddedServices] = useState([]);
-  const [searchServicesQuery] = useLazySearchWalkInServicesQuery();
 
-  const { items: pagedResults, total: resultsTotal } = useMemo(
-    () => paginateServices(searchResults, resultsPage),
-    [searchResults, resultsPage],
+  // Filter MOCK_SERVICES by selected category — no search input needed
+  const serviceOptions = useMemo(
+    () =>
+      MOCK_SERVICES.filter(
+        (s) => category === "all" || s.category === category,
+      ).map((s) => ({
+        value: s.id,
+        label: `${s.name} (${formatPkr(s.price)})`,
+      })),
+    [category],
   );
 
-  useEffect(() => {
-    const query = searchQuery.trim();
+  const selectedServiceValues = useMemo(
+    () => addedServices.map((row) => row.serviceId),
+    [addedServices],
+  );
 
-    if (!query) {
-      setHasSearched(false);
-      setSearchResults([]);
-      setResultsPage(1);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      void searchServicesQuery({ category, query }).then(({ data: matched = [] }) => {
-        setSearchResults(matched);
-        setResultsPage(1);
-        setHasSearched(true);
-      });
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [category, searchQuery, searchServicesQuery]);
+  const selectedServiceSet = useMemo(
+    () => new Set(selectedServiceValues),
+    [selectedServiceValues],
+  );
 
   const handleSelectedServicesChange = (selectedIds) => {
     setAddedServices((prev) => {
@@ -92,9 +80,7 @@ export default function SearchServicesSection({ variant = "full" }) {
   const handleQuantityChange = (rowId, quantity) => {
     const nextQty = Math.max(1, quantity);
     setAddedServices((prev) =>
-      prev.map((row) =>
-        row.id === rowId ? { ...row, quantity: nextQty } : row,
-      ),
+      prev.map((row) => (row.id === rowId ? { ...row, quantity: nextQty } : row)),
     );
   };
 
@@ -115,10 +101,6 @@ export default function SearchServicesSection({ variant = "full" }) {
 
   const handleCancel = () => {
     setAddedServices([]);
-    setHasSearched(false);
-    setSearchResults([]);
-    setSearchQuery("");
-    setResultsPage(1);
   };
 
   const handleSave = () => {
@@ -126,26 +108,8 @@ export default function SearchServicesSection({ variant = "full" }) {
     // TODO: wire save walk-in record API
   };
 
-  const selectedServiceValues = useMemo(
-    () => addedServices.map((row) => row.serviceId),
-    [addedServices],
-  );
-
-  const selectedServiceSet = useMemo(
-    () => new Set(selectedServiceValues),
-    [selectedServiceValues],
-  );
-
-  const serviceSelectOptions = useMemo(
-    () =>
-      pagedResults.map((service) => ({
-        value: service.id,
-        label: `${service.name} (${formatPkr(service.price)})`,
-      })),
-    [pagedResults],
-  );
-
-  const serviceResultsDropdown = (
+  // The service select dropdown — category drives its options, no search input
+  const serviceSelectDropdown = (
     <div className="walk-in-service-results-dropdown-wrap">
       <Select
         size="middle"
@@ -154,9 +118,8 @@ export default function SearchServicesSection({ variant = "full" }) {
         className={`w-full ${FIELD_CONTROL_CLASS}`}
         placeholder="Select services"
         value={selectedServiceValues}
-        options={serviceSelectOptions}
+        options={serviceOptions}
         onChange={handleSelectedServicesChange}
-        disabled={!hasSearched}
         maxTagCount={1}
         maxTagTextLength={26}
         maxTagPlaceholder={(omittedValues) => `+${omittedValues.length}`}
@@ -171,9 +134,6 @@ export default function SearchServicesSection({ variant = "full" }) {
           </div>
         )}
       />
-      {/* <p className="walk-in-service-results-count">
-        Showing {pagedResults.length} of {resultsTotal} results
-      </p> */}
     </div>
   );
 
@@ -185,55 +145,65 @@ export default function SearchServicesSection({ variant = "full" }) {
           className={`walk-in-services-filter-category ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
-          onChange={setCategory}
+          onChange={(val) => {
+            setCategory(val);
+          }}
         />
-        <Input
-          size="middle"
-          className={`walk-in-services-filter-input ${FIELD_CONTROL_CLASS}`}
-          placeholder="Search Services"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          autoComplete="off"
-          data-lpignore="true"
-          data-1p-ignore="true"
-        />
+        {serviceSelectDropdown}
       </div>
-      <div className="walk-in-services-filter-multiselect">{serviceResultsDropdown}</div>
     </div>
   ) : (
     <Row gutter={[12, 12]} align="stretch" className="walk-in-services-filters-grid">
-      <Col xs={24} md={8} className="walk-in-services-filters-grid-col">
+      <Col xs={24} md={10} className="walk-in-services-filters-grid-col">
         <Select
           size="middle"
           className={`w-full ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
-          onChange={setCategory}
+          onChange={(val) => {
+            setCategory(val);
+          }}
         />
       </Col>
-      <Col xs={24} md={16} className="walk-in-services-filters-grid-col">
-        <Row
-          gutter={[12, 12]}
-          align="stretch"
-          wrap={false}
-          className="walk-in-services-filters-grid-right"
-        >
-          <Col span={10}>
-            <Input
-              size="middle"
-              className={FIELD_CONTROL_CLASS}
-              placeholder="Search Services"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoComplete="off"
-              data-lpignore="true"
-              data-1p-ignore="true"
-            />
-          </Col>
-          <Col span={14}>{serviceResultsDropdown}</Col>
-        </Row>
+      <Col xs={24} md={13} className="walk-in-services-filters-grid-col">
+        {serviceSelectDropdown}
       </Col>
     </Row>
+  );
+
+  const servicesBody = isSidebar ? (
+    <div className="walk-in-services-body walk-in-services-body--sidebar">
+      <div className="walk-in-services-content walk-in-services-content--stacked">
+        <div className="walk-in-services-content-row">
+          <AddedServicesPanel
+            variant="sidebar"
+            services={addedServices}
+            doctors={MOCK_DOCTORS}
+            onQuantityChange={handleQuantityChange}
+            onDoctorChange={handleDoctorChange}
+            onRemove={handleRemove}
+            onCancel={handleCancel}
+            onSave={handleSave}
+          />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="walk-in-services-body">
+      <div className="walk-in-services-content walk-in-services-content--stacked">
+        <div className="walk-in-services-content-row walk-in-services-content-row--full">
+          <AddedServicesPanel
+            services={addedServices}
+            doctors={MOCK_DOCTORS}
+            onQuantityChange={handleQuantityChange}
+            onDoctorChange={handleDoctorChange}
+            onRemove={handleRemove}
+            onCancel={handleCancel}
+            onSave={handleSave}
+          />
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -251,52 +221,7 @@ export default function SearchServicesSection({ variant = "full" }) {
           </div>
           <div className="section-header-extra">{searchFilters}</div>
         </div>
-        {!hasSearched ? (
-          <div className="walk-in-services-illustration">
-            <Image
-              src="/hmis-base-img.svg"
-              alt="Search services illustration"
-              width={200}
-              height={175}
-              className="walk-in-services-illustration-img"
-              priority
-              style={{ width: 'auto', height: 'auto' }}
-            />
-          </div>
-        ) : isSidebar ? (
-          <div className="walk-in-services-body walk-in-services-body--sidebar">
-            <div className="walk-in-services-content walk-in-services-content--stacked">
-              <div className="walk-in-services-content-row">
-                <AddedServicesPanel
-                  variant="sidebar"
-                  services={addedServices}
-                  doctors={MOCK_DOCTORS}
-                  onQuantityChange={handleQuantityChange}
-                  onDoctorChange={handleDoctorChange}
-                  onRemove={handleRemove}
-                  onCancel={handleCancel}
-                  onSave={handleSave}
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="walk-in-services-body">
-            <div className="walk-in-services-content walk-in-services-content--stacked">
-              <div className="walk-in-services-content-row walk-in-services-content-row--full">
-                <AddedServicesPanel
-                  services={addedServices}
-                  doctors={MOCK_DOCTORS}
-                  onQuantityChange={handleQuantityChange}
-                  onDoctorChange={handleDoctorChange}
-                  onRemove={handleRemove}
-                  onCancel={handleCancel}
-                  onSave={handleSave}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        {servicesBody}
       </div>
     </section>
   );
