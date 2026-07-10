@@ -11,6 +11,14 @@ import {
 
 export const opdEndpoints = api.injectEndpoints({
   endpoints: (builder) => ({
+    createPatient: builder.mutation({
+      query: (body) => ({
+        url: '/registration/patients/create',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Patient'],
+    }),
     searchWalkInPatients: builder.query({
       queryFn: async (filters) => ({
         data: searchWalkInPatients(MOCK_WALK_IN_PATIENTS, filters),
@@ -34,4 +42,5 @@ export const {
   useLazySearchWalkInPatientsQuery,
   useLazySearchWalkInServicesQuery,
   useGetWalkInDoctorsQuery,
+  useCreatePatientMutation,
 } = opdEndpoints;

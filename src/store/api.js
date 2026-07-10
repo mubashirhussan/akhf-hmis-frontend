@@ -71,6 +71,7 @@ export const api = createApi({
     "WardBed",
     "BedLocation",
     "UserLogin",
+    "Patient"
   ],
   endpoints: () => ({}),
 });
