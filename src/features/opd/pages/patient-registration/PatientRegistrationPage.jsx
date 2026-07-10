@@ -19,6 +19,8 @@ import {
   GENERAL_FIELDS,
   GENERAL_B2B_FIELDS,
 } from './patient-registration-fields';
+import { useCreatePatientMutation } from '@/features/opd/api/opdEndpoints';
+import { buildPatientPayload } from '@/features/opd/utils/buildPatientPayload';
 
 const DEFAULT_OPEN_PANELS = ['patient', 'general'];
 
@@ -80,6 +82,7 @@ export default function PatientRegistrationForm() {
   const [form] = Form.useForm();
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
   const [pendingSubmitErrors, setPendingSubmitErrors] = useState(null);
+  const [createPatient, { isLoading: isSaving }] = useCreatePatientMutation();
   const labCategory = Form.useWatch('labCategory', form);
 
   const isB2bLabCategory = labCategory === 'b2b';
@@ -168,9 +171,22 @@ export default function PatientRegistrationForm() {
       const values = await form.validateFields();
       setPendingSubmitErrors(null);
       clearPatientRegValidationState();
-      message.success('Patient registration saved');
-      console.info('Patient registration', values);
+
+      const payload = buildPatientPayload(values, {
+        hospitalID: 1,  // TODO: replace with value from your auth/session context
+        empID: 1,       // TODO: replace with logged-in user's empID
+      });
+
+      await createPatient(payload).unwrap();
+
+      message.success('Patient registered successfully');
+      form.resetFields();
+      setActivePanels(DEFAULT_OPEN_PANELS);
     } catch (error) {
+      if (error?.status || error?.data) {
+        message.error(error?.data?.message ?? 'Registration failed. Please try again.');
+        return;
+      }
       const errorFields = error?.errorFields ?? [];
       if (errorFields.length > 0) {
         const panelsToOpen = new Set(activePanels);
@@ -236,7 +252,7 @@ export default function PatientRegistrationForm() {
             <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
               Clear
             </Button>
-            <Button type="primary" className="patient-reg-btn-save" onClick={handleSave}>
+            <Button type="primary" className="patient-reg-btn-save" onClick={handleSave} loading={isSaving}>
               Save &amp; Print
             </Button>
           </div>
