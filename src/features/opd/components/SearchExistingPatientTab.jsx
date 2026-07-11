@@ -5,14 +5,14 @@ import { App, Avatar, Button, Input, Modal } from 'antd';
 import DetailSection from '@/components/ui/DetailSection';
 import DataTable from '@/components/ui/DataTable';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
-import { useLazyGetPatientByIdQuery } from '@/features/opd/api/opdEndpoints';
+import {
+  useLazyGetPatientByIdQuery,
+  useGetConsultantsQuery,
+  useRegisterPatientWithVisitMutation,
+} from '@/features/opd/api/opdEndpoints';
 import SearchServicesSection from '@/features/opd/components/SearchServicesSection';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 
-/**
- * Maps the raw API response (Pascal-cased) to the shape the table
- * columns and PatientDetailsPanel expect.
- */
 function mapApiPatient(raw) {
   const prefix = (raw.Prefix ?? '').trim();
   const nameParts = [raw.PFName, raw.PMName, raw.PLName].filter(Boolean).join(' ');
@@ -48,21 +48,22 @@ function mapApiPatient(raw) {
     patientType: raw.Patient_Type ?? '—',
     visitDateTime,
     picture: raw.Picture_Path ?? null,
+    raw,
   };
 }
 
 function PatientDetailsPanel({ patient }) {
   const patientFields = [
-    { key: 'mr',          label: 'Reg No',           value: patient.mrNo },
-    { key: 'name',        label: 'Patient Name',      value: patient.name },
-    { key: 'gender',      label: 'Gender',            value: patient.gender },
-    { key: 'age',         label: 'Age',               value: patient.ageLabel },
-    { key: 'mobile',      label: 'Mobile No',         value: patient.mobile },
-    { key: 'cnic',        label: 'CNIC',              value: patient.cnic },
-    { key: 'email',       label: 'Email',             value: patient.email },
-    { key: 'type',        label: 'Patient Type',      value: patient.patientType },
-    { key: 'visit',       label: 'Visit Date & Time', value: patient.visitDateTime },
-    { key: 'address',     label: 'Address',           value: patient.address },
+    { key: 'mr',       label: 'Reg No',           value: patient.mrNo },
+    { key: 'name',     label: 'Patient Name',      value: patient.name },
+    { key: 'gender',   label: 'Gender',            value: patient.gender },
+    { key: 'age',      label: 'Age',               value: patient.ageLabel },
+    { key: 'mobile',   label: 'Mobile No',         value: patient.mobile },
+    { key: 'cnic',     label: 'CNIC',              value: patient.cnic },
+    { key: 'email',    label: 'Email',             value: patient.email },
+    { key: 'type',     label: 'Patient Type',      value: patient.patientType },
+    { key: 'visit',    label: 'Visit Date & Time', value: patient.visitDateTime },
+    { key: 'address',  label: 'Address',           value: patient.address },
   ];
 
   return (
@@ -79,8 +80,11 @@ export default function SearchExistingPatientTab() {
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isPatientDetailsModalOpen, setIsPatientDetailsModalOpen] = useState(false);
+  const [addedServices, setAddedServices] = useState([]);
 
   const [fetchPatient, { isLoading }] = useLazyGetPatientByIdQuery();
+  const { data: consultantOptions = [] } = useGetConsultantsQuery();
+  const [registerPatient, { isLoading: isSaving }] = useRegisterPatientWithVisitMutation();
 
   const handleSearch = async () => {
     const query = regNo.trim();
@@ -105,6 +109,7 @@ export default function SearchExistingPatientTab() {
     setHasSearched(true);
     setSelectedPatient(null);
     setIsPatientDetailsModalOpen(false);
+    setAddedServices([]);
   };
 
   const handleClear = () => {
@@ -113,6 +118,7 @@ export default function SearchExistingPatientTab() {
     setHasSearched(false);
     setSelectedPatient(null);
     setIsPatientDetailsModalOpen(false);
+    setAddedServices([]);
   };
 
   const handlePatientSelect = (patient) => {
@@ -122,6 +128,101 @@ export default function SearchExistingPatientTab() {
 
   const handleClosePatientModal = () => {
     setIsPatientDetailsModalOpen(false);
+  };
+
+  const handleSave = async () => {
+    if (!selectedPatient) {
+      message.error('Please select a patient before saving services.');
+      return;
+    }
+
+    if (addedServices.length === 0) {
+      message.error('Please add at least one service before saving.');
+      return;
+    }
+
+    const raw = selectedPatient.raw ?? {};
+    const now = new Date().toISOString();
+    const firstService = addedServices[0];
+    const totalAmount = addedServices.reduce(
+      (sum, row) => sum + row.price * row.quantity - row.discount,
+      0,
+    );
+
+    const payload = {
+      prefix: raw.Prefix ?? null,
+      pfName: raw.PFName ?? null,
+      pmName: raw.PMName ?? null,
+      plName: raw.PLName ?? null,
+      relation: raw.Relation ?? null,
+      rfName: raw.RFName ?? null,
+      rmName: raw.RMName ?? null,
+      rlName: raw.RLName ?? null,
+      sexID: raw.SexID ?? 0,
+      age: raw.Age ?? 0,
+      regDateTime: raw.RegDateTime ?? now,
+      countryCode: raw.CountryCode ?? 0,
+      provinceID: raw.ProvinceID ?? 0,
+      districtID: raw.DistrictID ?? 0,
+      tehsil: raw.Tehsil ?? 0,
+      zipcode: raw.ZipCode ?? 0,
+      house_No: raw.House_No ?? null,
+      streetAddress: raw.StreetAddress ?? null,
+      city: raw.City ?? null,
+      colony: raw.Colony ?? null,
+      homePhone: raw.HomePhone ?? null,
+      mobilePhone: raw.MobilePhone ?? null,
+      nic: raw.CNIC ?? null,
+      dateOfBirth: raw.DateOfBirth ?? null,
+      regNo: raw.RegNo ?? null,
+      dateTime: now,
+      deptID: raw.DeptID ?? 0,
+      empID: firstService.doctorId ?? raw.EmpID ?? 0,
+      diagonosis: raw.Diagonosis ?? null,
+      patientType: raw.Patient_Type ?? null,
+      ageType: raw.AgeType ?? null,
+      referFrom: raw.ReferFrom ?? null,
+      to_sub_Dept: raw.To_Sub_Dept ?? 0,
+      patient_Type: raw.Patient_Type ?? null,
+      pt_Cast: raw.Pt_Cast ?? null,
+      payment_Status: raw.Payment_Status ?? null,
+      passport_No: raw.Passport_No ?? null,
+      email_address: raw.email_address ?? null,
+      doctorID: firstService.doctorId ?? raw.DoctorID ?? 0,
+      religion: raw.Religion ?? 0,
+      nationality: raw.Nationality ?? 0,
+      party_ID: raw.Party_ID ?? 0,
+      party_Desg_ID: raw.Party_Desg_ID ?? 0,
+      registrationType: raw.RegistrationType ?? null,
+      emp_No: raw.Emp_No ?? null,
+      room_No: raw.Room_No ?? null,
+      s_ID: firstService.serviceId,
+      amount: firstService.price,
+      panelAmounts: totalAmount,
+      hospital_Id: raw.Hospital_Id ?? 0,
+      emp_DeptId: raw.Emp_DeptId ?? 0,
+      emp_SubDeptId: raw.Emp_SubDeptId ?? 0,
+      patient_Type_Id: raw.Patient_Type_Id ?? 0,
+      referenceNo: raw.ReferenceNo ?? 0,
+      doctor_Subdept_Id: raw.Doctor_Subdept_Id ?? 0,
+      checkupType: raw.CheckupType ?? null,
+    };
+
+    try {
+      const result = await registerPatient(payload).unwrap();
+      if (result?.success) {
+        message.success('Services saved successfully.');
+        setAddedServices([]);
+      } else {
+        message.error(result?.message ?? 'Save failed. Please try again.');
+      }
+    } catch {
+      message.error('Save failed. Please try again.');
+    }
+  };
+
+  const handleCancel = () => {
+    setAddedServices([]);
   };
 
   const patientCountLabel = useMemo(() => {
@@ -265,8 +366,14 @@ export default function SearchExistingPatientTab() {
         />
       </section>
 
-      {/* Services section — always visible, table open by default */}
-      <SearchServicesSection />
+      <SearchServicesSection
+        addedServices={addedServices}
+        onAddedServicesChange={setAddedServices}
+        consultantOptions={consultantOptions}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        isSaving={isSaving}
+      />
 
       <Modal
         className="patient-details-modal"

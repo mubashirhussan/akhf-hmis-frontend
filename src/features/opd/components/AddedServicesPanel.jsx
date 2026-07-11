@@ -14,12 +14,13 @@ import {
 export default function AddedServicesPanel({
   variant = 'full',
   services,
-  doctors,
+  consultantOptions = [],
   onQuantityChange,
   onDoctorChange,
   onRemove,
   onCancel,
   onSave,
+  isSaving = false,
 }) {
   const isSidebar = variant === 'sidebar';
 
@@ -100,8 +101,10 @@ export default function AddedServicesPanel({
                 <Select
                   className={`w-full ${FIELD_CONTROL_CLASS}`}
                   value={record.doctorId}
-                  options={doctors.map((d) => ({ value: d.id, label: d.name }))}
+                  options={consultantOptions}
                   onChange={(value) => onDoctorChange(record.id, value)}
+                  placeholder="Select"
+                  allowClear
                 />
               ),
             },
@@ -124,7 +127,7 @@ export default function AddedServicesPanel({
         ),
       },
     ],
-    [isSidebar, doctors, onQuantityChange, onDoctorChange, onRemove],
+    [isSidebar, consultantOptions, onQuantityChange, onDoctorChange, onRemove],
   );
 
   const tableScroll = useMemo(
@@ -138,8 +141,6 @@ export default function AddedServicesPanel({
     <div
       className={`walk-in-added-services ${isSidebar ? 'walk-in-added-services--sidebar' : 'walk-in-added-services--full'}`}
     >
-      {/* <h3 className="walk-in-added-services-title">Added Services</h3> */}
-
       <DataTable
         wrapClassName="walk-in-added-services-table-wrap"
         columns={columns}
@@ -161,7 +162,13 @@ export default function AddedServicesPanel({
         <Button className="walk-in-btn-cancel" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="primary" className="walk-in-btn-save" onClick={onSave} disabled={!services.length}>
+        <Button
+          type="primary"
+          className="walk-in-btn-save"
+          onClick={onSave}
+          disabled={!services.length}
+          loading={isSaving}
+        >
           Save Record
         </Button>
       </div>
