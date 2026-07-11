@@ -7,15 +7,19 @@ import {
   PATIENT_TYPE_OPTIONS,
   CHECKUP_TYPE_OPTIONS,
   LAB_OPTIONS,
+  DEPARTMENT_OPTIONS,
+  INSURER_OPTIONS,
   dobAgeRules,
 } from './walk-in-patient-options';
 
 export const WALK_IN_INITIAL_VALUES = {
   title: 'mr',
   relation: 'so',
+  department: 'laboratory',
   category: 'general',
   patientType: 'opd',
   checkupType: 'emergency',
+  insurer: 'ptcl',
   dobAge: { age: '', unit: DOB_AGE_UNITS.years, dob: null },
 };
 
@@ -136,6 +140,14 @@ export const buildWalkInBaseFields = ({ genderOptions = [], religionOptions = []
 export const buildWalkInVisitFields = ({ consultantOptions = [] } = {}) => [
   {
     type: 'select',
+    name: 'department',
+    label: 'Department',
+    floating: true,
+    span: 6,
+    options: DEPARTMENT_OPTIONS,
+  },
+  {
+    type: 'select',
     name: 'consultant',
     label: 'Consultant',
     floating: true,
@@ -179,6 +191,14 @@ export const WALK_IN_CATEGORY_FIELDS = [
 ];
 
 export const buildWalkInPanelFields = ({ designationOptions = [] } = {}) => [
+  {
+    type: 'select',
+    name: 'insurer',
+    label: 'Insurer',
+    floating: true,
+    span: 6,
+    options: INSURER_OPTIONS,
+  },
   {
     type: 'select',
     name: 'designation',

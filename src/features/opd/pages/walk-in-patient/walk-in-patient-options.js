@@ -52,3 +52,15 @@ export const SERVICE_CATEGORY_OPTIONS = [
   { value: 4, label: 'Pharmacy' },
   { value: 5, label: 'Procedure' },
 ];
+
+export const DEPARTMENT_OPTIONS = [
+  { value: 'laboratory', label: 'Laboratory' },
+  { value: 'private', label: 'Private' },
+  { value: 'radiology', label: 'Radiology' },
+];
+
+export const INSURER_OPTIONS = [
+  { value: 'ptcl', label: 'PTCL' },
+  { value: 'ssp', label: 'SSP' },
+  { value: 'state-life', label: 'State Life' },
+];
