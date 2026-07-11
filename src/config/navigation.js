@@ -13,6 +13,7 @@ export const navigation = [
     children: [
       { key: 'patient-registration', label: 'Patient Registration', href: '/opd/patient-registration' },
       { key: 'walk-in-patient', label: 'Walk-in patient', href: '/opd/walk-in-patient' },
+      { key: 'patient-search', label: 'Patient Search', href: '/opd/patient-search' },
       { key: 'advance-payment', label: 'Advance Payment', href: '/opd/advance-payment' },
       { key: 'opd-payment', label: 'Payment', href: '/opd/payment' },
       { key: 'update-dept-consultant', label: 'Update Dept & Consultant', href: '/opd/update-dept-consultant' },
@@ -21,7 +22,6 @@ export const navigation = [
       { key: 'emergency-registration', label: 'Emergency Registration', href: '/opd/emergency-registration' },
       { key: 'area-wise-patient-report', label: 'Area-wise Patient Report', href: '/opd/area-wise-patient-report' },
       { key: 're-visit', label: 'Re-visit', href: '/opd/re-visit' },
-      { key: 'patient-search', label: 'Patient Search', href: '/opd/patient-search' },
       { key: 'employee-waive-patient', label: 'Employee for waive Patient', href: '/opd/employee-waive-patient' },
       { key: 'search-service-refund', label: 'Search Service for Refund', href: '/opd/search-service-refund' },
       { key: 'take-vital', label: 'Take Vital', href: '/opd/take-vital' },

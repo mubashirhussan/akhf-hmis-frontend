@@ -1,0 +1,146 @@
+/* ── Patient Search Page ─────────────────────────────────────────────────── */
+
+.patient-search-page {
+  padding: 8px 4px 24px;
+  max-width: 100%;
+}
+
+/* ── Filter Panel ─────────────────────────────────────────────────────────── */
+
+.patient-search-filter-panel {
+  border: 1px solid #d2d2d2;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: none;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.patient-search-filter-layout {
+  margin-bottom: 0;
+}
+
+.patient-search-filter-form.form-grid,
+.patient-search-filter-form {
+  row-gap: 12px;
+  column-gap: 14px;
+}
+
+.patient-search-filter-form.form-grid > .floating-field,
+.patient-search-filter-form > .floating-field {
+  margin-top: 6px;
+}
+
+/* Ant form overrides inside the filter form */
+.patient-search-filter-form.ant-form-vertical {
+  --ant-form-vertical-label-padding: 0 0 4px;
+  --ant-form-item-margin-bottom: 8px;
+  --ant-form-label-font-size: var(--font-size-base);
+}
+
+.patient-search-filter-form .ant-form-item {
+  margin-bottom: 8px !important;
+}
+
+.patient-search-filter-form .ant-form-item-label {
+  display: none !important;
+}
+
+.patient-search-filter-form .floating-field .ant-form-item-label {
+  display: none !important;
+}
+
+.patient-search-filter-form .floating-field {
+  max-width: 100%;
+  margin-top: 6px;
+}
+
+.patient-search-filter-form .floating-control .ant-form-item {
+  margin-bottom: 0;
+}
+
+/* ── Search Action Buttons ────────────────────────────────────────────────── */
+
+.patient-search-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+/* ── Results Section ──────────────────────────────────────────────────────── */
+
+.patient-search-results {
+  /* matches .services-billing-results pattern */
+}
+
+.patient-search-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.patient-search-export-btn {
+  min-width: 138px;
+}
+
+/* ── Table column overrides ───────────────────────────────────────────────── */
+
+.patient-search-page .data-table .patient-search-col-reg-no,
+.patient-search-page .data-table .patient-search-col-gender,
+.patient-search-page .data-table .patient-search-col-patient-type {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+.patient-search-page .data-table .patient-search-col-reg-no {
+  min-width: 70px;
+}
+
+.patient-search-page .data-table .patient-search-col-patient-name {
+  min-width: 140px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 991px) {
+  .patient-search-filter-form.form-grid {
+    --form-cols: 3;
+  }
+}
+
+@media (max-width: 767px) {
+  .patient-search-filter-form.form-grid {
+    --form-cols: 1;
+  }
+
+  .patient-search-export-btn {
+    width: 100%;
+  }
+
+  .patient-search-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patient-search-filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patient-search-filter-form .ant-input,
+  .patient-search-filter-form .ant-btn,
+  .patient-search-filter-form .ant-select,
+  .patient-search-filter-form .ant-picker {
+    width: 100% !important;
+  }
+}
+.patient-search-page .data-table .patient-search-col-dob {
+  min-width: 110px;
+  white-space: nowrap !important;
+}
