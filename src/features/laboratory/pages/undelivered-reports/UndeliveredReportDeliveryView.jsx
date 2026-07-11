@@ -1,24 +1,23 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Checkbox, Input, Select } from 'antd';
+import { App, Button, Checkbox, Form } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
-import FloatingField from '@/components/ui/FloatingField';
+import DynamicForm from '@/components/form/DynamicForm';
 import ChangeStatusModal, {
   UNDELIVERED_REPORTS_STATUS_OPTIONS,
 } from '@/features/laboratory/pages/result-entry/ChangeStatusModal';
 import { useUpdateLaboratoryWorklistStatusMutation } from '@/features/laboratory/api/laboratoryEndpoints';
-import FormGrid from '@/components/ui/FormGrid';
 import DataTable from '@/components/ui/DataTable';
 import {
   createUndeliveredDeliveryForm,
   getUndeliveredReportLineItems,
-  UNDELIVERED_DELIVER_RELATION_OPTIONS,
 } from '@/features/laboratory/api/mock-undelivered-reports';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import {
+  UNDELIVERED_DELIVERY_RELATION_FIELDS,
+  UNDELIVERED_DELIVERY_TOP_FIELDS,
+} from '@/features/laboratory/pages/undelivered-reports/undelivered-report-delivery-fields';
 import './undelivered-report-delivery.css';
-
-const controlClass = FIELD_CONTROL_CLASS;
 
 function PaymentStatusBadge({ label, tone = 'pending' }) {
   return (
@@ -30,21 +29,18 @@ function PaymentStatusBadge({ label, tone = 'pending' }) {
 
 export default function UndeliveredReportDeliveryView({ record }) {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
   const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
 
   const lineItems = useMemo(() => getUndeliveredReportLineItems(record), [record]);
   const [selectedLineItemIds, setSelectedLineItemIds] = useState([]);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
-  const [deliveryForm, setDeliveryForm] = useState(() => createUndeliveredDeliveryForm(record));
+  const initialValues = useMemo(() => createUndeliveredDeliveryForm(record), [record]);
 
   const selectedLineItemSet = useMemo(
     () => new Set(selectedLineItemIds),
     [selectedLineItemIds],
   );
-
-  const patchDeliveryForm = useCallback((patch) => {
-    setDeliveryForm((prev) => ({ ...prev, ...patch }));
-  }, []);
 
   const toggleLineItemSelection = useCallback((lineItemId, checked) => {
     setSelectedLineItemIds((prev) => {
@@ -107,13 +103,14 @@ export default function UndeliveredReportDeliveryView({ record }) {
   }, [message, record.labNo, record.patientName]);
 
   const handleSave = useCallback(() => {
-    if (!deliveryForm.deliverFirstName.trim() || !deliveryForm.deliverLastName.trim()) {
+    const values = form.getFieldsValue();
+    if (!String(values.deliverFirstName ?? '').trim() || !String(values.deliverLastName ?? '').trim()) {
       message.error('Enter first and last name in Reports Deliver To.');
       return;
     }
 
     message.success(`Report delivery saved for ${record.patientName} (Lab #${record.labNo}).`);
-  }, [deliveryForm.deliverFirstName, deliveryForm.deliverLastName, message, record.labNo, record.patientName]);
+  }, [form, message, record.labNo, record.patientName]);
 
   const columns = useMemo(
     () => [
@@ -173,68 +170,10 @@ export default function UndeliveredReportDeliveryView({ record }) {
       <section className="undelivered-report-deliver-section" aria-label="Reports deliver to">
         <h2 className="undelivered-report-deliver-section-title">Reports Deliver To</h2>
         <div className="undelivered-report-deliver-form">
-          <FormGrid columns={4} className="undelivered-report-deliver-grid">
-            <FloatingField label="First Name" htmlFor="undelivered-deliver-first-name">
-              <Input
-                id="undelivered-deliver-first-name"
-                className={controlClass}
-                value={deliveryForm.deliverFirstName}
-                onChange={(event) => patchDeliveryForm({ deliverFirstName: event.target.value })}
-              />
-            </FloatingField>
-            <FloatingField label="Last Name" htmlFor="undelivered-deliver-last-name">
-              <Input
-                id="undelivered-deliver-last-name"
-                className={controlClass}
-                value={deliveryForm.deliverLastName}
-                onChange={(event) => patchDeliveryForm({ deliverLastName: event.target.value })}
-              />
-            </FloatingField>
-            <FloatingField label="Description" htmlFor="undelivered-relation-description" col={2}>
-              <Input
-                id="undelivered-relation-description"
-                className={controlClass}
-                value={deliveryForm.description}
-                onChange={(event) => patchDeliveryForm({ description: event.target.value })}
-              />
-            </FloatingField>
-          </FormGrid>
-
-          <FormGrid columns={4} className="undelivered-report-deliver-grid">
-            <FloatingField label="Relation" htmlFor="undelivered-deliver-relation">
-              <Select
-                id="undelivered-deliver-relation"
-                className={controlClass}
-                value={deliveryForm.deliverRelation}
-                options={UNDELIVERED_DELIVER_RELATION_OPTIONS}
-                onChange={(value) => patchDeliveryForm({ deliverRelation: value })}
-              />
-            </FloatingField>
-            <FloatingField label="First Name" htmlFor="undelivered-relation-first-name">
-              <Input
-                id="undelivered-relation-first-name"
-                className={controlClass}
-                value={deliveryForm.relationFirstName}
-                onChange={(event) => patchDeliveryForm({ relationFirstName: event.target.value })}
-              />
-            </FloatingField>
-            <FloatingField label="Last Name" htmlFor="undelivered-relation-last-name">
-              <Input
-                id="undelivered-relation-last-name"
-                className={controlClass}
-                value={deliveryForm.relationLastName}
-                onChange={(event) => patchDeliveryForm({ relationLastName: event.target.value })}
-              />
-            </FloatingField>
-            <FloatingField label="CNIC #" htmlFor="undelivered-relation-cnic">
-              <Input
-                id="undelivered-relation-cnic"
-                className={controlClass}
-                value={deliveryForm.cnic}
-                onChange={(event) => patchDeliveryForm({ cnic: event.target.value })}
-              />
-            </FloatingField>
-          </FormGrid>
+          <Form form={form} layout="vertical" initialValues={initialValues}>
+            <DynamicForm fields={UNDELIVERED_DELIVERY_TOP_FIELDS} gutter={[16, 12]} />
+            <DynamicForm fields={UNDELIVERED_DELIVERY_RELATION_FIELDS} gutter={[16, 12]} />
+          </Form>
 
           <div className="undelivered-report-deliver-form-actions">
             <Button

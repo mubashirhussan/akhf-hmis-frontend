@@ -1,17 +1,18 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import NewCategoryForm from '@/features/service-admin/pages/new-category/NewCategoryForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  NEW_CATEGORY_FIELDS,
+  NEW_CATEGORY_INITIAL_VALUES,
+} from '@/features/service-admin/pages/new-category/new-category-fields';
 
 export default function NewCategoryModal({
   open,
   onClose,
   title = 'Add Service Category',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
   return (
@@ -34,12 +35,15 @@ export default function NewCategoryModal({
         </>
       }
     >
-      <NewCategoryForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={NEW_CATEGORY_INITIAL_VALUES}
+      >
+        <DynamicForm fields={NEW_CATEGORY_FIELDS} className="new-category-form-grid" />
+      </Form>
     </AppModal>
   );
 }

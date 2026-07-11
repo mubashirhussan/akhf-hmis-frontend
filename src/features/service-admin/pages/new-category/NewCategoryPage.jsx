@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Tooltip } from 'antd';
+import { App, Button, Form, Input, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import NewCategoryModal from '@/features/service-admin/pages/new-category/NewCategoryModal';
@@ -15,20 +15,13 @@ import {
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyForm() {
-  return {
-    serviceName: '',
-  };
-}
-
 export default function NewCategoryPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
   const { data: rows = [], isLoading } = useGetServiceCategoriesQuery();
@@ -36,38 +29,26 @@ export default function NewCategoryPage() {
   const [updateServiceCategory] = useUpdateServiceCategoryMutation();
   const [deleteServiceCategory] = useDeleteServiceCategoryMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({ serviceName: record.serviceName ?? '' });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({ serviceName: record.serviceName ?? '' });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -81,30 +62,30 @@ export default function NewCategoryPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const serviceName = form.serviceName.trim();
-    const errors = {};
+    try {
+      const values = await form.validateFields();
+      const serviceName = values.serviceName.trim();
 
-    if (!serviceName) {
-      errors.serviceName = 'Service Category is required.';
+      if (editingRowId) {
+        await updateServiceCategory({ id: editingRowId, serviceName }).unwrap();
+        message.success('Category updated.');
+      } else {
+        await createServiceCategory(serviceName).unwrap();
+        message.success('Category created.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-
-    if (editingRowId) {
-      await updateServiceCategory({ id: editingRowId, serviceName }).unwrap();
-      message.success('Category updated.');
-    } else {
-      await createServiceCategory(serviceName).unwrap();
-      message.success('Category created.');
-    }
-
-    closeModal();
-  }, [form.serviceName, editingRowId, createServiceCategory, updateServiceCategory, message, closeModal]);
+  }, [
+    form,
+    editingRowId,
+    createServiceCategory,
+    updateServiceCategory,
+    message,
+    closeModal,
+  ]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -212,9 +193,6 @@ export default function NewCategoryPage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Service Category' : 'Add Service Category'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

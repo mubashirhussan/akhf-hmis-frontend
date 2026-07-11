@@ -1,23 +1,41 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import AssignBedLocationForm from '@/features/service-admin/pages/assign-bed-location/AssignBedLocationForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  ASSIGN_BED_LOCATION_INITIAL_VALUES,
+  getAssignBedLocationFields,
+} from '@/features/service-admin/pages/assign-bed-location/assign-bed-location-fields';
 
 export default function AssignBedLocationModal({
   open,
   onClose,
   title = 'Assign Bed Location',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   wardOptions = [],
   roomOptions = [],
   bedOptions = [],
   isEditMode = false,
 }) {
+  const wardBedId = Form.useWatch('wardBedId', form);
+  const roomNumber = Form.useWatch('roomNumber', form);
+
+  const fields = useMemo(
+    () =>
+      getAssignBedLocationFields({
+        wardOptions,
+        roomOptions,
+        bedOptions,
+        hasWard: Boolean(wardBedId),
+        hasRoom: Boolean(roomNumber),
+        isEditMode,
+      }),
+    [wardOptions, roomOptions, bedOptions, wardBedId, roomNumber, isEditMode],
+  );
+
   return (
     <AppModal
       open={open}
@@ -38,16 +56,23 @@ export default function AssignBedLocationModal({
         </>
       }
     >
-      <AssignBedLocationForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        wardOptions={wardOptions}
-        roomOptions={roomOptions}
-        bedOptions={bedOptions}
-        isEditMode={isEditMode}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={ASSIGN_BED_LOCATION_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('wardBedId' in changed) {
+            form.setFieldsValue({ roomNumber: undefined, bedNumber: undefined });
+          }
+          if ('roomNumber' in changed) {
+            form.setFieldsValue({ bedNumber: undefined });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="assign-bed-location-form-grid" />
+      </Form>
     </AppModal>
   );
 }

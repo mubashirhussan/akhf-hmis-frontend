@@ -1,13 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Input, Select } from "antd";
+import { App, Button, Form, Tooltip, Select } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import MachineIntegrationCompwiseModal from "@/features/admin-pathology/pages/machine-integration-compwise/MachineIntegrationCompwiseModal";
 import {
-  createEmptyMachineIntegrationCompwiseForm,
-  rowToMachineIntegrationCompwiseForm,
   getTestComponentLabel,
   LAB_MACHINE_OPTIONS,
   TEST_COMPONENT_OPTIONS,
@@ -24,11 +22,10 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function MachineIntegrationCompwisePage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyMachineIntegrationCompwiseForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const [labMachineFilter, setLabMachineFilter] = useState("");
   const [testComponentFilter, setTestComponentFilter] = useState("");
   const { confirmDelete } = useConfirm();
@@ -38,40 +35,33 @@ export default function MachineIntegrationCompwisePage() {
   const [createMachineIntegration] = useCreateMachineIntegrationCompwiseMutation();
   const [updateMachineIntegration] = useUpdateMachineIntegrationCompwiseMutation();
   const [deleteMachineIntegration] = useDeleteMachineIntegrationCompwiseMutation();
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const openModal = useCallback(() => {
-    setForm(createEmptyMachineIntegrationCompwiseForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToMachineIntegrationCompwiseForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        labMachine: record.labMachine ?? "",
+        testComponent: record.testComponent ?? "",
+        machineCode: record.machineCode ?? "",
+        assayNumber: record.assayNumber ?? "",
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -86,56 +76,37 @@ export default function MachineIntegrationCompwisePage() {
   );
 
   const handleSave = useCallback(async () => {
-    const labMachine = form.labMachine?.trim();
-    const testComponent = form.testComponent?.trim();
-    const machineCode = form.machineCode.trim();
-    const assayNumber = form.assayNumber.trim();
+    try {
+      const values = await form.validateFields();
+      const rowPayload = {
+        labMachine: values.labMachine?.trim?.() ?? values.labMachine,
+        testComponent: values.testComponent?.trim?.() ?? values.testComponent,
+        machineCode: values.machineCode.trim(),
+        assayNumber: values.assayNumber.trim(),
+      };
 
-    const errors = {};
-    if (!labMachine) errors.labMachine = "Lab Machine is required.";
-    if (!testComponent) errors.testComponent = "Test Component is required.";
-    if (!machineCode) errors.machineCode = "Machine Code is required.";
-    if (!assayNumber) errors.assayNumber = "Assay Number is required.";
+      if (editingRowId) {
+        await updateMachineIntegration({
+          id: editingRowId,
+          ...rowPayload,
+        }).unwrap();
+        message.success("Machine integration updated.");
+      } else {
+        await createMachineIntegration(rowPayload).unwrap();
+        message.success("Machine integration created.");
+      }
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const rowPayload = {
-      labMachine,
-      testComponent,
-      machineCode,
-      assayNumber,
-    };
-
-    if (editingRowId) {
-      await updateMachineIntegration({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
-
-      setIsModalOpen(false);
-      setEditingRowId(null);
-
-      message.success("Machine integration updated.");
-
-      return;
-    }
-
-    await createMachineIntegration(rowPayload).unwrap();
-
-    setIsModalOpen(false);
-
-    message.success("Machine integration created.");
   }, [
     form,
     editingRowId,
     createMachineIntegration,
     updateMachineIntegration,
     message,
+    closeModal,
   ]);
 
   const filteredRows = useMemo(() => {
@@ -276,11 +247,11 @@ export default function MachineIntegrationCompwisePage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-           pagination={{
+          pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
             onChange: (current, pageSize) =>
               setPagination({ current, pageSize }),
@@ -297,9 +268,6 @@ export default function MachineIntegrationCompwisePage() {
             : "Add Machine Integration"
         }
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

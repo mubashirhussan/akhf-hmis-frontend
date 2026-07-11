@@ -1,46 +1,61 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { App, Button, Input, Select, Upload } from 'antd';
+import { App, Button, Form, Upload } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import {
-  BILLING_DISCOUNT_FORWARD_TO_OPTIONS,
-  BILLING_DISCOUNT_HOSPITAL_OPTIONS,
-} from '@/features/billing/api/mock-billing-payment';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
-const controlClass = FIELD_CONTROL_CLASS;
+  BILLING_DISCOUNT_REQUEST_FIELDS,
+  BILLING_DISCOUNT_REQUEST_INITIAL_VALUES,
+} from '@/features/billing/components/billing-payment-fields';
 
 const ACCEPTED_FILE_TYPES = '.png,.jpg,.jpeg,.pdf';
 
 export default function BillingDiscountRequestModal({ open, onClose }) {
   const { message } = App.useApp();
-  const [hospital, setHospital] = useState('alkhidmat-khi');
-  const [forwardTo, setForwardTo] = useState('abdul-hameed');
-  const [description, setDescription] = useState('');
-  const [attachmentName, setAttachmentName] = useState('');
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (!open) return;
+    form.resetFields();
+  }, [form, open]);
 
-    setHospital('alkhidmat-khi');
-    setForwardTo('abdul-hameed');
-    setDescription('');
-    setAttachmentName('');
-  }, [open]);
-
-  const handleForward = () => {
-    if (!hospital || !forwardTo) {
-      message.error('Hospital and Forward To are required.');
-      return;
+  const handleForward = async () => {
+    try {
+      await form.validateFields(['hospital', 'forwardTo']);
+      message.success('Discount request forwarded successfully.');
+      onClose();
+    } catch {
+      // validation messages shown by Form
     }
-
-    message.success('Discount request forwarded successfully.');
-    onClose();
   };
+
+  const fields = [
+    ...BILLING_DISCOUNT_REQUEST_FIELDS,
+    {
+      type: 'custom',
+      name: 'attachments',
+      label: 'Attachments',
+      col: 24,
+      props: {
+        render: () => (
+          <DiscountAttachmentControl />
+        ),
+      },
+    },
+    {
+      type: 'textarea',
+      name: 'description',
+      label: 'Description',
+      col: 24,
+      props: {
+        rows: 4,
+        placeholder: 'Enter description here ...',
+        className: 'discount-request-description',
+      },
+    },
+  ];
 
   return (
     <AppModal
@@ -59,62 +74,43 @@ export default function BillingDiscountRequestModal({ open, onClose }) {
         </>
       }
     >
-      <FormGrid columns={1} className="walk-in-add-record-form">
-        <FloatingField label="Hospital" htmlFor="discount-request-hospital" required>
-          <Select
-            id="discount-request-hospital"
-            className={controlClass}
-            value={hospital}
-            options={BILLING_DISCOUNT_HOSPITAL_OPTIONS}
-            onChange={setHospital}
-          />
-        </FloatingField>
-
-        <FloatingField label="Forward To" htmlFor="discount-request-forward" required>
-          <Select
-            id="discount-request-forward"
-            className={controlClass}
-            value={forwardTo}
-            options={BILLING_DISCOUNT_FORWARD_TO_OPTIONS}
-            onChange={setForwardTo}
-          />
-        </FloatingField>
-
-        <FloatingField label="Attachments" htmlFor="discount-request-attachments">
-          <div className="discount-request-upload">
-            <Upload
-              accept={ACCEPTED_FILE_TYPES}
-              maxCount={1}
-              showUploadList={false}
-              beforeUpload={() => false}
-              onChange={({ file }) => {
-                setAttachmentName(file.name || '');
-              }}
-            >
-              <Button icon={<UploadOutlined />} className="discount-request-upload-btn">
-                Choose Files
-              </Button>
-            </Upload>
-            <span className="discount-request-upload-name">
-              {attachmentName || 'No file chosen'}
-            </span>
-            <p className="discount-request-upload-hint">
-              You can upload PNG, JPG, PDF (Max. 5MB)
-            </p>
-          </div>
-        </FloatingField>
-
-        <FloatingField label="Description" htmlFor="discount-request-description">
-          <Input.TextArea
-            id="discount-request-description"
-            className="discount-request-description"
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter description here ..."
-          />
-        </FloatingField>
-      </FormGrid>
+      <Form
+        form={form}
+        layout="vertical"
+        requiredMark
+        initialValues={BILLING_DISCOUNT_REQUEST_INITIAL_VALUES}
+        className="walk-in-add-record-form"
+      >
+        <DynamicForm fields={fields} gutter={[16, 12]} />
+      </Form>
     </AppModal>
+  );
+}
+
+function DiscountAttachmentControl({ value, onChange }) {
+  const attachmentName = value?.name || '';
+
+  return (
+    <div className="discount-request-upload">
+      <Upload
+        accept={ACCEPTED_FILE_TYPES}
+        maxCount={1}
+        showUploadList={false}
+        beforeUpload={() => false}
+        onChange={({ file }) => {
+          onChange?.(file ? { name: file.name || '', file } : null);
+        }}
+      >
+        <Button icon={<UploadOutlined />} className="discount-request-upload-btn">
+          Choose Files
+        </Button>
+      </Upload>
+      <span className="discount-request-upload-name">
+        {attachmentName || 'No file chosen'}
+      </span>
+      <p className="discount-request-upload-hint">
+        You can upload PNG, JPG, PDF (Max. 5MB)
+      </p>
+    </div>
   );
 }

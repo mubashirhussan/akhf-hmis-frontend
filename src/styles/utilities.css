@@ -116,22 +116,31 @@
   margin-top: 7px;
 }
 
+/* Shared MUI-style floating labels — same behavior app-wide */
 .floating-label {
   position: absolute;
-  top: 0;
-  left: 10px;
+  top: 50%;
+  left: 12px;
   z-index: 2;
-  padding: 0 4px;
-  background: #ffffff;
+  padding: 0;
+  background: transparent;
   font-family: var(--font-family);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #94a3b8;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #64748b;
   transform: translateY(-50%);
   pointer-events: none;
+  transition:
+    top 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    font-size 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left center;
 }
 
 .floating-label-asterisk {
@@ -139,6 +148,67 @@
   color: #ff4d4f;
   font-size: var(--font-size-xs);
   font-weight: 600;
+}
+
+.floating-field:focus-within .floating-label,
+.floating-field:has(.ant-select-open) .floating-label,
+.floating-field:has(.ant-select-content-has-value) .floating-label,
+.floating-field:has(.ant-select-content-value) .floating-label,
+.floating-field:has(.ant-select-selection-item) .floating-label,
+.floating-field:has(.field-control.ant-select):not(:has(.ant-select-placeholder)) .floating-label,
+.floating-field:has(input.ant-input[value]:not([value=''])) .floating-label,
+.floating-field:has(input.ant-input[placeholder]:not([placeholder='']):not([placeholder=' '])) .floating-label,
+.floating-field:has(textarea.ant-input:not(:placeholder-shown)) .floating-label,
+.floating-field:has(.ant-input-number-input[value]:not([value=''])) .floating-label,
+.floating-field:has(.ant-input-number-input[placeholder]:not([placeholder='']):not([placeholder=' '])) .floating-label,
+.floating-field:has(.ant-picker-input input[value]:not([value=''])) .floating-label,
+.floating-field:has(.ant-picker-input input[placeholder]:not([placeholder='']):not([placeholder=' '])) .floating-label,
+.floating-field:has(.dob-age-age[value]:not([value=''])) .floating-label,
+.floating-field:has(.employee-entry-readonly:not(:empty)) .floating-label,
+.floating-field:has(.ant-input-status-error) .floating-label,
+.floating-field:has(.ant-input-affix-wrapper-status-error) .floating-label,
+.floating-field:has(.ant-select-status-error) .floating-label,
+.floating-field:has(.ant-picker-status-error) .floating-label,
+.floating-field:has(.ant-input-number-status-error) .floating-label {
+  top: 0;
+  left: 10px;
+  transform: translateY(-50%) scale(0.85);
+  padding: 0 4px;
+  background: #ffffff;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transform-origin: left top;
+}
+
+.floating-field:focus-within:not(:has(.ant-input-status-error)):not(:has(.ant-input-affix-wrapper-status-error)):not(:has(.ant-select-status-error)) .floating-label,
+.floating-field:has(.ant-select-open):not(:has(.ant-select-status-error)) .floating-label {
+  color: var(--app-primary);
+}
+
+.floating-field:not(:focus-within):not(:has(.ant-select-open)):not(:has(.ant-select-content-has-value)):not(:has(.ant-select-content-value)):not(:has(.ant-select-selection-item)):has(.ant-select-placeholder)
+  .ant-select-placeholder {
+  opacity: 0 !important;
+}
+
+.floating-field:has(textarea.field-control) .floating-label {
+  top: 12px;
+  transform: none;
+}
+
+.floating-field:has(textarea.field-control):focus-within .floating-label,
+.floating-field:has(textarea.ant-input:not(:placeholder-shown)) .floating-label,
+.floating-field:has(textarea.field-control):has(.ant-input-status-error) .floating-label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+}
+
+.floating-field:has(.ant-input-status-error) .floating-label,
+.floating-field:has(.ant-select-status-error) .floating-label,
+.floating-field:has(.ant-input-affix-wrapper-status-error) .floating-label,
+.floating-field:has(.ant-picker-status-error) .floating-label,
+.floating-field:has(.ant-input-number-status-error) .floating-label {
+  color: var(--app-error) !important;
 }
 
 .floating-control {
@@ -263,6 +333,8 @@
 
 .floating-field--radios .floating-label--inline {
   position: static;
+  top: auto;
+  left: auto;
   transform: none;
   padding: 0;
   background: transparent;
@@ -274,6 +346,19 @@
   color: #000000;
   pointer-events: none;
   flex-shrink: 0;
+}
+
+.floating-field--radios:focus-within .floating-label--inline,
+.floating-field--radios:has(.ant-select-selection-item) .floating-label--inline,
+.floating-field--radios:has(.ant-input-status-error) .floating-label--inline {
+  top: auto;
+  left: auto;
+  transform: none;
+  padding: 0;
+  background: transparent;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: #000000;
 }
 
 .floating-field--radios .floating-control {

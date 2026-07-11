@@ -1,19 +1,14 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import ShiftForm from './ShiftForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  SHIFT_FIELDS,
+  SHIFT_INITIAL_VALUES,
+} from '@/features/duty-roaster/pages/add-shift/shift-fields';
 
-export default function ShiftModal({
-  open,
-  onClose,
-  title = 'Add Shift',
-  form,
-  errors,
-  onPatchForm,
-  onClearError,
-  onSave,
-}) {
+export default function ShiftModal({ open, onClose, title = 'Add Shift', form, onSave }) {
   return (
     <AppModal
       open={open}
@@ -34,12 +29,15 @@ export default function ShiftModal({
         </>
       }
     >
-      <ShiftForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={SHIFT_INITIAL_VALUES}
+      >
+        <DynamicForm fields={SHIFT_FIELDS} className="shift-form-grid" />
+      </Form>
     </AppModal>
   );
 }

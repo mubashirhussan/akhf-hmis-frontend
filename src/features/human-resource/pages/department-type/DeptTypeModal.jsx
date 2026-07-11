@@ -1,20 +1,35 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import DeptTypeForm from './DeptTypeForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi';
+import {
+  DEPT_TYPE_INITIAL_VALUES,
+  getDeptTypeFields,
+} from '@/features/human-resource/pages/department-type/dept-type-fields';
 
 export default function DeptTypeModal({
   open,
   onClose,
   title = 'Add Department Type',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   isEdit = false,
 }) {
+  const { data: hospitals = [], isLoading: hospitalsLoading } = useGetHospitalsQuery();
+
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
+
+  const fields = useMemo(
+    () => getDeptTypeFields({ hospitalOptions, hospitalsLoading, isEdit }),
+    [hospitalOptions, hospitalsLoading, isEdit],
+  );
+
   return (
     <AppModal
       open={open}
@@ -35,13 +50,15 @@ export default function DeptTypeModal({
         </>
       }
     >
-      <DeptTypeForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        isEdit={isEdit}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={DEPT_TYPE_INITIAL_VALUES}
+      >
+        <DynamicForm fields={fields} className="dept-type-form-grid" />
+      </Form>
     </AppModal>
   );
 }

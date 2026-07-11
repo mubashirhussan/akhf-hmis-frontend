@@ -153,8 +153,8 @@
   font-weight: 500;
 }
 
-.employee-entry-form .patient-reg-section-grid > .employee-entry-photo-field {
-  grid-column: 1 / -1;
+.employee-entry-form .patient-reg-section-grid > .employee-entry-photo-field,
+.employee-entry-form .dynamic-form > .employee-entry-photo-field {
   width: fit-content;
   max-width: 100%;
   align-self: start;
@@ -162,8 +162,12 @@
   margin-bottom: 2px;
 }
 
-.employee-entry-photo-field .floating-label {
+.employee-entry-photo-field .floating-label,
+.employee-entry-photo-field:focus-within .floating-label,
+.employee-entry-photo-field:has(.ant-input-status-error) .floating-label {
   position: static;
+  top: auto;
+  left: auto;
   transform: none;
   display: block;
   margin: 0 0 6px;

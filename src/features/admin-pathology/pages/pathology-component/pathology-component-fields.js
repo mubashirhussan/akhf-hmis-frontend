@@ -12,6 +12,55 @@ export const PATHOLOGY_COMPONENT_INITIAL_VALUES = {
   newUnit: '',
 };
 
+export const PATHOLOGY_COMPONENT_FILTER_INITIAL_VALUES = {
+  groupName: '',
+  subGroupName: '',
+  testName: '',
+  componentName: '',
+};
+
+export const getPathologyComponentFilterFields = ({
+  groupOptions = [],
+  subGroupOptions = [],
+  testNameOptions = [],
+} = {}) => [
+  {
+    type: 'select',
+    name: 'groupName',
+    label: 'Main Group',
+    floating: true,
+    col: 6,
+    options: groupOptions,
+    props: { allowClear: true, placeholder: 'Select group', autoComplete: 'off' },
+  },
+  {
+    type: 'select',
+    name: 'subGroupName',
+    label: 'Sub Group',
+    floating: true,
+    col: 6,
+    options: subGroupOptions,
+    props: { allowClear: true, placeholder: 'Select sub group', autoComplete: 'off' },
+  },
+  {
+    type: 'select',
+    name: 'testName',
+    label: 'Test Name',
+    floating: true,
+    col: 6,
+    options: testNameOptions,
+    props: { allowClear: true, placeholder: 'Select test name', autoComplete: 'off' },
+  },
+  {
+    type: 'text',
+    name: 'componentName',
+    label: 'Component Name',
+    floating: true,
+    col: 6,
+    props: { allowClear: true, placeholder: 'Enter component name', autoComplete: 'off' },
+  },
+];
+
 export const getPathologyComponentFields = ({
   groupOptions = [],
   subGroupOptions = [],

@@ -1,20 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import DesignationForm from './DesignationForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import { rowToDesignationForm } from '@/features/human-resource/api/mock-designations';
+import {
+  DESIGNATION_FIELDS,
+  DESIGNATION_INITIAL_VALUES,
+} from '@/features/human-resource/pages/add-designation/designation-fields';
 
 export default function DesignationModal({
   open,
   onClose,
   title = 'Add Designation',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
-  isEdit = false,
+  record = null,
 }) {
+  const loadRecord = (opened) => {
+    if (!opened || !record) return;
+    form.setFieldsValue(rowToDesignationForm(record));
+  };
+
   return (
     <AppModal
       open={open}
@@ -26,6 +33,7 @@ export default function DesignationModal({
       width={520}
       className="designation-modal"
       rootClassName="designation-modal-root"
+      afterOpenChange={loadRecord}
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
@@ -35,13 +43,15 @@ export default function DesignationModal({
         </>
       }
     >
-      <DesignationForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        isEdit={isEdit}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={DESIGNATION_INITIAL_VALUES}
+      >
+        <DynamicForm fields={DESIGNATION_FIELDS} className="designation-form-grid" />
+      </Form>
     </AppModal>
   );
 }

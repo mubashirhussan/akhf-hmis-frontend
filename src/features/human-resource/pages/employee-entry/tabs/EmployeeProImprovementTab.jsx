@@ -1,26 +1,14 @@
 'use client';
 
-import { Button, Form, Input } from 'antd';
+import { Button, Form } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import FormGrid from '@/components/ui/FormGrid';
-import FormFloatingField from '@/components/ui/FormFloatingField';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
-const controlClass = FIELD_CONTROL_CLASS;
-
-const tableColumns = [
-  { title: 'Certificate Name', dataIndex: 'certificateName', key: 'certificateName', width: 160 },
-  { title: 'Recommended Institute', dataIndex: 'recommendedInstitute', key: 'recommendedInstitute', width: 180 },
-  { title: 'Recommended By', dataIndex: 'recommendedBy', key: 'recommendedBy', width: 150 },
-  { title: 'Recommend Date', dataIndex: 'recommendDate', key: 'recommendDate', width: 130 },
-  { title: 'Recommended Till', dataIndex: 'recommendedTill', key: 'recommendedTill', width: 130 },
-  { title: 'Remarks', dataIndex: 'remarks', key: 'remarks', width: 160 },
-];
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  PRO_IMPROVEMENT_DEFAULT_ROW,
+  getProImprovementFields,
+} from './employee-pro-improvement-fields';
 
 export default function EmployeeProImprovementTab() {
-  const form = Form.useFormInstance();
-  const allRows = Form.useWatch('proImprovements', form) ?? [];
-
   return (
     <Form.List name="proImprovements">
       {(listFields, { add, remove }) => (
@@ -41,36 +29,11 @@ export default function EmployeeProImprovementTab() {
                   <DeleteOutlined />
                 </button>
               </div>
-              <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-                <FormFloatingField
-                  name={[field.name, 'certificateName']}
-                  label="Certificate Name"
-                  required
-                  rules={[{ required: true, whitespace: true, message: 'Certificate name is required' }]}
-                >
-                  <Input className={controlClass} />
-                </FormFloatingField>
-
-                <FormFloatingField name={[field.name, 'recommendedInstitute']} label="Recommended Institute">
-                  <Input className={controlClass} />
-                </FormFloatingField>
-
-                <FormFloatingField name={[field.name, 'recommendedBy']} label="Recommended By">
-                  <Input className={controlClass} />
-                </FormFloatingField>
-
-                <FormFloatingField name={[field.name, 'recommendDate']} label="Recommend Date">
-                  <Input className={controlClass} type="date" />
-                </FormFloatingField>
-
-                <FormFloatingField name={[field.name, 'recommendedTill']} label="Recommended Till">
-                  <Input className={controlClass} type="date" />
-                </FormFloatingField>
-
-                <FormFloatingField name={[field.name, 'remarks']} label="Remarks" col="full">
-                  <Input.TextArea className={controlClass} rows={2} />
-                </FormFloatingField>
-              </FormGrid>
+              <DynamicForm
+                fields={getProImprovementFields(field.name)}
+                gutter={[14, 12]}
+                className="patient-reg-section-grid employee-entry-section-grid"
+              />
             </div>
           ))}
 
@@ -78,7 +41,7 @@ export default function EmployeeProImprovementTab() {
             type="dashed"
             className="employee-entry-list-add-btn"
             icon={<PlusOutlined />}
-            onClick={() => add({ certificateName: '', recommendedInstitute: '', recommendedBy: '', recommendDate: '', recommendedTill: '', remarks: '' })}
+            onClick={() => add(PRO_IMPROVEMENT_DEFAULT_ROW)}
           >
             Add Professional Improvement
           </Button>

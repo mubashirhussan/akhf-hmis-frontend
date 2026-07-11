@@ -1,90 +1,63 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Select, Tag } from 'antd';
+import { App, Button, Form, Select, Tag } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import {
-  createEmptyCreateLoginForm,
+  getCreateLoginDepartments,
   getCreateLoginEmployees,
+  getCreateLoginSubDepartments,
   MAIN_PAGE_OPTIONS,
 } from '@/features/user-role/api/mock-create-login';
 import {
   useCreateUserLoginMutation,
   useGetUserLoginsQuery,
 } from '@/features/user-role/api/userRoleApi';
+import { CREATE_LOGIN_INITIAL_VALUES } from '@/features/user-role/pages/create-login/create-login-fields';
 import CreateLoginForm from './CreateLoginForm';
 import './create-login.css';
 
 export default function CreateLoginPage() {
   const { message } = App.useApp();
-  const [form, setForm] = useState(createEmptyCreateLoginForm);
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [form] = Form.useForm();
   const [employeeFilter, setEmployeeFilter] = useState(undefined);
   const { data: rows = [], isLoading } = useGetUserLoginsQuery();
   const [createUserLogin, { isLoading: isSaving }] = useCreateUserLoginMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const handleSave = useCallback(async () => {
-    const errors = {};
-
-    if (!form.departmentId) errors.departmentId = 'Department is required.';
-    if (!form.subDepartmentId) errors.subDepartmentId = 'Sub Department is required.';
-    if (!form.employeeId) errors.employeeId = 'Employee is required.';
-    if (!form.mainPage) errors.mainPage = 'Main page is required.';
-
-    const userName = form.userName.trim();
-    if (!userName) errors.userName = 'User name is required.';
-
-    if (!form.password) {
-      errors.password = 'Password is required.';
-    }
-
-    if (!form.confirmPassword) {
-      errors.confirmPassword = 'Confirm password is required.';
-    } else if (form.password !== form.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match.';
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      message.error('Please complete all required fields.');
-      return;
-    }
-
-    setFieldErrors({});
-
-    const mainPageLabel =
-      MAIN_PAGE_OPTIONS.find((option) => option.value === form.mainPage)?.label ?? '';
-
     try {
+      const values = await form.validateFields();
+
+      const departmentName =
+        getCreateLoginDepartments().find((d) => d.id === values.departmentId)?.name ?? '';
+      const subDepartmentName =
+        getCreateLoginSubDepartments(values.departmentId).find(
+          (d) => d.id === values.subDepartmentId,
+        )?.name ?? '';
+      const employeeName =
+        getCreateLoginEmployees(values.departmentId, values.subDepartmentId).find(
+          (e) => e.id === values.employeeId,
+        )?.name ?? '';
+      const mainPageLabel =
+        MAIN_PAGE_OPTIONS.find((option) => option.value === values.mainPage)?.label ?? '';
+
       await createUserLogin({
-        departmentId: form.departmentId,
-        departmentName: form.departmentName,
-        subDepartmentId: form.subDepartmentId,
-        subDepartmentName: form.subDepartmentName,
-        employeeId: form.employeeId,
-        employeeName: form.employeeName,
-        mainPage: form.mainPage,
+        departmentId: values.departmentId,
+        departmentName,
+        subDepartmentId: values.subDepartmentId,
+        subDepartmentName,
+        employeeId: values.employeeId,
+        employeeName,
+        mainPage: values.mainPage,
         mainPageLabel,
-        branchAccess: form.branchAccess ?? false,
-        userName,
+        branchAccess: values.branchAccess ?? false,
+        userName: values.userName.trim(),
       }).unwrap();
 
       message.success('Login created successfully.');
-      setForm(createEmptyCreateLoginForm());
-    } catch {
+      form.resetFields();
+    } catch (error) {
+      if (error?.errorFields) return;
       message.error('Failed to create login.');
     }
   }, [createUserLogin, form, message]);
@@ -105,36 +78,16 @@ export default function CreateLoginPage() {
 
   const columns = useMemo(
     () => [
-      {
-        title: 'Employee',
-        dataIndex: 'employeeName',
-        key: 'employeeName',
-        width: 200,
-      },
-      {
-        title: 'Department',
-        dataIndex: 'departmentName',
-        key: 'departmentName',
-        width: 180,
-      },
+      { title: 'Employee', dataIndex: 'employeeName', key: 'employeeName', width: 200 },
+      { title: 'Department', dataIndex: 'departmentName', key: 'departmentName', width: 180 },
       {
         title: 'Sub Department',
         dataIndex: 'subDepartmentName',
         key: 'subDepartmentName',
         width: 160,
       },
-      {
-        title: 'User Name',
-        dataIndex: 'userName',
-        key: 'userName',
-        width: 160,
-      },
-      {
-        title: 'Main Page',
-        dataIndex: 'mainPageLabel',
-        key: 'mainPageLabel',
-        width: 160,
-      },
+      { title: 'User Name', dataIndex: 'userName', key: 'userName', width: 160 },
+      { title: 'Main Page', dataIndex: 'mainPageLabel', key: 'mainPageLabel', width: 160 },
       {
         title: 'Branch Access',
         dataIndex: 'branchAccess',
@@ -151,12 +104,25 @@ export default function CreateLoginPage() {
   return (
     <div className="services-billing-page create-login-page">
       <section className="create-login-panel" aria-label="Create login form">
-        <CreateLoginForm
+        <Form
           form={form}
-          errors={fieldErrors}
-          onPatchForm={patchForm}
-          onClearError={clearFieldError}
-        />
+          layout="vertical"
+          requiredMark
+          initialValues={CREATE_LOGIN_INITIAL_VALUES}
+          onValuesChange={(changed) => {
+            if ('departmentId' in changed) {
+              form.setFieldsValue({
+                subDepartmentId: undefined,
+                employeeId: undefined,
+              });
+            }
+            if ('subDepartmentId' in changed) {
+              form.setFieldsValue({ employeeId: undefined });
+            }
+          }}
+        >
+          <CreateLoginForm form={form} />
+        </Form>
 
         <div className="create-login-actions">
           <Button type="primary" loading={isSaving} onClick={handleSave}>

@@ -1,6 +1,9 @@
 export const PATIENT_REG_FORM_SELECTOR = '.patient-registration-form';
 
-import { formFieldId } from '@/components/ui/FormFieldPrefixContext';
+export function formFieldId(prefix, name) {
+  const key = Array.isArray(name) ? name.join('-') : String(name);
+  return `${prefix}-${key}`;
+}
 
 /** @deprecated Use formFieldId('patient-reg', name) */
 export function patientRegFieldId(name) {

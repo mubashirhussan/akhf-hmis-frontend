@@ -22,7 +22,7 @@ const cls = FIELD_CONTROL_CLASS;
 export default function DynamicForm({ fields = [], gutter = [16, 12], className = '' }) {
   return (
     <Row gutter={gutter} className={['dynamic-form', className].filter(Boolean).join(' ')}>
-      {fields.map((field) => {
+      {fields.map((field, index) => {
         const {
           type = 'text',
           name,
@@ -30,13 +30,19 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           rules,
           options,
           floating,
+          required,
           props: controlProps = {},
           col,
           colStart,
           span,
           offset,
+          className: fieldClassName,
           ...itemProps
         } = field;
+
+        const fieldKey = Array.isArray(name) ? name.join('-') : (name ?? `field-${index}`);
+        const showRequiredMark =
+          required ?? rules?.some((rule) => rule && typeof rule === 'object' && rule.required);
 
         let control;
 
@@ -60,7 +66,14 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
             );
             break;
           case 'textarea':
-            control = <Input.TextArea className={cls} {...controlProps} />;
+            // Placeholder required so :placeholder-shown can float labels when value is set
+            control = (
+              <Input.TextArea
+                className={cls}
+                {...controlProps}
+                placeholder={controlProps.placeholder ?? ' '}
+              />
+            );
             break;
           case 'checkbox':
             control = <Checkbox {...controlProps} />;
@@ -74,15 +87,15 @@ export default function DynamicForm({ fields = [], gutter = [16, 12], className 
           case 'password':
             control = <Input.Password className={cls} {...controlProps} />;
             break;
-case 'age': {
-  control = <AgeUnitInput className={controlProps.className} />;
-  break;
-}
-case 'dobAge': {
-  const DobAgeFormControl = controlProps.component;
-  control = DobAgeFormControl ? <DobAgeFormControl {...controlProps} /> : null;
-  break;
-}
+          case 'age': {
+            control = <AgeUnitInput className={controlProps.className} />;
+            break;
+          }
+          case 'dobAge': {
+            const DobAgeFormControl = controlProps.component;
+            control = DobAgeFormControl ? <DobAgeFormControl {...controlProps} /> : null;
+            break;
+          }
           case 'condition': {
             const { options: conditionOptions, onAdd, newConditionName: _newConditionName, onNewConditionChange: _onNewConditionChange, ...conditionRest } = controlProps;
             control = (
@@ -137,6 +150,7 @@ case 'dobAge': {
             name={name}
             label={floating ? undefined : label}
             rules={rules}
+            required={required}
             valuePropName={valuePropName}
           >
             {control}
@@ -145,13 +159,21 @@ case 'dobAge': {
 
         return (
           <Col
-            key={name}
+            key={fieldKey}
             span={span ?? col ?? 24}
             offset={offset ?? colStart}
+            className={fieldClassName}
           >
             {floating ? (
               <div className="floating-field">
-                <span className="floating-label">{label}</span>
+                <span className="floating-label">
+                  {label}
+                  {showRequiredMark ? (
+                    <span className="floating-label-asterisk" aria-hidden>
+                      *
+                    </span>
+                  ) : null}
+                </span>
                 <div className="floating-control">{formItem}</div>
               </div>
             ) : (

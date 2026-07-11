@@ -1,23 +1,61 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form, InputNumber } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import NewPackageForm from '@/features/service-admin/pages/new-package/NewPackageForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  NEW_PACKAGE_INITIAL_VALUES,
+  getNewPackageFields,
+} from '@/features/service-admin/pages/new-package/new-package-fields';
 
 export default function NewPackageModal({
   open,
   onClose,
   title = 'Add Package',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
-  departmentOptions,
+  departmentOptions = [],
   serviceCategoryOptions = [],
-  serviceOptions,
+  serviceOptions = [],
   serviceChargesMap = {},
 }) {
+  const serviceCategory = Form.useWatch('serviceCategory', form);
+  const services = Form.useWatch('services', form);
+
+  const servicesTotal = useMemo(
+    () => (services ?? []).reduce((sum, svc) => sum + (serviceChargesMap[svc] ?? 0), 0),
+    [services, serviceChargesMap],
+  );
+
+  const fields = useMemo(
+    () =>
+      getNewPackageFields({
+        departmentOptions,
+        serviceCategoryOptions,
+        serviceOptions,
+        hasServiceCategory: Boolean(serviceCategory),
+        servicesTotalField: {
+          type: 'custom',
+          name: '_servicesTotal',
+          label: 'Total Amount',
+          col: 12,
+          props: {
+            render: () => (
+              <InputNumber value={servicesTotal} disabled style={{ width: '100%' }} />
+            ),
+          },
+        },
+      }),
+    [
+      departmentOptions,
+      serviceCategoryOptions,
+      serviceOptions,
+      serviceCategory,
+      servicesTotal,
+    ],
+  );
+
   return (
     <AppModal
       open={open}
@@ -32,26 +70,26 @@ export default function NewPackageModal({
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button
-            type="primary"
-            className="new-package-save-btn"
-            onClick={onSave}
-          >
+          <Button type="primary" className="new-package-save-btn" onClick={onSave}>
             Save
           </Button>
         </>
       }
     >
-      <NewPackageForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        departmentOptions={departmentOptions}
-        serviceCategoryOptions={serviceCategoryOptions}
-        serviceOptions={serviceOptions}
-        serviceChargesMap={serviceChargesMap}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={NEW_PACKAGE_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('serviceCategory' in changed) {
+            form.setFieldsValue({ services: [] });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="new-package-form-grid" />
+      </Form>
     </AppModal>
   );
 }

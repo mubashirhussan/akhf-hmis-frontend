@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tag, Tooltip } from 'antd';
+import { App, Button, Form, Input, Select, Tag, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import PatientTypeModal from '@/features/service-admin/pages/patient-type/PatientTypeModal';
@@ -20,20 +20,14 @@ import '@/features/service-admin/pages/patient-type/patient-type.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyForm() {
-  return { patientType: '', b2bLabs: '', status: 'active' };
-}
-
 export default function PatientTypePage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
 
-  // filter state
   const [filterPatientType, setFilterPatientType] = useState('');
   const [filterB2b, setFilterB2b] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -43,42 +37,30 @@ export default function PatientTypePage() {
   const [updatePatientType] = useUpdatePatientTypeMutation();
   const [deletePatientType] = useDeletePatientTypeMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      patientType: record.patientType ?? '',
-      b2bLabs: record.b2bLabs ?? '',
-      status: record.status ?? 'active',
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        patientType: record.patientType ?? '',
+        b2bLabs: record.b2bLabs ?? '',
+        status: record.status ?? 'active',
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -91,35 +73,35 @@ export default function PatientTypePage() {
   );
 
   const handleSave = useCallback(async () => {
-    const patientType = form.patientType.trim();
-    const errors = {};
+    try {
+      const values = await form.validateFields();
+      const patientType = values.patientType.trim();
 
-    if (!patientType) errors.patientType = 'Patient Type is required.';
-    if (!form.b2bLabs) errors.b2bLabs = 'B2B LABS is required.';
-    if (editingRowId && !form.status) errors.status = 'Status is required.';
+      if (editingRowId) {
+        await updatePatientType({
+          id: editingRowId,
+          patientType,
+          b2bLabs: values.b2bLabs,
+          status: values.status,
+        }).unwrap();
+        message.success('Patient type updated.');
+      } else {
+        await createPatientType({ patientType, b2bLabs: values.b2bLabs }).unwrap();
+        message.success('Patient type added.');
+      }
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    if (editingRowId) {
-      await updatePatientType({
-        id: editingRowId,
-        patientType,
-        b2bLabs: form.b2bLabs,
-        status: form.status,
-      }).unwrap();
-      message.success('Patient type updated.');
-    } else {
-      await createPatientType({ patientType, b2bLabs: form.b2bLabs }).unwrap();
-      message.success('Patient type added.');
-    }
-
-    closeModal();
-  }, [form, editingRowId, createPatientType, updatePatientType, message, closeModal]);
+  }, [
+    form,
+    editingRowId,
+    createPatientType,
+    updatePatientType,
+    message,
+    closeModal,
+  ]);
 
   const filteredRows = useMemo(() => {
     const term = filterPatientType.trim().toLowerCase();
@@ -262,10 +244,7 @@ export default function PatientTypePage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Patient Type' : 'Add Patient Type'}
         form={form}
-        errors={fieldErrors}
         isEdit={Boolean(editingRowId)}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import { App, Button, Select, Tooltip } from "antd";
-import AppIcon from "@/components/icons/AppIcon";
-import DataTable from "@/components/ui/DataTable";
-import AssignOpdServicesModal from "@/features/service-admin/pages/assign-opd-services/AssignOpdServicesModal";
-import { useConfirm } from "@/hooks/useConfirm";
+import { useCallback, useMemo, useState } from 'react';
+import { App, Button, Form, Select, Tooltip } from 'antd';
+import AppIcon from '@/components/icons/AppIcon';
+import DataTable from '@/components/ui/DataTable';
+import AssignOpdServicesModal from '@/features/service-admin/pages/assign-opd-services/AssignOpdServicesModal';
+import { useConfirm } from '@/hooks/useConfirm';
 import {
   useGetHospitalsQuery,
   useGetSubDepartmentsQuery,
-} from "@/features/human-resource/api/employeeApi";
+} from '@/features/human-resource/api/employeeApi';
 import {
   useGetPatientTypesQuery,
   useGetServiceCategoriesQuery,
@@ -18,32 +18,22 @@ import {
   useCreateAssignOpdServiceMutation,
   useUpdateAssignOpdServiceMutation,
   useDeleteAssignOpdServiceMutation,
-} from "@/features/service-admin/api/serviceAdminApi";
-import "@/features/service-admin/pages/assign-opd-services/assign-opd-services.css";
+} from '@/features/service-admin/api/serviceAdminApi';
+import '@/features/service-admin/pages/assign-opd-services/assign-opd-services.css';
 
-const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
-
-const EMPTY_FORM = {
-  hospital: "",
-  patientType: "",
-  serviceCategory: "",
-  service: "",
-  subDepartment: "",
-  amount: null,
-};
+const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 function getLabelFromOptions(options, value) {
-  return options.find((o) => o.value === value)?.label ?? value ?? "—";
+  return options.find((o) => o.value === value)?.label ?? value ?? '—';
 }
 
 export default function AssignOpdServicesPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(EMPTY_FORM);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const [filterHospital, setFilterHospital] = useState(undefined);
   const [filterServiceCategory, setFilterServiceCategory] = useState(undefined);
@@ -60,6 +50,8 @@ export default function AssignOpdServicesPage() {
   const [updateAssignOpdService] = useUpdateAssignOpdServiceMutation();
   const [deleteAssignOpdService] = useDeleteAssignOpdServiceMutation();
 
+  const watchedCategory = Form.useWatch('serviceCategory', form);
+
   const patientTypeOptions = useMemo(
     () => patientTypeRows.map((r) => ({ value: r.id, label: r.patientType })),
     [patientTypeRows],
@@ -71,18 +63,14 @@ export default function AssignOpdServicesPage() {
   );
 
   const serviceOptions = useMemo(() => {
-    if (!form.serviceCategory) return [];
+    if (!watchedCategory) return [];
     return serviceAdminRows
-      .filter(
-        (r) =>
-          r.serviceCategory === form.serviceCategory &&
-          r.activeStatus === "active",
-      )
+      .filter((r) => r.serviceCategory === watchedCategory && r.activeStatus === 'active')
       .map((r) => ({ value: r.id, label: r.serviceName }));
-  }, [serviceAdminRows, form.serviceCategory]);
+  }, [serviceAdminRows, watchedCategory]);
 
   const filterServiceOptions = useMemo(() => {
-    const base = serviceAdminRows.filter((r) => r.activeStatus === "active");
+    const base = serviceAdminRows.filter((r) => r.activeStatus === 'active');
     const filtered = filterServiceCategory
       ? base.filter((r) => r.serviceCategory === filterServiceCategory)
       : base;
@@ -95,144 +83,91 @@ export default function AssignOpdServicesPage() {
   );
 
   const subDepartmentOptions = useMemo(
-    () =>
-      allSubDepartments.map((s) => ({
-        value: s.id,
-        label: s.subDepartmentName,
-      })),
+    () => allSubDepartments.map((s) => ({ value: s.id, label: s.subDepartmentName })),
     [allSubDepartments],
   );
 
-  const patchForm = useCallback(
-    (patch) => {
-      setForm((current) => {
-        const next = { ...current, ...patch };
-        if ("service" in patch && patch.service) {
-          const selectedService = serviceAdminRows.find(
-            (row) => row.id === patch.service,
-          );
-          if (selectedService?.serviceCharges != null) {
-            next.amount = selectedService.serviceCharges;
-          }
-        }
-        return next;
-      });
-    },
-    [serviceAdminRows],
-  );
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(EMPTY_FORM);
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      hospital: record.hospital ?? "",
-      patientType: record.patientType ?? "",
-      serviceCategory: record.serviceCategory ?? "",
-      service: record.service ?? "",
-      subDepartment: record.subDepartment ?? "",
-      amount: record.amount ?? null,
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        hospital: record.hospital ?? undefined,
+        patientType: record.patientType ?? undefined,
+        serviceCategory: record.serviceCategory ?? undefined,
+        service: record.service ?? undefined,
+        subDepartment: record.subDepartment ?? undefined,
+        amount: record.amount ?? null,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
-      const hospitalLabel = getLabelFromOptions(
-        hospitalOptions,
-        record.hospital,
-      );
+      const hospitalLabel = getLabelFromOptions(hospitalOptions, record.hospital);
       const confirmed = await confirmDelete({
         itemName: `OPD assignment for ${hospitalLabel}`,
       });
       if (!confirmed) return;
       await deleteAssignOpdService(record.id).unwrap();
-      message.success("OPD service assignment deleted.");
+      message.success('OPD service assignment deleted.');
     },
     [confirmDelete, deleteAssignOpdService, message, hospitalOptions],
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.hospital) errors.hospital = "Hospital is required.";
-    if (!form.patientType) errors.patientType = "Patient Type is required.";
-    if (!form.serviceCategory)
-      errors.serviceCategory = "Service Category is required.";
-    if (!form.service) errors.service = "Service is required.";
-    if (!form.subDepartment)
-      errors.subDepartment = "Sub Department is required.";
-    if (form.amount === null || form.amount === undefined || form.amount === "")
-      errors.amount = "Amount is required.";
+    try {
+      const values = await form.validateFields();
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      const hospitalLabel = getLabelFromOptions(hospitalOptions, values.hospital);
+      const patientTypeLabel = getLabelFromOptions(patientTypeOptions, values.patientType);
+      const serviceCategoryLabel = getLabelFromOptions(
+        serviceCategoryOptions,
+        values.serviceCategory,
+      );
+      const serviceLabel = getLabelFromOptions(
+        serviceAdminRows.map((r) => ({ value: r.id, label: r.serviceName })),
+        values.service,
+      );
+      const subDepartmentLabel = getLabelFromOptions(subDepartmentOptions, values.subDepartment);
+
+      const payload = {
+        hospital: values.hospital,
+        hospitalLabel,
+        patientType: values.patientType,
+        patientTypeLabel,
+        serviceCategory: values.serviceCategory,
+        serviceCategoryLabel,
+        service: values.service,
+        serviceLabel,
+        subDepartment: values.subDepartment,
+        subDepartmentLabel,
+        amount: values.amount,
+      };
+
+      if (editingRowId) {
+        await updateAssignOpdService({ id: editingRowId, ...payload }).unwrap();
+        message.success('OPD service assignment updated.');
+      } else {
+        await createAssignOpdService(payload).unwrap();
+        message.success('OPD service assignment added.');
+      }
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const hospitalLabel = getLabelFromOptions(hospitalOptions, form.hospital);
-    const patientTypeLabel = getLabelFromOptions(
-      patientTypeOptions,
-      form.patientType,
-    );
-    const serviceCategoryLabel = getLabelFromOptions(
-      serviceCategoryOptions,
-      form.serviceCategory,
-    );
-    const serviceLabel = getLabelFromOptions(
-      serviceAdminRows.map((r) => ({ value: r.id, label: r.serviceName })),
-      form.service,
-    );
-    const subDepartmentLabel = getLabelFromOptions(
-      subDepartmentOptions,
-      form.subDepartment,
-    );
-
-    const payload = {
-      hospital: form.hospital,
-      hospitalLabel,
-      patientType: form.patientType,
-      patientTypeLabel,
-      serviceCategory: form.serviceCategory,
-      serviceCategoryLabel,
-      service: form.service,
-      serviceLabel,
-      subDepartment: form.subDepartment,
-      subDepartmentLabel,
-      amount: form.amount,
-    };
-
-    if (editingRowId) {
-      await updateAssignOpdService({ id: editingRowId, ...payload }).unwrap();
-      message.success("OPD service assignment updated.");
-    } else {
-      await createAssignOpdService(payload).unwrap();
-      message.success("OPD service assignment added.");
-    }
-
-    // closeModal();
   }, [
     form,
     editingRowId,
@@ -244,90 +179,58 @@ export default function AssignOpdServicesPage() {
     createAssignOpdService,
     updateAssignOpdService,
     message,
-    closeModal,
   ]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
       if (filterHospital && row.hospital !== filterHospital) return false;
-      if (
-        filterServiceCategory &&
-        row.serviceCategory !== filterServiceCategory
-      )
-        return false;
+      if (filterServiceCategory && row.serviceCategory !== filterServiceCategory) return false;
       if (filterService && row.service !== filterService) return false;
-      if (filterSubDepartment && row.subDepartment !== filterSubDepartment)
-        return false;
+      if (filterSubDepartment && row.subDepartment !== filterSubDepartment) return false;
       return true;
     });
-  }, [
-    rows,
-    filterHospital,
-    filterServiceCategory,
-    filterService,
-    filterSubDepartment,
-  ]);
+  }, [rows, filterHospital, filterServiceCategory, filterService, filterSubDepartment]);
 
   const columns = useMemo(
     () => [
+      { title: 'Hospital', dataIndex: 'hospitalLabel', key: 'hospitalLabel', width: 200 },
+      { title: 'Patient Type', dataIndex: 'patientTypeLabel', key: 'patientTypeLabel', width: 140 },
       {
-        title: "Hospital",
-        dataIndex: "hospitalLabel",
-        key: "hospitalLabel",
-        width: 200,
-      },
-      {
-        title: "Patient Type",
-        dataIndex: "patientTypeLabel",
-        key: "patientTypeLabel",
-        width: 140,
-      },
-      {
-        title: "Service Category",
-        dataIndex: "serviceCategoryLabel",
-        key: "serviceCategoryLabel",
+        title: 'Service Category',
+        dataIndex: 'serviceCategoryLabel',
+        key: 'serviceCategoryLabel',
         width: 160,
       },
+      { title: 'Service', dataIndex: 'serviceLabel', key: 'serviceLabel', width: 200 },
       {
-        title: "Service",
-        dataIndex: "serviceLabel",
-        key: "serviceLabel",
-        width: 200,
-      },
-      {
-        title: "Sub Department",
-        dataIndex: "subDepartmentLabel",
-        key: "subDepartmentLabel",
+        title: 'Sub Department',
+        dataIndex: 'subDepartmentLabel',
+        key: 'subDepartmentLabel',
         width: 150,
       },
       {
-        title: "Amount",
-        dataIndex: "amount",
-        key: "amount",
+        title: 'Amount',
+        dataIndex: 'amount',
+        key: 'amount',
         width: 110,
-        render: (val) => (val != null ? val.toLocaleString() : "—"),
+        render: (val) => (val != null ? val.toLocaleString() : '—'),
       },
       {
-        title: "Action",
-        key: "action",
+        title: 'Action',
+        key: 'action',
         width: 90,
-        align: "center",
+        align: 'center',
         render: (_, record) => (
           <div
             className="assign-opd-services-actions-cell"
-            style={{ display: "flex", gap: 8, justifyContent: "center" }}
+            style={{ display: 'flex', gap: 8, justifyContent: 'center' }}
           >
             <Tooltip title="Edit">
               <Button
                 type="link"
                 size="small"
                 aria-label="Edit OPD service"
-                icon={
-                  <AppIcon
-                    icon="mdi:pencil-outline"
-                    className={ACTION_ICON_CLASS}
-                  />
-                }
+                icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
                 onClick={() => handleEditRow(record)}
               />
             </Tooltip>
@@ -337,12 +240,7 @@ export default function AssignOpdServicesPage() {
                 danger
                 size="small"
                 aria-label="Delete OPD service"
-                icon={
-                  <AppIcon
-                    icon="mdi:delete-outline"
-                    className={ACTION_ICON_CLASS}
-                  />
-                }
+                icon={<AppIcon icon="mdi:delete-outline" className={ACTION_ICON_CLASS} />}
                 onClick={() => handleDeleteRow(record)}
               />
             </Tooltip>
@@ -357,12 +255,9 @@ export default function AssignOpdServicesPage() {
     <div className="services-billing-page assign-opd-services-page">
       <div
         className="assign-opd-services-table-toolbar"
-        style={{ display: "flex", gap: 12, justifyContent: "space-between" }}
+        style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}
       >
-        <div
-          className="assign-opd-services-filters"
-          style={{ display: "flex", gap: 12 }}
-        >
+        <div className="assign-opd-services-filters" style={{ display: 'flex', gap: 12 }}>
           <Select
             placeholder="Hospital"
             value={filterHospital}
@@ -417,10 +312,7 @@ export default function AssignOpdServicesPage() {
         </Button>
       </div>
 
-      <section
-        className="services-billing-results"
-        aria-label="assign opd services"
-      >
+      <section className="services-billing-results" aria-label="assign opd services">
         <DataTable
           rowKey="id"
           columns={columns}
@@ -430,7 +322,7 @@ export default function AssignOpdServicesPage() {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ['10', '20', '50', '100'],
             showTotal: (total) => `Total ${total} items`,
           }}
         />
@@ -439,19 +331,15 @@ export default function AssignOpdServicesPage() {
       <AssignOpdServicesModal
         open={isModalOpen}
         onClose={closeModal}
-        title={
-          editingRowId ? "Edit OPD Service Assignment" : "Assign OPD Service"
-        }
+        title={editingRowId ? 'Edit OPD Service Assignment' : 'Assign OPD Service'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         hospitalOptions={hospitalOptions}
         patientTypeOptions={patientTypeOptions}
         serviceCategoryOptions={serviceCategoryOptions}
         serviceOptions={serviceOptions}
         subDepartmentOptions={subDepartmentOptions}
+        serviceAdminRows={serviceAdminRows}
       />
     </div>
   );

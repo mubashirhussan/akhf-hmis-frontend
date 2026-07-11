@@ -1,18 +1,14 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import ChangeDepartmentForm from './ChangeDepartmentForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  CHANGE_DEPARTMENT_FIELDS,
+  CHANGE_DEPARTMENT_INITIAL_VALUES,
+} from '@/features/human-resource/pages/change-department/change-department-fields';
 
-export default function ChangeDepartmentModal({
-  open,
-  onClose,
-  form,
-  errors,
-  onPatchForm,
-  onClearError,
-  onSave,
-}) {
+export default function ChangeDepartmentModal({ open, onClose, form, onSave }) {
   return (
     <AppModal
       open={open}
@@ -33,12 +29,15 @@ export default function ChangeDepartmentModal({
         </>
       }
     >
-      <ChangeDepartmentForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={CHANGE_DEPARTMENT_INITIAL_VALUES}
+      >
+        <DynamicForm fields={CHANGE_DEPARTMENT_FIELDS} className="change-department-form-grid" />
+      </Form>
     </AppModal>
   );
 }

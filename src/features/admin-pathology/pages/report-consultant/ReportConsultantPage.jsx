@@ -1,14 +1,10 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Input } from "antd";
+import { App, Button, Form, Tooltip, Input } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import ReportConsultantModal from "@/features/admin-pathology/pages/report-consultant/ReportConsultantModal";
-import {
-  createEmptyReportConsultantForm,
-  rowToReportConsultantForm,
-} from "@/features/admin-pathology/api/mock-report-consultant";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   useGetReportConsultantsQuery,
@@ -21,11 +17,10 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function ReportConsultantPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyReportConsultantForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const [nameFilter, setNameFilter] = useState("");
   const [designationFilter, setDesignationFilter] = useState("");
   const { confirmDelete } = useConfirm();
@@ -35,40 +30,32 @@ export default function ReportConsultantPage() {
   const [createReportConsultant] = useCreateReportConsultantMutation();
   const [updateReportConsultant] = useUpdateReportConsultantMutation();
   const [deleteReportConsultant] = useDeleteReportConsultantMutation();
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const openModal = useCallback(() => {
-    setForm(createEmptyReportConsultantForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToReportConsultantForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        doctorName: record.doctorName ?? "",
+        doctorQualification: record.doctorQualification ?? "",
+        doctorDesignation: record.doctorDesignation ?? "",
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -82,50 +69,37 @@ export default function ReportConsultantPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const doctorName = form.doctorName.trim();
-    const doctorQualification = form.doctorQualification.trim();
-    const doctorDesignation = form.doctorDesignation.trim();
+    try {
+      const values = await form.validateFields();
+      const rowPayload = {
+        doctorName: values.doctorName.trim(),
+        doctorQualification: values.doctorQualification.trim(),
+        doctorDesignation: values.doctorDesignation.trim(),
+      };
 
-    const errors = {};
-    if (!doctorName) errors.doctorName = "Doctor Name is required.";
-    if (!doctorQualification)
-      errors.doctorQualification = "Doctor Qualification is required.";
-    if (!doctorDesignation)
-      errors.doctorDesignation = "Doctor Designation is required.";
+      if (editingRowId) {
+        await updateReportConsultant({
+          id: editingRowId,
+          ...rowPayload,
+        }).unwrap();
+        message.success("Consultant updated.");
+      } else {
+        await createReportConsultant(rowPayload).unwrap();
+        message.success("Consultant created.");
+      }
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const rowPayload = {
-      doctorName,
-      doctorQualification,
-      doctorDesignation,
-    };
-
-    if (editingRowId) {
-      await updateReportConsultant({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
-
-      setIsModalOpen(false);
-      setEditingRowId(null);
-
-      message.success("Consultant updated.");
-
-      return;
-    }
-
-    await createReportConsultant(rowPayload).unwrap();
-
-    setIsModalOpen(false);
-
-    message.success("Consultant created.");
-  }, [form, editingRowId, createReportConsultant, updateReportConsultant, message]);
+  }, [
+    form,
+    editingRowId,
+    createReportConsultant,
+    updateReportConsultant,
+    message,
+    closeModal,
+  ]);
 
   const filteredRows = useMemo(() => {
     const nameTerm = nameFilter.trim().toLowerCase();
@@ -241,11 +215,11 @@ export default function ReportConsultantPage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-           pagination={{
+          pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
             onChange: (current, pageSize) =>
               setPagination({ current, pageSize }),
@@ -258,9 +232,6 @@ export default function ReportConsultantPage() {
         onClose={closeModal}
         title={editingRowId ? "Edit Consultant" : "Add Consultant"}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

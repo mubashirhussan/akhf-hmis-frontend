@@ -1,15 +1,13 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import NewPackageModal from '@/features/service-admin/pages/new-package/NewPackageModal';
 import NewPackageLinkageModal from '@/features/service-admin/pages/new-package/NewPackageLinkageModal';
 import {
   WARD_OPTIONS,
-  PACKAGE_SERVICE_HEAD_OPTIONS,
-  createEmptyPackageForm,
   rowToPackageForm,
 } from '@/features/service-admin/api/mock-service-admin';
 import {
@@ -28,6 +26,7 @@ const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 export default function NewPackagePage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
   const [wardFilter, setWardFilter] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
@@ -35,8 +34,6 @@ export default function NewPackagePage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [form, setForm] = useState(createEmptyPackageForm);
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const [linkageOpen, setLinkageOpen] = useState(false);
   const [selectedPkgId, setSelectedPkgId] = useState(null);
@@ -50,24 +47,26 @@ export default function NewPackagePage() {
   const [updatePackage] = useUpdatePackageMutation();
   const [deletePackage] = useDeletePackageMutation();
 
+  const watchedCategory = Form.useWatch('serviceCategory', form);
+
   const departmentOptions = useMemo(
     () => departments.map((d) => ({ value: d.id, label: d.departmentName })),
     [departments],
   );
 
   const serviceOptionsByCategory = useMemo(() => {
-    if (!form.serviceCategory) return [];
+    if (!watchedCategory) return [];
     return allServiceRows
-      .filter((r) => r.serviceCategory === form.serviceCategory)
+      .filter((r) => r.serviceCategory === watchedCategory)
       .map((r) => ({ value: r.serviceName, label: r.serviceName }));
-  }, [allServiceRows, form.serviceCategory]);
+  }, [allServiceRows, watchedCategory]);
 
   const serviceCategoryOptions = useMemo(
     () => categories.map((category) => ({ value: category.value, label: category.serviceName })),
     [categories],
   );
 
-   const allServiceOptions = useMemo(
+  const allServiceOptions = useMemo(
     () =>
       allServiceRows.map((r) => ({
         value: r.serviceName,
@@ -79,48 +78,44 @@ export default function NewPackagePage() {
 
   const serviceChargesMap = useMemo(() => {
     const map = {};
-    allServiceRows.forEach((r) => { map[r.serviceName] = r.serviceCharges ?? 0; });
+    allServiceRows.forEach((r) => {
+      map[r.serviceName] = r.serviceCharges ?? 0;
+    });
     return map;
   }, [allServiceRows]);
-
 
   const selectedPkg = useMemo(
     () => packages.find((p) => p.id === selectedPkgId) ?? null,
     [packages, selectedPkgId],
   );
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyPackageForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToPackageForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      const values = rowToPackageForm(record);
+      form.setFieldsValue({
+        ...values,
+        ward: values.ward || undefined,
+        department: values.department || undefined,
+        serviceHead: values.serviceHead || undefined,
+        serviceCategory: values.serviceCategory || undefined,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -133,35 +128,31 @@ export default function NewPackagePage() {
   );
 
   const handleSave = useCallback(async () => {
-    const packageName = form.packageName?.trim();
-    const errors = {};
-    if (!packageName) errors.packageName = 'Package Name is required.';
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
-    }
-    setFieldErrors({});
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        ward: values.ward,
+        department: values.department,
+        packageName: values.packageName.trim(),
+        totalAmount: values.totalAmount,
+        doctorShare: values.doctorShare,
+        description: values.description,
+        serviceHead: values.serviceHead,
+        serviceCategory: values.serviceCategory,
+        services: values.services,
+      };
 
-    const payload = {
-      ward: form.ward,
-      department: form.department,
-      packageName,
-      totalAmount: form.totalAmount,
-      doctorShare: form.doctorShare,
-      description: form.description,
-      serviceHead: form.serviceHead,
-      serviceCategory: form.serviceCategory,
-      services: form.services,
-    };
-
-    if (editingRowId) {
-      await updatePackage({ id: editingRowId, ...payload }).unwrap();
-      message.success('Package updated.');
-    } else {
-      await createPackage(payload).unwrap();
-      message.success('Package created.');
+      if (editingRowId) {
+        await updatePackage({ id: editingRowId, ...payload }).unwrap();
+        message.success('Package updated.');
+      } else {
+        await createPackage(payload).unwrap();
+        message.success('Package created.');
+      }
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-    closeModal();
   }, [form, editingRowId, createPackage, updatePackage, closeModal, message]);
 
   const handleLinkageSave = useCallback(
@@ -187,7 +178,7 @@ export default function NewPackagePage() {
     [],
   );
 
-const columns = useMemo(
+  const columns = useMemo(
     () => [
       {
         title: 'Department',
@@ -265,8 +256,7 @@ const columns = useMemo(
         dataIndex: 'onDate',
         key: 'onDate',
         width: 160,
-        render: (value) =>
-          value ? new Date(value).toLocaleString() : '—',
+        render: (value) => (value ? new Date(value).toLocaleString() : '—'),
       },
       {
         title: 'Action',
@@ -281,12 +271,7 @@ const columns = useMemo(
                 size="small"
                 className="new-package-actions-cell"
                 aria-label="Edit package"
-                icon={
-                  <AppIcon
-                    icon="mdi:pencil-outline"
-                    className={ACTION_ICON_CLASS}
-                  />
-                }
+                icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
                 onClick={() => handleEditRow(record)}
               />
             </Tooltip>
@@ -296,12 +281,7 @@ const columns = useMemo(
                 danger
                 size="small"
                 aria-label="Delete package"
-                icon={
-                  <AppIcon
-                    icon="mdi:delete-outline"
-                    className={ACTION_ICON_CLASS}
-                  />
-                }
+                icon={<AppIcon icon="mdi:delete-outline" className={ACTION_ICON_CLASS} />}
                 onClick={() => handleDeleteRow(record)}
               />
             </Tooltip>
@@ -372,9 +352,6 @@ const columns = useMemo(
         onClose={closeModal}
         title={editingRowId ? 'Edit Package' : 'Add Package'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         departmentOptions={departmentOptions}
         serviceCategoryOptions={serviceCategoryOptions}
@@ -382,7 +359,7 @@ const columns = useMemo(
         serviceChargesMap={serviceChargesMap}
       />
 
-<NewPackageLinkageModal
+      <NewPackageLinkageModal
         open={linkageOpen}
         onClose={() => {
           setLinkageOpen(false);

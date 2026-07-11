@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import HospitalServicesModal from '@/features/service-admin/pages/hospital-services/HospitalServicesModal';
@@ -9,44 +9,34 @@ import { getServiceHeadLabel } from '@/features/service-admin/api/mock-service-a
 import {
   useGetHospitalServicesQuery,
   useGetServiceCategoriesQuery,
-  useUpdateHospitalServicePriceMutation,
   useBulkUpdateHospitalServicePricesMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
 import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyBulkForm() {
-  return { adjustType: '', adjustMode: '', percentage: null, fixedAmount: null };
-}
-
 export default function HospitalServicesPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
-const [hospitalId, setHospitalId] = useState(undefined);
-const [categoryFilter, setCategoryFilter] = useState('laboratory');
+  const [hospitalId, setHospitalId] = useState(undefined);
+  const [categoryFilter, setCategoryFilter] = useState('laboratory');
   const [nameFilter, setNameFilter] = useState('');
-
   const [selectedIds, setSelectedIds] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bulkForm, setBulkForm] = useState(createEmptyBulkForm);
-  const [fieldErrors, setFieldErrors] = useState({});
-
-
 
   const { data: hospitals = [] } = useGetHospitalsQuery();
 
-const hospitalOptions = useMemo(
-  () => hospitals.map((h) => ({ value: h.id, label: h.name })),
-  [hospitals],
-);
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
 
-useEffect(() => {
-  if (hospitalOptions.length > 0 && hospitalId === undefined) {
-    setHospitalId(hospitalOptions[0].value);
-  }
-}, [hospitalOptions, hospitalId]);
+  useEffect(() => {
+    if (hospitalOptions.length > 0 && hospitalId === undefined) {
+      setHospitalId(hospitalOptions[0].value);
+    }
+  }, [hospitalOptions, hospitalId]);
 
   const { data: categories = [] } = useGetServiceCategoriesQuery();
   const categoryOptions = useMemo(
@@ -59,27 +49,13 @@ useEffect(() => {
     { skip: !hospitalId },
   );
 
-  const [updateHospitalServicePrice] = useUpdateHospitalServicePriceMutation();
   const [bulkUpdatePrices] = useBulkUpdateHospitalServicePricesMutation();
-
-  const patchBulkForm = useCallback((patch) => {
-    setBulkForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
 
   const allIds = useMemo(() => rows.map((r) => r.id), [rows]);
   const allSelected = allIds.length > 0 && selectedIds.length === allIds.length;
   const someSelected = selectedIds.length > 0 && !allSelected;
 
- const toggleSelectAll = useCallback(() => {
+  const toggleSelectAll = useCallback(() => {
     setSelectedIds(allSelected ? [] : [...allIds]);
   }, [allSelected, allIds]);
 
@@ -89,45 +65,39 @@ useEffect(() => {
     );
   }, []);
 
-  const openModal = useCallback((record) => {
-    setBulkForm({ ...createEmptyBulkForm(), currentAmount: record?.price ?? null });
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (record) => {
+      form.resetFields();
+      form.setFieldsValue({ currentAmount: record?.price ?? null });
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleBulkSave = useCallback(async () => {
-    const errors = {};
-    if (!bulkForm.adjustType) errors.adjustType = 'Adjustment Type is required.';
-    if (!bulkForm.adjustMode) errors.adjustMode = 'Adjustment Mode is required.';
-    if (bulkForm.adjustMode === 'percentage' && (!bulkForm.percentage || bulkForm.percentage <= 0)) {
-      errors.percentage = 'Percentage is required.';
+    try {
+      const values = await form.validateFields();
+      await bulkUpdatePrices({
+        hospitalId,
+        serviceIds: selectedIds,
+        type: values.adjustType,
+        percentage: values.adjustMode === 'percentage' ? values.percentage : null,
+        fixedAmount: values.adjustMode === 'fixed' ? values.fixedAmount : null,
+      }).unwrap();
+      message.success('Prices updated successfully.');
+      setSelectedIds([]);
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-    if (bulkForm.adjustMode === 'fixed' && (!bulkForm.fixedAmount || bulkForm.fixedAmount <= 0)) {
-      errors.fixedAmount = 'Fixed Amount is required.';
-    }
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
-    }
-    setFieldErrors({});
-    await bulkUpdatePrices({
-      hospitalId,
-      serviceIds: selectedIds,
-      type: bulkForm.adjustType,
-      percentage: bulkForm.adjustMode === 'percentage' ? bulkForm.percentage : null,
-      fixedAmount: bulkForm.adjustMode === 'fixed' ? bulkForm.fixedAmount : null,
-    }).unwrap();
-    message.success('Prices updated successfully.');
-    setSelectedIds([]);
-    setIsModalOpen(false);
-  }, [bulkForm, hospitalId, selectedIds, bulkUpdatePrices, message]);
+  }, [form, hospitalId, selectedIds, bulkUpdatePrices, message, closeModal]);
 
-   const updatePricesEnabled = selectedIds.length >= 2;
+  const updatePricesEnabled = selectedIds.length >= 2;
   const singleSelected = selectedIds.length === 1;
 
   const columns = useMemo(
@@ -137,7 +107,9 @@ useEffect(() => {
           <input
             type="checkbox"
             checked={allSelected}
-            ref={(el) => { if (el) el.indeterminate = someSelected; }}
+            ref={(el) => {
+              if (el) el.indeterminate = someSelected;
+            }}
             onChange={toggleSelectAll}
             style={{ cursor: 'pointer' }}
           />
@@ -190,12 +162,7 @@ useEffect(() => {
                   disabled={!isThisRowSelected}
                   className="hospital-services-actions-cell"
                   aria-label="Edit price"
-                  icon={
-                    <AppIcon
-                      icon="mdi:pencil-outline"
-                      className={ACTION_ICON_CLASS}
-                    />
-                  }
+                  icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
                   onClick={() => openModal(record)}
                 />
               </Tooltip>
@@ -204,15 +171,7 @@ useEffect(() => {
         },
       },
     ],
-    [
-      allSelected,
-      someSelected,
-      toggleSelectAll,
-      selectedIds,
-      toggleRow,
-      singleSelected,
-      openModal,
-    ],
+    [allSelected, someSelected, toggleSelectAll, selectedIds, toggleRow, singleSelected, openModal],
   );
 
   return (
@@ -262,11 +221,7 @@ useEffect(() => {
         </div>
 
         <Tooltip title={!updatePricesEnabled ? 'Select 2 or more services to update prices' : ''}>
-          <Button
-            type="primary"
-            disabled={!updatePricesEnabled}
-            onClick={() => openModal()}
-          >
+          <Button type="primary" disabled={!updatePricesEnabled} onClick={() => openModal()}>
             Update Prices
           </Button>
         </Tooltip>
@@ -274,7 +229,13 @@ useEffect(() => {
 
       <section className="services-billing-results" aria-label="hospital services">
         {!hospitalId ? (
-          <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--app-text-secondary, #999)' }}>
+          <div
+            style={{
+              padding: '40px 0',
+              textAlign: 'center',
+              color: 'var(--app-text-secondary, #999)',
+            }}
+          >
             Please select a hospital to view services.
           </div>
         ) : (
@@ -297,10 +258,7 @@ useEffect(() => {
       <HospitalServicesModal
         open={isModalOpen}
         onClose={closeModal}
-        form={bulkForm}
-        errors={fieldErrors}
-        onPatchForm={patchBulkForm}
-        onClearError={clearFieldError}
+        form={form}
         onSave={handleBulkSave}
       />
     </div>

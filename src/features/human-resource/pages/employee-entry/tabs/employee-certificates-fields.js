@@ -1,0 +1,110 @@
+export const CERTIFICATION_TYPE_OPTIONS = [
+  { label: 'PMDC', value: 'pmdc' },
+  { label: 'PNC', value: 'pnc' },
+  { label: 'PEC', value: 'pec' },
+];
+
+export const NEED_RENEWAL_OPTIONS = [
+  { label: 'Yes', value: 'yes' },
+  { label: 'No', value: 'no' },
+];
+
+export const CERTIFICATE_DEFAULT_ROW = {
+  certificationNo: '',
+  certificationName: '',
+  institutionName: '',
+  detail: '',
+  certificationType: null,
+  dateFrom: '',
+  dateTo: '',
+  needRenewal: null,
+  expiryDate: '',
+  attachImageName: null,
+};
+
+export const getCertificateFields = (listIndex, { attachImageRender } = {}) => [
+  {
+    type: 'text',
+    name: [listIndex, 'certificationNo'],
+    label: 'Certification No',
+    floating: true,
+    span: 6,
+    required: true,
+    rules: [{ required: true, whitespace: true, message: 'Certification No is required' }],
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'certificationName'],
+    label: 'Certification Name',
+    floating: true,
+    span: 6,
+    required: true,
+    rules: [{ required: true, whitespace: true, message: 'Certification Name is required' }],
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'institutionName'],
+    label: 'Institution Name',
+    floating: true,
+    span: 6,
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'detail'],
+    label: 'Detail',
+    floating: true,
+    span: 6,
+  },
+  {
+    type: 'select',
+    name: [listIndex, 'certificationType'],
+    label: 'Certification Type',
+    floating: true,
+    span: 6,
+    options: CERTIFICATION_TYPE_OPTIONS,
+    props: { allowClear: true },
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'dateFrom'],
+    label: 'Date From',
+    floating: true,
+    span: 6,
+    props: { type: 'date' },
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'dateTo'],
+    label: 'Date To',
+    floating: true,
+    span: 6,
+    props: { type: 'date' },
+  },
+  {
+    type: 'select',
+    name: [listIndex, 'needRenewal'],
+    label: 'Need Renewal',
+    floating: true,
+    span: 6,
+    options: NEED_RENEWAL_OPTIONS,
+    props: { allowClear: true },
+  },
+  {
+    type: 'text',
+    name: [listIndex, 'expiryDate'],
+    label: 'Expiry Date',
+    floating: true,
+    span: 6,
+    props: { type: 'date' },
+  },
+  {
+    type: 'custom',
+    name: [listIndex, 'attachImageName'],
+    label: 'Attach Image',
+    floating: true,
+    span: 6,
+    required: true,
+    rules: [{ required: true, message: 'Please attach an image' }],
+    props: { render: attachImageRender },
+  },
+];

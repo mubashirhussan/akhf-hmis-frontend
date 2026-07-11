@@ -1,37 +1,33 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
-import DataTable from '@/components/ui/DataTable';
 import {
-  createLaboratoryWorklistFilters,
-} from '@/features/laboratory/api/mock-laboratory-worklist';
+  getCollectionFilterInitialValues,
+  normalizeCollectionFilters,
+} from '@/features/laboratory/components/collection-filter-fields';
+import DataTable from '@/components/ui/DataTable';
 import {
   useGetLaboratoryWorklistRecordQuery,
   useLazySearchLaboratoryWorklistQuery,
 } from '@/features/laboratory/api/laboratoryEndpoints';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import SampleReceivingFormView from '@/features/laboratory/pages/sample-receiving/SampleReceivingFormView';
 
-
 export default function SampleReceivingList() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const recordId = searchParams.get('recordId');
+  const [filterForm] = Form.useForm();
 
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const recordId = searchParams.get('recordId');
-
-  const { message } = App.useApp();
-  const [filters, setFilters] = useState(() => ({
-    ...createLaboratoryWorklistFilters('sample-receiving'),
-    ageUnit: DOB_AGE_UNITS.years,
-    patientAge: '',
-    dateRange: null,
-  }));
+  const filterInitialValues = useMemo(
+    () => getCollectionFilterInitialValues('sample-receiving'),
+    [],
+  );
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
@@ -39,11 +35,8 @@ export default function SampleReceivingList() {
     skip: !recordId,
   });
 
-  const patchFilter = (patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  };
-
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
+    const filters = normalizeCollectionFilters(values);
     const { data = [] } = await searchWorklist(filters);
     setResults(data);
     setHasSearched(true);
@@ -100,17 +93,18 @@ export default function SampleReceivingList() {
     ],
     [handleReceiveSample],
   );
-    if (activeRecord) {
-      return <SampleReceivingFormView record={activeRecord} />;
-    }
+
+  if (activeRecord) {
+    return <SampleReceivingFormView record={activeRecord} />;
+  }
 
   return (
     <div className="services-billing-page laboratory-worklist-page">
       <CollectionFilterForm
-        idPrefix="sample-receiving"
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
+        initialValues={filterInitialValues}
         onSubmit={handleSearch}
+        loading={isLoading}
       />
 
       <section className="services-billing-results" aria-label="Sample receiving results">

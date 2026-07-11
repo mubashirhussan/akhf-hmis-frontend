@@ -1,40 +1,36 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, InputNumber, Tooltip } from 'antd';
+import { App, Button, Form, Tooltip } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import DynamicForm from '@/components/form/DynamicForm';
 import { useConfirm } from '@/hooks/useConfirm';
-import {
-  createEmptyDesignationForm,
-  rowToDesignationForm,
-  filterDesignationRows,
-} from '@/features/human-resource/api/mock-designations';
+import { filterDesignationRows } from '@/features/human-resource/api/mock-designations';
 import {
   useGetDesignationsQuery,
   useAddDesignationMutation,
   useUpdateDesignationMutation,
   useDeleteDesignationMutation,
 } from '@/features/human-resource/api/employeeApi';
+import {
+  DESIGNATION_FILTER_FIELDS,
+  DESIGNATION_FILTER_INITIAL_VALUES,
+} from '@/features/human-resource/pages/add-designation/designation-fields';
 import DesignationModal from './DesignationModal';
 import './add-designation.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-const controlClass = FIELD_CONTROL_CLASS;
 
 export default function DesignationPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyDesignationForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [designationFilter, setDesignationFilter] = useState('');
+  const [editingRow, setEditingRow] = useState(null);
   const [appliedFilter, setAppliedFilter] = useState('');
 
   const { data: rows = [], isLoading } = useGetDesignationsQuery();
@@ -42,34 +38,20 @@ export default function DesignationPage() {
   const [updateDesignation] = useUpdateDesignationMutation();
   const [deleteDesignation] = useDeleteDesignationMutation();
 
-  const patchForm = useCallback((patch) => setForm((c) => ({ ...c, ...patch })), []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyDesignationForm());
-    setEditingRowId(null);
-    setFieldErrors({});
+    form.resetFields();
+    setEditingRow(null);
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    setEditingRow(null);
+    form.resetFields();
+  }, [form]);
 
   const handleEditRow = useCallback((record) => {
-    setForm(rowToDesignationForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
+    setEditingRow(record);
     setIsModalOpen(true);
   }, []);
 
@@ -84,42 +66,37 @@ export default function DesignationPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.designation?.trim()) errors.designation = 'Designation is required.';
-    if (form.minPayScale === '' || form.minPayScale === null || form.minPayScale === undefined)
-      errors.minPayScale = 'Minimum Pay Scale is required.';
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        designation: values.designation.trim(),
+        minPayScale: Number(values.minPayScale),
+      };
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      if (editingRow) {
+        await updateDesignation({ id: editingRow.id, ...payload }).unwrap();
+        closeModal();
+        message.success('Designation updated.');
+        return;
+      }
+
+      await addDesignation(payload).unwrap();
+      closeModal();
+      message.success('Designation added.');
+    } catch {
+      // validation errors are shown by antd Form
     }
+  }, [form, editingRow, addDesignation, updateDesignation, closeModal, message]);
 
-    setFieldErrors({});
+  const handleSearch = useCallback(() => {
+    const values = filterForm.getFieldsValue();
+    setAppliedFilter(values.designation ?? '');
+  }, [filterForm]);
 
-    const payload = {
-      designation: form.designation.trim(),
-      minPayScale: Number(form.minPayScale),
-    };
-
-    if (editingRowId) {
-      await updateDesignation({ id: editingRowId, ...payload }).unwrap();
-      setIsModalOpen(false);
-      setEditingRowId(null);
-      message.success('Designation updated.');
-      return;
-    }
-
-    await addDesignation(payload).unwrap();
-    setIsModalOpen(false);
-    message.success('Designation added.');
-  }, [form, editingRowId, addDesignation, updateDesignation, message]);
-
-  const handleSearch = () => setAppliedFilter(designationFilter);
-
-  const handleClear = () => {
-    setDesignationFilter('');
+  const handleClear = useCallback(() => {
+    filterForm.resetFields();
     setAppliedFilter('');
-  };
+  }, [filterForm]);
 
   const filteredRows = useMemo(
     () => filterDesignationRows(rows, { designation: appliedFilter }),
@@ -185,25 +162,14 @@ export default function DesignationPage() {
     <div className="services-billing-page designation-page">
       <section className="hr-filter-panel" aria-label="Designation search filters">
         <div className="walk-in-add-record-layout hr-search-layout">
-          <FormGrid
-            as="form"
-            columns={4}
+          <Form
+            form={filterForm}
+            layout="vertical"
             className="walk-in-add-record-form hr-search-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch();
-            }}
+            initialValues={DESIGNATION_FILTER_INITIAL_VALUES}
+            onFinish={handleSearch}
           >
-            <FloatingField label="Designation Name">
-              <Input
-                className={controlClass}
-                value={designationFilter}
-                allowClear
-                onChange={(e) => setDesignationFilter(e.target.value)}
-                autoComplete="off"
-              />
-            </FloatingField>
-
+            <DynamicForm fields={DESIGNATION_FILTER_FIELDS} />
             <div className="hr-search-actions">
               <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
                 Clear
@@ -218,7 +184,7 @@ export default function DesignationPage() {
                 Search
               </Button>
             </div>
-          </FormGrid>
+          </Form>
         </div>
       </section>
 
@@ -247,13 +213,10 @@ export default function DesignationPage() {
       <DesignationModal
         open={isModalOpen}
         onClose={closeModal}
-        title={editingRowId ? 'Edit Designation' : 'Add Designation'}
+        title={editingRow ? 'Edit Designation' : 'Add Designation'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
-        isEdit={!!editingRowId}
+        record={editingRow}
       />
     </div>
   );

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Collapse, Form } from 'antd';
 import DynamicForm from '@/components/form/DynamicForm';
-import { FormFieldPrefixProvider } from '@/components/ui/FormFieldPrefixContext';
 import {
   clearPatientRegValidationState,
   focusFormField,
@@ -228,35 +227,33 @@ export default function PatientRegistrationForm() {
           }
         }}
       >
-        <FormFieldPrefixProvider prefix="patient-reg">
-          <Collapse
-            items={collapseItems}
-            activeKey={activePanels}
-            onChange={setActivePanels}
-            destroyOnHidden={false}
-            classNames={{
-              root: 'patient-registration-collapse',
-              header: 'patient-reg-collapse-header',
-              title: 'patient-reg-collapse-title',
-            }}
-            expandIconPlacement="end"
-            expandIcon={({ isActive }) =>
-              isActive ? (
-                <DownOutlined className="patient-reg-collapse-icon" aria-hidden />
-              ) : (
-                <UpOutlined className="patient-reg-collapse-icon" aria-hidden />
-              )
-            }
-          />
-          <div className="patient-registration-actions">
-            <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
-              Clear
-            </Button>
-            <Button type="primary" className="patient-reg-btn-save" onClick={handleSave} loading={isSaving}>
-              Save &amp; Print
-            </Button>
-          </div>
-        </FormFieldPrefixProvider>
+        <Collapse
+          items={collapseItems}
+          activeKey={activePanels}
+          onChange={setActivePanels}
+          destroyOnHidden={false}
+          classNames={{
+            root: 'patient-registration-collapse',
+            header: 'patient-reg-collapse-header',
+            title: 'patient-reg-collapse-title',
+          }}
+          expandIconPlacement="end"
+          expandIcon={({ isActive }) =>
+            isActive ? (
+              <DownOutlined className="patient-reg-collapse-icon" aria-hidden />
+            ) : (
+              <UpOutlined className="patient-reg-collapse-icon" aria-hidden />
+            )
+          }
+        />
+        <div className="patient-registration-actions">
+          <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
+            Clear
+          </Button>
+          <Button type="primary" className="patient-reg-btn-save" onClick={handleSave} loading={isSaving}>
+            Save &amp; Print
+          </Button>
+        </div>
       </Form>
     </div>
   );

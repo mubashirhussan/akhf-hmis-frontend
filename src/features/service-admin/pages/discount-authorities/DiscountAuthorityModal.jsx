@@ -1,20 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import DiscountAuthorityForm from '@/features/service-admin/pages/discount-authorities/DiscountAuthorityForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  DISCOUNT_AUTHORITY_INITIAL_VALUES,
+  getDiscountAuthorityFields,
+} from '@/features/service-admin/pages/discount-authorities/discount-authority-fields';
 
 export default function DiscountAuthorityModal({
   open,
   onClose,
   title = 'Add Discount Authority',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   employeeOptions = [],
 }) {
+  const fields = useMemo(
+    () => getDiscountAuthorityFields(employeeOptions),
+    [employeeOptions],
+  );
+
   return (
     <AppModal
       open={open}
@@ -35,13 +42,15 @@ export default function DiscountAuthorityModal({
         </>
       }
     >
-      <DiscountAuthorityForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        employeeOptions={employeeOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={DISCOUNT_AUTHORITY_INITIAL_VALUES}
+      >
+        <DynamicForm fields={fields} className="discount-authority-form-grid" />
+      </Form>
     </AppModal>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { App, Button, Tooltip } from "antd";
+import { App, Button, Form, Tooltip } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import { ROUTES } from "@/config/routes";
@@ -20,7 +20,7 @@ export default function SearchAllEmployeePage() {
   const { message } = App.useApp();
   const router = useRouter();
   const { confirmDelete } = useConfirm();
-  const [filters, setFilters] = useState(createEmployeeSearchFilters);
+  const [filterForm] = Form.useForm();
   const [appliedFilters, setAppliedFilters] = useState(
     createEmployeeSearchFilters,
   );
@@ -29,21 +29,17 @@ export default function SearchAllEmployeePage() {
     useSearchEmployeesQuery(appliedFilters);
   const [deleteEmployee] = useDeleteEmployeeMutation();
 
-  const patchFilter = useCallback((patch) => {
-    setFilters((current) => ({ ...current, ...patch }));
+  const handleSearch = useCallback((values) => {
+    setAppliedFilters({ ...values });
+    setHasSearched(true);
   }, []);
 
-  const handleSearch = () => {
-    setAppliedFilters({ ...filters });
-    setHasSearched(true);
-  };
-
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const resetFilters = createEmployeeSearchFilters();
-    setFilters(resetFilters);
+    filterForm.setFieldsValue(resetFilters);
     setAppliedFilters(resetFilters);
     setHasSearched(true);
-  };
+  }, [filterForm]);
 
   const handleEdit = useCallback(
     (record) => {
@@ -77,128 +73,63 @@ export default function SearchAllEmployeePage() {
         title: "#",
         dataIndex: "serial",
         key: "serial",
-        // width: 56,
       },
       {
         title: "Emp ID",
         dataIndex: "empId",
         key: "empId",
-        // width: 90,
       },
       {
         title: "Emp No",
         dataIndex: "empNo",
         key: "empNo",
-        // width: 100,
       },
       {
         title: "Emp Name",
         dataIndex: "empName",
         key: "empName",
-        // width: 180,
       },
       {
         title: "Relation Name",
         dataIndex: "relationName",
         key: "relationName",
-        // width: 160,
       },
-      // {
-      //   title: "Hospital ID",
-      //   dataIndex: "hospitalId",
-      //   key: "hospitalId",
-      //   width: 90,
-      // },
       {
         title: "Hospital Name",
         dataIndex: "hospitalName",
         key: "hospitalName",
-        // width: 260,
       },
-      // {
-      //   title: "Department ID",
-      //   dataIndex: "departmentId",
-      //   key: "departmentId",
-      //   width: 130,
-      // },
       {
         title: "Department",
         dataIndex: "department",
         key: "department",
-        // width: 160,
       },
       {
         title: "SubDepartment",
         dataIndex: "subDepartment",
         key: "subDepartment",
-        // width: 150,
       },
       {
         title: "CNIC",
         dataIndex: "cnic",
         key: "cnic",
-        // width: 160,
       },
-      // {
-      //   title: "Designation ID",
-      //   dataIndex: "designationId",
-      //   key: "designationId",
-      //   width: 125,
-      // },
       {
         title: "Designation",
         dataIndex: "designation",
         key: "designation",
-        // width: 140,
       },
-      { title: "Gender", dataIndex: "gender", key: "gender",  },
-      { title: "DOB", dataIndex: "dob", key: "dob",  },
+      { title: "Gender", dataIndex: "gender", key: "gender" },
+      { title: "DOB", dataIndex: "dob", key: "dob" },
       {
         title: "Joining Date",
         dataIndex: "joiningDate",
         key: "joiningDate",
-        // width: 120,
       },
-      // {
-      //   title: "Pay Scale",
-      //   dataIndex: "payScale",
-      //   key: "payScale",
-      //   width: 100,
-      // },
-      // {
-      //   title: "Office Address",
-      //   dataIndex: "officeAddress",
-      //   key: "officeAddress",
-      //   width: 200,
-      // },
-      // {
-      //   title: "Home Address",
-      //   dataIndex: "homeAddress",
-      //   key: "homeAddress",
-      //   width: 200,
-      // },
-      // {
-      //   title: "Present Address",
-      //   dataIndex: "presentAddress",
-      //   key: "presentAddress",
-      //   width: 200,
-      // },
-      { title: "Email", dataIndex: "email", key: "email",  },
+      { title: "Email", dataIndex: "email", key: "email" },
       { title: "Phone Number", dataIndex: "phone", key: "phone" },
-      { title: "PMDC", dataIndex: "pmdc", key: "pmdc",  },
-      { title: "Shift", dataIndex: "shift", key: "shift", className:"whitespace-nowrap" },
-      // {
-      //   title: "Nationality",
-      //   dataIndex: "nationalityName",
-      //   key: "nationalityName",
-      //   width: 120,
-      // },
-      // {
-      //   title: "Religion",
-      //   dataIndex: "religionName",
-      //   key: "religionName",
-      //   width: 110,
-      // },
+      { title: "PMDC", dataIndex: "pmdc", key: "pmdc" },
+      { title: "Shift", dataIndex: "shift", key: "shift", className: "whitespace-nowrap" },
       {
         title: "Action",
         key: "action",
@@ -246,8 +177,7 @@ export default function SearchAllEmployeePage() {
   return (
     <div className="patient-registration-page search-all-employee-page">
       <EmployeeSearchFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
         onSubmit={handleSearch}
         onClear={handleClear}
         loading={isFetching}
@@ -263,7 +193,6 @@ export default function SearchAllEmployeePage() {
           loading={isFetching}
           rowKey="id"
           columnAlign="left"
-          // scroll={{ x: true }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,

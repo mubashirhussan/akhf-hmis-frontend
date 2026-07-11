@@ -233,6 +233,7 @@ export function createActivateDeactivateFilters() {
     department: ALL_FILTER_VALUE,
     subDepartment: ALL_FILTER_VALUE,
     employeeNo: '',
+    employeeName: '',
     status: ALL_FILTER_VALUE,
   };
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { App, Button, Input, Tooltip, Select } from 'antd';
+import { App, Button, Form, Input, Tooltip, Select } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -13,31 +13,21 @@ import {
   useUpdateReceptionistMutation,
   useDeleteReceptionistMutation,
 } from '@/features/human-resource/api/employeeApi';
+import { COUNTER_TYPE_OPTIONS } from '@/features/human-resource/pages/mark-receptionist/mark-receptionist-fields';
 import MarkReceptionistModal from './MarkReceptionistModal';
 import './mark-receptionist.css';
 
-
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-
-const COUNTER_TYPE_OPTIONS = [
-  { value: 'hospital', label: 'Hospital' },
-  { value: 'pharmacy', label: 'Pharmacy' },
-];
-
-function createEmptyReceptionistForm() {
-  return { employeeId: '', employeeName: '', counterType: '' };
-}
 
 export default function MarkReceptionistPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
   const [employeeNameFilter, setEmployeeNameFilter] = useState('');
   const [counterTypeFilter, setCounterTypeFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [form, setForm] = useState(createEmptyReceptionistForm);
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [editingRow, setEditingRow] = useState(null);
 
   const { data: employees = [] } = useGetEmployeesQuery();
   const { data: rows = [], isFetching } = useGetReceptionistsQuery();
@@ -58,76 +48,46 @@ export default function MarkReceptionistPage() {
     });
   }, [rows, employeeNameFilter, counterTypeFilter]);
 
-  const patchForm = useCallback((patch) => {
-    setForm((cur) => ({ ...cur, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((cur) => {
-      if (!cur[field]) return cur;
-      const next = { ...cur };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyReceptionistForm());
-    setEditingRowId(null);
-    setFieldErrors({});
+    form.resetFields();
+    setEditingRow(null);
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const handleEditRow = useCallback((record) => {
-    setForm({
-      employeeId: record.employeeId ?? '',
-      employeeName: record.employeeName ?? '',
-      counterType: record.counterType ?? '',
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
+    setEditingRow(record);
     setIsModalOpen(true);
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    setEditingRow(null);
+    form.resetFields();
+  }, [form]);
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.employeeId) errors.employeeId = 'Employee ID is required.';
-    if (!form.counterType) errors.counterType = 'Counter Type is required.';
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-
-    const payload = {
-      employeeId: form.employeeId,
-      employeeName: form.employeeName,
-      counterType: form.counterType,
-    };
-
     try {
-      if (editingRowId) {
-        await updateReceptionist({ id: editingRowId, ...payload }).unwrap();
-        setIsModalOpen(false);
-        setEditingRowId(null);
+      const values = await form.validateFields();
+      const payload = {
+        employeeId: values.employeeId,
+        employeeName: values.employeeName,
+        counterType: values.counterType,
+      };
+
+      if (editingRow) {
+        await updateReceptionist({ id: editingRow.id, ...payload }).unwrap();
+        closeModal();
         message.success('Receptionist updated.');
         return;
       }
       await addReceptionist(payload).unwrap();
-      setIsModalOpen(false);
+      closeModal();
       message.success('Receptionist marked successfully.');
-    } catch {
+    } catch (err) {
+      if (err?.errorFields) return;
       message.error('Failed to save receptionist.');
     }
-  }, [form, editingRowId, addReceptionist, updateReceptionist, message]);
+  }, [form, editingRow, addReceptionist, updateReceptionist, closeModal, message]);
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -227,14 +187,12 @@ export default function MarkReceptionistPage() {
       <MarkReceptionistModal
         open={isModalOpen}
         onClose={closeModal}
-        title={editingRowId ? 'Edit Receptionist' : 'Mark Receptionist'}
+        title={editingRow ? 'Edit Receptionist' : 'Mark Receptionist'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         employees={employees}
-        isEdit={!!editingRowId}
+        isEdit={!!editingRow}
+        record={editingRow}
       />
     </div>
   );

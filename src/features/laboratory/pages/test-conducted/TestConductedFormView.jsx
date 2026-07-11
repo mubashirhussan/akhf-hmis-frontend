@@ -1,10 +1,9 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { App, Button, Input, Select } from 'antd';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { App, Button, Form } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
 import ChangeStatusModal, {
   TEST_CONDUCTED_STATUS_OPTIONS,
@@ -21,12 +20,13 @@ import {
   getTestConductedReportTemplates,
   resolveTestConductedTest,
   TEST_CONDUCTED_ALL_TEST_GROUP,
-  TEST_CONDUCTED_TEST_GROUP_FILTER_OPTIONS,
 } from '@/features/laboratory/api/mock-test-conducted';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import {
+  getTestConductedRemarksFields,
+  getTestConductedReportFields,
+  TEST_CONDUCTED_SIDEBAR_FIELDS,
+} from '@/features/laboratory/pages/test-conducted/test-conducted-fields';
 import './test-conducted.css';
-
-const controlClass = FIELD_CONTROL_CLASS;
 
 function formatSavedFieldDateTime(isoString) {
   if (!isoString) return '';
@@ -92,6 +92,8 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
   const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
   const reportSectionRef = useRef(null);
+  const [sidebarForm] = Form.useForm();
+  const [metaForm] = Form.useForm();
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [sentTestKeys, setSentTestKeys] = useState([]);
 
@@ -202,6 +204,32 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
       });
     },
     [patchCurrentDraft, reportTemplates],
+  );
+
+  useEffect(() => {
+    sidebarForm.setFieldsValue({ testGroup });
+  }, [sidebarForm, testGroup]);
+
+  useEffect(() => {
+    metaForm.setFieldsValue({
+      remarks,
+      selectedTemplateId: selectedTemplateId || undefined,
+      templateContent,
+    });
+  }, [metaForm, remarks, selectedTemplateId, templateContent, activeTestKey]);
+
+  const remarksFields = useMemo(
+    () => getTestConductedRemarksFields({ disabled: isCurrentTestFinalized }),
+    [isCurrentTestFinalized],
+  );
+
+  const reportFields = useMemo(
+    () =>
+      getTestConductedReportFields({
+        reportTemplates,
+        disabled: isCurrentTestFinalized,
+      }),
+    [isCurrentTestFinalized, reportTemplates],
   );
 
   const handleSave = useCallback(
@@ -330,17 +358,19 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
       <div className="test-conducted-form-layout">
         <aside className="test-conducted-sidebar" aria-label="Test selection">
           <section className="test-conducted-sidebar-filters" aria-label="Test filters">
-            <FormGrid columns={1} className="test-conducted-sidebar-form">
-              <FloatingField label="Test Group" htmlFor="test-conducted-test-group">
-                <Select
-                  id="test-conducted-test-group"
-                  className={controlClass}
-                  value={testGroup}
-                  options={TEST_CONDUCTED_TEST_GROUP_FILTER_OPTIONS}
-                  onChange={handleTestGroupChange}
-                />
-              </FloatingField>
-            </FormGrid>
+            <Form
+              form={sidebarForm}
+              layout="vertical"
+              className="test-conducted-sidebar-form"
+              initialValues={{ testGroup }}
+              onValuesChange={(changed) => {
+                if ('testGroup' in changed) {
+                  handleTestGroupChange(changed.testGroup);
+                }
+              }}
+            >
+              <DynamicForm fields={TEST_CONDUCTED_SIDEBAR_FIELDS} gutter={[16, 12]} />
+            </Form>
           </section>
 
           <section className="test-conducted-sidebar-tests" aria-label="Ordered tests">
@@ -432,53 +462,37 @@ export default function TestConductedFormView({ record, onAllTestsCompleted }) {
             </section>
           ))}
 
-          <section className="test-conducted-remarks-section" aria-label="Remarks">
-            <h3 className="test-conducted-block-label">Remarks :</h3>
-            <FloatingField label="Remarks" htmlFor="test-conducted-remarks" col="full">
-              <Input.TextArea
-                id="test-conducted-remarks"
-                className={controlClass}
-                rows={4}
-                value={remarks}
-                disabled={isCurrentTestFinalized}
-                onChange={(event) => patchCurrentDraft({ remarks: event.target.value })}
-              />
-            </FloatingField>
-          </section>
-
-          <section
-            ref={reportSectionRef}
-            className="test-conducted-report-section"
-            aria-label="Report templates"
+          <Form
+            form={metaForm}
+            layout="vertical"
+            onValuesChange={(changed) => {
+              if ('remarks' in changed) {
+                patchCurrentDraft({ remarks: changed.remarks });
+              }
+              if ('selectedTemplateId' in changed) {
+                handleTemplateChange(changed.selectedTemplateId);
+              }
+              if ('templateContent' in changed) {
+                patchCurrentDraft({ templateContent: changed.templateContent });
+              }
+            }}
           >
-            <h3 className="test-conducted-block-label">Report</h3>
+            <section className="test-conducted-remarks-section" aria-label="Remarks">
+              <h3 className="test-conducted-block-label">Remarks :</h3>
+              <DynamicForm fields={remarksFields} gutter={[16, 12]} />
+            </section>
 
-            <FormGrid columns={1} className="test-conducted-report-form">
-              <FloatingField label="Templates" htmlFor="test-conducted-template" col="full">
-                <Select
-                  id="test-conducted-template"
-                  className={controlClass}
-                  value={selectedTemplateId || undefined}
-                  options={reportTemplates}
-                  placeholder="Select template"
-                  disabled={isCurrentTestFinalized}
-                  onChange={handleTemplateChange}
-                />
-              </FloatingField>
-
-              <FloatingField label="Report Content" htmlFor="test-conducted-template-content" col="full">
-                <Input.TextArea
-                  id="test-conducted-template-content"
-                  className={controlClass}
-                  rows={4}
-                  value={templateContent}
-                  disabled={isCurrentTestFinalized}
-                  onChange={(event) => patchCurrentDraft({ templateContent: event.target.value })}
-                  placeholder="Report template content"
-                />
-              </FloatingField>
-            </FormGrid>
-          </section>
+            <section
+              ref={reportSectionRef}
+              className="test-conducted-report-section"
+              aria-label="Report templates"
+            >
+              <h3 className="test-conducted-block-label">Report</h3>
+              <div className="test-conducted-report-form">
+                <DynamicForm fields={reportFields} gutter={[16, 12]} />
+              </div>
+            </section>
+          </Form>
 
           <div className="test-conducted-form-footer">
             {hasSavedResults ? (

@@ -1,17 +1,18 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import InterpretationForm from '@/features/admin-pathology/pages/interpretation/InterpretationForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  INTERPRETATION_FIELDS,
+  INTERPRETATION_INITIAL_VALUES,
+} from '@/features/admin-pathology/pages/interpretation/interpretation-fields';
 
 export default function InterpretationModal({
   open,
   onClose,
   title = 'Add Interpretation',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
   return (
@@ -38,12 +39,15 @@ export default function InterpretationModal({
         </>
       }
     >
-      <InterpretationForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={INTERPRETATION_INITIAL_VALUES}
+      >
+        <DynamicForm fields={INTERPRETATION_FIELDS} className="interpretation-form-grid" />
+      </Form>
     </AppModal>
   );
 }

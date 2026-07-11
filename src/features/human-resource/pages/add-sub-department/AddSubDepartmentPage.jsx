@@ -1,17 +1,13 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Tooltip } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import DynamicForm from '@/components/form/DynamicForm';
 import { useConfirm } from '@/hooks/useConfirm';
 import {
-  createEmptySubDepartmentForm,
-  rowToSubDepartmentForm,
   createSubDepartmentFilters,
   filterSubDepartmentRows,
 } from '@/features/human-resource/api/mock-sub-departments';
@@ -23,62 +19,102 @@ import {
   useGetHospitalsQuery,
   useGetDeptTypesQuery,
   useGetDepartmentsQuery,
+  useGetSubDeptTypesQuery,
 } from '@/features/human-resource/api/employeeApi';
 import SubDepartmentModal from './SubDepartmentModal';
+import {
+  SUB_DEPARTMENT_FILTER_INITIAL_VALUES,
+  getSubDepartmentFilterFields,
+} from './sub-department-fields';
 import './add-sub-department.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-const controlClass = FIELD_CONTROL_CLASS;
 
 export default function AddSubDepartmentPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptySubDepartmentForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [filters, setFilters] = useState(createSubDepartmentFilters);
   const [appliedFilters, setAppliedFilters] = useState(createSubDepartmentFilters);
 
   const { data: rows = [], isLoading } = useGetSubDepartmentsQuery();
   const { data: hospitals = [] } = useGetHospitalsQuery();
   const { data: deptTypes = [] } = useGetDeptTypesQuery();
   const { data: departments = [] } = useGetDepartmentsQuery();
+  const { data: subDeptTypes = [] } = useGetSubDeptTypesQuery();
   const [addSubDepartment] = useAddSubDepartmentMutation();
   const [updateSubDepartment] = useUpdateSubDepartmentMutation();
   const [deleteSubDepartment] = useDeleteSubDepartmentMutation();
 
-  const patchForm = useCallback((patch) => setForm((c) => ({ ...c, ...patch })), []);
+  const filterHospitalId = Form.useWatch('hospitalId', filterForm);
+  const filterDeptTypeId = Form.useWatch('deptTypeId', filterForm);
 
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
+
+  const filterDeptTypeOptions = useMemo(() => {
+    if (!filterHospitalId) {
+      return deptTypes.map((d) => ({ value: d.id, label: d.departmentType }));
+    }
+    return deptTypes
+      .filter((d) => d.hospitalId === filterHospitalId)
+      .map((d) => ({ value: d.id, label: d.departmentType }));
+  }, [deptTypes, filterHospitalId]);
+
+  const filterDepartmentOptions = useMemo(() => {
+    if (!filterDeptTypeId) {
+      return departments.map((d) => ({ value: d.id, label: d.departmentName }));
+    }
+    return departments
+      .filter((d) => d.deptTypeId === filterDeptTypeId)
+      .map((d) => ({ value: d.id, label: d.departmentName }));
+  }, [departments, filterDeptTypeId]);
+
+  const filterFields = useMemo(
+    () =>
+      getSubDepartmentFilterFields({
+        hospitalOptions,
+        deptTypeOptions: filterDeptTypeOptions,
+        departmentOptions: filterDepartmentOptions,
+      }),
+    [hospitalOptions, filterDeptTypeOptions, filterDepartmentOptions],
+  );
 
   const openModal = useCallback(() => {
-    setForm(createEmptySubDepartmentForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToSubDepartmentForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        hospitalId: record.hospitalId ?? null,
+        deptTypeId: record.deptTypeId ?? null,
+        departmentId: record.departmentId ?? null,
+        subDeptTypeId: record.subDeptTypeId ?? null,
+        subDepartmentName: record.subDepartmentName ?? '',
+        costCenter: record.costCenter ?? '',
+        location: record.location ?? '',
+        phone: record.phone ?? '',
+        fax: record.fax ?? '',
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -91,79 +127,82 @@ export default function AddSubDepartmentPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.hospitalId) errors.hospitalId = 'Hospital Name is required.';
-    if (!form.deptTypeId) errors.deptTypeId = 'Department Type is required.';
-    if (!form.departmentId) errors.departmentId = 'Department Name is required.';
-    if (!form.subDeptTypeId) errors.subDeptTypeId = 'Sub Department Type is required.';
-    if (!form.subDepartmentName?.trim()) errors.subDepartmentName = 'Sub Department Name is required.';
+    try {
+      const values = await form.validateFields();
+      const hospitalName =
+        hospitals.find((h) => h.id === values.hospitalId)?.name ?? '';
+      const departmentType =
+        deptTypes.find((d) => d.id === values.deptTypeId)?.departmentType ?? '';
+      const departmentName =
+        departments.find((d) => d.id === values.departmentId)?.departmentName ?? '';
+      const subDepartmentType =
+        subDeptTypes.find((s) => s.id === values.subDeptTypeId)?.subDepartmentType ??
+        '';
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      const payload = {
+        hospitalId: values.hospitalId,
+        hospitalName,
+        deptTypeId: values.deptTypeId,
+        departmentType,
+        departmentId: values.departmentId,
+        departmentName,
+        subDeptTypeId: values.subDeptTypeId,
+        subDepartmentType,
+        subDepartmentName: values.subDepartmentName.trim(),
+        costCenter: (values.costCenter ?? '').trim(),
+        location: (values.location ?? '').trim(),
+        phone: (values.phone ?? '').trim(),
+        fax: (values.fax ?? '').trim(),
+      };
+
+      if (editingRowId) {
+        await updateSubDepartment({ id: editingRowId, ...payload }).unwrap();
+        message.success('Sub Department updated.');
+      } else {
+        await addSubDepartment(payload).unwrap();
+        message.success('Sub Department added.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
+  }, [
+    form,
+    hospitals,
+    deptTypes,
+    departments,
+    subDeptTypes,
+    editingRowId,
+    addSubDepartment,
+    updateSubDepartment,
+    message,
+    closeModal,
+  ]);
 
-    setFieldErrors({});
+  const handleSearch = useCallback((values) => {
+    setAppliedFilters({
+      hospitalId: values.hospitalId ?? null,
+      deptTypeId: values.deptTypeId ?? null,
+      departmentId: values.departmentId ?? null,
+      subDepartmentName: values.subDepartmentName ?? '',
+      costCenter: values.costCenter ?? '',
+      location: values.location ?? '',
+      phone: values.phone ?? '',
+      fax: values.fax ?? '',
+    });
+  }, []);
 
-    const payload = {
-      hospitalId: form.hospitalId,
-      hospitalName: form.hospitalName,
-      deptTypeId: form.deptTypeId,
-      departmentType: form.departmentType,
-      departmentId: form.departmentId,
-      departmentName: form.departmentName,
-      subDeptTypeId: form.subDeptTypeId,
-      subDepartmentType: form.subDepartmentType,
-      subDepartmentName: form.subDepartmentName.trim(),
-      costCenter: form.costCenter.trim(),
-      location: form.location.trim(),
-      phone: form.phone.trim(),
-      fax: form.fax.trim(),
-    };
-
-    if (editingRowId) {
-      await updateSubDepartment({ id: editingRowId, ...payload }).unwrap();
-      setIsModalOpen(false);
-      setEditingRowId(null);
-      message.success('Sub Department updated.');
-      return;
-    }
-
-    await addSubDepartment(payload).unwrap();
-    setIsModalOpen(false);
-    message.success('Sub Department added.');
-  }, [form, editingRowId, addSubDepartment, updateSubDepartment, message]);
-
-  const patchFilter = useCallback((patch) => setFilters((c) => ({ ...c, ...patch })), []);
-
-  const handleSearch = () => setAppliedFilters({ ...filters });
-
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const reset = createSubDepartmentFilters();
-    setFilters(reset);
+    filterForm.resetFields();
     setAppliedFilters(reset);
-  };
+  }, [filterForm]);
 
   const filteredRows = useMemo(
     () => filterSubDepartmentRows(rows, appliedFilters),
     [rows, appliedFilters],
   );
-
-  // Filter bar: dept type options filtered by selected hospital
-  const filterDeptTypeOptions = useMemo(() => {
-    if (!filters.hospitalId) return deptTypes.map((d) => ({ value: d.id, label: d.departmentType }));
-    return deptTypes
-      .filter((d) => d.hospitalId === filters.hospitalId)
-      .map((d) => ({ value: d.id, label: d.departmentType }));
-  }, [deptTypes, filters.hospitalId]);
-
-  // Filter bar: department options filtered by selected deptTypeId
-  const filterDepartmentOptions = useMemo(() => {
-    if (!filters.deptTypeId) return departments.map((d) => ({ value: d.id, label: d.departmentName }));
-    return departments
-      .filter((d) => d.deptTypeId === filters.deptTypeId)
-      .map((d) => ({ value: d.id, label: d.departmentName }));
-  }, [departments, filters.deptTypeId]);
 
   const columns = useMemo(
     () => [
@@ -213,108 +252,21 @@ export default function AddSubDepartmentPage() {
     <div className="services-billing-page add-sub-department-page">
       <section className="hr-filter-panel" aria-label="Sub department search filters">
         <div className="walk-in-add-record-layout hr-search-layout">
-          <FormGrid
-            as="form"
-            columns={4}
+          <Form
+            form={filterForm}
+            layout="vertical"
             className="walk-in-add-record-form hr-search-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch();
+            initialValues={SUB_DEPARTMENT_FILTER_INITIAL_VALUES}
+            onFinish={handleSearch}
+            onValuesChange={(changed) => {
+              if ('hospitalId' in changed) {
+                filterForm.setFieldsValue({ deptTypeId: null, departmentId: null });
+              } else if ('deptTypeId' in changed) {
+                filterForm.setFieldsValue({ departmentId: null });
+              }
             }}
           >
-            <FloatingField label="Hospital Name">
-              <Select
-                className={controlClass}
-                value={filters.hospitalId}
-                allowClear
-                showSearch
-                optionFilterProp="label"
-                placeholder=""
-                options={hospitals.map((h) => ({ value: h.id, label: h.name }))}
-                onChange={(val) =>
-                  patchFilter({ hospitalId: val ?? null, deptTypeId: null, departmentId: null })
-                }
-              />
-            </FloatingField>
-
-            <FloatingField label="Department Type">
-              <Select
-                className={controlClass}
-                value={filters.deptTypeId}
-                allowClear
-                showSearch
-                optionFilterProp="label"
-                placeholder=""
-                options={filterDeptTypeOptions}
-                onChange={(val) =>
-                  patchFilter({ deptTypeId: val ?? null, departmentId: null })
-                }
-              />
-            </FloatingField>
-
-            <FloatingField label="Department Name">
-              <Select
-                className={controlClass}
-                value={filters.departmentId}
-                allowClear
-                showSearch
-                optionFilterProp="label"
-                placeholder=""
-                options={filterDepartmentOptions}
-                onChange={(val) => patchFilter({ departmentId: val ?? null })}
-              />
-            </FloatingField>
-
-            <FloatingField label="Sub Department Name">
-              <Input
-                className={controlClass}
-                value={filters.subDepartmentName}
-                allowClear
-                onChange={(e) => patchFilter({ subDepartmentName: e.target.value })}
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Cost Center">
-              <Input
-                className={controlClass}
-                value={filters.costCenter}
-                allowClear
-                onChange={(e) => patchFilter({ costCenter: e.target.value })}
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Location">
-              <Input
-                className={controlClass}
-                value={filters.location}
-                allowClear
-                onChange={(e) => patchFilter({ location: e.target.value })}
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Phone">
-              <Input
-                className={controlClass}
-                value={filters.phone}
-                allowClear
-                onChange={(e) => patchFilter({ phone: e.target.value })}
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Fax #">
-              <Input
-                className={controlClass}
-                value={filters.fax}
-                allowClear
-                onChange={(e) => patchFilter({ fax: e.target.value })}
-                autoComplete="off"
-              />
-            </FloatingField>
-
+            <DynamicForm fields={filterFields} />
             <div className="hr-search-actions">
               <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
                 Clear
@@ -329,7 +281,7 @@ export default function AddSubDepartmentPage() {
                 Search
               </Button>
             </div>
-          </FormGrid>
+          </Form>
         </div>
       </section>
 
@@ -360,11 +312,7 @@ export default function AddSubDepartmentPage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Sub Department' : 'Add Sub Department'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
-        isEdit={!!editingRowId}
       />
     </div>
   );

@@ -2,18 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import {
+  getCollectionFilterInitialValues,
+  normalizeCollectionFilters,
+} from '@/features/laboratory/components/collection-filter-fields';
 import UndeliveredReportDeliveryView from '@/features/laboratory/pages/undelivered-reports/UndeliveredReportDeliveryView';
 import DataTable from '@/components/ui/DataTable';
-import { createLaboratoryWorklistFilters } from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
   useGetLaboratoryWorklistRecordQuery,
   useLazySearchLaboratoryWorklistQuery,
 } from '@/features/laboratory/api/laboratoryEndpoints';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const UNDELIVERED_REPORTS_STATUS = 'undelivered-reports';
 
@@ -22,13 +24,12 @@ export default function UndeliveredReportsList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const recordId = searchParams.get('recordId');
+  const [filterForm] = Form.useForm();
 
-  const [filters, setFilters] = useState(() => ({
-    ...createLaboratoryWorklistFilters(UNDELIVERED_REPORTS_STATUS),
-    ageUnit: DOB_AGE_UNITS.years,
-    patientAge: '',
-    dateRange: null,
-  }));
+  const filterInitialValues = useMemo(
+    () => getCollectionFilterInitialValues(UNDELIVERED_REPORTS_STATUS),
+    [],
+  );
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(true);
   const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
@@ -37,16 +38,14 @@ export default function UndeliveredReportsList() {
   });
 
   useEffect(() => {
-    searchWorklist({ ...filters, status: UNDELIVERED_REPORTS_STATUS }).then(({ data = [] }) =>
-      setResults(data),
-    );
-  }, [searchWorklist]);
+    searchWorklist({
+      ...normalizeCollectionFilters(filterInitialValues),
+      status: UNDELIVERED_REPORTS_STATUS,
+    }).then(({ data = [] }) => setResults(data));
+  }, [filterInitialValues, searchWorklist]);
 
-  const patchFilter = (patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  };
-
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
+    const filters = normalizeCollectionFilters(values);
     const { data = [] } = await searchWorklist({
       ...filters,
       status: UNDELIVERED_REPORTS_STATUS,
@@ -114,10 +113,10 @@ export default function UndeliveredReportsList() {
   return (
     <div className="services-billing-page laboratory-worklist-page">
       <CollectionFilterForm
-        idPrefix="undelivered-reports"
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
+        initialValues={filterInitialValues}
         onSubmit={handleSearch}
+        loading={isLoading}
       />
 
       <section className="services-billing-results" aria-label="Undelivered reports results">

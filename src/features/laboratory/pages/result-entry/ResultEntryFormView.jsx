@@ -1,11 +1,10 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { App, Button, Collapse, Input, Select } from 'antd';
+import { App, Button, Collapse, Form } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import DynamicResultField from '@/features/laboratory/components/DynamicResultField';
 import ChangeStatusModal, {
   RESULT_ENTRY_STATUS_OPTIONS,
@@ -29,12 +28,13 @@ import {
   filterResultEntryTestsByGroup,
   resolveResultEntryTest,
   RESULT_ENTRY_ALL_TEST_GROUP,
-  RESULT_ENTRY_TEST_GROUP_FILTER_OPTIONS,
 } from '@/features/laboratory/api/mock-result-entry';
+import {
+  getResultEntryRemarksFields,
+  getResultEntryReportFields,
+  RESULT_ENTRY_SIDEBAR_FIELDS,
+} from '@/features/laboratory/pages/result-entry/result-entry-fields';
 import { buildPatientInfoSummary } from '@/features/patient/utils/patient-info';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
-const controlClass = FIELD_CONTROL_CLASS;
 
 function formatSavedFieldDateTime(isoString) {
   if (!isoString) return '';
@@ -100,6 +100,8 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
   const { message } = App.useApp();
   const [updateWorklistStatus] = useUpdateLaboratoryWorklistStatusMutation();
   const reportSectionRef = useRef(null);
+  const [sidebarForm] = Form.useForm();
+  const [metaForm] = Form.useForm();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
 
@@ -225,6 +227,32 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       });
     },
     [patchCurrentDraft, reportTemplates],
+  );
+
+  useEffect(() => {
+    sidebarForm.setFieldsValue({ testGroup });
+  }, [sidebarForm, testGroup]);
+
+  useEffect(() => {
+    metaForm.setFieldsValue({
+      remarks,
+      selectedTemplateId: selectedTemplateId || undefined,
+      templateContent,
+    });
+  }, [metaForm, remarks, selectedTemplateId, templateContent, activeTestKey]);
+
+  const remarksFields = useMemo(
+    () => getResultEntryRemarksFields({ disabled: isCurrentTestFinalized }),
+    [isCurrentTestFinalized],
+  );
+
+  const reportFields = useMemo(
+    () =>
+      getResultEntryReportFields({
+        reportTemplates,
+        disabled: isCurrentTestFinalized,
+      }),
+    [isCurrentTestFinalized, reportTemplates],
   );
 
   const handleSave = useCallback(
@@ -413,19 +441,19 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
       <div className="result-entry-form-layout">
         <aside className="result-entry-sidebar" aria-label="Test selection">
           <section className="result-entry-sidebar-filters" aria-label="Test filters">
-            <FormGrid columns={1} className="result-entry-sidebar-form">
-              <FloatingField label="Test Group" htmlFor="result-entry-test-group">
-                <Select
-                  id="result-entry-test-group"
-                  className={controlClass}
-                  value={testGroup}
-                  options={RESULT_ENTRY_TEST_GROUP_FILTER_OPTIONS}
-                  onChange={handleTestGroupChange}
-                />
-              </FloatingField>
-
-            
-            </FormGrid>
+            <Form
+              form={sidebarForm}
+              layout="vertical"
+              className="result-entry-sidebar-form"
+              initialValues={{ testGroup }}
+              onValuesChange={(changed) => {
+                if ('testGroup' in changed) {
+                  handleTestGroupChange(changed.testGroup);
+                }
+              }}
+            >
+              <DynamicForm fields={RESULT_ENTRY_SIDEBAR_FIELDS} gutter={[16, 12]} />
+            </Form>
           </section>
 
           <section className="result-entry-sidebar-tests" aria-label="Ordered tests">
@@ -517,53 +545,37 @@ export default function ResultEntryFormView({ record, onAllTestsCompleted }) {
             </section>
           ))}
 
-          <section className="result-entry-remarks-section" aria-label="Remarks">
-            <h3 className="result-entry-block-label">Remarks :</h3>
-            <FloatingField label="Remarks" htmlFor="result-entry-remarks" col="full">
-              <Input.TextArea
-                id="result-entry-remarks"
-                className={controlClass}
-                rows={4}
-                value={remarks}
-                disabled={isCurrentTestFinalized}
-                onChange={(event) => patchCurrentDraft({ remarks: event.target.value })}
-              />
-            </FloatingField>
-          </section>
-
-          <section
-            ref={reportSectionRef}
-            className="result-entry-report-section"
-            aria-label="Report templates"
+          <Form
+            form={metaForm}
+            layout="vertical"
+            onValuesChange={(changed) => {
+              if ('remarks' in changed) {
+                patchCurrentDraft({ remarks: changed.remarks });
+              }
+              if ('selectedTemplateId' in changed) {
+                handleTemplateChange(changed.selectedTemplateId);
+              }
+              if ('templateContent' in changed) {
+                patchCurrentDraft({ templateContent: changed.templateContent });
+              }
+            }}
           >
-            <h3 className="result-entry-block-label">Report</h3>
+            <section className="result-entry-remarks-section" aria-label="Remarks">
+              <h3 className="result-entry-block-label">Remarks :</h3>
+              <DynamicForm fields={remarksFields} gutter={[16, 12]} />
+            </section>
 
-            <FormGrid columns={1} className="result-entry-report-form">
-              <FloatingField label="Templates" htmlFor="result-entry-template" col="full">
-                <Select
-                  id="result-entry-template"
-                  className={controlClass}
-                  value={selectedTemplateId || undefined}
-                  options={reportTemplates}
-                  placeholder="Select template"
-                  disabled={isCurrentTestFinalized}
-                  onChange={handleTemplateChange}
-                />
-              </FloatingField>
-
-              <FloatingField label="Report Content" htmlFor="result-entry-template-content" col="full">
-                <Input.TextArea
-                  id="result-entry-template-content"
-                  className={controlClass}
-                  rows={4}
-                  value={templateContent}
-                  disabled={isCurrentTestFinalized}
-                  onChange={(event) => patchCurrentDraft({ templateContent: event.target.value })}
-                  placeholder="Report template content"
-                />
-              </FloatingField>
-            </FormGrid>
-          </section>
+            <section
+              ref={reportSectionRef}
+              className="result-entry-report-section"
+              aria-label="Report templates"
+            >
+              <h3 className="result-entry-block-label">Report</h3>
+              <div className="result-entry-report-form">
+                <DynamicForm fields={reportFields} gutter={[16, 12]} />
+              </div>
+            </section>
+          </Form>
 
           <div className="result-entry-form-footer">
             {hasSavedResults ? (

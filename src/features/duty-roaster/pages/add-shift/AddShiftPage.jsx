@@ -1,75 +1,82 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Form, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
-import {
-  createEmptyShiftForm,
-  createShiftFilters,
-  rowToShiftForm,
-  filterShiftRows,
-} from '@/features/duty-roaster/api/mock-shifts';
+import { filterShiftRows } from '@/features/duty-roaster/api/mock-shifts';
 import {
   useGetShiftsQuery,
   useAddShiftMutation,
   useUpdateShiftMutation,
   useDeleteShiftMutation,
 } from '@/features/duty-roaster/api/dutyRoasterApi';
+import {
+  SHIFT_FILTER_INITIAL_VALUES,
+} from '@/features/duty-roaster/pages/add-shift/shift-fields';
 import ShiftFilterForm from './ShiftFilterForm';
 import ShiftModal from './ShiftModal';
 import './add-shift.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
+function parseTime(value) {
+  if (!value) return null;
+  const parsed = dayjs(value, 'HH:mm');
+  return parsed.isValid() ? parsed : null;
+}
+
+function formatTime(value) {
+  if (!value) return '';
+  if (dayjs.isDayjs(value)) return value.format('HH:mm');
+  return value;
+}
+
 export default function AddShiftPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyShiftForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [filters, setFilters] = useState(createShiftFilters);
-  const [appliedFilters, setAppliedFilters] = useState(createShiftFilters);
+  const [appliedFilters, setAppliedFilters] = useState(SHIFT_FILTER_INITIAL_VALUES);
 
   const { data: rows = [], isLoading } = useGetShiftsQuery();
   const [addShift] = useAddShiftMutation();
   const [updateShift] = useUpdateShiftMutation();
   const [deleteShift] = useDeleteShiftMutation();
 
-  const patchForm = useCallback((patch) => setForm((c) => ({ ...c, ...patch })), []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyShiftForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToShiftForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        shiftName: record.shiftName ?? '',
+        shiftDescription: record.shiftDescription ?? '',
+        abbreviation: record.abbreviation ?? '',
+        startTime: parseTime(record.startTime),
+        endTime: parseTime(record.endTime),
+        relaxationTime: record.relaxationTime ?? 0,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -82,48 +89,44 @@ export default function AddShiftPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.shiftName?.trim()) errors.shiftName = 'Shift Name is required.';
-    if (!form.abbreviation?.trim()) errors.abbreviation = 'Abbreviation is required.';
-    if (!form.startTime) errors.startTime = 'Start Time is required.';
-    if (!form.endTime) errors.endTime = 'End Time is required.';
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        shiftName: values.shiftName.trim(),
+        shiftDescription: values.shiftDescription?.trim() ?? '',
+        abbreviation: values.abbreviation.trim(),
+        startTime: formatTime(values.startTime),
+        endTime: formatTime(values.endTime),
+        relaxationTime: values.relaxationTime ?? 0,
+      };
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      if (editingRowId) {
+        await updateShift({ id: editingRowId, ...payload }).unwrap();
+        message.success('Shift updated.');
+      } else {
+        await addShift(payload).unwrap();
+        message.success('Shift added.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
+  }, [form, editingRowId, addShift, updateShift, message, closeModal]);
 
-    setFieldErrors({});
+  const handleSearch = useCallback(() => {
+    const values = filterForm.getFieldsValue();
+    setAppliedFilters({
+      ...values,
+      startTime: formatTime(values.startTime),
+      endTime: formatTime(values.endTime),
+    });
+  }, [filterForm]);
 
-    const payload = {
-      shiftName: form.shiftName.trim(),
-      shiftDescription: form.shiftDescription?.trim() ?? '',
-      abbreviation: form.abbreviation.trim(),
-      startTime: form.startTime,
-      endTime: form.endTime,
-      relaxationTime: form.relaxationTime ?? 0,
-    };
-
-    if (editingRowId) {
-      await updateShift({ id: editingRowId, ...payload }).unwrap();
-      setIsModalOpen(false);
-      setEditingRowId(null);
-      message.success('Shift updated.');
-      return;
-    }
-
-    await addShift(payload).unwrap();
-    setIsModalOpen(false);
-    message.success('Shift added.');
-  }, [form, editingRowId, addShift, updateShift, message]);
-
-  const handleSearch = () => setAppliedFilters({ ...filters });
-
-  const handleClear = () => {
-    const empty = createShiftFilters();
-    setFilters(empty);
-    setAppliedFilters(empty);
-  };
+  const handleClear = useCallback(() => {
+    filterForm.resetFields();
+    setAppliedFilters(SHIFT_FILTER_INITIAL_VALUES);
+  }, [filterForm]);
 
   const filteredRows = useMemo(
     () => filterShiftRows(rows, appliedFilters),
@@ -138,18 +141,8 @@ export default function AddShiftPage() {
         width: 90,
         render: (_, __, index) => index + 1,
       },
-      {
-        title: 'Shift Name',
-        dataIndex: 'shiftName',
-        key: 'shiftName',
-        width: 200,
-      },
-      {
-        title: 'Abbreviation',
-        dataIndex: 'abbreviation',
-        key: 'abbreviation',
-        width: 120,
-      },
+      { title: 'Shift Name', dataIndex: 'shiftName', key: 'shiftName', width: 200 },
+      { title: 'Abbreviation', dataIndex: 'abbreviation', key: 'abbreviation', width: 120 },
       {
         title: 'Description',
         dataIndex: 'shiftDescription',
@@ -199,8 +192,7 @@ export default function AddShiftPage() {
   return (
     <div className="services-billing-page add-shift-page">
       <ShiftFilterForm
-        filters={filters}
-        onPatchFilter={(patch) => setFilters((c) => ({ ...c, ...patch }))}
+        form={filterForm}
         onSubmit={handleSearch}
         onClear={handleClear}
         loading={isLoading}
@@ -233,9 +225,6 @@ export default function AddShiftPage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Shift' : 'Add Shift'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

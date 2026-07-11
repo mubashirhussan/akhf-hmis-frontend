@@ -1,18 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import HospitalServicesForm from '@/features/service-admin/pages/hospital-services/HospitalServicesForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  HOSPITAL_SERVICES_INITIAL_VALUES,
+  getHospitalServicesFields,
+} from '@/features/service-admin/pages/hospital-services/hospital-services-fields';
 
-export default function HospitalServicesModal({
-  open,
-  onClose,
-  form,
-  errors,
-  onPatchForm,
-  onClearError,
-  onSave,
-}) {
+export default function HospitalServicesModal({ open, onClose, form, onSave }) {
+  const adjustMode = Form.useWatch('adjustMode', form);
+  const currentAmount = Form.useWatch('currentAmount', form);
+
+  const fields = useMemo(
+    () =>
+      getHospitalServicesFields({
+        adjustMode,
+        showCurrentAmount: currentAmount != null,
+      }),
+    [adjustMode, currentAmount],
+  );
+
   return (
     <AppModal
       open={open}
@@ -27,22 +36,26 @@ export default function HospitalServicesModal({
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button
-            type="primary"
-            className="hospital-services-save-btn"
-            onClick={onSave}
-          >
+          <Button type="primary" className="hospital-services-save-btn" onClick={onSave}>
             Apply
           </Button>
         </>
       }
     >
-      <HospitalServicesForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={HOSPITAL_SERVICES_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('adjustMode' in changed) {
+            form.setFieldsValue({ percentage: null, fixedAmount: null });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="hospital-services-form-grid" />
+      </Form>
     </AppModal>
   );
 }

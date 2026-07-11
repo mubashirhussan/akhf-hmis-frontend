@@ -1,20 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import UpdateAdminServicesForm from '@/features/service-admin/pages/update-admin-services/UpdateAdminServicesForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  UPDATE_ADMIN_SERVICES_INITIAL_VALUES,
+  getUpdateAdminServicesFields,
+} from '@/features/service-admin/pages/update-admin-services/update-admin-services-fields';
 
 export default function UpdateAdminServicesModal({
   open,
   onClose,
   title = 'Edit Service',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   serviceCategoryOptions = [],
 }) {
+  const fields = useMemo(
+    () => getUpdateAdminServicesFields({ serviceCategoryOptions }),
+    [serviceCategoryOptions],
+  );
+
   return (
     <AppModal
       open={open}
@@ -39,13 +46,15 @@ export default function UpdateAdminServicesModal({
         </>
       }
     >
-      <UpdateAdminServicesForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        serviceCategoryOptions={serviceCategoryOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={UPDATE_ADMIN_SERVICES_INITIAL_VALUES}
+      >
+        <DynamicForm fields={fields} className="update-admin-services-form-grid" />
+      </Form>
     </AppModal>
   );
 }

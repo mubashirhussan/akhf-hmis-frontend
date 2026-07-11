@@ -2,16 +2,14 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { App, Button, Tooltip } from 'antd';
+import { App, Button, Form, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import { useConfirm } from '@/hooks/useConfirm';
+import { filterHospitalRows } from '@/features/human-resource/api/mock-hospitals';
 import {
-  createEmptyHospitalForm,
-  rowToHospitalForm,
-  createHospitalFilters,
-  filterHospitalRows,
-} from '@/features/human-resource/api/mock-hospitals';
+  HOSPITAL_FILTER_INITIAL_VALUES,
+} from '@/features/human-resource/pages/add-hospital/hospital-fields';
 import HospitalFilterForm from './HospitalFilterForm';
 import {
   useGetHospitalsQuery,
@@ -27,49 +25,32 @@ const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 export default function AddHospitalPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyHospitalForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [filters, setFilters] = useState(createHospitalFilters);
-  const [appliedFilters, setAppliedFilters] = useState(createHospitalFilters);
+  const [editingRow, setEditingRow] = useState(null);
+  const [appliedFilters, setAppliedFilters] = useState(HOSPITAL_FILTER_INITIAL_VALUES);
 
   const { data: rows = [], isLoading } = useGetHospitalsQuery();
   const [createHospital] = useAddHospitalMutation();
   const [updateHospital] = useUpdateHospitalMutation();
   const [deleteHospital] = useDeleteHospitalMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyHospitalForm());
-    setEditingRowId(null);
-    setFieldErrors({});
+    form.resetFields();
+    setEditingRow(null);
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    setEditingRow(null);
+    form.resetFields();
+  }, [form]);
 
   const handleEditRow = useCallback((record) => {
-    setForm(rowToHospitalForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
+    setEditingRow(record);
     setIsModalOpen(true);
   }, []);
 
@@ -84,58 +65,55 @@ export default function AddHospitalPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    const hospitalIdValue = Number(form.hospitalId);
-    if (editingRowId && (!form.hospitalId || !Number.isInteger(hospitalIdValue) || hospitalIdValue <= 0)) {
-      errors.hospitalId = 'Hospital ID is required and must be a positive number.';
+    try {
+      const values = await form.validateFields();
+      const hospitalIdValue = Number(editingRow?.hospitalId ?? values.hospitalId);
+
+      if (
+        editingRow &&
+        (!editingRow.hospitalId || !Number.isInteger(hospitalIdValue) || hospitalIdValue <= 0)
+      ) {
+        message.error('Hospital ID is required and must be a positive number.');
+        return;
+      }
+
+      const payload = {
+        ...(editingRow ? { hospitalId: hospitalIdValue } : {}),
+        name: values.name.trim(),
+        abbreviation: (values.abbreviation ?? '').trim(),
+        address: (values.address ?? '').trim(),
+        city: values.city,
+        phone: (values.phone ?? '').trim(),
+        fax: (values.fax ?? '').trim(),
+        logo: values.logo ?? null,
+      };
+
+      if (editingRow) {
+        await updateHospital({ id: editingRow.id, ...payload }).unwrap();
+        closeModal();
+        message.success('Hospital updated.');
+        return;
+      }
+
+      await createHospital(payload).unwrap();
+      closeModal();
+      message.success('Hospital created.');
+    } catch {
+      // validation errors are shown by antd Form
     }
-    if (!form.name.trim()) errors.name = 'Hospital Name is required.';
-    if (!form.city) errors.city = 'City is required.';
+  }, [form, editingRow, createHospital, updateHospital, closeModal, message]);
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
+  const handleSearch = useCallback(
+    (values) => {
+      setAppliedFilters({ ...values });
+    },
+    [],
+  );
 
-    setFieldErrors({});
-
-    const payload = {
-      ...(editingRowId ? { hospitalId: hospitalIdValue } : {}),
-      name: form.name.trim(),
-      abbreviation: form.abbreviation.trim(),
-      address: form.address.trim(),
-      city: form.city,
-      phone: form.phone.trim(),
-      fax: form.fax.trim(),
-      logo: form.logo ?? null,
-    };
-
-    if (editingRowId) {
-      await updateHospital({ id: editingRowId, ...payload }).unwrap();
-      setIsModalOpen(false);
-      setEditingRowId(null);
-      message.success('Hospital updated.');
-      return;
-    }
-
-    await createHospital(payload).unwrap();
-    setIsModalOpen(false);
-    message.success('Hospital created.');
-  }, [form, editingRowId, createHospital, updateHospital, message]);
-
-  const patchFilter = useCallback((patch) => {
-    setFilters((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const handleSearch = () => {
-    setAppliedFilters({ ...filters });
-  };
-
-  const handleClear = () => {
-    const reset = createHospitalFilters();
-    setFilters(reset);
-    setAppliedFilters(reset);
-  };
+  const handleClear = useCallback(() => {
+    filterForm.resetFields();
+    setAppliedFilters(HOSPITAL_FILTER_INITIAL_VALUES);
+  }, [filterForm]);
 
   const filteredRows = useMemo(
     () => filterHospitalRows(rows, appliedFilters),
@@ -206,8 +184,7 @@ export default function AddHospitalPage() {
   return (
     <div className="services-billing-page add-hospital-page">
       <HospitalFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
         onSubmit={handleSearch}
         onClear={handleClear}
         loading={isLoading}
@@ -238,13 +215,10 @@ export default function AddHospitalPage() {
       <HospitalModal
         open={isModalOpen}
         onClose={closeModal}
-        title={editingRowId ? 'Edit Hospital' : 'Add Hospital'}
+        title={editingRow ? 'Edit Hospital' : 'Add Hospital'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
-        isEdit={Boolean(editingRowId)}
+        record={editingRow}
       />
     </div>
   );

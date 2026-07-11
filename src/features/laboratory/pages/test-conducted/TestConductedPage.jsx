@@ -2,20 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import LaboratoryDepartmentTag from '@/features/laboratory/components/LaboratoryDepartmentTag';
 import CollectionFilterForm from '@/features/laboratory/components/CollectionFilterForm';
+import {
+  getCollectionFilterInitialValues,
+  normalizeCollectionFilters,
+} from '@/features/laboratory/components/collection-filter-fields';
 import TestConductedFormView from '@/features/laboratory/pages/test-conducted/TestConductedFormView';
 import DataTable from '@/components/ui/DataTable';
-import {
-  createLaboratoryWorklistFilters,
-} from '@/features/laboratory/api/mock-laboratory-worklist';
 import {
   useGetLaboratoryWorklistRecordQuery,
   useLazySearchLaboratoryWorklistQuery,
 } from '@/features/laboratory/api/laboratoryEndpoints';
 import { resolveTestConductedRecord } from '@/features/laboratory/api/mock-test-conducted';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
 
 const TEST_CONDUCTED_STATUS = 'test-conducted';
 
@@ -24,13 +24,12 @@ export default function TestConductedList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const recordId = searchParams.get('recordId');
+  const [filterForm] = Form.useForm();
 
-  const [filters, setFilters] = useState(() => ({
-    ...createLaboratoryWorklistFilters(TEST_CONDUCTED_STATUS),
-    ageUnit: DOB_AGE_UNITS.years,
-    patientAge: '',
-    dateRange: null,
-  }));
+  const filterInitialValues = useMemo(
+    () => getCollectionFilterInitialValues(TEST_CONDUCTED_STATUS),
+    [],
+  );
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(true);
   const [searchWorklist, { isLoading }] = useLazySearchLaboratoryWorklistQuery();
@@ -39,19 +38,18 @@ export default function TestConductedList() {
   });
 
   useEffect(() => {
-    searchWorklist(filters).then(({ data = [] }) => setResults(data));
-  }, [searchWorklist]);
+    searchWorklist(normalizeCollectionFilters(filterInitialValues)).then(({ data = [] }) =>
+      setResults(data),
+    );
+  }, [filterInitialValues, searchWorklist]);
 
   const activeRecord = useMemo(
     () => (worklistRecord ? resolveTestConductedRecord(worklistRecord) : null),
     [worklistRecord],
   );
 
-  const patchFilter = (patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  };
-
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
+    const filters = normalizeCollectionFilters(values);
     const { data = [] } = await searchWorklist(filters);
     setResults(data);
     setHasSearched(true);
@@ -118,10 +116,10 @@ export default function TestConductedList() {
   return (
     <div className="services-billing-page laboratory-worklist-page">
       <CollectionFilterForm
-        idPrefix="test-conducted"
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
+        initialValues={filterInitialValues}
         onSubmit={handleSearch}
+        loading={isLoading}
       />
 
       <section className="services-billing-results" aria-label="Test conducted results">

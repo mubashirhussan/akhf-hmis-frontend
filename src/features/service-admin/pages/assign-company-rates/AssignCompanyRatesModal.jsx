@@ -1,18 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import AssignCompanyRatesForm from '@/features/service-admin/pages/assign-company-rates/AssignCompanyRatesForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  ASSIGN_COMPANY_RATES_INITIAL_VALUES,
+  getAssignCompanyRatesFields,
+} from '@/features/service-admin/pages/assign-company-rates/assign-company-rates-fields';
 
-export default function AssignCompanyRatesModal({
-  open,
-  onClose,
-  form,
-  errors,
-  onPatchForm,
-  onClearError,
-  onSave,
-}) {
+export default function AssignCompanyRatesModal({ open, onClose, form, onSave }) {
+  const adjustMode = Form.useWatch('adjustMode', form);
+  const currentAmount = Form.useWatch('currentAmount', form);
+
+  const fields = useMemo(
+    () =>
+      getAssignCompanyRatesFields({
+        adjustMode,
+        showCurrentAmount: currentAmount != null,
+      }),
+    [adjustMode, currentAmount],
+  );
+
   return (
     <AppModal
       open={open}
@@ -37,12 +46,20 @@ export default function AssignCompanyRatesModal({
         </>
       }
     >
-      <AssignCompanyRatesForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={ASSIGN_COMPANY_RATES_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('adjustMode' in changed) {
+            form.setFieldsValue({ percentage: null, fixedAmount: null });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="assign-company-rates-form-grid" />
+      </Form>
     </AppModal>
   );
 }

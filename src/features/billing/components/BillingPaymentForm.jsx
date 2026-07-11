@@ -2,23 +2,20 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Collapse, DatePicker, Input, InputNumber, Select } from 'antd';
+import { Button, Checkbox, Collapse, Form } from 'antd';
 import BillingDiscountRequestModal from '@/features/billing/components/BillingDiscountRequestModal';
 import AppIcon from '@/components/icons/AppIcon';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import {
-  BILLING_BANK_NAME_OPTIONS,
-  BILLING_CARD_SERVICE_OPTIONS,
-  BILLING_CARD_TYPE_OPTIONS,
-  BILLING_RECEIVABLE_PARTY_OPTIONS,
   calcBillingMaxReceivableAmount,
   calcBillingPaymentBreakdown,
 } from '@/features/billing/api/mock-billing-payment';
+import {
+  BILLING_BANK_FIELDS,
+  BILLING_CREDIT_CARD_FIELDS,
+  getBillingReceivableAmountField,
+} from '@/features/billing/components/billing-payment-fields';
 import { formatPkr } from '@/features/opd/api/mock-walk-in-services';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-
-const controlClass = FIELD_CONTROL_CLASS;
 
 function PaymentStat({ label, value, tone = 'default' }) {
   return (
@@ -39,19 +36,10 @@ export default function BillingPaymentForm({
   onReceivePayment,
 }) {
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
+  const [paymentForm] = Form.useForm();
+  const [receivableForm] = Form.useForm();
   const [receivable, setReceivable] = useState(false);
-  const [receivableAmount, setReceivableAmount] = useState(null);
-  const [receivableParty, setReceivableParty] = useState(undefined);
-  const [creditCardAmount, setCreditCardAmount] = useState(null);
-  const [cardType, setCardType] = useState('master');
-  const [creditBankName, setCreditBankName] = useState(undefined);
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardService, setCardService] = useState('credit');
-  const [approvalNumber, setApprovalNumber] = useState('');
-  const [bankAmount, setBankAmount] = useState(null);
-  const [bankName, setBankName] = useState(undefined);
-  const [chequeNumber, setChequeNumber] = useState('');
-  const [chequeDate, setChequeDate] = useState(null);
+  const receivableAmount = Form.useWatch('receivableAmount', receivableForm);
   const refundPayment = 0;
 
   const appliedAdvancePayment = advancePaymentTotal;
@@ -96,17 +84,16 @@ export default function BillingPaymentForm({
     if (!isReceivableDisabled) return;
 
     setReceivable(false);
-    setReceivableAmount(null);
-    setReceivableParty(undefined);
-  }, [isReceivableDisabled]);
+    receivableForm.setFieldsValue({ receivableAmount: null });
+  }, [isReceivableDisabled, receivableForm]);
 
   useEffect(() => {
     if (!receivable || receivableAmount == null) return;
 
     if (Number(receivableAmount) > maxReceivableAmount) {
-      setReceivableAmount(maxReceivableAmount);
+      receivableForm.setFieldsValue({ receivableAmount: maxReceivableAmount });
     }
-  }, [maxReceivableAmount, receivable, receivableAmount]);
+  }, [maxReceivableAmount, receivable, receivableAmount, receivableForm]);
 
   const handleReceivableChange = (checked) => {
     if (checked && isReceivableDisabled) return;
@@ -114,24 +101,14 @@ export default function BillingPaymentForm({
     setReceivable(checked);
 
     if (!checked) {
-      setReceivableAmount(null);
-      setReceivableParty(undefined);
-      return;
-    }
-
-    if (receivableAmount != null) {
-      setReceivableAmount(Math.min(Number(receivableAmount), maxReceivableAmount));
+      receivableForm.setFieldsValue({ receivableAmount: null });
     }
   };
 
-  const handleReceivableAmountChange = (value) => {
-    if (value == null || value === '') {
-      setReceivableAmount(null);
-      return;
-    }
-
-    setReceivableAmount(Math.min(Math.max(0, Number(value)), maxReceivableAmount));
-  };
+  const receivableAmountFields = useMemo(
+    () => getBillingReceivableAmountField({ maxReceivableAmount, formatPkr }),
+    [maxReceivableAmount],
+  );
 
   const collapseItems = [
     {
@@ -143,66 +120,9 @@ export default function BillingPaymentForm({
         </span>
       ),
       children: (
-        <FormGrid columns={3} className="billing-payment-method-grid">
-          <FloatingField label="Amount" htmlFor="billing-cc-amount">
-            <InputNumber
-              id="billing-cc-amount"
-              className={`w-full ${controlClass}`}
-              controls={false}
-              min={0}
-              value={creditCardAmount}
-              onChange={setCreditCardAmount}
-              placeholder="0"
-            />
-          </FloatingField>
-          <FloatingField label="Card Type" htmlFor="billing-cc-type">
-            <Select
-              id="billing-cc-type"
-              className={controlClass}
-              value={cardType}
-              options={BILLING_CARD_TYPE_OPTIONS}
-              onChange={setCardType}
-            />
-          </FloatingField>
-          <FloatingField label="Bank Name" htmlFor="billing-cc-bank">
-            <Select
-              id="billing-cc-bank"
-              className={controlClass}
-              placeholder="Select bank"
-              value={creditBankName}
-              allowClear
-              options={BILLING_BANK_NAME_OPTIONS}
-              onChange={setCreditBankName}
-            />
-          </FloatingField>
-          <FloatingField label="Card #" htmlFor="billing-cc-number">
-            <Input
-              id="billing-cc-number"
-              className={controlClass}
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              autoComplete="off"
-            />
-          </FloatingField>
-          <FloatingField label="Card Service" htmlFor="billing-cc-service">
-            <Select
-              id="billing-cc-service"
-              className={controlClass}
-              value={cardService}
-              options={BILLING_CARD_SERVICE_OPTIONS}
-              onChange={setCardService}
-            />
-          </FloatingField>
-          <FloatingField label="Approval #" htmlFor="billing-cc-approval">
-            <Input
-              id="billing-cc-approval"
-              className={controlClass}
-              value={approvalNumber}
-              onChange={(e) => setApprovalNumber(e.target.value)}
-              autoComplete="off"
-            />
-          </FloatingField>
-        </FormGrid>
+        <div className="billing-payment-method-grid">
+          <DynamicForm fields={BILLING_CREDIT_CARD_FIELDS} gutter={[16, 12]} />
+        </div>
       ),
     },
     {
@@ -214,49 +134,9 @@ export default function BillingPaymentForm({
         </span>
       ),
       children: (
-        <FormGrid columns={4} className="billing-payment-method-grid">
-          <FloatingField label="Amount" htmlFor="billing-bank-amount">
-            <InputNumber
-              id="billing-bank-amount"
-              className={`w-full ${controlClass}`}
-              controls={false}
-              min={0}
-              value={bankAmount}
-              onChange={setBankAmount}
-              placeholder="0"
-            />
-          </FloatingField>
-          <FloatingField label="Bank Name" htmlFor="billing-bank-name">
-            <Select
-              id="billing-bank-name"
-              className={controlClass}
-              placeholder="Select bank"
-              value={bankName}
-              allowClear
-              options={BILLING_BANK_NAME_OPTIONS}
-              onChange={setBankName}
-            />
-          </FloatingField>
-          <FloatingField label="Cheque #" htmlFor="billing-bank-cheque">
-            <Input
-              id="billing-bank-cheque"
-              className={controlClass}
-              value={chequeNumber}
-              onChange={(e) => setChequeNumber(e.target.value)}
-              autoComplete="off"
-            />
-          </FloatingField>
-          <FloatingField label="Cheque Date" htmlFor="billing-bank-cheque-date">
-            <DatePicker
-              id="billing-bank-cheque-date"
-              className={`w-full ${controlClass}`}
-              value={chequeDate}
-              onChange={setChequeDate}
-              format="MM/DD/YYYY"
-              placeholder="mm/dd/yyyy"
-            />
-          </FloatingField>
-        </FormGrid>
+        <div className="billing-payment-method-grid">
+          <DynamicForm fields={BILLING_BANK_FIELDS} gutter={[16, 12]} />
+        </div>
       ),
     },
   ];
@@ -282,8 +162,6 @@ export default function BillingPaymentForm({
           </div>
         </div>
       </div>
-
-      
 
       <div className="billing-payment-panels">
         <div className="billing-payment-panel">
@@ -319,18 +197,9 @@ export default function BillingPaymentForm({
               </Checkbox>
 
               {receivable && (
-                <FloatingField label="Amount" htmlFor="billing-receivable-amount">
-                  <InputNumber
-                    id="billing-receivable-amount"
-                    className={`w-full ${controlClass}`}
-                    controls={false}
-                    min={0}
-                    max={maxReceivableAmount}
-                    value={receivableAmount}
-                    onChange={handleReceivableAmountChange}
-                    placeholder={`Max ${formatPkr(maxReceivableAmount)}`}
-                  />
-                </FloatingField>
+                <Form form={receivableForm} layout="vertical">
+                  <DynamicForm fields={receivableAmountFields} gutter={[16, 12]} />
+                </Form>
               )}
             </div>
           </div>
@@ -344,10 +213,6 @@ export default function BillingPaymentForm({
           <div className="billing-payment-panel-body">
             {advancePayments.length > 0 ? (
               <div className="billing-payment-advance-table">
-                {/* <div className="billing-payment-advance-header">
-                  <span>Receipt #</span>
-                  <span>Value</span>
-                </div> */}
                 <ul className="billing-payment-advance-list">
                   {advancePayments.map((payment) => (
                     <li key={payment.receiptNo} className="billing-payment-advance-item">
@@ -373,10 +238,6 @@ export default function BillingPaymentForm({
           <div className="billing-payment-panel-body">
             {panelPayments.length > 0 ? (
               <div className="billing-payment-advance-table">
-                {/* <div className="billing-payment-advance-header">
-                  <span>Company</span>
-                  <span>Amount</span>
-                </div> */}
                 <ul className="billing-payment-advance-list">
                   {panelPayments.map((payment) => (
                     <li
@@ -397,20 +258,38 @@ export default function BillingPaymentForm({
           </div>
         </div>
       </div>
-      <Collapse
-        bordered={false}
-        className="billing-payment-collapse"
-        defaultActiveKey={[]}
-        expandIconPlacement="end"
-        expandIcon={({ isActive }) =>
-          isActive ? (
-            <UpOutlined className="billing-payment-collapse-arrow" aria-hidden />
-          ) : (
-            <DownOutlined className="billing-payment-collapse-arrow" aria-hidden />
-          )
-        }
-        items={collapseItems}
-      />
+
+      <Form
+        form={paymentForm}
+        layout="vertical"
+        initialValues={{
+          creditCardAmount: null,
+          cardType: 'master',
+          creditBankName: undefined,
+          cardNumber: '',
+          cardService: 'credit',
+          approvalNumber: '',
+          bankAmount: null,
+          bankName: undefined,
+          chequeNumber: '',
+          chequeDate: null,
+        }}
+      >
+        <Collapse
+          bordered={false}
+          className="billing-payment-collapse"
+          defaultActiveKey={[]}
+          expandIconPlacement="end"
+          expandIcon={({ isActive }) =>
+            isActive ? (
+              <UpOutlined className="billing-payment-collapse-arrow" aria-hidden />
+            ) : (
+              <DownOutlined className="billing-payment-collapse-arrow" aria-hidden />
+            )
+          }
+          items={collapseItems}
+        />
+      </Form>
 
       <div className="billing-payment-footer-actions">
         <Button className="billing-payment-print-btn">Print Receipt</Button>

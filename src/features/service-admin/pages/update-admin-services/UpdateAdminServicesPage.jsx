@@ -1,12 +1,11 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, InputNumber, Select, Tooltip } from 'antd';
+import { App, Button, Form, Input, InputNumber, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import UpdateAdminServicesModal from '@/features/service-admin/pages/update-admin-services/UpdateAdminServicesModal';
 import {
-  createEmptyServiceAdminForm,
   rowToServiceAdminForm,
   getServiceCategoryLabel,
   getBooleanLabel,
@@ -22,12 +21,10 @@ const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
 export default function UpdateAdminServicesPage() {
   const { message } = App.useApp();
-
-  const [form, setForm] = useState(createEmptyServiceAdminForm);
+  const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-   const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [editingAmountId, setEditingAmountId] = useState(null);
   const [editingAmount, setEditingAmount] = useState(null);
@@ -41,39 +38,35 @@ export default function UpdateAdminServicesPage() {
     [categories],
   );
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToServiceAdminForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      const values = rowToServiceAdminForm(record);
+      form.setFieldsValue({
+        ...values,
+        currentAmount: values.serviceCharges ?? 0,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
-  const handleAmountSave = useCallback(async (record) => {
-    if (editingAmount == null || editingAmount < 0) return;
-    await updateServiceAdmin({ id: record.id, serviceCharges: editingAmount }).unwrap();
-    message.success('Amount updated.');
-    setEditingAmountId(null);
-    setEditingAmount(null);
-  }, [editingAmount, updateServiceAdmin, message]);
+  const handleAmountSave = useCallback(
+    async (record) => {
+      if (editingAmount == null || editingAmount < 0) return;
+      await updateServiceAdmin({ id: record.id, serviceCharges: editingAmount }).unwrap();
+      message.success('Amount updated.');
+      setEditingAmountId(null);
+      setEditingAmount(null);
+    },
+    [editingAmount, updateServiceAdmin, message],
+  );
 
   const handleExport = useCallback(() => {
     const exportRows = rows.filter((row) => {
@@ -107,39 +100,24 @@ export default function UpdateAdminServicesPage() {
   }, [rows, searchTerm, categoryFilter]);
 
   const handleSave = useCallback(async () => {
-    const serviceName = form.serviceName.trim();
-    const serviceCategory = form.serviceCategory?.trim();
-    const serviceHead = form.serviceHead?.trim();
+    try {
+      const values = await form.validateFields();
+      await updateServiceAdmin({
+        id: editingRowId,
+        serviceName: values.serviceName.trim(),
+        serviceCategory: values.serviceCategory,
+        serviceCharges: values.serviceCharges ?? 0,
+        serviceChargesBefore: values.serviceChargesBefore,
+        serviceEditPrice: values.serviceEditPrice,
+        serviceHead: values.serviceHead,
+      }).unwrap();
 
-    const errors = {};
-    if (!serviceName) errors.serviceName = 'Service Name is required.';
-    if (!serviceCategory) errors.serviceCategory = 'Service Category is required.';
-    if (form.serviceCharges == null || form.serviceCharges < 0) {
-      errors.serviceCharges = 'Service Charges is required.';
+      closeModal();
+      message.success('Service updated.');
+    } catch {
+      // validation errors are shown by antd Form
     }
-    if (!serviceHead) errors.serviceHead = 'Service Head is required.';
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-
-    await updateServiceAdmin({
-      id: editingRowId,
-      serviceName,
-      serviceCategory,
-      serviceCharges: form.serviceCharges ?? 0,
-      serviceChargesBefore: form.serviceChargesBefore,
-      serviceEditPrice: form.serviceEditPrice,
-      serviceHead,
-    }).unwrap();
-
-    setIsModalOpen(false);
-    setEditingRowId(null);
-    message.success('Service updated.');
-  }, [form, editingRowId, updateServiceAdmin, message]);
+  }, [form, editingRowId, updateServiceAdmin, message, closeModal]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -181,8 +159,10 @@ export default function UpdateAdminServicesPage() {
               onPressEnter={() => handleAmountSave(record)}
               style={{ width: '100%' }}
             />
+          ) : value != null ? (
+            value.toLocaleString()
           ) : (
-            value != null ? value.toLocaleString() : ''
+            ''
           ),
       },
       {
@@ -213,12 +193,7 @@ export default function UpdateAdminServicesPage() {
                     type="link"
                     size="small"
                     aria-label="Save amount"
-                    icon={
-                      <AppIcon
-                        icon="mdi:check"
-                        className={ACTION_ICON_CLASS}
-                      />
-                    }
+                    icon={<AppIcon icon="mdi:check" className={ACTION_ICON_CLASS} />}
                     onClick={() => handleAmountSave(record)}
                   />
                 </Tooltip>
@@ -228,12 +203,7 @@ export default function UpdateAdminServicesPage() {
                     size="small"
                     danger
                     aria-label="Cancel edit"
-                    icon={
-                      <AppIcon
-                        icon="mdi:close"
-                        className={ACTION_ICON_CLASS}
-                      />
-                    }
+                    icon={<AppIcon icon="mdi:close" className={ACTION_ICON_CLASS} />}
                     onClick={() => {
                       setEditingAmountId(null);
                       setEditingAmount(null);
@@ -248,12 +218,7 @@ export default function UpdateAdminServicesPage() {
                   size="small"
                   className="update-admin-services-actions-cell"
                   aria-label="Edit amount"
-                  icon={
-                    <AppIcon
-                      icon="mdi:pencil-outline"
-                      className={ACTION_ICON_CLASS}
-                    />
-                  }
+                  icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
                   onClick={() => {
                     setEditingAmountId(record.id);
                     setEditingAmount(record.serviceCharges ?? 0);
@@ -265,7 +230,7 @@ export default function UpdateAdminServicesPage() {
         ),
       },
     ],
-    [handleEditRow, handleAmountSave, editingAmountId, editingAmount],
+    [handleAmountSave, editingAmountId, editingAmount],
   );
 
   return (
@@ -320,9 +285,6 @@ export default function UpdateAdminServicesPage() {
         onClose={closeModal}
         title="Edit Service"
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         serviceCategoryOptions={categoryOptions}
       />

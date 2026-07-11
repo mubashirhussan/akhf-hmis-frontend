@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import WardBedsModal from '@/features/service-admin/pages/ward-beds/WardBedsModal';
@@ -21,120 +21,95 @@ import '@/features/service-admin/pages/ward-beds/ward-beds.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyForm() {
-  return {
-    hospitalId: '',
-    departmentId: '',
-    subDepartmentId: '',
-    wardName: '',
-    rooms: null,
-    maxBeds: null,
-  };
-}
-
-
-
 export default function WardBedsPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const [fHospital, setFHospital] = useState('');
   const [fDepartment, setFDepartment] = useState('');
   const [fSubDepartment, setFSubDepartment] = useState('');
   const [fWardName, setFWardName] = useState('');
 
-const { data: hospitals = [] } = useGetHospitalsQuery();
-const { data: allDepartments = [] } = useGetDepartmentsQuery();
-const { data: allSubDepartments = [] } = useGetSubDepartmentsQuery();
-const { data: rows = [], isLoading } = useGetWardBedsQuery();
+  const { data: hospitals = [] } = useGetHospitalsQuery();
+  const { data: allDepartments = [] } = useGetDepartmentsQuery();
+  const { data: allSubDepartments = [] } = useGetSubDepartmentsQuery();
+  const { data: rows = [], isLoading } = useGetWardBedsQuery();
 
   const [createWardBed] = useCreateWardBedMutation();
   const [updateWardBed] = useUpdateWardBedMutation();
   const [deleteWardBed] = useDeleteWardBedMutation();
 
-const hospitalOptions = useMemo(
-  () => hospitals.map((h) => ({ value: h.id, label: h.name })),
-  [hospitals],
-);
+  const watchedHospitalId = Form.useWatch('hospitalId', form);
+  const watchedDepartmentId = Form.useWatch('departmentId', form);
 
-const modalDeptOptions = useMemo(
-  () =>
-    allDepartments
-      .filter((d) => d.hospitalId === form.hospitalId)
-      .map((d) => ({ value: d.id, label: d.departmentName })),
-  [allDepartments, form.hospitalId],
-);
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
 
-const modalSubDeptOptions = useMemo(
-  () =>
-    allSubDepartments
-      .filter((s) => s.departmentId === form.departmentId)
-      .map((s) => ({ value: s.id, label: s.subDepartmentName })),
-  [allSubDepartments, form.departmentId],
-);
+  const modalDeptOptions = useMemo(
+    () =>
+      allDepartments
+        .filter((d) => d.hospitalId === watchedHospitalId)
+        .map((d) => ({ value: d.id, label: d.departmentName })),
+    [allDepartments, watchedHospitalId],
+  );
 
-const filterDeptOptions = useMemo(
-  () =>
-    allDepartments
-      .filter((d) => !fHospital || d.hospitalId === fHospital)
-      .map((d) => ({ value: d.id, label: d.departmentName })),
-  [allDepartments, fHospital],
-);
+  const modalSubDeptOptions = useMemo(
+    () =>
+      allSubDepartments
+        .filter((s) => s.departmentId === watchedDepartmentId)
+        .map((s) => ({ value: s.id, label: s.subDepartmentName })),
+    [allSubDepartments, watchedDepartmentId],
+  );
 
-const filterSubDeptOptions = useMemo(
-  () =>
-    allSubDepartments
-      .filter((s) => !fDepartment || s.departmentId === fDepartment)
-      .map((s) => ({ value: s.id, label: s.subDepartmentName })),
-  [allSubDepartments, fDepartment],
-);
+  const filterDeptOptions = useMemo(
+    () =>
+      allDepartments
+        .filter((d) => !fHospital || d.hospitalId === fHospital)
+        .map((d) => ({ value: d.id, label: d.departmentName })),
+    [allDepartments, fHospital],
+  );
 
-  
-
-  const patchForm = useCallback((patch) => {
-    setForm((c) => ({ ...c, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const filterSubDeptOptions = useMemo(
+    () =>
+      allSubDepartments
+        .filter((s) => !fDepartment || s.departmentId === fDepartment)
+        .map((s) => ({ value: s.id, label: s.subDepartmentName })),
+    [allSubDepartments, fDepartment],
+  );
 
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      hospitalId: record.hospitalId ?? '',
-      departmentId: record.departmentId ?? '',
-      subDepartmentId: record.subDepartmentId ?? '',
-      wardName: record.wardName ?? '',
-      rooms: record.rooms ?? null,
-      maxBeds: record.maxBeds ?? null,
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        hospitalId: record.hospitalId ?? undefined,
+        departmentId: record.departmentId ?? undefined,
+        subDepartmentId: record.subDepartmentId ?? undefined,
+        wardName: record.wardName ?? '',
+        rooms: record.rooms ?? null,
+        maxBeds: record.maxBeds ?? null,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -147,44 +122,34 @@ const filterSubDeptOptions = useMemo(
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.hospitalId) errors.hospitalId = 'Hospital is required.';
-    if (!form.departmentId) errors.departmentId = 'Department is required.';
-    if (!form.subDepartmentId) errors.subDepartmentId = 'Sub Department is required.';
-    if (!form.wardName?.trim()) errors.wardName = 'Ward Name is required.';
-    if (!form.rooms || form.rooms < 1) errors.rooms = 'Rooms is required.';
-    if (!form.maxBeds || form.maxBeds < 1) errors.maxBeds = 'Maximum Beds is required.';
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        hospitalId: values.hospitalId,
+        hospitalName: hospitals.find((h) => h.id === values.hospitalId)?.name ?? '',
+        departmentId: values.departmentId,
+        departmentName:
+          allDepartments.find((d) => d.id === values.departmentId)?.departmentName ?? '',
+        subDepartmentId: values.subDepartmentId,
+        subDepartmentName:
+          allSubDepartments.find((s) => s.id === values.subDepartmentId)?.subDepartmentName ?? '',
+        wardName: values.wardName.trim(),
+        rooms: values.rooms,
+        maxBeds: values.maxBeds,
+      };
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      if (editingRowId) {
+        await updateWardBed({ id: editingRowId, ...payload }).unwrap();
+        message.success('Ward bed updated.');
+      } else {
+        await createWardBed(payload).unwrap();
+        message.success('Ward bed added.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const payload = {
-      hospitalId: form.hospitalId,
-hospitalName: hospitals.find((h) => h.id === form.hospitalId)?.name ?? '',
-departmentId: form.departmentId,
-departmentName: allDepartments.find((d) => d.id === form.departmentId)?.departmentName ?? '',
-
-subDepartmentId: form.subDepartmentId,
-subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?.subDepartmentName ?? '',
-
-      wardName: form.wardName.trim(),
-      rooms: form.rooms,
-      maxBeds: form.maxBeds,
-    };
-
-    if (editingRowId) {
-      await updateWardBed({ id: editingRowId, ...payload }).unwrap();
-      message.success('Ward bed updated.');
-    } else {
-      await createWardBed(payload).unwrap();
-      message.success('Ward bed added.');
-    }
-
-    closeModal();
   }, [
     form,
     editingRowId,
@@ -196,7 +161,6 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
     message,
     closeModal,
   ]);
-
 
   const filteredRows = useMemo(() => {
     const term = fWardName.trim().toLowerCase();
@@ -213,7 +177,12 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
     () => [
       { title: 'Hospital', dataIndex: 'hospitalName', key: 'hospitalName', width: 180 },
       { title: 'Department', dataIndex: 'departmentName', key: 'departmentName', width: 150 },
-      { title: 'Sub Department', dataIndex: 'subDepartmentName', key: 'subDepartmentName', width: 160 },
+      {
+        title: 'Sub Department',
+        dataIndex: 'subDepartmentName',
+        key: 'subDepartmentName',
+        width: 160,
+      },
       { title: 'Ward Name', dataIndex: 'wardName', key: 'wardName', width: 150 },
       { title: 'Rooms', dataIndex: 'rooms', key: 'rooms', width: 90, align: 'center' },
       { title: 'Maximum Beds', dataIndex: 'maxBeds', key: 'maxBeds', width: 130, align: 'center' },
@@ -331,9 +300,6 @@ subDepartmentName: allSubDepartments.find((s) => s.id === form.subDepartmentId)?
         onClose={closeModal}
         title={editingRowId ? 'Edit Ward Beds' : 'Add Ward Beds'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         hospitalOptions={hospitalOptions}
         departmentOptions={modalDeptOptions}

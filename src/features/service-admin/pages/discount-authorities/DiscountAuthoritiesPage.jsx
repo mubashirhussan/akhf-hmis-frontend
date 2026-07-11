@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Tooltip } from 'antd';
+import { App, Button, Form, Input, Tooltip } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import DiscountAuthorityModal from '@/features/service-admin/pages/discount-authorities/DiscountAuthorityModal';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -18,11 +18,10 @@ const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 export default function DiscountAuthoritiesPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState({ employeeId: '' });
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const { data: activeEmployees = [] } = useGetActiveEmployeesQuery();
   const { data: rows = [], isLoading } = useGetDiscountAuthoritiesQuery();
@@ -49,49 +48,32 @@ export default function DiscountAuthoritiesPage() {
   }, [rows, searchTerm]);
 
   const openModal = useCallback(() => {
-    setForm({ employeeId: '' });
-    setFieldErrors({});
+    form.resetFields();
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setFieldErrors({});
-  }, []);
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleSave = useCallback(async () => {
-    const employeeId = form.employeeId;
-    const errors = {};
-    if (!employeeId) {
-      errors.employeeId = 'Employee is required.';
+    try {
+      const values = await form.validateFields();
+      const employeeId = values.employeeId;
+      const employee = activeEmployees.find((emp) => emp.id === employeeId);
+      await createDiscountAuthority({
+        employeeId,
+        employeeName: employee
+          ? [employee.firstName, employee.middleName, employee.lastName].filter(Boolean).join(' ')
+          : '',
+      }).unwrap();
+      message.success('Discount authority added.');
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    const employee = activeEmployees.find((emp) => emp.id === employeeId);
-    await createDiscountAuthority({
-      employeeId,
-      employeeName: employee ? [employee.firstName, employee.middleName, employee.lastName].filter(Boolean).join(' ') : '',
-    }).unwrap();
-    message.success('Discount authority added.');
-    closeModal();
-  }, [form.employeeId, activeEmployees, createDiscountAuthority, closeModal, message]);
+  }, [form, activeEmployees, createDiscountAuthority, closeModal, message]);
 
   const handleDeleteRow = useCallback(
     async (row) => {
@@ -123,21 +105,21 @@ export default function DiscountAuthoritiesPage() {
         width: 100,
         align: 'center',
         render: (_, record) => (
-                              <Tooltip title="Delete">
-                        <Button
-                          type="link"
-                          danger
-                          size="small"
-                          aria-label="Delete service"
-                          icon={
-                            <AppIcon
-                              icon="mdi:delete-outline"
-                              className={ACTION_ICON_CLASS}
-                            />
-                          }
-                          onClick={() => handleDeleteRow(record)}
-                        />
-                      </Tooltip>
+          <Tooltip title="Delete">
+            <Button
+              type="link"
+              danger
+              size="small"
+              aria-label="Delete service"
+              icon={
+                <AppIcon
+                  icon="mdi:delete-outline"
+                  className={ACTION_ICON_CLASS}
+                />
+              }
+              onClick={() => handleDeleteRow(record)}
+            />
+          </Tooltip>
         ),
       },
     ],
@@ -183,9 +165,6 @@ export default function DiscountAuthoritiesPage() {
         onClose={closeModal}
         title="Add Discount Authority"
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         employeeOptions={employeeOptions}
       />

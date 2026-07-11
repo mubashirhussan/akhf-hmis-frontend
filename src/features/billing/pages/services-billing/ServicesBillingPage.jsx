@@ -2,11 +2,10 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button, DatePicker, Input, Space, Tag, Tooltip } from 'antd';
+import { Button, Form, Space, Tag, Tooltip } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
-import AgeUnitField from '@/components/ui/AgeUnitField';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import BillingVisitServicesView from '@/features/billing/pages/services-billing/BillingVisitServicesView';
 import DataTable from '@/components/ui/DataTable';
 import {
@@ -19,28 +18,13 @@ import {
   useLazySearchBillingVisitsQuery,
   useUpdateBillingVisitServicesMutation,
 } from '@/features/billing/api/billingEndpoints';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
-import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
-
-const controlClass = FIELD_CONTROL_CLASS;
+import {
+  BILLING_VISIT_FILTER_FIELDS,
+  BILLING_VISIT_FILTER_INITIAL_VALUES,
+  normalizeBillingVisitFilters,
+} from '@/features/billing/pages/services-billing/billing-visit-filter-fields';
 
 const BILLING_ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-
-const emptyFilters = {
-  visitNo: '',
-  mrNo: '',
-  patientAge: '',
-  ageUnit: DOB_AGE_UNITS.years,
-  registrationDate: null,
-  cnic: '',
-  mobile: '',
-  firstName: '',
-  middleName: '',
-  lastName: '',
-  relationFirstName: '',
-  relationMiddleName: '',
-  relationLastName: '',
-};
 
 function BillingTag({ value }) {
   const palette =
@@ -70,8 +54,8 @@ export default function ServicesBillingTab() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [filterForm] = Form.useForm();
 
-  const [filters, setFilters] = useState(emptyFilters);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchVisits, { isLoading }] = useLazySearchBillingVisitsQuery();
@@ -104,11 +88,8 @@ export default function ServicesBillingTab() {
     [pathname, router, searchParams],
   );
 
-  const patchFilter = (patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  };
-
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
+    const filters = normalizeBillingVisitFilters(values);
     const { data: matched = [] } = await searchVisits(filters);
     setResults(matched);
     setHasSearched(true);
@@ -219,152 +200,26 @@ export default function ServicesBillingTab() {
   return (
     <div className="services-billing-page">
       <div className="walk-in-add-record-layout services-billing-search-layout">
-        <FormGrid
-          as="form"
-          columns={4}
+        <Form
+          form={filterForm}
+          layout="vertical"
+          initialValues={BILLING_VISIT_FILTER_INITIAL_VALUES}
           className="walk-in-add-record-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearch();
-          }}
+          onFinish={handleSearch}
         >
-          <FloatingField label="Visit #" htmlFor="billing-visit-no">
-            <Input
-              id="billing-visit-no"
-              className={controlClass}
-              value={filters.visitNo}
-              inputMode="numeric"
-              maxLength={12}
-              placeholder="e.g. 2026"
-              onChange={(e) => {
-                const visitNo = e.target.value.replace(/\D/g, '');
-                patchFilter({ visitNo });
-              }}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="MR #" htmlFor="billing-mr-no">
-            <Input
-              id="billing-mr-no"
-              className={controlClass}
-              value={filters.mrNo}
-              onChange={(e) => patchFilter({ mrNo: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Patient Age" htmlFor="billing-patient-age">
-            <AgeUnitField
-              embedded
-              className="patient-reg-dob-age age-unit-field--no-dob"
-              ageInputId="billing-patient-age"
-              age={filters.patientAge}
-              unit={filters.ageUnit}
-              onChange={({ age, unit }) => patchFilter({ patientAge: age, ageUnit: unit })}
-            />
-          </FloatingField>
-
-          <FloatingField label="Registration Date" htmlFor="billing-reg-date">
-            <DatePicker
-              id="billing-reg-date"
-              className={controlClass}
-              value={filters.registrationDate}
-              onChange={(registrationDate) => patchFilter({ registrationDate })}
-              format="DD/MM/YYYY"
-            />
-          </FloatingField>
-
-          <FloatingField label="CNIC #" htmlFor="billing-cnic">
-            <Input
-              id="billing-cnic"
-              className={controlClass}
-              value={filters.cnic}
-              onChange={(e) => patchFilter({ cnic: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Mobile #" htmlFor="billing-mobile">
-            <Input
-              id="billing-mobile"
-              className={controlClass}
-              value={filters.mobile}
-              onChange={(e) => patchFilter({ mobile: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="First Name" htmlFor="billing-first-name">
-            <Input
-              id="billing-first-name"
-              className={controlClass}
-              value={filters.firstName}
-              onChange={(e) => patchFilter({ firstName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Middle Name" htmlFor="billing-middle-name">
-            <Input
-              id="billing-middle-name"
-              className={controlClass}
-              value={filters.middleName}
-              onChange={(e) => patchFilter({ middleName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Last Name" htmlFor="billing-last-name">
-            <Input
-              id="billing-last-name"
-              className={controlClass}
-              value={filters.lastName}
-              onChange={(e) => patchFilter({ lastName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Relation First Name" htmlFor="billing-rel-first">
-            <Input
-              id="billing-rel-first"
-              className={controlClass}
-              value={filters.relationFirstName}
-              onChange={(e) => patchFilter({ relationFirstName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Relation Middle Name" htmlFor="billing-rel-middle">
-            <Input
-              id="billing-rel-middle"
-              className={controlClass}
-              value={filters.relationMiddleName}
-              onChange={(e) => patchFilter({ relationMiddleName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
-          <FloatingField label="Relation Last Name" htmlFor="billing-rel-last">
-            <Input
-              id="billing-rel-last"
-              className={controlClass}
-              value={filters.relationLastName}
-              onChange={(e) => patchFilter({ relationLastName: e.target.value })}
-              autoComplete="off"
-            />
-          </FloatingField>
-
+          <DynamicForm fields={BILLING_VISIT_FILTER_FIELDS} gutter={[16, 12]} />
           <div className="services-billing-search-actions">
             <Button
-              type="primary"
+              type="default"
               htmlType="submit"
+              icon={<SearchOutlined />}
               className="walk-in-search-btn services-billing-search-btn"
+              loading={isLoading}
             >
               Search
             </Button>
           </div>
-        </FormGrid>
+        </Form>
       </div>
 
       <section className="services-billing-results" aria-label="Billing search results">

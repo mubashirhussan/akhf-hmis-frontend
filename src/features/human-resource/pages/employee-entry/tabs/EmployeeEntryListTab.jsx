@@ -2,8 +2,7 @@
 
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form } from 'antd';
-import FormGrid from '@/components/ui/FormGrid';
-import FormFloatingField from '@/components/ui/FormFloatingField';
+import DynamicForm from '@/components/form/DynamicForm';
 
 export default function EmployeeEntryListTab({
   name,
@@ -22,7 +21,9 @@ export default function EmployeeEntryListTab({
             listFields.map((field, index) => (
               <div key={field.key} className="employee-entry-list-row">
                 <div className="employee-entry-list-row-header">
-                  <span className="employee-entry-list-row-title">{maxRows === 1 ? 'Record' : `Record ${index + 1}`}</span>
+                  <span className="employee-entry-list-row-title">
+                    {maxRows === 1 ? 'Record' : `Record ${index + 1}`}
+                  </span>
                   {!maxRows && (
                     <button
                       type="button"
@@ -34,22 +35,16 @@ export default function EmployeeEntryListTab({
                     </button>
                   )}
                 </div>
-                <FormGrid columns={4} className="patient-reg-section-grid employee-entry-section-grid">
-{fields.map((item) => (
-                    <FormFloatingField
-                      key={item.name}
-                      name={[field.name, item.name]}
-                      label={item.label}
-                      required={item.required}
-                      rules={item.rules}
-                      col={item.col}
-                      valuePropName={item.valuePropName}
-                      getValueFromEvent={item.getValueFromEvent}
-                    >
-                      {item.render()}
-                    </FormFloatingField>
-                  ))}
-                </FormGrid>
+                <DynamicForm
+                  gutter={[14, 12]}
+                  className="patient-reg-section-grid employee-entry-section-grid"
+                  fields={fields.map((item) => ({
+                    ...item,
+                    floating: item.floating ?? true,
+                    span: item.span ?? (item.col === 'full' ? 24 : 6),
+                    name: [field.name, item.name],
+                  }))}
+                />
               </div>
             ))
           )}

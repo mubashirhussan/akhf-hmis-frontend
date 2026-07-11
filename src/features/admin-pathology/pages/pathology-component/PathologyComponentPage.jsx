@@ -1,16 +1,18 @@
 'use client';
 import { useCallback, useMemo, useState } from 'react';
 import { useConfirm } from '@/hooks/useConfirm';
-import { App, Button, Form, Space, Tooltip, Select, Input } from 'antd';
+import { App, Button, Form, Space, Tooltip } from 'antd';
 
 import { SearchOutlined } from '@ant-design/icons';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
+import DynamicForm from '@/components/form/DynamicForm';
 import PathologyComponentAddModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentAddModal';
 import PathologyComponentEditModal from '@/features/admin-pathology/pages/pathology-component/PathologyComponentEditModal';
+import {
+  getPathologyComponentFilterFields,
+  PATHOLOGY_COMPONENT_FILTER_INITIAL_VALUES,
+} from '@/features/admin-pathology/pages/pathology-component/pathology-component-fields';
 import {
   useAddPathologyUnitMutation,
   useCreatePathologyComponentMutation,
@@ -25,13 +27,13 @@ import {
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 const DELETE_ICON_CLASS = 'h-[16px] w-[16px] text-[#ff4d4f]';
-const controlClass = FIELD_CONTROL_CLASS;
 
 export default function PathologyComponentPage() {
-const { message } = App.useApp();
-const { confirmDelete } = useConfirm();
+  const { message } = App.useApp();
+  const { confirmDelete } = useConfirm();
   const [addForm] = Form.useForm();
   const [editForm] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
   const { data: rows = [], isLoading } = useGetPathologyComponentsQuery();
   const { data: lookups } = useGetPathologyLookupsQuery();
@@ -45,31 +47,18 @@ const { confirmDelete } = useConfirm();
   const [updateComponent] = useUpdatePathologyComponentMutation();
   const [deleteComponent] = useDeletePathologyComponentMutation();
   const [addUnit] = useAddPathologyUnitMutation();
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
 
-  const [filters, setFilters] = useState({
-    groupName: '',
-    subGroupName: '',
-    testName: '',
-    componentName: '',
-  });
-
-  const patchFilter = useCallback((patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  }, []);
+  const [filters, setFilters] = useState(PATHOLOGY_COMPONENT_FILTER_INITIAL_VALUES);
 
   const handleClear = useCallback(() => {
-    setFilters({
-      groupName: '',
-      subGroupName: '',
-      testName: '',
-      componentName: '',
-    });
-  }, []);
+    filterForm.resetFields();
+    setFilters(PATHOLOGY_COMPONENT_FILTER_INITIAL_VALUES);
+  }, [filterForm]);
 
   const closeAddModal = useCallback(() => {
     setIsAddModalOpen(false);
@@ -164,7 +153,6 @@ const { confirmDelete } = useConfirm();
   }, [message, rows.length]);
 
   const handleAddUnit = useCallback(async () => {
-    const label = (addForm.getFieldValue('newUnit') || editForm.getFieldValue('newUnit') || '').trim();
     const targetForm = isAddModalOpen ? addForm : editForm;
     const rawLabel = (targetForm.getFieldValue('newUnit') || '').trim();
 
@@ -190,15 +178,16 @@ const { confirmDelete } = useConfirm();
   }, [addForm, editForm, isAddModalOpen, addUnit, unitOptions, message]);
 
   const handleDeleteRow = useCallback(
-  async (record) => {
-    const confirmed = await confirmDelete({ itemName: record.componentName });
-    if (confirmed) {
-      await deleteComponent(record.id).unwrap();
-      message.success('Component deleted.');
-    }
-  },
-  [confirmDelete, deleteComponent, message],
-);
+    async (record) => {
+      const confirmed = await confirmDelete({ itemName: record.componentName });
+      if (confirmed) {
+        await deleteComponent(record.id).unwrap();
+        message.success('Component deleted.');
+      }
+    },
+    [confirmDelete, deleteComponent, message],
+  );
+
   const groupOptions = useMemo(
     () => mainGroups.map((g) => ({ label: g.groupName, value: g.groupName })),
     [mainGroups],
@@ -226,6 +215,16 @@ const { confirmDelete } = useConfirm();
     [testNames, filters.groupName, filters.subGroupName],
   );
 
+  const filterFields = useMemo(
+    () =>
+      getPathologyComponentFilterFields({
+        groupOptions,
+        subGroupOptions,
+        testNameOptions,
+      }),
+    [groupOptions, subGroupOptions, testNameOptions],
+  );
+
   const filteredRows = useMemo(
     () =>
       rows.filter((row) => {
@@ -234,8 +233,10 @@ const { confirmDelete } = useConfirm();
           ? row.subGroupName === filters.subGroupName
           : true;
         const matchesTestName = filters.testName ? row.testName === filters.testName : true;
-        const matchesComponentName = filters.componentName.trim()
-          ? row.componentName?.toLowerCase().includes(filters.componentName.trim().toLowerCase())
+        const matchesComponentName = (filters.componentName ?? '').trim()
+          ? row.componentName
+              ?.toLowerCase()
+              .includes((filters.componentName ?? '').trim().toLowerCase())
           : true;
         return matchesGroup && matchesSubGroup && matchesTestName && matchesComponentName;
       }),
@@ -244,7 +245,13 @@ const { confirmDelete } = useConfirm();
 
   const columns = useMemo(
     () => [
-      { title: 'Group Name', dataIndex: 'groupName', key: 'groupName', width: 130, className: 'pathology-component-col-group-name' },
+      {
+        title: 'Group Name',
+        dataIndex: 'groupName',
+        key: 'groupName',
+        width: 130,
+        className: 'pathology-component-col-group-name',
+      },
       { title: 'Sub Group Name', dataIndex: 'subGroupName', key: 'subGroupName', width: 140 },
       { title: 'TID', dataIndex: 'tid', key: 'tid', width: 72 },
       { title: 'Test Name', dataIndex: 'testName', key: 'testName', width: 160 },
@@ -253,116 +260,91 @@ const { confirmDelete } = useConfirm();
       { title: 'Field Type', dataIndex: 'fieldType', key: 'fieldType', width: 100 },
       { title: 'Ref Values Male', dataIndex: 'referenceMale', key: 'referenceMale', width: 180 },
       { title: 'Ref Value Female', dataIndex: 'referenceFemale', key: 'referenceFemale', width: 180 },
-      { title: 'Unit', dataIndex: 'unit', key: 'unit', width: 88, className: 'pathology-component-col-unit' },
+      {
+        title: 'Unit',
+        dataIndex: 'unit',
+        key: 'unit',
+        width: 88,
+        className: 'pathology-component-col-unit',
+      },
       { title: 'Priority', dataIndex: 'priority', key: 'priority', width: 80 },
-     {
-  title: 'Action',
-  key: 'action',
-  width: 96,
-  align: 'center',
-  render: (_, record) => (
-    <Space size={4} className="pathology-component-actions-cell">
-      <Tooltip title="Edit">
-<Button
-  type="link"
-  size="small"
-  className="pathology-component-edit-btn"
-  aria-label="Edit component"
-  icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
-  onClick={() => openEditModal(record)}
-/>
-      </Tooltip>
-      <Tooltip title="Delete">
-<Button
-  type="link"
-  size="small"
-  className="pathology-component-delete-btn"
-  aria-label="Delete component"
-  icon={<AppIcon icon="mdi:delete-outline" className={DELETE_ICON_CLASS} />}
-  onClick={() => handleDeleteRow(record)}
-/>
-      </Tooltip>
-    </Space>
-  ),
-},
+      {
+        title: 'Action',
+        key: 'action',
+        width: 96,
+        align: 'center',
+        render: (_, record) => (
+          <Space size={4} className="pathology-component-actions-cell">
+            <Tooltip title="Edit">
+              <Button
+                type="link"
+                size="small"
+                className="pathology-component-edit-btn"
+                aria-label="Edit component"
+                icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
+                onClick={() => openEditModal(record)}
+              />
+            </Tooltip>
+            <Tooltip title="Delete">
+              <Button
+                type="link"
+                size="small"
+                className="pathology-component-delete-btn"
+                aria-label="Delete component"
+                icon={<AppIcon icon="mdi:delete-outline" className={DELETE_ICON_CLASS} />}
+                onClick={() => handleDeleteRow(record)}
+              />
+            </Tooltip>
+          </Space>
+        ),
+      },
     ],
     [openEditModal, handleDeleteRow],
   );
 
   return (
     <div className="services-billing-page pathology-component-page">
-      <section className="pathology-component-filter-panel" aria-label="Pathology component search filters">
+      <section
+        className="pathology-component-filter-panel"
+        aria-label="Pathology component search filters"
+      >
         <div className="walk-in-add-record-layout pathology-component-search-layout">
-          <FormGrid
-            as="form"
-            columns={4}
+          <Form
+            form={filterForm}
+            layout="vertical"
+            initialValues={PATHOLOGY_COMPONENT_FILTER_INITIAL_VALUES}
             className="walk-in-add-record-form pathology-component-search-form"
-            onSubmit={(event) => {
-              event.preventDefault();
+            onValuesChange={(changed, allValues) => {
+              if ('groupName' in changed) {
+                filterForm.setFieldsValue({ subGroupName: '', testName: '' });
+                setFilters({ ...allValues, subGroupName: '', testName: '' });
+                return;
+              }
+              if ('subGroupName' in changed) {
+                filterForm.setFieldsValue({ testName: '' });
+                setFilters({ ...allValues, testName: '' });
+                return;
+              }
+              setFilters(allValues);
             }}
+            onFinish={() => setFilters(filterForm.getFieldsValue())}
           >
-            <FloatingField label="Main Group" htmlFor="pathology-filter-group">
-              <Select
-                id="pathology-filter-group"
-                className={controlClass}
-                placeholder="Select group"
-                value={filters.groupName || undefined}
-                options={groupOptions}
-                onChange={(value) =>
-                  patchFilter({ groupName: value || '', subGroupName: '', testName: '' })
-                }
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Sub Group" htmlFor="pathology-filter-subgroup">
-              <Select
-                id="pathology-filter-subgroup"
-                className={controlClass}
-                placeholder="Select sub group"
-                value={filters.subGroupName || undefined}
-                options={subGroupOptions}
-                onChange={(value) => patchFilter({ subGroupName: value || '', testName: '' })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Test Name" htmlFor="pathology-filter-testname">
-              <Select
-                id="pathology-filter-testname"
-                className={controlClass}
-                placeholder="Select test name"
-                value={filters.testName || undefined}
-                options={testNameOptions}
-                onChange={(value) => patchFilter({ testName: value || '' })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Component Name" htmlFor="pathology-filter-component">
-              <Input
-                id="pathology-filter-component"
-                className={controlClass}
-                placeholder="Enter component name"
-                value={filters.componentName}
-                onChange={(e) => patchFilter({ componentName: e.target.value })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
+            <DynamicForm fields={filterFields} gutter={[16, 12]} />
             <div className="pathology-component-search-actions">
               <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
                 Clear
               </Button>
-              <Button type="default" className="hr-search-btn" icon={<SearchOutlined />} htmlType="submit" loading={isLoading}>
+              <Button
+                type="default"
+                className="hr-search-btn"
+                icon={<SearchOutlined />}
+                htmlType="submit"
+                loading={isLoading}
+              >
                 Search
               </Button>
             </div>
-          </FormGrid>
+          </Form>
         </div>
       </section>
 
@@ -385,14 +367,13 @@ const { confirmDelete } = useConfirm();
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-           pagination={{
+          pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
+            pageSizeOptions: ['10', '20', '50', '100'],
             showTotal: (total) => `Total ${total} items`,
-            onChange: (current, pageSize) =>
-              setPagination({ current, pageSize }),
+            onChange: (current, pageSize) => setPagination({ current, pageSize }),
           }}
         />
       </section>

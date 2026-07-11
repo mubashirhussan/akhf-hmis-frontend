@@ -1,17 +1,18 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import MachineIntegrationCompwiseForm from '@/features/admin-pathology/pages/machine-integration-compwise/MachineIntegrationCompwiseForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  MACHINE_INTEGRATION_COMPWISE_FIELDS,
+  MACHINE_INTEGRATION_COMPWISE_INITIAL_VALUES,
+} from '@/features/admin-pathology/pages/machine-integration-compwise/machine-integration-compwise-fields';
 
 export default function MachineIntegrationCompwiseModal({
   open,
   onClose,
   title = 'Add Machine Integration',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
   return (
@@ -38,12 +39,18 @@ export default function MachineIntegrationCompwiseModal({
         </>
       }
     >
-      <MachineIntegrationCompwiseForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={MACHINE_INTEGRATION_COMPWISE_INITIAL_VALUES}
+      >
+        <DynamicForm
+          fields={MACHINE_INTEGRATION_COMPWISE_FIELDS}
+          className="machine-integration-compwise-form-grid"
+        />
+      </Form>
     </AppModal>
   );
 }

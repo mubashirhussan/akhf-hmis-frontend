@@ -63,7 +63,17 @@ import EmployeeFileLabelTab from './tabs/EmployeeFileLabelTab';
 import EmployeeEmpSummaryTab from './tabs/EmployeeEmpSummaryTab';
 import EmployeePromotionTab from './tabs/EmployeePromotionTab';
 
-function calculateAge(day, month, year) {
+function calculateAgeFromDob(dob) {
+  if (!dob || typeof dob !== "string") {
+    return "0 Years";
+  }
+
+  const parts = dob.trim().split(/[/-]/);
+  if (parts.length !== 3) {
+    return "0 Years";
+  }
+
+  const [day, month, year] = parts;
   if (!day || !month || !year) {
     return "0 Years";
   }
@@ -178,16 +188,11 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
     [editingEmployee],
   );
 
-  const birthDay = Form.useWatch("birthDay", form);
-  const birthMonth = Form.useWatch("birthMonth", form);
-  const birthYear = Form.useWatch("birthYear", form);
+  const dob = Form.useWatch("dob", form);
 
   const isEmployeeSaved = Boolean(employeeId);
 
-  const ageLabel = useMemo(
-    () => calculateAge(birthDay, birthMonth, birthYear),
-    [birthDay, birthMonth, birthYear],
-  );
+  const ageLabel = useMemo(() => calculateAgeFromDob(dob), [dob]);
 
  const savingTab = useMemo(() => {
     if (isCreating || isUpdatingInfo) return EMPLOYEE_ENTRY_TABS.INFO;

@@ -1,15 +1,17 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import DynamicForm from '@/components/form/DynamicForm';
 import CompanyModal from '@/features/service-admin/pages/companies/CompanyModal';
 import CompanyDetailsModal from '@/features/service-admin/pages/companies/CompanyDetailsModal';
+import {
+  COMPANY_FILTER_FIELDS,
+  COMPANY_FILTER_INITIAL_VALUES,
+} from '@/features/service-admin/pages/companies/company-fields';
 import { useConfirm } from '@/hooks/useConfirm';
 import {
   useCreateCompanyMutation,
@@ -18,126 +20,64 @@ import {
   useUpdateCompanyMutation,
 } from '@/features/service-admin/api/serviceAdminApi';
 
-const COMPANY_TYPE_OPTIONS = [
-  { label: 'Gov', value: 'gov' },
-  { label: 'Semi Gov', value: 'semi-gov' },
-  { label: 'Priv', value: 'priv' },
-];
-
-const STATUS_OPTIONS = [
-  { label: 'Individuals', value: 'individuals' },
-  { label: 'NGO', value: 'ngo' },
-  { label: 'Business', value: 'business' },
-  { label: 'Trust', value: 'trust' },
-];
-
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-const controlClass = FIELD_CONTROL_CLASS;
-
-function createEmptyForm() {
-  return {
-    companyType: '',
-    companyName: '',
-    ntn: '',
-    city: '',
-    address: '',
-    contactPersonName: '',
-    cnic: '',
-    phone: '',
-    fax: '',
-    email: '',
-    website: '',
-    str: '',
-    bankAccount: '',
-    status: '',
-  };
-}
 
 export default function CompaniesPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [viewingRow, setViewingRow] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [filters, setFilters] = useState({
-    companyType: '',
-    title: '',
-    city: '',
-    email: '',
-    website: '',
-    status: '',
-  });
+  const [filters, setFilters] = useState(COMPANY_FILTER_INITIAL_VALUES);
 
   const { data: rows = [], isLoading } = useGetCompaniesQuery();
   const [createCompany] = useCreateCompanyMutation();
   const [updateCompany] = useUpdateCompanyMutation();
   const [deleteCompany] = useDeleteCompanyMutation();
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
-  const patchFilters = useCallback((patch) => {
-    setFilters((current) => ({ ...current, ...patch }));
-  }, []);
-
   const handleClear = useCallback(() => {
-    setFilters({
-      companyType: '',
-      title: '',
-      city: '',
-      email: '',
-      website: '',
-      status: '',
-    });
-  }, []);
+    filterForm.resetFields();
+    setFilters(COMPANY_FILTER_INITIAL_VALUES);
+  }, [filterForm]);
 
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      companyType: record.companyType ?? '',
-      companyName: record.companyName ?? '',
-      ntn: record.ntn ?? '',
-      city: record.city ?? '',
-      address: record.address ?? '',
-      contactPersonName: record.contactPersonName ?? '',
-      cnic: record.cnic ?? '',
-      phone: record.phone ?? '',
-      fax: record.fax ?? '',
-      email: record.email ?? '',
-      website: record.website ?? '',
-      str: record.str ?? '',
-      bankAccount: record.bankAccount ?? '',
-      status: record.status ?? '',
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        companyType: record.companyType || undefined,
+        companyName: record.companyName ?? '',
+        ntn: record.ntn ?? null,
+        city: record.city ?? '',
+        address: record.address ?? '',
+        contactPersonName: record.contactPersonName ?? '',
+        cnic: record.cnic ?? '',
+        phone: record.phone ?? '',
+        fax: record.fax ?? null,
+        email: record.email ?? '',
+        website: record.website ?? '',
+        str: record.str ?? null,
+        bankAccount: record.bankAccount ?? '',
+        status: record.status || undefined,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleViewRow = useCallback((record) => {
     setViewingRow(record);
@@ -154,52 +94,44 @@ export default function CompaniesPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.companyType) errors.companyType = 'Company Type is required.';
-    if (!form.companyName?.trim()) errors.companyName = 'Company Name is required.';
-    if (!form.city?.trim()) errors.city = 'City is required.';
-    if (!form.email?.trim()) errors.email = 'Email is required.';
-    if (!form.website?.trim()) errors.website = 'Website is required.';
-    if (!form.status) errors.status = 'Status is required.';
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        companyType: values.companyType,
+        companyName: values.companyName.trim(),
+        ntn: values.ntn,
+        city: values.city.trim(),
+        address: (values.address ?? '').trim(),
+        contactPersonName: (values.contactPersonName ?? '').trim(),
+        cnic: values.cnic,
+        phone: values.phone,
+        fax: values.fax,
+        email: values.email.trim(),
+        website: values.website.trim(),
+        str: values.str,
+        bankAccount: values.bankAccount,
+        status: values.status,
+      };
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      if (editingRowId) {
+        await updateCompany({ id: editingRowId, ...payload }).unwrap();
+        message.success('Company updated.');
+      } else {
+        await createCompany(payload).unwrap();
+        message.success('Company created.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    const payload = {
-      companyType: form.companyType,
-      companyName: form.companyName.trim(),
-      ntn: form.ntn,
-      city: form.city.trim(),
-      address: form.address.trim(),
-      contactPersonName: form.contactPersonName.trim(),
-      cnic: form.cnic,
-      phone: form.phone,
-      fax: form.fax,
-      email: form.email.trim(),
-      website: form.website.trim(),
-      str: form.str,
-      bankAccount: form.bankAccount,
-      status: form.status,
-    };
-
-    if (editingRowId) {
-      await updateCompany({ id: editingRowId, ...payload }).unwrap();
-      message.success('Company updated.');
-    } else {
-      await createCompany(payload).unwrap();
-      message.success('Company created.');
-    }
-
-    closeModal();
   }, [closeModal, createCompany, editingRowId, form, message, updateCompany]);
 
   const filteredRows = useMemo(() => {
-    const termTitle = filters.title.trim().toLowerCase();
-    const termCity = filters.city.trim().toLowerCase();
-    const termEmail = filters.email.trim().toLowerCase();
-    const termWebsite = filters.website.trim().toLowerCase();
+    const termTitle = (filters.title ?? '').trim().toLowerCase();
+    const termCity = (filters.city ?? '').trim().toLowerCase();
+    const termEmail = (filters.email ?? '').trim().toLowerCase();
+    const termWebsite = (filters.website ?? '').trim().toLowerCase();
     return rows.filter((row) => {
       const matchesType = !filters.companyType || row.companyType === filters.companyType;
       const matchesTitle = !termTitle || row.companyName?.toLowerCase().includes(termTitle);
@@ -207,18 +139,20 @@ export default function CompaniesPage() {
       const matchesEmail = !termEmail || row.email?.toLowerCase().includes(termEmail);
       const matchesWebsite = !termWebsite || row.website?.toLowerCase().includes(termWebsite);
       const matchesStatus = !filters.status || row.status === filters.status;
-      return matchesType && matchesTitle && matchesCity && matchesEmail && matchesWebsite && matchesStatus;
+      return (
+        matchesType &&
+        matchesTitle &&
+        matchesCity &&
+        matchesEmail &&
+        matchesWebsite &&
+        matchesStatus
+      );
     });
   }, [filters, rows]);
 
   const columns = useMemo(
     () => [
-      {
-        title: 'Company Type',
-        dataIndex: 'companyType',
-        key: 'companyType',
-        width: 140,
-      },
+      { title: 'Company Type', dataIndex: 'companyType', key: 'companyType', width: 140 },
       {
         title: 'Company Name',
         dataIndex: 'companyName',
@@ -234,36 +168,11 @@ export default function CompaniesPage() {
           </button>
         ),
       },
-      {
-        title: 'City',
-        dataIndex: 'city',
-        key: 'city',
-        width: 140,
-      },
-      {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
-        width: 220,
-      },
-      {
-        title: 'Email',
-        dataIndex: 'email',
-        key: 'email',
-        width: 180,
-      },
-      {
-        title: 'Website',
-        dataIndex: 'website',
-        key: 'website',
-        width: 180,
-      },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        width: 140,
-      },
+      { title: 'City', dataIndex: 'city', key: 'city', width: 140 },
+      { title: 'Address', dataIndex: 'address', key: 'address', width: 220 },
+      { title: 'Email', dataIndex: 'email', key: 'email', width: 180 },
+      { title: 'Website', dataIndex: 'website', key: 'website', width: 180 },
+      { title: 'Status', dataIndex: 'status', key: 'status', width: 140 },
       {
         title: 'Action',
         key: 'action',
@@ -301,97 +210,30 @@ export default function CompaniesPage() {
     <div className="services-billing-page companies-page">
       <section className="company-filter-panel" aria-label="Company search filters">
         <div className="walk-in-add-record-layout company-search-layout">
-          <FormGrid
-            as="form"
-            columns={4}
+          <Form
+            form={filterForm}
+            layout="vertical"
+            initialValues={COMPANY_FILTER_INITIAL_VALUES}
             className="walk-in-add-record-form company-search-form"
-            onSubmit={(event) => {
-              event.preventDefault();
-            }}
+            onValuesChange={(_, allValues) => setFilters(allValues)}
+            onFinish={() => setFilters(filterForm.getFieldsValue())}
           >
-            <FloatingField label="Company Type" htmlFor="company-filter-company-type">
-              <Select
-                id="company-filter-company-type"
-                className={controlClass}
-                placeholder="Select type"
-                value={filters.companyType || undefined}
-                onChange={(companyType) => patchFilters({ companyType })}
-                options={COMPANY_TYPE_OPTIONS}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Company Title" htmlFor="company-filter-title">
-              <Input
-                id="company-filter-title"
-                className={controlClass}
-                placeholder="Enter title"
-                value={filters.title}
-                onChange={(e) => patchFilters({ title: e.target.value })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="City" htmlFor="company-filter-city">
-              <Input
-                id="company-filter-city"
-                className={controlClass}
-                placeholder="Enter city"
-                value={filters.city}
-                onChange={(e) => patchFilters({ city: e.target.value })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Status" htmlFor="company-filter-status">
-              <Select
-                id="company-filter-status"
-                className={controlClass}
-                placeholder="Select status"
-                value={filters.status || undefined}
-                onChange={(status) => patchFilters({ status })}
-                options={STATUS_OPTIONS}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Email" htmlFor="company-filter-email">
-              <Input
-                id="company-filter-email"
-                className={controlClass}
-                placeholder="Enter email"
-                value={filters.email}
-                onChange={(e) => patchFilters({ email: e.target.value })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Website" htmlFor="company-filter-website">
-              <Input
-                id="company-filter-website"
-                className={controlClass}
-                placeholder="Enter website"
-                value={filters.website}
-                onChange={(e) => patchFilters({ website: e.target.value })}
-                allowClear
-                autoComplete="off"
-              />
-            </FloatingField>
-
+            <DynamicForm fields={COMPANY_FILTER_FIELDS} gutter={[16, 12]} />
             <div className="company-search-actions">
               <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
                 Clear
               </Button>
-              <Button type="default" className="hr-search-btn" icon={<SearchOutlined />} htmlType="submit" loading={isLoading}>
+              <Button
+                type="default"
+                className="hr-search-btn"
+                icon={<SearchOutlined />}
+                htmlType="submit"
+                loading={isLoading}
+              >
                 Search
               </Button>
             </div>
-          </FormGrid>
+          </Form>
         </div>
       </section>
 
@@ -421,12 +263,7 @@ export default function CompaniesPage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Company' : 'Add New Company'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
-        companyTypeOptions={COMPANY_TYPE_OPTIONS}
-        statusOptions={STATUS_OPTIONS}
       />
 
       <CompanyDetailsModal

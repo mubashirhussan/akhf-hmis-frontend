@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tooltip } from 'antd';
+import { App, Button, Form, Input, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import AssignCompanyRatesModal from '@/features/service-admin/pages/assign-company-rates/AssignCompanyRatesModal';
@@ -15,24 +15,15 @@ import {
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyBulkForm() {
-  return { adjustType: '', adjustMode: '', percentage: null, fixedAmount: null };
-}
-
 export default function AssignCompanyRatesPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
   const [companyId, setCompanyId] = useState(undefined);
   const [categoryFilter, setCategoryFilter] = useState(undefined);
   const [nameFilter, setNameFilter] = useState('');
-
   const [selectedIds, setSelectedIds] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bulkForm, setBulkForm] = useState(createEmptyBulkForm);
-  const [fieldErrors, setFieldErrors] = useState({});
-
-
 
   const { data: companies = [] } = useGetCompaniesQuery();
   const companyOptions = useMemo(
@@ -65,19 +56,6 @@ export default function AssignCompanyRatesPage() {
 
   const [bulkUpdatePrices] = useBulkUpdateCompanyServicePricesMutation();
 
-  const patchBulkForm = useCallback((patch) => {
-    setBulkForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const allIds = useMemo(() => rows.map((r) => r.id), [rows]);
   const allSelected = allIds.length > 0 && selectedIds.length === allIds.length;
   const someSelected = selectedIds.length > 0 && !allSelected;
@@ -92,45 +70,37 @@ export default function AssignCompanyRatesPage() {
     );
   }, []);
 
-  const openModal = useCallback((record) => {
-    setBulkForm({ ...createEmptyBulkForm(), currentAmount: record?.price ?? null });
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (record) => {
+      form.resetFields();
+      form.setFieldsValue({ currentAmount: record?.price ?? null });
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleBulkSave = useCallback(async () => {
-    const errors = {};
-    if (!bulkForm.adjustType) errors.adjustType = 'Adjustment Type is required.';
-    if (!bulkForm.adjustMode) errors.adjustMode = 'Adjustment Mode is required.';
-    if (bulkForm.adjustMode === 'percentage' && (!bulkForm.percentage || bulkForm.percentage <= 0)) {
-      errors.percentage = 'Percentage is required.';
+    try {
+      const values = await form.validateFields();
+      await bulkUpdatePrices({
+        companyId,
+        serviceIds: selectedIds,
+        type: values.adjustType,
+        percentage: values.adjustMode === 'percentage' ? values.percentage : null,
+        fixedAmount: values.adjustMode === 'fixed' ? values.fixedAmount : null,
+      }).unwrap();
+      message.success('Prices updated successfully.');
+      setSelectedIds([]);
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-    if (bulkForm.adjustMode === 'fixed' && (!bulkForm.fixedAmount || bulkForm.fixedAmount <= 0)) {
-      errors.fixedAmount = 'Fixed Amount is required.';
-    }
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
-    }
-    setFieldErrors({});
-    await bulkUpdatePrices({
-      companyId,
-      serviceIds: selectedIds,
-      type: bulkForm.adjustType,
-      percentage: bulkForm.adjustMode === 'percentage' ? bulkForm.percentage : null,
-      fixedAmount: bulkForm.adjustMode === 'fixed' ? bulkForm.fixedAmount : null,
-    }).unwrap();
-    message.success('Prices updated successfully.');
-    setSelectedIds([]);
-    setIsModalOpen(false);
-  }, [bulkForm, companyId, selectedIds, bulkUpdatePrices, message]);
-
-  
+  }, [form, companyId, selectedIds, bulkUpdatePrices, message, closeModal]);
 
   const updatePricesEnabled = selectedIds.length >= 2;
   const singleSelected = selectedIds.length === 1;
@@ -142,7 +112,9 @@ export default function AssignCompanyRatesPage() {
           <input
             type="checkbox"
             checked={allSelected}
-            ref={(el) => { if (el) el.indeterminate = someSelected; }}
+            ref={(el) => {
+              if (el) el.indeterminate = someSelected;
+            }}
             onChange={toggleSelectAll}
             style={{ cursor: 'pointer' }}
           />
@@ -195,12 +167,7 @@ export default function AssignCompanyRatesPage() {
                   disabled={!isThisRowSelected}
                   className="assign-company-rates-actions-cell"
                   aria-label="Edit price"
-                  icon={
-                    <AppIcon
-                      icon="mdi:pencil-outline"
-                      className={ACTION_ICON_CLASS}
-                    />
-                  }
+                  icon={<AppIcon icon="mdi:pencil-outline" className={ACTION_ICON_CLASS} />}
                   onClick={() => openModal(record)}
                 />
               </Tooltip>
@@ -209,15 +176,7 @@ export default function AssignCompanyRatesPage() {
         },
       },
     ],
-    [
-      allSelected,
-      someSelected,
-      toggleSelectAll,
-      selectedIds,
-      toggleRow,
-      singleSelected,
-      openModal,
-    ],
+    [allSelected, someSelected, toggleSelectAll, selectedIds, toggleRow, singleSelected, openModal],
   );
 
   return (
@@ -267,11 +226,7 @@ export default function AssignCompanyRatesPage() {
         </div>
 
         <Tooltip title={!updatePricesEnabled ? 'Select 2 or more services to adjust prices' : ''}>
-          <Button
-            type="primary"
-            disabled={!updatePricesEnabled}
-            onClick={() => openModal()}
-          >
+          <Button type="primary" disabled={!updatePricesEnabled} onClick={() => openModal()}>
             Adjust Prices
           </Button>
         </Tooltip>
@@ -279,7 +234,13 @@ export default function AssignCompanyRatesPage() {
 
       <section className="services-billing-results" aria-label="company services">
         {!companyId ? (
-          <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--app-text-secondary, #999)' }}>
+          <div
+            style={{
+              padding: '40px 0',
+              textAlign: 'center',
+              color: 'var(--app-text-secondary, #999)',
+            }}
+          >
             Please select a company to view services.
           </div>
         ) : (
@@ -302,10 +263,7 @@ export default function AssignCompanyRatesPage() {
       <AssignCompanyRatesModal
         open={isModalOpen}
         onClose={closeModal}
-        form={bulkForm}
-        errors={fieldErrors}
-        onPatchForm={patchBulkForm}
-        onClearError={clearFieldError}
+        form={form}
         onSave={handleBulkSave}
       />
     </div>

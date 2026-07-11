@@ -1,24 +1,49 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import AssignOpdServicesForm from '@/features/service-admin/pages/assign-opd-services/AssignOpdServicesForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  ASSIGN_OPD_SERVICES_INITIAL_VALUES,
+  getAssignOpdServicesFields,
+} from '@/features/service-admin/pages/assign-opd-services/assign-opd-services-fields';
 
 export default function AssignOpdServicesModal({
   open,
   onClose,
   title = 'Assign OPD Service',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   hospitalOptions = [],
   patientTypeOptions = [],
   serviceCategoryOptions = [],
   serviceOptions = [],
   subDepartmentOptions = [],
+  serviceAdminRows = [],
 }) {
+  const serviceCategory = Form.useWatch('serviceCategory', form);
+
+  const fields = useMemo(
+    () =>
+      getAssignOpdServicesFields({
+        hospitalOptions,
+        patientTypeOptions,
+        serviceCategoryOptions,
+        serviceOptions,
+        subDepartmentOptions,
+        hasServiceCategory: Boolean(serviceCategory),
+      }),
+    [
+      hospitalOptions,
+      patientTypeOptions,
+      serviceCategoryOptions,
+      serviceOptions,
+      subDepartmentOptions,
+      serviceCategory,
+    ],
+  );
+
   return (
     <AppModal
       open={open}
@@ -39,17 +64,26 @@ export default function AssignOpdServicesModal({
         </>
       }
     >
-      <AssignOpdServicesForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        hospitalOptions={hospitalOptions}
-        patientTypeOptions={patientTypeOptions}
-        serviceCategoryOptions={serviceCategoryOptions}
-        serviceOptions={serviceOptions}
-        subDepartmentOptions={subDepartmentOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={ASSIGN_OPD_SERVICES_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('serviceCategory' in changed) {
+            form.setFieldsValue({ service: undefined });
+          }
+          if ('service' in changed && changed.service) {
+            const selectedService = serviceAdminRows.find((row) => row.id === changed.service);
+            if (selectedService?.serviceCharges != null) {
+              form.setFieldsValue({ amount: selectedService.serviceCharges });
+            }
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="assign-opd-services-form-grid" />
+      </Form>
     </AppModal>
   );
 }

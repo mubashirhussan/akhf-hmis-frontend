@@ -1,20 +1,27 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import RefundAuthorityForm from '@/features/service-admin/pages/refund-authorities/RefundAuthorityForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  REFUND_AUTHORITY_INITIAL_VALUES,
+  getRefundAuthorityFields,
+} from '@/features/service-admin/pages/refund-authorities/refund-authority-fields';
 
 export default function RefundAuthorityModal({
   open,
   onClose,
   title = 'Add Refund Authority',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   employeeOptions = [],
 }) {
+  const fields = useMemo(
+    () => getRefundAuthorityFields(employeeOptions),
+    [employeeOptions],
+  );
+
   return (
     <AppModal
       open={open}
@@ -35,13 +42,15 @@ export default function RefundAuthorityModal({
         </>
       }
     >
-      <RefundAuthorityForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        employeeOptions={employeeOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={REFUND_AUTHORITY_INITIAL_VALUES}
+      >
+        <DynamicForm fields={fields} className="refund-authority-form-grid" />
+      </Form>
     </AppModal>
   );
 }

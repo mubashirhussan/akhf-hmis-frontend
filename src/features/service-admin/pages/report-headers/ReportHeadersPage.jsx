@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Tooltip } from 'antd';
+import { App, Button, Form, Input, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import ReportHeaderModal from '@/features/service-admin/pages/report-headers/ReportHeaderModal';
@@ -16,27 +16,14 @@ import { useGetHospitalsQuery } from '@/features/human-resource/api/employeeApi'
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyForm() {
-  return {
-    hospitalId: '',
-    heading1: '',
-    heading2: '',
-    heading3: '',
-    footerHeading: '',
-    imageLeft: null,
-    imageRight: null,
-  };
-}
-
 export default function ReportHeadersPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [form, setForm] = useState(createEmptyForm);
 
   const { data: hospitals = [] } = useGetHospitalsQuery();
   const { data: rows = [], isLoading } = useGetReportHeadersQuery();
@@ -49,46 +36,38 @@ export default function ReportHeadersPage() {
     [hospitals],
   );
 
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      hospitalId: record.hospitalId ?? '',
-      heading1: record.heading1 ?? '',
-      heading2: record.heading2 ?? '',
-      heading3: record.heading3 ?? '',
-      footerHeading: record.footerHeading ?? '',
-      imageLeft: record.imageLeft ? { url: record.imageLeft, name: record.imageLeftName ?? '' } : null,
-      imageRight: record.imageRight ? { url: record.imageRight, name: record.imageRightName ?? '' } : null,
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        hospitalId: record.hospitalId || undefined,
+        heading1: record.heading1 ?? '',
+        heading2: record.heading2 ?? '',
+        heading3: record.heading3 ?? '',
+        footerHeading: record.footerHeading ?? '',
+        imageLeft: record.imageLeft
+          ? { url: record.imageLeft, name: record.imageLeftName ?? '' }
+          : null,
+        imageRight: record.imageRight
+          ? { url: record.imageRight, name: record.imageRightName ?? '' }
+          : null,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -101,38 +80,43 @@ export default function ReportHeadersPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.hospitalId) errors.hospitalId = 'Hospital is required.';
+    try {
+      const values = await form.validateFields();
+      const hospital = hospitals.find((item) => item.id === values.hospitalId);
+      const payload = {
+        hospitalId: values.hospitalId,
+        hospitalName: hospital?.name ?? '',
+        heading1: values.heading1,
+        heading2: values.heading2,
+        heading3: values.heading3,
+        footerHeading: values.footerHeading,
+        imageLeft: values.imageLeft?.url || '',
+        imageLeftName: values.imageLeft?.name || '',
+        imageRight: values.imageRight?.url || '',
+        imageRightName: values.imageRight?.name || '',
+      };
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      if (editingRowId) {
+        await updateReportHeader({ id: editingRowId, ...payload }).unwrap();
+        message.success('Report header updated.');
+      } else {
+        await createReportHeader(payload).unwrap();
+        message.success('Report header created.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    const hospital = hospitals.find((item) => item.id === form.hospitalId);
-    const payload = {
-      hospitalId: form.hospitalId,
-      hospitalName: hospital?.name ?? '',
-      heading1: form.heading1,
-      heading2: form.heading2,
-      heading3: form.heading3,
-      footerHeading: form.footerHeading,
-      imageLeft: form.imageLeft?.url || '',
-      imageLeftName: form.imageLeft?.name || '',
-      imageRight: form.imageRight?.url || '',
-      imageRightName: form.imageRight?.name || '',
-    };
-
-    if (editingRowId) {
-      await updateReportHeader({ id: editingRowId, ...payload }).unwrap();
-      message.success('Report header updated.');
-    } else {
-      await createReportHeader(payload).unwrap();
-      message.success('Report header created.');
-    }
-
-    closeModal();
-  }, [closeModal, editingRowId, form, hospitals, createReportHeader, updateReportHeader, message]);
+  }, [
+    closeModal,
+    editingRowId,
+    form,
+    hospitals,
+    createReportHeader,
+    updateReportHeader,
+    message,
+  ]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -144,36 +128,11 @@ export default function ReportHeadersPage() {
 
   const columns = useMemo(
     () => [
-      {
-        title: 'Hospital Name',
-        dataIndex: 'hospitalName',
-        key: 'hospitalName',
-        width: 240,
-      },
-      {
-        title: 'Heading One',
-        dataIndex: 'heading1',
-        key: 'heading1',
-        width: 180,
-      },
-      {
-        title: 'Heading Two',
-        dataIndex: 'heading2',
-        key: 'heading2',
-        width: 180,
-      },
-      {
-        title: 'Heading Three',
-        dataIndex: 'heading3',
-        key: 'heading3',
-        width: 180,
-      },
-      {
-        title: 'Footer Heading',
-        dataIndex: 'footerHeading',
-        key: 'footerHeading',
-        width: 200,
-      },
+      { title: 'Hospital Name', dataIndex: 'hospitalName', key: 'hospitalName', width: 240 },
+      { title: 'Heading One', dataIndex: 'heading1', key: 'heading1', width: 180 },
+      { title: 'Heading Two', dataIndex: 'heading2', key: 'heading2', width: 180 },
+      { title: 'Heading Three', dataIndex: 'heading3', key: 'heading3', width: 180 },
+      { title: 'Footer Heading', dataIndex: 'footerHeading', key: 'footerHeading', width: 200 },
       {
         title: 'Image Left',
         dataIndex: 'imageLeft',
@@ -278,9 +237,6 @@ export default function ReportHeadersPage() {
         onClose={closeModal}
         title={editingRowId ? 'Edit Report Header' : 'Add Report Header'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         hospitalOptions={hospitalOptions}
       />

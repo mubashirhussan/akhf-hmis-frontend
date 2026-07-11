@@ -1,19 +1,13 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Input, Select, Tag, Tooltip } from 'antd';
+import { App, Button, Form, Tag, Tooltip } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
+import DynamicForm from '@/components/form/DynamicForm';
 import { useConfirm } from '@/hooks/useConfirm';
-import {
-  createEmptyDeptTypeForm,
-  rowToDeptTypeForm,
-  filterDeptTypeRows,
-} from '@/features/human-resource/api/mock-department-types';
+import { filterDeptTypeRows } from '@/features/human-resource/api/mock-department-types';
 import {
   useGetDeptTypesQuery,
   useAddDeptTypeMutation,
@@ -22,20 +16,22 @@ import {
   useGetHospitalsQuery,
 } from '@/features/human-resource/api/employeeApi';
 import DeptTypeModal from './DeptTypeModal';
+import {
+  DEPT_TYPE_FILTER_INITIAL_VALUES,
+  getDeptTypeFilterFields,
+} from './dept-type-fields';
 import './department-type.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
-const controlClass = FIELD_CONTROL_CLASS;
 
 export default function DepartmentTypePage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyDeptTypeForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [deptTypeFilter, setDeptTypeFilter] = useState({ hospitalId: null, departmentType: '', status: null });
   const [appliedFilter, setAppliedFilter] = useState({});
 
   const { data: rows = [], isLoading } = useGetDeptTypesQuery();
@@ -44,39 +40,40 @@ export default function DepartmentTypePage() {
   const [updateDeptType] = useUpdateDeptTypeMutation();
   const [deleteDeptType] = useDeleteDeptTypeMutation();
 
-  const patchForm = useCallback(
-    (patch) => setForm((c) => ({ ...c, ...patch })),
-    [],
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
   );
 
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const filterFields = useMemo(
+    () => getDeptTypeFilterFields({ hospitalOptions }),
+    [hospitalOptions],
+  );
 
   const openModal = useCallback(() => {
-    setForm(createEmptyDeptTypeForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToDeptTypeForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        hospitalId: record.hospitalId ?? null,
+        departmentType: record.departmentType ?? '',
+        status: record.status ?? 'active',
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -89,43 +86,44 @@ export default function DepartmentTypePage() {
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.hospitalId) errors.hospitalId = 'Hospital Name is required.';
-    if (!form.departmentType?.trim()) errors.departmentType = 'Department Type is required.';
+    try {
+      const values = await form.validateFields();
+      const hospitalName =
+        hospitals.find((h) => h.id === values.hospitalId)?.name ?? '';
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      const payload = {
+        hospitalId: values.hospitalId,
+        hospitalName,
+        departmentType: values.departmentType.trim(),
+        status: values.status ?? 'active',
+      };
+
+      if (editingRowId) {
+        await updateDeptType({ id: editingRowId, ...payload }).unwrap();
+        message.success('Department Type updated.');
+      } else {
+        await addDeptType(payload).unwrap();
+        message.success('Department Type added.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
+  }, [form, hospitals, editingRowId, addDeptType, updateDeptType, message, closeModal]);
 
-    setFieldErrors({});
+  const handleSearch = useCallback((values) => {
+    setAppliedFilter({
+      hospitalId: values.hospitalId ?? null,
+      departmentType: values.departmentType ?? '',
+      status: values.status ?? null,
+    });
+  }, []);
 
-    const payload = {
-      hospitalId: form.hospitalId,
-      hospitalName: form.hospitalName,
-      departmentType: form.departmentType.trim(),
-      status: form.status ?? 'active',
-    };
-
-    if (editingRowId) {
-      await updateDeptType({ id: editingRowId, ...payload }).unwrap();
-      setIsModalOpen(false);
-      setEditingRowId(null);
-      message.success('Department Type updated.');
-      return;
-    }
-
-    await addDeptType(payload).unwrap();
-    setIsModalOpen(false);
-    message.success('Department Type added.');
-  }, [form, editingRowId, addDeptType, updateDeptType, message]);
-
-  const handleSearch = () => setAppliedFilter(deptTypeFilter);
-
-  const handleClear = () => {
-    setDeptTypeFilter({ hospitalId: null, departmentType: '', status: null });
+  const handleClear = useCallback(() => {
+    filterForm.resetFields();
     setAppliedFilter({});
-  };
+  }, [filterForm]);
 
   const filteredRows = useMemo(
     () => filterDeptTypeRows(rows, appliedFilter),
@@ -157,11 +155,11 @@ export default function DepartmentTypePage() {
         dataIndex: 'status',
         key: 'status',
         width: 100,
-render: (status) => (
-  <Tag className={status === 'active' ? 'status-active' : 'status-inactive'}>
-    {status === 'active' ? 'Active' : 'inactive'}
-  </Tag>
-),
+        render: (status) => (
+          <Tag className={status === 'active' ? 'status-active' : 'status-inactive'}>
+            {status === 'active' ? 'Active' : 'inactive'}
+          </Tag>
+        ),
       },
       {
         title: 'Action',
@@ -201,52 +199,14 @@ render: (status) => (
     <div className="services-billing-page dept-type-page">
       <section className="hr-filter-panel" aria-label="Department type search filters">
         <div className="walk-in-add-record-layout hr-search-layout">
-          <FormGrid
-            as="form"
-            columns={4}
+          <Form
+            form={filterForm}
+            layout="vertical"
             className="walk-in-add-record-form hr-search-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch();
-            }}
+            initialValues={DEPT_TYPE_FILTER_INITIAL_VALUES}
+            onFinish={handleSearch}
           >
-            <FloatingField label="Hospital Name">
-              <Select
-                className={controlClass}
-                value={deptTypeFilter.hospitalId}
-                allowClear
-                showSearch
-                optionFilterProp="label"
-                placeholder=""
-                options={hospitals.map((h) => ({ value: h.id, label: h.name }))}
-                onChange={(val) => setDeptTypeFilter((c) => ({ ...c, hospitalId: val ?? null }))}
-              />
-            </FloatingField>
-
-            <FloatingField label="Department Type">
-              <Input
-                className={controlClass}
-                value={deptTypeFilter.departmentType}
-                allowClear
-                onChange={(e) => setDeptTypeFilter((c) => ({ ...c, departmentType: e.target.value }))}
-                autoComplete="off"
-              />
-            </FloatingField>
-
-            <FloatingField label="Status">
-              <Select
-                className={controlClass}
-                value={deptTypeFilter.status}
-                allowClear
-                placeholder=""
-                options={[
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: 'inactive' },
-                ]}
-                onChange={(val) => setDeptTypeFilter((c) => ({ ...c, status: val ?? null }))}
-              />
-            </FloatingField>
-
+            <DynamicForm fields={filterFields} />
             <div className="hr-search-actions">
               <Button type="link" className="patient-reg-btn-clear" onClick={handleClear}>
                 Clear
@@ -261,7 +221,7 @@ render: (status) => (
                 Search
               </Button>
             </div>
-          </FormGrid>
+          </Form>
         </div>
       </section>
 
@@ -292,9 +252,6 @@ render: (status) => (
         onClose={closeModal}
         title={editingRowId ? 'Edit Department Type' : 'Add Department Type'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         isEdit={!!editingRowId}
       />

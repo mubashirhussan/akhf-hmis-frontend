@@ -1,20 +1,24 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import PatientTypeForm from '@/features/service-admin/pages/patient-type/PatientTypeForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  PATIENT_TYPE_INITIAL_VALUES,
+  getPatientTypeFields,
+} from '@/features/service-admin/pages/patient-type/patient-type-fields';
 
 export default function PatientTypeModal({
   open,
   onClose,
   title = 'Add Patient Type',
   form,
-  errors,
   isEdit = false,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
+  const fields = useMemo(() => getPatientTypeFields({ isEdit }), [isEdit]);
+
   return (
     <AppModal
       open={open}
@@ -35,13 +39,15 @@ export default function PatientTypeModal({
         </>
       }
     >
-      <PatientTypeForm
+      <Form
         form={form}
-        errors={errors}
-        isEdit={isEdit}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={PATIENT_TYPE_INITIAL_VALUES}
+      >
+        <DynamicForm fields={fields} className="patient-type-form-grid" />
+      </Form>
     </AppModal>
   );
 }

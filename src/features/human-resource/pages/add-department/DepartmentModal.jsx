@@ -1,20 +1,53 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import DepartmentForm from './DepartmentForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  useGetHospitalsQuery,
+  useGetDeptTypesQuery,
+} from '@/features/human-resource/api/employeeApi';
+import {
+  DEPARTMENT_INITIAL_VALUES,
+  getDepartmentFields,
+} from '@/features/human-resource/pages/add-department/department-fields';
 
 export default function DepartmentModal({
   open,
   onClose,
   title = 'Add Department',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
-  isEdit = false,
 }) {
+  const { data: hospitals = [], isLoading: hospitalsLoading } = useGetHospitalsQuery();
+  const { data: deptTypes = [] } = useGetDeptTypesQuery();
+
+  const hospitalId = Form.useWatch('hospitalId', form);
+
+  const hospitalOptions = useMemo(
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
+
+  const deptTypeOptions = useMemo(() => {
+    if (!hospitalId) return [];
+    return deptTypes
+      .filter((d) => d.hospitalId === hospitalId)
+      .map((d) => ({ value: d.id, label: d.departmentType }));
+  }, [deptTypes, hospitalId]);
+
+  const fields = useMemo(
+    () =>
+      getDepartmentFields({
+        hospitalOptions,
+        hospitalsLoading,
+        deptTypeOptions,
+        hospitalId,
+      }),
+    [hospitalOptions, hospitalsLoading, deptTypeOptions, hospitalId],
+  );
+
   return (
     <AppModal
       open={open}
@@ -35,13 +68,20 @@ export default function DepartmentModal({
         </>
       }
     >
-      <DepartmentForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        isEdit={isEdit}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={DEPARTMENT_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('hospitalId' in changed) {
+            form.setFieldsValue({ deptTypeId: null });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="department-form-grid" />
+      </Form>
     </AppModal>
   );
 }

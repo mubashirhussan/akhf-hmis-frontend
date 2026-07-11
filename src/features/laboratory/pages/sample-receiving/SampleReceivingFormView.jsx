@@ -1,38 +1,33 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Checkbox, Input, Select } from 'antd';
+import { App, Button, Checkbox, Form } from 'antd';
 import PatientInfoHeaderCard from '@/features/patient/components/PatientInfoHeaderCard';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import {
-  createCollectionFilters,
   createSampleCollectionTests,
-  SAMPLE_COLLECTION_GROUP_OPTIONS,
-  SAMPLE_COLLECTION_LOCATION_OPTIONS,
-  SAMPLE_COLLECTION_PRINTER_OPTIONS,
-  SAMPLE_COLLECTION_SITE_OPTIONS,
 } from '@/features/laboratory/api/mock-sample-collection';
+import {
+  getSampleCollectionFields,
+  SAMPLE_COLLECTION_INITIAL_VALUES,
+} from '@/features/laboratory/pages/sample-collection/sample-collection-fields';
 import { buildPatientInfoSummary } from '@/features/patient/utils/patient-info';
-import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import '@/features/laboratory/pages/sample-receiving/sample-receiving.css';
-
-const controlClass = FIELD_CONTROL_CLASS;
 
 export default function SampleReceivingFormView({ record }) {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
   const patient = useMemo(() => buildPatientInfoSummary(record), [record]);
-
-  const [filters, setFilters] = useState(createCollectionFilters);
   const [testRows, setTestRows] = useState(() => createSampleCollectionTests(record.id));
 
-  const isSatelliteCenter = filters.collectedAt === 'satellite-center';
-
-  const patchFilter = (patch) => {
-    setFilters((prev) => ({ ...prev, ...patch }));
-  };
+  const collectedAt = Form.useWatch('collectedAt', form);
+  const isSatelliteCenter = collectedAt === 'satellite-center';
+  const fields = useMemo(
+    () => getSampleCollectionFields({ showLocation: isSatelliteCenter }),
+    [isSatelliteCenter],
+  );
 
   const patchTestRow = useCallback((rowId, patch) => {
     setTestRows((prev) =>
@@ -122,74 +117,14 @@ export default function SampleReceivingFormView({ record }) {
     <div className="sample-receiving-form-page">
       <PatientInfoHeaderCard patient={patient} />
 
-      <FormGrid columns={4} className="sample-receiving-entry-form">
-        <FloatingField label="Test Group" htmlFor="sample-receiving-group">
-          <Select
-            id="sample-receiving-group"
-            className={controlClass}
-            value={filters.testGroup}
-            options={SAMPLE_COLLECTION_GROUP_OPTIONS}
-            onChange={(value) => patchFilter({ testGroup: value })}
-          />
-        </FloatingField>
-
-        <FloatingField label="Collected at" htmlFor="sample-receiving-collected-at">
-          <Select
-            id="sample-receiving-collected-at"
-            className={controlClass}
-            value={filters.collectedAt}
-            options={SAMPLE_COLLECTION_SITE_OPTIONS}
-            onChange={(value) => patchFilter({ collectedAt: value })}
-          />
-        </FloatingField>
-
-     
-
-        <FloatingField label="Bar Code" htmlFor="sample-receiving-barcode">
-          <Input
-            id="sample-receiving-barcode"
-            className={controlClass}
-            value={filters.barCode}
-            onChange={(e) => patchFilter({ barCode: e.target.value })}
-            autoComplete="off"
-          />
-        </FloatingField>
-  <FloatingField label="Select Printer Location" htmlFor="sample-receiving-printer">
-          <Select
-            id="sample-receiving-printer"
-            className={controlClass}
-            value={filters.printerLocation}
-            options={SAMPLE_COLLECTION_PRINTER_OPTIONS}
-            onChange={(value) => patchFilter({ printerLocation: value })}
-          />
-        </FloatingField>
-        <FloatingField label="Clinical Diagnosis" htmlFor="sample-receiving-diagnosis">
-          <Input.TextArea
-            id="sample-receiving-diagnosis"
-            className={controlClass}
-            rows={4}
-            value={filters.clinicalDiagnosis}
-            onChange={(e) => patchFilter({ clinicalDiagnosis: e.target.value })}
-          />
-        </FloatingField>
-        {
-          isSatelliteCenter&& (
-  <FloatingField label="Location" htmlFor="sample-receiving-location">
-          <Select
-            id="sample-receiving-location"
-            className={controlClass}
-            value={filters.location}
-            options={SAMPLE_COLLECTION_LOCATION_OPTIONS}
-         
-
-            onChange={(value) => patchFilter({ location: value })}
-          />
-        </FloatingField>
-          )
-        }
- 
-      
-      </FormGrid>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={SAMPLE_COLLECTION_INITIAL_VALUES}
+        className="sample-receiving-entry-form"
+      >
+        <DynamicForm fields={fields} gutter={[16, 12]} />
+      </Form>
 
       <section className="sample-receiving-form-table-section" aria-label="Tests for receiving">
         <DataTable

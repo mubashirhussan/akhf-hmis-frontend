@@ -1,22 +1,39 @@
 'use client';
 
-import { Button } from 'antd';
+import { useMemo } from 'react';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import WardBedsForm from '@/features/service-admin/pages/ward-beds/WardBedsForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  WARD_BEDS_INITIAL_VALUES,
+  getWardBedsFields,
+} from '@/features/service-admin/pages/ward-beds/ward-beds-fields';
 
 export default function WardBedsModal({
   open,
   onClose,
   title = 'Add Ward Beds',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
   hospitalOptions = [],
   departmentOptions = [],
   subDepartmentOptions = [],
 }) {
+  const hospitalId = Form.useWatch('hospitalId', form);
+  const departmentId = Form.useWatch('departmentId', form);
+
+  const fields = useMemo(
+    () =>
+      getWardBedsFields({
+        hospitalOptions,
+        departmentOptions,
+        subDepartmentOptions,
+        hasHospital: Boolean(hospitalId),
+        hasDepartment: Boolean(departmentId),
+      }),
+    [hospitalOptions, departmentOptions, subDepartmentOptions, hospitalId, departmentId],
+  );
+
   return (
     <AppModal
       open={open}
@@ -37,15 +54,23 @@ export default function WardBedsModal({
         </>
       }
     >
-      <WardBedsForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        hospitalOptions={hospitalOptions}
-        departmentOptions={departmentOptions}
-        subDepartmentOptions={subDepartmentOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={WARD_BEDS_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('hospitalId' in changed) {
+            form.setFieldsValue({ departmentId: undefined, subDepartmentId: undefined });
+          }
+          if ('departmentId' in changed) {
+            form.setFieldsValue({ subDepartmentId: undefined });
+          }
+        }}
+      >
+        <DynamicForm fields={fields} className="ward-beds-form-grid" />
+      </Form>
     </AppModal>
   );
 }

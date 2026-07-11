@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons';
-import { App, Button } from 'antd';
+import { App, Button, Form, Tag, Tooltip } from 'antd';
 import DataTable from '@/components/ui/DataTable';
 import {
   createActivateDeactivateFilters,
@@ -13,18 +13,13 @@ import {
   useGetEmployeesQuery,
   useToggleEmployeeActiveMutation,
 } from '@/features/human-resource/api/employeeApi';
-import { useConfirm } from '@/hooks/useConfirm';
 import ActivateDeactivateFilterForm from './ActivateDeactivateFilterForm';
 import './activate-deactivate-user.css';
-import { Tag } from 'antd';
-import { Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 
 export default function ActivateDeactivatePage() {
   const { message, modal } = App.useApp();
- 
-  const { confirmDelete } = useConfirm();
-  const [filters, setFilters] = useState(createActivateDeactivateFilters);
+  const [filterForm] = Form.useForm();
   const [appliedFilters, setAppliedFilters] = useState(createActivateDeactivateFilters);
 
   const { data: _employees = [], isFetching } = useGetEmployeesQuery();
@@ -36,21 +31,17 @@ export default function ActivateDeactivatePage() {
     [appliedFilters, _employees],
   );
 
-  const patchFilter = useCallback((patch) => {
-    setFilters((current) => ({ ...current, ...patch }));
+  const handleSearch = useCallback((values) => {
+    setAppliedFilters({ ...values });
   }, []);
 
-  const handleSearch = () => {
-    setAppliedFilters({ ...filters });
-  };
-
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const reset = createActivateDeactivateFilters();
-    setFilters(reset);
+    filterForm.setFieldsValue(reset);
     setAppliedFilters(reset);
-  };
+  }, [filterForm]);
 
-const handleToggle = useCallback(
+  const handleToggle = useCallback(
     (record) => {
       const isActivating = !record.isActive;
 
@@ -84,23 +75,6 @@ const handleToggle = useCallback(
       });
     },
     [toggleActive, message, modal],
-    async (record) => {
-      const confirmed = await confirmDelete({
-        itemName: record.empName,
-      });
-      if (!confirmed) return;
-      try {
-        await toggleActive(record.id).unwrap();
-        message.success(
-          record.isActive
-            ? `${record.empName} deactivated successfully.`
-            : `${record.empName} activated successfully.`,
-        );
-      } catch {
-        message.error('Failed to update employee status.');
-      }
-    },
-    [toggleActive, message, confirmDelete],
   );
 
   const columns = useMemo(
@@ -114,34 +88,39 @@ const handleToggle = useCallback(
       { title: 'Joining Date', dataIndex: 'joiningDate', key: 'joiningDate', width: 120 },
       { title: 'Designation', dataIndex: 'designation', key: 'designation', width: 140 },
       {
-  title: 'Status',
-  dataIndex: 'isActive',
-  key: 'status',
-  width: 100,
-  render: (isActive) => (
-    <Tag className={isActive ? 'status-active' : 'status-inactive'}>
-      {isActive ? 'Active' : 'Inactive'}
-    </Tag>
-  ),
-},
+        title: 'Status',
+        dataIndex: 'isActive',
+        key: 'status',
+        width: 100,
+        render: (isActive) => (
+          <Tag className={isActive ? 'status-active' : 'status-inactive'}>
+            {isActive ? 'Active' : 'Inactive'}
+          </Tag>
+        ),
+      },
       {
         title: 'Action',
         key: 'action',
         width: 110,
         align: 'center',
         fixed: 'right',
-render: (_, record) => (
-  <Tooltip title="Update Status">
-    <Button
-      type="link"
-      size="small"
-      disabled={isToggling}
-      aria-label={`Update status for ${record.empName}`}
-      icon={<AppIcon icon="mdi:pencil-outline" className="h-[16px] w-[16px] text-[var(--app-primary)]" />}
-      onClick={() => handleToggle(record)}
-    />
-  </Tooltip>
-),
+        render: (_, record) => (
+          <Tooltip title="Update Status">
+            <Button
+              type="link"
+              size="small"
+              disabled={isToggling}
+              aria-label={`Update status for ${record.empName}`}
+              icon={
+                <AppIcon
+                  icon="mdi:pencil-outline"
+                  className="h-[16px] w-[16px] text-[var(--app-primary)]"
+                />
+              }
+              onClick={() => handleToggle(record)}
+            />
+          </Tooltip>
+        ),
       },
     ],
     [handleToggle, isToggling],
@@ -150,8 +129,7 @@ render: (_, record) => (
   return (
     <div className="patient-registration-page activate-deactivate-page">
       <ActivateDeactivateFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
         onSubmit={handleSearch}
         onClear={handleClear}
         loading={isFetching}

@@ -3,15 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
-import { App, Button, Checkbox, Input, Select } from 'antd';
+import { App, Button, Form, Select } from 'antd';
 import PatientInfoHeaderCard from '@/features/patient/components/PatientInfoHeaderCard';
 import DataTable from '@/components/ui/DataTable';
-import FloatingField from '@/components/ui/FloatingField';
-import FormGrid from '@/components/ui/FormGrid';
+import DynamicForm from '@/components/form/DynamicForm';
 import {
-  BILLING_PACKAGE_OPTIONS,
-  BILLING_REFERENCE_OPTIONS,
-  BILLING_SERVICE_CATEGORY_OPTIONS,
   buildBillingPatientSummary,
   calcBillingServicesGrandTotal,
   createBillingServiceRow,
@@ -25,6 +21,10 @@ import {
 } from '@/features/opd/api/mock-walk-in-services';
 import { useConfirm } from '@/hooks/useConfirm';
 import { buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
+import {
+  BILLING_VISIT_SERVICES_FILTER_INITIAL_VALUES,
+  getBillingVisitServicesFilterFields,
+} from '@/features/billing/pages/services-billing/billing-visit-services-fields';
 import { FIELD_CONTROL_CLASS } from '@/lib/field-control';
 import { BILLING_VISIT_SERVICES_TABLE_SCROLL_Y } from '@/lib/table-scroll';
 
@@ -34,17 +34,15 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
   const router = useRouter();
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [filterForm] = Form.useForm();
   const patient = useMemo(() => buildBillingPatientSummary(visit), [visit]);
-  const isPanelPatient = patient.patientType?.toLowerCase() === 'panel';
 
   const openPayment = useCallback(() => {
     router.push(buildOpdPaymentHref(visit.id));
   }, [router, visit.id]);
 
-  const [category, setCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [reference, setReference] = useState(undefined);
-  const [packageId, setPackageId] = useState(undefined);
+  const category = Form.useWatch('category', filterForm) ?? 'all';
+  const searchQuery = Form.useWatch('searchQuery', filterForm) ?? '';
   const [hasSearched, setHasSearched] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [resultsPage] = useState(1);
@@ -54,7 +52,7 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
   );
 
   useEffect(() => {
-    const query = searchQuery.trim();
+    const query = String(searchQuery ?? '').trim();
 
     if (!query) {
       setHasSearched(false);
@@ -90,6 +88,10 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
     [pagedResults],
   );
 
+  useEffect(() => {
+    filterForm.setFieldsValue({ selectedServices: selectedServiceValues });
+  }, [filterForm, selectedServiceValues]);
+
   const handleSelectedServicesChange = (selectedIds) => {
     setServiceRows((prev) => {
       const existingMap = new Map(prev.map((row) => [row.serviceId, row]));
@@ -105,6 +107,16 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
         .filter(Boolean);
     });
   };
+
+  const filterFields = useMemo(
+    () =>
+      getBillingVisitServicesFilterFields({
+        serviceSelectOptions,
+        selectedServiceSet,
+        hasSearched,
+      }),
+    [hasSearched, selectedServiceSet, serviceSelectOptions],
+  );
 
   const grandTotal = useMemo(() => calcBillingServicesGrandTotal(serviceRows), [serviceRows]);
 
@@ -194,84 +206,19 @@ export default function BillingVisitServicesView({ visit, serviceRows, setServic
     <div className="billing-visit-services-page">
       <PatientInfoHeaderCard patient={patient} />
 
-      <FormGrid columns={5} className="walk-in-add-record-form billing-visit-services-filters">
-        <FloatingField label="Category" htmlFor="billing-svc-category">
-          <Select
-            id="billing-svc-category"
-            className={controlClass}
-            value={category}
-            options={BILLING_SERVICE_CATEGORY_OPTIONS}
-            onChange={setCategory}
-          />
-        </FloatingField>
-
-       
-
-        <FloatingField label="Select Refer" htmlFor="billing-svc-reference">
-          <Select
-            id="billing-svc-reference"
-            className={controlClass}
-            placeholder="Select Reference"
-            value={reference}
-            allowClear
-            options={BILLING_REFERENCE_OPTIONS}
-            onChange={setReference}
-          />
-        </FloatingField>
-        
-
-        <FloatingField label="Select Packages" htmlFor="billing-svc-package">
-          <Select
-            id="billing-svc-package"
-            className={controlClass}
-            placeholder="Select Packages"
-            value={packageId}
-            allowClear
-            options={BILLING_PACKAGE_OPTIONS}
-            onChange={setPackageId}
-          />
-        </FloatingField>
-         <FloatingField label="Search Services" htmlFor="billing-svc-search">
-          <Input
-            id="billing-svc-search"
-            className={controlClass}
-            placeholder="Search Services here..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoComplete="off"
-          />
-        </FloatingField>
-
-        <FloatingField label="Select Services" htmlFor="billing-svc-select">
-          <div className="walk-in-service-results-dropdown-wrap">
-            <Select
-              id="billing-svc-select"
-              size="middle"
-              mode="multiple"
-              allowClear
-              className={`w-full ${controlClass}`}
-              placeholder="Select services"
-              value={selectedServiceValues}
-              options={serviceSelectOptions}
-              onChange={handleSelectedServicesChange}
-              disabled={!hasSearched}
-              maxTagCount={1}
-              maxTagTextLength={26}
-              maxTagPlaceholder={(omittedValues) => `+${omittedValues.length}`}
-              optionRender={(option) => (
-                <div className="walk-in-service-option">
-                  <Checkbox
-                    checked={selectedServiceSet.has(option.value)}
-                    tabIndex={-1}
-                    className="walk-in-service-option-checkbox"
-                  />
-                  <span className="walk-in-service-option-label">{option.label}</span>
-                </div>
-              )}
-            />
-          </div>
-        </FloatingField>
-      </FormGrid>
+      <Form
+        form={filterForm}
+        layout="vertical"
+        initialValues={BILLING_VISIT_SERVICES_FILTER_INITIAL_VALUES}
+        className="walk-in-add-record-form billing-visit-services-filters"
+        onValuesChange={(changed) => {
+          if ('selectedServices' in changed) {
+            handleSelectedServicesChange(changed.selectedServices ?? []);
+          }
+        }}
+      >
+        <DynamicForm fields={filterFields} gutter={[16, 12]} />
+      </Form>
 
       <section className="billing-visit-services-table-section" aria-label="Visit services">
         <DataTable

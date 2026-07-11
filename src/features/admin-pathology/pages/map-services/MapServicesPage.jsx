@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Input, Select, Tooltip } from "antd";
+import { App, Button, Form, Input, Select, Tooltip } from "antd";
 import DataTable from "@/components/ui/DataTable";
 import AppIcon from "@/components/icons/AppIcon";
 import MapServicesModal from "./MapServicesModal";
@@ -12,9 +12,9 @@ import {
 } from "@/features/admin-pathology/api/pathologyApi";
 import { SERVICE_OPTIONS } from "@/features/admin-pathology/api/mock-test-booking";
 
-
 export default function MapServicesPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
   const { data: rows = [], isLoading } = useGetTestBookingsQuery();
   const { data: mainGroups = [] } = useGetMainGroupsQuery();
@@ -36,7 +36,8 @@ export default function MapServicesPage() {
   const closeModal = useCallback(() => {
     setOpen(false);
     setEditingRow(null);
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const filteredRows = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
@@ -50,19 +51,21 @@ export default function MapServicesPage() {
     });
   }, [rows, selectedGroup, searchTerm]);
 
-  const handleSave = useCallback(
-    async (updated) => {
+  const handleSave = useCallback(async () => {
+    try {
+      const values = await form.validateFields();
       await updateBooking({
         id: editingRow.id,
-        specimenRequired: updated.specimenRequired,
-        service: updated.service,
+        specimenRequired: values.specimenRequired,
+        service: values.service,
       }).unwrap();
 
       message.success("Updated successfully");
       closeModal();
-    },
-    [updateBooking, editingRow, message, closeModal]
-  );
+    } catch {
+      // validation errors are shown by antd Form
+    }
+  }, [form, updateBooking, editingRow, message, closeModal]);
 
   const columns = useMemo(
     () => [
@@ -92,7 +95,7 @@ export default function MapServicesPage() {
         ),
       },
     ],
-    [openEdit]
+    [openEdit],
   );
 
   return (
@@ -123,20 +126,21 @@ export default function MapServicesPage() {
         columns={columns}
         dataSource={filteredRows}
         loading={isLoading}
-         pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
-            showTotal: (total) => `Total ${total} items`,
-            onChange: (current, pageSize) =>
-              setPagination({ current, pageSize }),
-          }}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50", "100"],
+          showTotal: (total) => `Total ${total} items`,
+          onChange: (current, pageSize) =>
+            setPagination({ current, pageSize }),
+        }}
       />
 
       <MapServicesModal
         open={open}
         onClose={closeModal}
+        form={form}
         row={editingRow}
         onSave={handleSave}
         services={SERVICE_OPTIONS}

@@ -1,8 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { App, Button, Form, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import {
@@ -19,25 +18,14 @@ import './change-department.css';
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyChangeDeptForm() {
-  return {
-    department: '',
-    subDepartment: '',
-    designation: '',
-    shift: '',
-    reason: '',
-  };
-}
-
 export default function ChangeDepartmentPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
-  const [filters, setFilters] = useState(createChangeDepartmentFilters);
   const [appliedFilters, setAppliedFilters] = useState(createChangeDepartmentFilters);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
-  const [form, setForm] = useState(createEmptyChangeDeptForm);
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const { data: _employees = [], isFetching } = useGetEmployeesQuery();
   const [changeDepartment] = useChangeDepartmentMutation();
@@ -48,77 +36,52 @@ export default function ChangeDepartmentPage() {
     [appliedFilters, _employees],
   );
 
-  const patchFilter = useCallback((patch) => {
-    setFilters((cur) => ({ ...cur, ...patch }));
+  const handleSearch = useCallback((values) => {
+    setAppliedFilters({ ...values });
   }, []);
 
-  const handleSearch = () => setAppliedFilters({ ...filters });
-
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const reset = createChangeDepartmentFilters();
-    setFilters(reset);
+    filterForm.setFieldsValue(reset);
     setAppliedFilters(reset);
-  };
+  }, [filterForm]);
 
-  const patchForm = useCallback((patch) => {
-    setForm((cur) => ({ ...cur, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((cur) => {
-      if (!cur[field]) return cur;
-      const next = { ...cur };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
-  const handleEditRow = useCallback((record) => {
-    setEditingRecord(record);
-    setForm({
-      department: record.department ?? '',
-      subDepartment: record.subDepartment ?? '',
-      designation: record.designation ?? '',
-      shift: record.shift ?? '',
-      reason: '',
-    });
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      setEditingRecord(record);
+      form.setFieldsValue({
+        department: record.department ?? '',
+        subDepartment: record.subDepartment ?? '',
+        designation: record.designation ?? '',
+        shift: record.shift ?? '',
+        reason: '',
+      });
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRecord(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.department) errors.department = 'Department is required.';
-    if (!form.subDepartment) errors.subDepartment = 'Sub Department is required.';
-    if (!form.designation) errors.designation = 'Designation is required.';
-    if (!form.shift) errors.shift = 'Shift is required.';
-    if (!form.reason?.trim()) errors.reason = 'Reason is required.';
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setFieldErrors({});
-
     try {
+      const values = await form.validateFields();
       await changeDepartment({
         id: editingRecord.id,
-        department: form.department,
-        subDepartment: form.subDepartment,
-        designation: form.designation,
-        shift: form.shift,
-        reason: form.reason.trim(),
+        department: values.department,
+        subDepartment: values.subDepartment,
+        designation: values.designation,
+        shift: values.shift,
+        reason: values.reason.trim(),
       }).unwrap();
       message.success('Department changed successfully.');
       closeModal();
-    } catch {
+    } catch (error) {
+      if (error?.errorFields) return;
       message.error('Failed to change department.');
     }
   }, [form, editingRecord, changeDepartment, message, closeModal]);
@@ -196,8 +159,7 @@ export default function ChangeDepartmentPage() {
   return (
     <div className="services-billing-page change-department-page">
       <ChangeDepartmentFilterForm
-        filters={filters}
-        onPatchFilter={patchFilter}
+        form={filterForm}
         onSubmit={handleSearch}
         onClear={handleClear}
         loading={isFetching}
@@ -230,9 +192,6 @@ export default function ChangeDepartmentPage() {
         open={isModalOpen}
         onClose={closeModal}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>

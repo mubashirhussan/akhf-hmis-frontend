@@ -1,17 +1,19 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import ReportConsultantForm from '@/features/admin-pathology/pages/report-consultant/ReportConsultantForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import { DOCTOR_OPTIONS } from '@/features/admin-pathology/api/mock-report-consultant';
+import {
+  REPORT_CONSULTANT_FIELDS,
+  REPORT_CONSULTANT_INITIAL_VALUES,
+} from '@/features/admin-pathology/pages/report-consultant/report-consultant-fields';
 
 export default function ReportConsultantModal({
   open,
   onClose,
   title = 'Add Consultant',
   form,
-  errors,
-  onPatchForm,
-  onClearError,
   onSave,
 }) {
   return (
@@ -38,12 +40,29 @@ export default function ReportConsultantModal({
         </>
       }
     >
-      <ReportConsultantForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={REPORT_CONSULTANT_INITIAL_VALUES}
+        onValuesChange={(changed) => {
+          if ('doctorName' in changed) {
+            const selectedDoctor = DOCTOR_OPTIONS.find(
+              (option) => option.value === changed.doctorName,
+            );
+            form.setFieldsValue({
+              doctorQualification: selectedDoctor?.doctorQualification ?? '',
+              doctorDesignation: selectedDoctor?.doctorDesignation ?? '',
+            });
+          }
+        }}
+      >
+        <DynamicForm
+          fields={REPORT_CONSULTANT_FIELDS}
+          className="report-consultant-form-grid"
+        />
+      </Form>
     </AppModal>
   );
 }

@@ -1,21 +1,14 @@
 'use client';
 
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import AppModal from '@/components/ui/AppModal';
-import CompanyForm from '@/features/service-admin/pages/companies/CompanyForm';
+import DynamicForm from '@/components/form/DynamicForm';
+import {
+  COMPANY_FIELDS,
+  COMPANY_INITIAL_VALUES,
+} from '@/features/service-admin/pages/companies/company-fields';
 
-export default function CompanyModal({
-  open,
-  onClose,
-  title,
-  form,
-  errors,
-  onPatchForm,
-  onClearError,
-  onSave,
-  companyTypeOptions,
-  statusOptions,
-}) {
+export default function CompanyModal({ open, onClose, title, form, onSave }) {
   return (
     <AppModal
       open={open}
@@ -33,14 +26,15 @@ export default function CompanyModal({
         </div>
       }
     >
-      <CompanyForm
+      <Form
         form={form}
-        errors={errors}
-        onPatchForm={onPatchForm}
-        onClearError={onClearError}
-        companyTypeOptions={companyTypeOptions}
-        statusOptions={statusOptions}
-      />
+        layout="vertical"
+        requiredMark
+        preserve={false}
+        initialValues={COMPANY_INITIAL_VALUES}
+      >
+        <DynamicForm fields={COMPANY_FIELDS} className="company-form-grid" />
+      </Form>
     </AppModal>
   );
 }

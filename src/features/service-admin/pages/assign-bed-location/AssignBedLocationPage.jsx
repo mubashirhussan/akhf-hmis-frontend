@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { App, Button, Select, Tooltip } from 'antd';
+import { App, Button, Form, Select, Tooltip } from 'antd';
 import AppIcon from '@/components/icons/AppIcon';
 import DataTable from '@/components/ui/DataTable';
 import AssignBedLocationModal from '@/features/service-admin/pages/assign-bed-location/AssignBedLocationModal';
@@ -22,10 +22,6 @@ import '@/features/service-admin/pages/assign-bed-location/assign-bed-location.c
 
 const ACTION_ICON_CLASS = 'h-[16px] w-[16px] text-[var(--app-primary)]';
 
-function createEmptyForm() {
-  return { wardBedId: '', roomNumber: '', bedNumber: '', location: '', price: null };
-}
-
 function makeNumberOptions(n) {
   if (!n || n < 1) return [];
   return Array.from({ length: n }, (_, i) => ({
@@ -37,47 +33,48 @@ function makeNumberOptions(n) {
 export default function AssignBedLocationPage() {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
 
   const [fHospital, setFHospital] = useState('');
   const [fDepartment, setFDepartment] = useState('');
   const [fSubDepartment, setFSubDepartment] = useState('');
   const [fWard, setFWard] = useState('');
 
-const { data: hospitals = [] } = useGetHospitalsQuery();
-const { data: allDepartments = [] } = useGetDepartmentsQuery();
-const { data: allSubDepartments = [] } = useGetSubDepartmentsQuery();
-const { data: wardBeds = [] } = useGetWardBedsQuery();
-const { data: rows = [], isLoading } = useGetBedLocationsQuery();
+  const { data: hospitals = [] } = useGetHospitalsQuery();
+  const { data: allDepartments = [] } = useGetDepartmentsQuery();
+  const { data: allSubDepartments = [] } = useGetSubDepartmentsQuery();
+  const { data: wardBeds = [] } = useGetWardBedsQuery();
+  const { data: rows = [], isLoading } = useGetBedLocationsQuery();
 
   const [createBedLocation] = useCreateBedLocationMutation();
   const [updateBedLocation] = useUpdateBedLocationMutation();
   const [deleteBedLocation] = useDeleteBedLocationMutation();
 
+  const watchedWardBedId = Form.useWatch('wardBedId', form);
+
   const hospitalOptions = useMemo(
-  () => hospitals.map((h) => ({ value: h.id, label: h.name })),
-  [hospitals],
-);
+    () => hospitals.map((h) => ({ value: h.id, label: h.name })),
+    [hospitals],
+  );
 
-const filterDeptOptions = useMemo(
-  () =>
-    allDepartments
-      .filter((d) => !fHospital || d.hospitalId === fHospital)
-      .map((d) => ({ value: d.id, label: d.departmentName })),
-  [allDepartments, fHospital],
-);
+  const filterDeptOptions = useMemo(
+    () =>
+      allDepartments
+        .filter((d) => !fHospital || d.hospitalId === fHospital)
+        .map((d) => ({ value: d.id, label: d.departmentName })),
+    [allDepartments, fHospital],
+  );
 
-const filterSubDeptOptions = useMemo(
-  () =>
-    allSubDepartments
-      .filter((s) => !fDepartment || s.departmentId === fDepartment)
-      .map((s) => ({ value: s.id, label: s.subDepartmentName })),
-  [allSubDepartments, fDepartment],
-);
+  const filterSubDeptOptions = useMemo(
+    () =>
+      allSubDepartments
+        .filter((s) => !fDepartment || s.departmentId === fDepartment)
+        .map((s) => ({ value: s.id, label: s.subDepartmentName })),
+    [allSubDepartments, fDepartment],
+  );
 
   const filterWardOptions = useMemo(() => {
     return wardBeds
@@ -96,8 +93,8 @@ const filterSubDeptOptions = useMemo(
   );
 
   const selectedWard = useMemo(
-    () => wardBeds.find((w) => w.id === form.wardBedId) ?? null,
-    [wardBeds, form.wardBedId],
+    () => wardBeds.find((w) => w.id === watchedWardBedId) ?? null,
+    [wardBeds, watchedWardBedId],
   );
 
   const roomOptions = useMemo(
@@ -110,42 +107,32 @@ const filterSubDeptOptions = useMemo(
     [selectedWard],
   );
 
-  const patchForm = useCallback((patch) => setForm((c) => ({ ...c, ...patch })), []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((c) => {
-      if (!c[field]) return c;
-      const next = { ...c };
-      delete next[field];
-      return next;
-    });
-  }, []);
-
   const openModal = useCallback(() => {
-    setForm(createEmptyForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm({
-      wardBedId: record.wardBedId ?? '',
-      roomNumber: String(record.roomNumber ?? ''),
-      bedNumber: String(record.bedNumber ?? ''),
-      location: record.location ?? '',
-      price: record.price ?? null,
-    });
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        wardBedId: record.wardBedId ?? undefined,
+        roomNumber: String(record.roomNumber ?? ''),
+        bedNumber: String(record.bedNumber ?? ''),
+        location: record.location ?? '',
+        price: record.price ?? null,
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -159,51 +146,39 @@ const filterSubDeptOptions = useMemo(
   );
 
   const handleSave = useCallback(async () => {
-    const errors = {};
-    if (!form.wardBedId) errors.wardBedId = 'Ward is required.';
-    if (!form.roomNumber) errors.roomNumber = 'Room Number is required.';
-    if (!form.bedNumber) errors.bedNumber = 'Bed Number is required.';
-    if (!form.location?.trim()) errors.location = 'Location is required.';
-    if (form.price === null || form.price === undefined || form.price === '')
-      errors.price = 'Price is required.';
+    try {
+      const values = await form.validateFields();
+      const ward = wardBeds.find((w) => w.id === values.wardBedId);
 
-    if (Object.keys(errors).length) {
-      setFieldErrors(errors);
-      return;
+      if (editingRowId) {
+        await updateBedLocation({
+          id: editingRowId,
+          location: values.location.trim(),
+          price: values.price,
+        }).unwrap();
+        message.success('Bed location updated.');
+      } else {
+        await createBedLocation({
+          wardBedId: values.wardBedId,
+          wardName: ward?.wardName ?? '',
+          hospitalId: ward?.hospitalId ?? '',
+          hospitalName: ward?.hospitalName ?? '',
+          departmentId: ward?.departmentId ?? '',
+          departmentName: ward?.departmentName ?? '',
+          subDepartmentId: ward?.subDepartmentId ?? '',
+          subDepartmentName: ward?.subDepartmentName ?? '',
+          roomNumber: values.roomNumber,
+          bedNumber: values.bedNumber,
+          location: values.location.trim(),
+          price: values.price,
+        }).unwrap();
+        message.success('Bed location assigned.');
+      }
+
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const ward = wardBeds.find((w) => w.id === form.wardBedId);
-
-    const payload = {
-      wardBedId: form.wardBedId,
-      wardName: ward?.wardName ?? '',
-      hospitalId: ward?.hospitalId ?? '',
-      hospitalName: ward?.hospitalName ?? '',
-      departmentId: ward?.departmentId ?? '',
-      departmentName: ward?.departmentName ?? '',
-      subDepartmentId: ward?.subDepartmentId ?? '',
-      subDepartmentName: ward?.subDepartmentName ?? '',
-      roomNumber: form.roomNumber,
-      bedNumber: form.bedNumber,
-      location: form.location.trim(),
-      price: form.price,
-    };
-
-    if (editingRowId) {
-      await updateBedLocation({
-        id: editingRowId,
-        location: form.location.trim(),
-        price: form.price,
-      }).unwrap();
-      message.success('Bed location updated.');
-    } else {
-      await createBedLocation(payload).unwrap();
-      message.success('Bed location assigned.');
-    }
-
-    closeModal();
   }, [form, editingRowId, wardBeds, createBedLocation, updateBedLocation, message, closeModal]);
 
   const filteredRows = useMemo(() => {
@@ -220,9 +195,20 @@ const filterSubDeptOptions = useMemo(
     () => [
       { title: 'Hospital', dataIndex: 'hospitalName', key: 'hospitalName', width: 170 },
       { title: 'Department', dataIndex: 'departmentName', key: 'departmentName', width: 140 },
-      { title: 'Sub Department', dataIndex: 'subDepartmentName', key: 'subDepartmentName', width: 160 },
+      {
+        title: 'Sub Department',
+        dataIndex: 'subDepartmentName',
+        key: 'subDepartmentName',
+        width: 160,
+      },
       { title: 'Ward Name', dataIndex: 'wardName', key: 'wardName', width: 140 },
-      { title: 'Room No.', dataIndex: 'roomNumber', key: 'roomNumber', width: 90, align: 'center' },
+      {
+        title: 'Room No.',
+        dataIndex: 'roomNumber',
+        key: 'roomNumber',
+        width: 90,
+        align: 'center',
+      },
       { title: 'Bed No.', dataIndex: 'bedNumber', key: 'bedNumber', width: 90, align: 'center' },
       { title: 'Location', dataIndex: 'location', key: 'location', width: 160 },
       {
@@ -354,9 +340,6 @@ const filterSubDeptOptions = useMemo(
         onClose={closeModal}
         title={editingRowId ? 'Edit Bed Location' : 'Assign Bed Location'}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
         wardOptions={usableWardOptions}
         roomOptions={roomOptions}

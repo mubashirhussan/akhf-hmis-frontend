@@ -1,13 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Tooltip, Input, Select } from "antd";
+import { App, Button, Form, Tooltip, Input, Select } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import InterpretationModal from "@/features/admin-pathology/pages/interpretation/InterpretationModal";
 import {
-  createEmptyInterpretationForm,
-  rowToInterpretationForm,
   getServiceLabel,
   SERVICE_OPTIONS,
 } from "@/features/admin-pathology/api/mock-interpretation";
@@ -23,11 +21,10 @@ const ACTION_ICON_CLASS = "h-[16px] w-[16px] text-[var(--app-primary)]";
 
 export default function InterpretationPage() {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
 
-  const [form, setForm] = useState(createEmptyInterpretationForm);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
   const [serviceFilter, setServiceFilter] = useState("");
   const [templateNameFilter, setTemplateNameFilter] = useState("");
   const { confirmDelete } = useConfirm();
@@ -37,40 +34,32 @@ export default function InterpretationPage() {
   const [createInterpretation] = useCreateInterpretationMutation();
   const [updateInterpretation] = useUpdateInterpretationMutation();
   const [deleteInterpretation] = useDeleteInterpretationMutation();
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-
-  const patchForm = useCallback((patch) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const clearFieldError = useCallback((field) => {
-    setFieldErrors((current) => {
-      if (!current[field]) return current;
-      const next = { ...current };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const openModal = useCallback(() => {
-    setForm(createEmptyInterpretationForm());
+    form.resetFields();
     setEditingRowId(null);
-    setFieldErrors({});
     setIsModalOpen(true);
-  }, []);
+  }, [form]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setEditingRowId(null);
-    setFieldErrors({});
-  }, []);
+    form.resetFields();
+  }, [form]);
 
-  const handleEditRow = useCallback((record) => {
-    setForm(rowToInterpretationForm(record));
-    setEditingRowId(record.id);
-    setFieldErrors({});
-    setIsModalOpen(true);
-  }, []);
+  const handleEditRow = useCallback(
+    (record) => {
+      form.setFieldsValue({
+        serviceName: record.serviceName ?? "",
+        templateName: record.templateName ?? "",
+        templateDescription: record.templateDescription ?? "",
+      });
+      setEditingRowId(record.id);
+      setIsModalOpen(true);
+    },
+    [form],
+  );
 
   const handleDeleteRow = useCallback(
     async (record) => {
@@ -84,49 +73,37 @@ export default function InterpretationPage() {
   );
 
   const handleSave = useCallback(async () => {
-    const serviceName = form.serviceName?.trim();
-    const templateName = form.templateName.trim();
-    const templateDescription = form.templateDescription.trim();
+    try {
+      const values = await form.validateFields();
+      const rowPayload = {
+        serviceName: values.serviceName?.trim?.() ?? values.serviceName,
+        templateName: values.templateName.trim(),
+        templateDescription: values.templateDescription.trim(),
+      };
 
-    const errors = {};
-    if (!serviceName) errors.serviceName = "Service Name is required.";
-    if (!templateName) errors.templateName = "Template Name is required.";
-    if (!templateDescription)
-      errors.templateDescription = "Template Description is required.";
+      if (editingRowId) {
+        await updateInterpretation({
+          id: editingRowId,
+          ...rowPayload,
+        }).unwrap();
+        message.success("Interpretation updated.");
+      } else {
+        await createInterpretation(rowPayload).unwrap();
+        message.success("Interpretation created.");
+      }
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
+      closeModal();
+    } catch {
+      // validation errors are shown by antd Form
     }
-
-    setFieldErrors({});
-
-    const rowPayload = {
-      serviceName,
-      templateName,
-      templateDescription,
-    };
-
-    if (editingRowId) {
-      await updateInterpretation({
-        id: editingRowId,
-        ...rowPayload,
-      }).unwrap();
-
-      setIsModalOpen(false);
-      setEditingRowId(null);
-
-      message.success("Interpretation updated.");
-
-      return;
-    }
-
-    await createInterpretation(rowPayload).unwrap();
-
-    setIsModalOpen(false);
-
-    message.success("Interpretation created.");
-  }, [form, editingRowId, createInterpretation, updateInterpretation, message]);
+  }, [
+    form,
+    editingRowId,
+    createInterpretation,
+    updateInterpretation,
+    message,
+    closeModal,
+  ]);
 
   const filteredRows = useMemo(() => {
     const serviceTerm = serviceFilter.trim().toLowerCase();
@@ -246,11 +223,11 @@ export default function InterpretationPage() {
           dataSource={filteredRows}
           loading={isLoading}
           columnAlign="left"
-           pagination={{
+          pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
             onChange: (current, pageSize) =>
               setPagination({ current, pageSize }),
@@ -263,9 +240,6 @@ export default function InterpretationPage() {
         onClose={closeModal}
         title={editingRowId ? "Edit Interpretation" : "Add Interpretation"}
         form={form}
-        errors={fieldErrors}
-        onPatchForm={patchForm}
-        onClearError={clearFieldError}
         onSave={handleSave}
       />
     </div>
