@@ -3,23 +3,25 @@ import {
   MOCK_WALK_IN_PATIENTS,
   searchWalkInPatients,
 } from '@/features/opd/api/mock-walk-in-patients';
-import {
-  MOCK_DOCTORS,
-  MOCK_SERVICES,
-  searchServices,
-} from '@/features/opd/api/mock-walk-in-services';
 
 export const opdEndpoints = api.injectEndpoints({
   endpoints: (builder) => ({
     createPatient: builder.mutation({
       query: (body) => ({
-        url: '/registration/patients/create',
+        url: '/registration/patient-registration-with-visit',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Patient'],
     }),
-    // Real API: GET /api/registration/patients/get-by-id?RegNo=...
+    registerPatientWithVisit: builder.mutation({
+      query: (body) => ({
+        url: '/registration/patient-registration-with-visit',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Patient'],
+    }),
     getPatientById: builder.query({
       query: (RegNo) => ({
         url: '/registration/patients/get-by-id',
@@ -33,23 +35,46 @@ export const opdEndpoints = api.injectEndpoints({
       }),
       providesTags: ['WalkInPatient'],
     }),
-    searchWalkInServices: builder.query({
-      queryFn: async ({ category, query }) => ({
-        data: searchServices(MOCK_SERVICES, category, query),
-      }),
-      providesTags: ['WalkInService'],
+    getGenders: builder.query({
+      query: () => '/admin/pathology/lookups/genders',
+      transformResponse: (res) =>
+        (res.data ?? []).map((g) => ({ value: g.Gender_ID, label: g.Gender })),
+      providesTags: ['Lookup'],
     }),
-    getWalkInDoctors: builder.query({
-      queryFn: async () => ({ data: MOCK_DOCTORS }),
-      providesTags: ['WalkInService'],
+    getReligions: builder.query({
+      query: () => '/registration/religions',
+      transformResponse: (res) =>
+        (res.data ?? []).map((r) => ({ value: r.religion_ID, label: r.religion_name })),
+      providesTags: ['Lookup'],
+    }),
+    getConsultants: builder.query({
+      query: () => '/registration/consultants',
+      transformResponse: (res) =>
+        (res.data ?? []).map((c) => ({ value: c.empID, label: c.employeeName })),
+      providesTags: ['Lookup'],
+    }),
+    getOpdDesignations: builder.query({
+      query: () => '/registration/designations',
+      transformResponse: (res) =>
+        (res.data ?? []).map((d) => ({ value: d.party_Desg_ID, label: d.party_Desg_Name })),
+      providesTags: ['Lookup'],
+    }),
+    searchOpdServices: builder.query({
+      query: () => '/opd/services/search',
+      transformResponse: (res) => res.data ?? [],
+      providesTags: ['OpdService'],
     }),
   }),
 });
 
 export const {
-  useLazySearchWalkInPatientsQuery,
-  useLazySearchWalkInServicesQuery,
-  useGetWalkInDoctorsQuery,
   useCreatePatientMutation,
+  useRegisterPatientWithVisitMutation,
+  useLazySearchWalkInPatientsQuery,
+  useGetGendersQuery,
+  useGetReligionsQuery,
+  useGetConsultantsQuery,
+  useGetOpdDesignationsQuery,
+  useSearchOpdServicesQuery,
   useLazyGetPatientByIdQuery,
 } = opdEndpoints;

@@ -5,50 +5,51 @@ import { App, Checkbox, Col, Row, Select } from "antd";
 import { useConfirm } from "@/hooks/useConfirm";
 import { FIELD_CONTROL_CLASS } from "@/lib/field-control";
 import AddedServicesPanel from "@/features/opd/components/AddedServicesPanel";
+import { useSearchOpdServicesQuery } from "@/features/opd/api/opdEndpoints";
 import {
-  MOCK_DOCTORS,
-  MOCK_SERVICES,
-  formatPkr,
-  formatServiceDateTime,
-} from "@/features/opd/api/mock-walk-in-services";
-
-const SERVICE_CATEGORY_OPTIONS = [
-  { value: "all", label: "All Category" },
-  { value: "consultation", label: "Consultation" },
-  { value: "laboratory", label: "Laboratory" },
-  { value: "radiology", label: "Radiology" },
-];
+  SERVICE_CATEGORY_OPTIONS,
+  SERVICE_CATEGORY_MAP,
+} from "@/features/opd/pages/walk-in-patient/walk-in-patient-options";
+import { formatServiceDateTime, formatPkr } from "@/features/opd/api/mock-walk-in-services";
 
 function createAddedService(service) {
   return {
-    id: `added-${service.id}-${Date.now()}`,
-    serviceId: service.id,
-    name: service.name,
-    price: service.price,
+    id: `added-${service.S_ID}-${Date.now()}`,
+    serviceId: service.S_ID,
+    name: service.S_Name,
+    price: service.S_Amount ?? 0,
     quantity: 1,
     discount: 0,
-    doctorId: MOCK_DOCTORS[0].id,
+    doctorId: null,
     addedAt: formatServiceDateTime(),
   };
 }
 
-export default function SearchServicesSection({ variant = "full" }) {
+export default function SearchServicesSection({
+  variant = "full",
+  addedServices,
+  onAddedServicesChange,
+  consultantOptions = [],
+  onSave,
+  onCancel,
+  isSaving = false,
+}) {
   const { message } = App.useApp();
   const { confirmDelete } = useConfirm();
   const isSidebar = variant === "sidebar";
   const [category, setCategory] = useState("all");
-  const [addedServices, setAddedServices] = useState([]);
 
-  // Filter MOCK_SERVICES by selected category — no search input needed
+  const { data: allServices = [] } = useSearchOpdServicesQuery();
+
   const serviceOptions = useMemo(
     () =>
-      MOCK_SERVICES.filter(
-        (s) => category === "all" || s.category === category,
-      ).map((s) => ({
-        value: s.id,
-        label: `${s.name} (${formatPkr(s.price)})`,
-      })),
-    [category],
+      allServices
+        .filter((s) => category === "all" || s.S_Category === category)
+        .map((s) => ({
+          value: s.S_ID,
+          label: `${s.S_Name}${s.Display_Rate ? ` (PKR ${s.Display_Rate})` : s.S_Amount ? ` (${formatPkr(s.S_Amount)})` : ""}`,
+        })),
+    [allServices, category],
   );
 
   const selectedServiceValues = useMemo(
@@ -62,15 +63,13 @@ export default function SearchServicesSection({ variant = "full" }) {
   );
 
   const handleSelectedServicesChange = (selectedIds) => {
-    setAddedServices((prev) => {
+    onAddedServicesChange((prev) => {
       const existingMap = new Map(prev.map((row) => [row.serviceId, row]));
-
       return selectedIds
         .map((serviceId) => {
           const existing = existingMap.get(serviceId);
           if (existing) return existing;
-
-          const service = MOCK_SERVICES.find((s) => s.id === serviceId);
+          const service = allServices.find((s) => s.S_ID === serviceId);
           return service ? createAddedService(service) : null;
         })
         .filter(Boolean);
@@ -79,13 +78,13 @@ export default function SearchServicesSection({ variant = "full" }) {
 
   const handleQuantityChange = (rowId, quantity) => {
     const nextQty = Math.max(1, quantity);
-    setAddedServices((prev) =>
+    onAddedServicesChange((prev) =>
       prev.map((row) => (row.id === rowId ? { ...row, quantity: nextQty } : row)),
     );
   };
 
   const handleDoctorChange = (rowId, doctorId) => {
-    setAddedServices((prev) =>
+    onAddedServicesChange((prev) =>
       prev.map((row) => (row.id === rowId ? { ...row, doctorId } : row)),
     );
   };
@@ -93,22 +92,11 @@ export default function SearchServicesSection({ variant = "full" }) {
   const handleRemove = async (rowId) => {
     const row = addedServices.find((item) => item.id === rowId);
     const confirmed = await confirmDelete({ itemName: row?.name });
-
     if (confirmed) {
-      setAddedServices((prev) => prev.filter((item) => item.id !== rowId));
+      onAddedServicesChange((prev) => prev.filter((item) => item.id !== rowId));
     }
   };
 
-  const handleCancel = () => {
-    setAddedServices([]);
-  };
-
-  const handleSave = () => {
-    message.success("Record saved successfully.");
-    // TODO: wire save walk-in record API
-  };
-
-  // The service select dropdown — category drives its options, no search input
   const serviceSelectDropdown = (
     <div className="walk-in-service-results-dropdown-wrap">
       <Select
@@ -145,9 +133,7 @@ export default function SearchServicesSection({ variant = "full" }) {
           className={`walk-in-services-filter-category ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
-          onChange={(val) => {
-            setCategory(val);
-          }}
+          onChange={(val) => setCategory(val)}
         />
         {serviceSelectDropdown}
       </div>
@@ -160,9 +146,7 @@ export default function SearchServicesSection({ variant = "full" }) {
           className={`w-full ${FIELD_CONTROL_CLASS}`}
           value={category}
           options={SERVICE_CATEGORY_OPTIONS}
-          onChange={(val) => {
-            setCategory(val);
-          }}
+          onChange={(val) => setCategory(val)}
         />
       </Col>
       <Col xs={24} md={13} className="walk-in-services-filters-grid-col">
@@ -178,12 +162,13 @@ export default function SearchServicesSection({ variant = "full" }) {
           <AddedServicesPanel
             variant="sidebar"
             services={addedServices}
-            doctors={MOCK_DOCTORS}
+            consultantOptions={consultantOptions}
             onQuantityChange={handleQuantityChange}
             onDoctorChange={handleDoctorChange}
             onRemove={handleRemove}
-            onCancel={handleCancel}
-            onSave={handleSave}
+            onCancel={onCancel}
+            onSave={onSave}
+            isSaving={isSaving}
           />
         </div>
       </div>
@@ -194,12 +179,13 @@ export default function SearchServicesSection({ variant = "full" }) {
         <div className="walk-in-services-content-row walk-in-services-content-row--full">
           <AddedServicesPanel
             services={addedServices}
-            doctors={MOCK_DOCTORS}
+            consultantOptions={consultantOptions}
             onQuantityChange={handleQuantityChange}
             onDoctorChange={handleDoctorChange}
             onRemove={handleRemove}
-            onCancel={handleCancel}
-            onSave={handleSave}
+            onCancel={onCancel}
+            onSave={onSave}
+            isSaving={isSaving}
           />
         </div>
       </div>

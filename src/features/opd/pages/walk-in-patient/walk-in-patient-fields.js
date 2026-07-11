@@ -3,15 +3,9 @@ import DobAgeField from '@/components/ui/DobAgeField';
 import {
   TITLE_OPTIONS,
   RELATION_OPTIONS,
-  GENDER_OPTIONS,
-  RELIGION_OPTIONS,
-  DEPARTMENT_OPTIONS,
-  CONSULTANT_OPTIONS,
   CATEGORY_OPTIONS,
   PATIENT_TYPE_OPTIONS,
   CHECKUP_TYPE_OPTIONS,
-  INSURER_OPTIONS,
-  DESIGNATION_OPTIONS,
   LAB_OPTIONS,
   dobAgeRules,
 } from './walk-in-patient-options';
@@ -19,19 +13,13 @@ import {
 export const WALK_IN_INITIAL_VALUES = {
   title: 'mr',
   relation: 'so',
-  gender: 'male',
-  religion: 'islam',
-  department: 'laboratory',
-  consultant: 'abc',
   category: 'general',
   patientType: 'opd',
   checkupType: 'emergency',
-  insurer: 'ptcl',
-  designation: 'na',
   dobAge: { age: '', unit: DOB_AGE_UNITS.years, dob: null },
 };
 
-export const WALK_IN_BASE_FIELDS = [
+export const buildWalkInBaseFields = ({ genderOptions = [], religionOptions = [] } = {}) => [
   {
     type: 'select',
     name: 'title',
@@ -82,7 +70,7 @@ export const WALK_IN_BASE_FIELDS = [
     label: 'Gender',
     floating: true,
     span: 6,
-    options: GENDER_OPTIONS,
+    options: genderOptions,
   },
   {
     type: 'text',
@@ -104,7 +92,7 @@ export const WALK_IN_BASE_FIELDS = [
     label: 'Religion',
     floating: true,
     span: 6,
-    options: RELIGION_OPTIONS,
+    options: religionOptions,
   },
   {
     type: 'select',
@@ -145,22 +133,14 @@ export const WALK_IN_BASE_FIELDS = [
   },
 ];
 
-export const WALK_IN_VISIT_FIELDS = [
-  {
-    type: 'select',
-    name: 'department',
-    label: 'Department',
-    floating: true,
-    span: 6,
-    options: DEPARTMENT_OPTIONS,
-  },
+export const buildWalkInVisitFields = ({ consultantOptions = [] } = {}) => [
   {
     type: 'select',
     name: 'consultant',
     label: 'Consultant',
     floating: true,
     span: 6,
-    options: CONSULTANT_OPTIONS,
+    options: consultantOptions,
   },
   {
     type: 'text',
@@ -198,23 +178,14 @@ export const WALK_IN_CATEGORY_FIELDS = [
   },
 ];
 
-
-export const WALK_IN_PANEL_FIELDS = [
-  {
-    type: 'select',
-    name: 'insurer',
-    label: 'Insurer',
-    floating: true,
-    span: 6,
-    options: INSURER_OPTIONS,
-  },
+export const buildWalkInPanelFields = ({ designationOptions = [] } = {}) => [
   {
     type: 'select',
     name: 'designation',
     label: 'Designation',
     floating: true,
     span: 6,
-    options: DESIGNATION_OPTIONS,
+    options: designationOptions,
   },
   {
     type: 'text',
@@ -225,7 +196,6 @@ export const WALK_IN_PANEL_FIELDS = [
   },
 ];
 
-// Rendered when category === 'b2b'
 export const WALK_IN_B2B_FIELDS = [
   {
     type: 'select',

@@ -13,31 +13,6 @@ export const RELATION_OPTIONS = [
   { value: 'wo', label: 'W/O' },
 ];
 
-export const GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-];
-
-export const RELIGION_OPTIONS = [
-  { value: 'islam', label: 'Islam' },
-  { value: 'hindu', label: 'Hindu' },
-  { value: 'christian', label: 'Christian' },
-  { value: 'other', label: 'Other' },
-];
-
-export const DEPARTMENT_OPTIONS = [
-  { value: 'laboratory', label: 'Laboratory' },
-  { value: 'private', label: 'Private' },
-  { value: 'radiology', label: 'Radiology' },
-];
-
-export const CONSULTANT_OPTIONS = [
-  { value: 'abc', label: 'Mr abc' },
-  { value: 'ali', label: 'Mr Ali' },
-  { value: 'xyz', label: 'Mr xyz' },
-];
-
 export const CATEGORY_OPTIONS = [
   { value: 'general', label: 'General' },
   { value: 'panel', label: 'Panel' },
@@ -54,17 +29,26 @@ export const CHECKUP_TYPE_OPTIONS = [
   { value: 'emergency', label: 'Emergency' },
 ];
 
-export const INSURER_OPTIONS = [
-  { value: 'ptcl', label: 'PTCL' },
-  { value: 'ssp', label: 'SSP' },
-  { value: 'state-life', label: 'State Life' },
-];
-
-export const DESIGNATION_OPTIONS = [{ value: 'na', label: 'N/A' }];
-
 export const LAB_OPTIONS = [
   { value: 'chughtai', label: 'Chughtai Lab' },
   { value: 'excel', label: 'Excel Lab' },
   { value: 'dr-essa', label: 'Dr. Essa Laboratory' },
   { value: 'shaukat', label: 'Shaukat Khanum Lab' },
+];
+
+export const SERVICE_CATEGORY_MAP = {
+  1: 'Consultation',
+  2: 'Laboratory',
+  3: 'Radiology',
+  4: 'Pharmacy',
+  5: 'Procedure',
+};
+
+export const SERVICE_CATEGORY_OPTIONS = [
+  { value: 'all', label: 'All Category' },
+  { value: 1, label: 'Consultation' },
+  { value: 2, label: 'Laboratory' },
+  { value: 3, label: 'Radiology' },
+  { value: 4, label: 'Pharmacy' },
+  { value: 5, label: 'Procedure' },
 ];
