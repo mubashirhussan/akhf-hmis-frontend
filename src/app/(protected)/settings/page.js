@@ -1,7 +1,7 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
 
 export const metadata = {
-  title: 'Settings | AKHF',
+  title: 'Settings',
 };
 
 export default function SettingsModulePage() {

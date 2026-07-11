@@ -1,7 +1,7 @@
 import MarkVisitingPage from '@/features/human-resource/pages/mark-visiting/MarkVisitingPage';
 
 export const metadata = {
-  title: 'Mark Visiting | AKHF',
+  title: 'Mark Visiting',
 };
 
 export default function MarkVisitingRoutePage() {

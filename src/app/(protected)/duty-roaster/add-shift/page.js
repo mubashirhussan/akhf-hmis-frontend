@@ -1,7 +1,7 @@
 import AddShiftPage from '@/features/duty-roaster/pages/add-shift/AddShiftPage';
 
 export const metadata = {
-  title: 'Add Shift | AKHF',
+  title: 'Add Shift',
 };
 
 export default function AddShiftRoutePage() {

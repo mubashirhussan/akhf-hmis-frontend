@@ -1,7 +1,7 @@
 import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 
 export const metadata = {
-  title: 'Forgot password | AKHF',
+  title: 'Forgot password',
 };
 
 export default function Page() {

@@ -1,7 +1,7 @@
 import DesignationPage from "@/features/human-resource/pages/add-designation/DesignationPage";
 
 export const metadata = {
-  title: 'Add Designation | AKHF',
+  title: 'Add Designation',
 };
 
 export default function DesignationRoutePage() {

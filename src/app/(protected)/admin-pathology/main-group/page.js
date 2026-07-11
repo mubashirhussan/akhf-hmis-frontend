@@ -1,7 +1,7 @@
 import MainGroupPage from '@/features/admin-pathology/pages/main-group/MainGroupPage';
 
 export const metadata = {
-  title: 'Pathology Main Group | AKHF',
+  title: 'Pathology Main Group',
 };
 
 export default function MainGroupRoutePage() {

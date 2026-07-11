@@ -1,7 +1,7 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
 
 export const metadata = {
-  title: 'Pharmacy | AKHF',
+  title: 'Pharmacy',
 };
 
 export default function PharmacyModulePage() {

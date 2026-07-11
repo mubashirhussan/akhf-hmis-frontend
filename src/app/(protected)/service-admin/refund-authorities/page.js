@@ -1,7 +1,7 @@
 import RefundAuthoritiesPage from '@/features/service-admin/pages/refund-authorities/RefundAuthoritiesPage';
 
 export const metadata = {
-  title: 'Refund Authorities | AKHF',
+  title: 'Refund Authorities',
 };
 
 export default function RefundAuthoritiesRoutePage() {

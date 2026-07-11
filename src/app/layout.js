@@ -9,7 +9,10 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "AKHF",
+  title: {
+    default: "HMIS",
+    template: "%s | HMIS",
+  },
   description: "Al-Khidmat Hospital Management Information System",
 };
 

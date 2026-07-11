@@ -1,7 +1,7 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
 
 export const metadata = {
-  title: 'Service Admin | AKHF',
+  title: 'Service Admin',
 };
 
 export default function ServiceAdminModulePage() {

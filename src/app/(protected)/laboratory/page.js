@@ -1,7 +1,7 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
 
 export const metadata = {
-  title: 'Laboratory | AKHF',
+  title: 'Laboratory',
 };
 
 export default function LaboratoryModulePage() {

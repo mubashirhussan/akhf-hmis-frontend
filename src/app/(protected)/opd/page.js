@@ -1,7 +1,7 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
 
 export const metadata = {
-  title: 'OPD | AKHF',
+  title: 'OPD',
 };
 
 export default function OpdModulePage() {

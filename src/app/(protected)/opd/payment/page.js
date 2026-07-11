@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import PaymentList from '@/features/billing/pages/payment/PaymentListPage';
 
 export const metadata = {
-  title: 'Payment | AKHF',
+  title: 'Payment',
 };
 
 export default function OpdPaymentPage() {

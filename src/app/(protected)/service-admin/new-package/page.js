@@ -1,7 +1,7 @@
 import NewPackagePage from '@/features/service-admin/pages/new-package/NewPackagePage';
 
 export const metadata = {
-  title: 'New Package | AKHF',
+  title: 'New Package',
 };
 
 export default function NewPackageRoutePage() {

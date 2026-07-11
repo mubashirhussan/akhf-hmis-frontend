@@ -2,7 +2,7 @@ import EmergencyRegistrationForm from '@/features/opd/pages/emergency-registrati
 
 
 export const metadata = {
-  title: 'Emergency Registration | AKHF',
+  title: 'Emergency Registration',
 };
 
 export default function EmergencyRegistrationPage() {
