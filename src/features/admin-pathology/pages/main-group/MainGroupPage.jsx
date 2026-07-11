@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { App, Button, Form, Tooltip, Input } from "antd";
+import { App, Button, Form, Tooltip, Input, Row, Col } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
 import MainGroupAddModal from "@/features/admin-pathology/pages/main-group/MainGroupAddModal";
@@ -24,9 +24,10 @@ export default function MainGroupPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, });
   const { confirmDelete } = useConfirm();
-  const { data: rows = [], isLoading } = useGetMainGroupsQuery();
+  const { data, isLoading } = useGetMainGroupsQuery(  {page: pagination.current,
+  pageSize: pagination.pageSize, search: searchTerm,});
   const [createMainGroup] = useCreateMainGroupMutation();
   const [updateMainGroup] = useUpdateMainGroupMutation();
   const [deleteMainGroup] = useDeleteMainGroupMutation();
@@ -100,13 +101,7 @@ export default function MainGroupPage() {
     }
   }, [editForm, editingRow, updateMainGroup, message]);
 
-  const filteredRows = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-
-    if (!term) return rows;
-
-    return rows.filter((row) => row.groupName?.toLowerCase().includes(term));
-  }, [rows, searchTerm]);
+ 
 
   const columns = useMemo(
     () => [
@@ -168,31 +163,45 @@ export default function MainGroupPage() {
 
   return (
     <div className="services-billing-page main-group-page">
-      <div
-        className="main-group-table-toolbar"
-        style={{ display: "flex", gap: 12, justifyContent: "space-between" }}
-      >
-        <Input
-          placeholder="Filter by Main Group"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPagination((prev) => ({ ...prev, current: 1 }));
-          }}
-          allowClear
-          style={{ width: 260 }}
-        />
-
-        <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
-          Add Main Group
-        </Button>
-      </div>
+    
 
       <section className="services-billing-results" aria-label="main group">
+       <Row gutter={[16, 16]} align="middle" className="mb-2.5">
+  <Col
+    xs={24}
+    sm={24}
+    md={12}
+    lg={8}
+    xl={4}
+  >
+    <Input
+      placeholder="Filter by Main Group"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setPagination((prev) => ({ ...prev, current: 1 }));
+      }}
+      allowClear
+    />
+  </Col>
+
+  <Col
+    xs={24}
+    sm={24}
+    md={12}
+    lg={16}
+    xl={20}
+    style={{ textAlign: "right" }}
+  >
+    <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
+      Add Main Group
+    </Button>
+  </Col>
+</Row>
         <DataTable
           rowKey="id"
           columns={columns}
-          dataSource={filteredRows}
+          dataSource={data ?? []}
           loading={isLoading}
           columnAlign="left"
           pagination={{

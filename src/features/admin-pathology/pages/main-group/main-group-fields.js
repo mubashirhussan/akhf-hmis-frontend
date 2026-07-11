@@ -9,7 +9,7 @@ export const MAIN_GROUP_FIELDS = [
     name: "groupName",
     label: "Group Name",
 
-    rules: [{ required: true, message: "Group Name is required." }],
+    rules: [{ required: true, message: "Group Name is required.", whitespace:true }],
   },
   {
     type: "number",

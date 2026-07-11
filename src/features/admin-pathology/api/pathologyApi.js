@@ -31,15 +31,24 @@ import {
 export const pathologyApi = api.injectEndpoints({
   endpoints: (builder) => ({
 getMainGroups: builder.query({
-  query: () => "/admin/pathology/groups",
+  query: ({ page, pageSize,search  }) => ({
+    url: "/admin/pathology/groups",
+    params: {
+      page,
+      pageSize,
+      search 
+    },
+  }),
+
   transformResponse: (response) =>
-response.data.map((item) => ({
-  id: String(item.TGID),
-  groupId: item.TGID,
-  TGID: item.TGID,
-  groupName: item.TGName,
-  fee: item.Fee ?? 0,
-})),
+    response.data.map((item) => ({
+      id: String(item.TGID),
+      groupId: item.TGID,
+      TGID: item.TGID,
+      groupName: item.TGName,
+      fee: item.Fee ?? 0,
+    })),
+
   providesTags: ["MainGroup"],
 }),
 createMainGroup: builder.mutation({
