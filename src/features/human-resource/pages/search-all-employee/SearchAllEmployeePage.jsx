@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { App, Button, Form, Tooltip } from "antd";
 import AppIcon from "@/components/icons/AppIcon";
 import DataTable from "@/components/ui/DataTable";
-import { ROUTES } from "@/config/routes";
 import { createEmployeeSearchFilters } from "@/features/human-resource/api/mock-employee-search";
 import {
   useDeleteEmployeeMutation,
@@ -44,7 +43,7 @@ export default function SearchAllEmployeePage() {
   const handleEdit = useCallback(
     (record) => {
       router.push(
-        `${ROUTES.humanResource.employeeEntry}?employeeId=${record.id}`,
+        `/human-resource/employee-entry?employeeId=${record.id}`,
       );
     },
     [router],

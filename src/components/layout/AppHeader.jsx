@@ -4,7 +4,22 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AppIcon from '@/components/icons/AppIcon';
-import { getBreadcrumbs } from '@/lib/navigation-utils';
+import { findNavItemByHref, normalizePath } from '@/components/layout/sidebar-nav';
+import {
+  getWorklistRowById,
+  MOCK_LABORATORY_WORKLIST_ROWS,
+} from '@/features/laboratory/api/mock-laboratory-worklist';
+import { resolveTestConductedRecord } from '@/features/laboratory/api/mock-test-conducted';
+import { MOCK_SERVICES_BILLING_VISITS } from '@/features/billing/api/mock-services-billing';
+import { buildBillingVisitHref, buildOpdPaymentHref } from '@/features/billing/utils/billing-navigation';
+import {
+  buildResultEntryHref,
+  buildSampleCollectionHref,
+  buildSampleReceivingHref,
+  buildTestConductedHref,
+  buildDeliveredReportHref,
+  buildUndeliveredReportHref,
+} from '@/features/laboratory/utils/laboratory-navigation';
 
 function formatDate(date) {
   return date.toLocaleDateString('en-GB', {
@@ -29,6 +44,109 @@ function formatTime(date) {
     minute: '2-digit',
     hour12: true,
   });
+}
+
+function getBreadcrumbs(pathname, searchParams) {
+  const item = findNavItemByHref(pathname);
+  if (!item) {
+    return [{ label: 'Home', href: '/' }];
+  }
+
+  const baseCrumb = { label: item.label, href: item.href };
+  const path = normalizePath(pathname);
+  const recordId = searchParams?.get?.('recordId');
+  const visitId = searchParams?.get?.('visitId');
+
+  if (path === '/laboratory/sample-collection' && recordId) {
+    const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+    return [
+      baseCrumb,
+      {
+        label: record ? `Lab #${record.labNo}` : 'Collect Sample',
+        href: buildSampleCollectionHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/laboratory/sample-receiving' && recordId) {
+    const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+    return [
+      baseCrumb,
+      {
+        label: record ? `Lab #${record.labNo}` : 'Receive Sample',
+        href: buildSampleReceivingHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/laboratory/result-entry' && recordId) {
+    const record = MOCK_LABORATORY_WORKLIST_ROWS.find((row) => row.id === recordId);
+    return [
+      baseCrumb,
+      {
+        label: record ? `Lab #${record.labNo}` : 'Enter Result',
+        href: buildResultEntryHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/laboratory/test-conducted' && recordId) {
+    const row = getWorklistRowById(recordId);
+    const record = row ? resolveTestConductedRecord(row) : null;
+    return [
+      baseCrumb,
+      {
+        label: record?.labNo ? `Lab #${record.labNo}` : 'Ready for Approval',
+        href: buildTestConductedHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/laboratory/undelivered-reports' && recordId) {
+    const record = getWorklistRowById(recordId);
+    return [
+      baseCrumb,
+      {
+        label: record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery',
+        href: buildUndeliveredReportHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/laboratory/delivered-reports' && recordId) {
+    const record = getWorklistRowById(recordId);
+    return [
+      baseCrumb,
+      {
+        label: record?.labNo ? `Lab #${record.labNo}` : 'Report Delivery',
+        href: buildDeliveredReportHref(recordId),
+      },
+    ];
+  }
+
+  if (path === '/opd/services-billing' && visitId) {
+    const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
+    return [
+      baseCrumb,
+      {
+        label: visit ? `Visit #${visit.visitNo}` : 'Visit Services',
+        href: buildBillingVisitHref(visitId),
+      },
+    ];
+  }
+
+  if (path === '/opd/payment' && visitId) {
+    const visit = MOCK_SERVICES_BILLING_VISITS.find((row) => row.id === visitId);
+    return [
+      baseCrumb,
+      {
+        label: visit ? `Visit #${visit.visitNo}` : 'Visit Payment',
+        href: buildOpdPaymentHref(visitId),
+      },
+    ];
+  }
+
+  return [baseCrumb];
 }
 
 export default function AppHeader() {

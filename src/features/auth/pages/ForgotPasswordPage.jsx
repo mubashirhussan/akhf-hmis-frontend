@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Button, Form, Input } from "antd";
 import AuthShell from "@/features/auth/components/AuthShell";
-import { ROUTES } from "@/config/routes";
 
 export default function ForgotPasswordPage() {
   return (
@@ -29,7 +28,7 @@ export default function ForgotPasswordPage() {
       </Form>
 
       <p className="auth-switch">
-        <Link href={ROUTES.login} className="auth-link auth-link--strong">
+        <Link href="/login" className="auth-link auth-link--strong">
           Back to sign in
         </Link>
       </p>

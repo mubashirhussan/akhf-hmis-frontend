@@ -4,15 +4,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { footerLinks, navigation } from "@/config/navigation";
-import { ROUTES } from "@/config/routes";
-import { logout } from "@/store/authSlice";
-import AppIcon from "@/components/icons/AppIcon";
+import { Modal } from "antd";
 import {
   getExpandedKeys,
   hasActiveDescendant,
   isPathActive,
-} from "@/lib/navigation-utils";
+  navigation,
+  footerLinks,
+} from "@/components/layout/sidebar-nav";
+import { clearLegacyStoredAuth, logout } from "@/store/authSlice";
+import { clearAuthSession } from "@/features/auth/session";
+import AppIcon from "@/components/icons/AppIcon";
 
 function NavChevron({ expanded }) {
   return (
@@ -136,6 +138,8 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [hovering, setHovering] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const pathExpandedKeys = useMemo(() => getExpandedKeys(pathname), [pathname]);
   const [userToggledKeys, setUserToggledKeys] = useState(() => new Set());
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -178,12 +182,46 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
     });
   };
 
+  const handleConfirmLogout = async () => {
+    setLoggingOut(true);
+    try {
+      dispatch(logout());
+      clearLegacyStoredAuth();
+      try {
+        await clearAuthSession();
+      } catch {
+        // Redirect even if cookie clear fails.
+      }
+      setLogoutOpen(false);
+      router.replace("/login");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
   return (
     <aside
       className={`app-sidebar relative flex h-screen shrink-0 flex-col bg-[var(--app-primary)] text-white transition-[width] duration-200 ${isCollapsed ? "w-[72px]" : "w-[256px]"} ${isHoverExpanded ? "app-sidebar--hover-expand" : ""}`}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
+      <Modal
+        open={logoutOpen}
+        title="Logout"
+        centered
+        okText="Yes, logout"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+        confirmLoading={loggingOut}
+        onOk={handleConfirmLogout}
+        onCancel={() => {
+          if (!loggingOut) setLogoutOpen(false);
+        }}
+        mask={{ closable: !loggingOut }}
+        closable={!loggingOut}
+      >
+        Are you sure you want to logout?
+      </Modal>
       <button
         type="button"
         onClick={() => onCollapsedChange(!collapsed)}
@@ -240,10 +278,7 @@ export default function AppSidebar({ collapsed, onCollapsedChange }) {
                 {link.key === "logout" ? (
                   <button
                     type="button"
-                    onClick={() => {
-                      dispatch(logout());
-                      router.push(ROUTES.login);
-                    }}
+                    onClick={() => setLogoutOpen(true)}
                     className="sidebar-nav-parent cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-white/95 hover:bg-white/10"
                   >
                     <AppIcon icon={link.icon} />

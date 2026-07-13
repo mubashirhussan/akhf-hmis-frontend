@@ -1,5 +1,11 @@
 import { DOB_AGE_UNITS } from '@/lib/dob-from-age';
-import { ageRequired } from '@/lib/form-validation';
+
+const ageRequired = (message) => ({
+  validator: (_, value) =>
+    value?.age !== '' && value?.age !== undefined
+      ? Promise.resolve()
+      : Promise.reject(new Error(message)),
+});
 
 
 export const PATHOLOGY_TEST_RANGE_INITIAL_VALUES = {

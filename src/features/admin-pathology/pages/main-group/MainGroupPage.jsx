@@ -24,10 +24,13 @@ export default function MainGroupPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const { confirmDelete } = useConfirm();
-  const { data, isLoading } = useGetMainGroupsQuery(  {page: pagination.current,
-  pageSize: pagination.pageSize, search: searchTerm,});
+  const { data, isLoading } = useGetMainGroupsQuery({
+    page: pagination.current,
+    pageSize: pagination.pageSize,
+    search: searchTerm,
+  });
   const [createMainGroup] = useCreateMainGroupMutation();
   const [updateMainGroup] = useUpdateMainGroupMutation();
   const [deleteMainGroup] = useDeleteMainGroupMutation();
@@ -101,8 +104,6 @@ export default function MainGroupPage() {
     }
   }, [editForm, editingRow, updateMainGroup, message]);
 
- 
-
   const columns = useMemo(
     () => [
       {
@@ -163,41 +164,33 @@ export default function MainGroupPage() {
 
   return (
     <div className="services-billing-page main-group-page">
-    
-
       <section className="services-billing-results" aria-label="main group">
-       <Row gutter={[16, 16]} align="middle" className="mb-2.5">
-  <Col
-    xs={24}
-    sm={24}
-    md={12}
-    lg={8}
-    xl={4}
-  >
-    <Input
-      placeholder="Filter by Main Group"
-      value={searchTerm}
-      onChange={(e) => {
-        setSearchTerm(e.target.value);
-        setPagination((prev) => ({ ...prev, current: 1 }));
-      }}
-      allowClear
-    />
-  </Col>
+        <Row gutter={[16, 16]} align="middle" className="mb-2.5">
+          <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+            <Input
+              placeholder="Filter by Main Group"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPagination((prev) => ({ ...prev, current: 1 }));
+              }}
+              allowClear
+            />
+          </Col>
 
-  <Col
-    xs={24}
-    sm={24}
-    md={12}
-    lg={16}
-    xl={20}
-    style={{ textAlign: "right" }}
-  >
-    <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
-      Add Main Group
-    </Button>
-  </Col>
-</Row>
+          <Col
+            xs={24}
+            sm={24}
+            md={12}
+            lg={16}
+            xl={20}
+            style={{ textAlign: "right" }}
+          >
+            <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
+              Add Main Group
+            </Button>
+          </Col>
+        </Row>
         <DataTable
           rowKey="id"
           columns={columns}
@@ -208,7 +201,7 @@ export default function MainGroupPage() {
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
-            pageSizeOptions: ["10","20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             showTotal: (total) => `Total ${total} items`,
             onChange: (current, pageSize) =>
               setPagination({ current, pageSize }),

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { App, Form } from "antd";
 import AppTabs from "@/components/ui/AppTabs";
-import { ROUTES } from "@/config/routes";
 import {
   useCreateEmployeeMutation,
   useUpdateEmployeeInfoMutation,
@@ -300,7 +299,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
         const created = await createEmployee(payload).unwrap();
         setEmployeeId(created.id);
         router.replace(
-          `${ROUTES.humanResource.employeeEntry}?employeeId=${created.id}`,
+          `/human-resource/employee-entry?employeeId=${created.id}`,
         );
       }
 
@@ -419,7 +418,7 @@ function EmployeeEntryFormContent({ editingEmployee, isEditMode }) {
   }, [photoPreview]);
 
   const handleNewEmployee = useCallback(() => {
-    router.replace(ROUTES.humanResource.employeeEntry);
+    router.replace("/human-resource/employee-entry");
   }, [router]);
 
   const handleClearInfo = () => {

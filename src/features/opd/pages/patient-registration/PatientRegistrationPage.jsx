@@ -1,15 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { App, Button, Collapse, Form } from 'antd';
 import DynamicForm from '@/components/form/DynamicForm';
-import {
-  clearPatientRegValidationState,
-  focusFormField,
-  handleFormChangeClearErrors,
-  highlightAllInvalidFields,
-} from '@/lib/form-validation';
 import {
   PATIENT_FORM_INITIAL_VALUES,
   PATIENT_FIELDS,
@@ -80,7 +74,6 @@ export default function PatientRegistrationForm() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [activePanels, setActivePanels] = useState(DEFAULT_OPEN_PANELS);
-  const [pendingSubmitErrors, setPendingSubmitErrors] = useState(null);
   const [createPatient, { isLoading: isSaving }] = useCreatePatientMutation();
   const labCategory = Form.useWatch('labCategory', form);
 
@@ -138,42 +131,17 @@ export default function PatientRegistrationForm() {
 
   const handleClear = () => {
     form.resetFields();
-    setPendingSubmitErrors(null);
-    clearPatientRegValidationState();
     setActivePanels(DEFAULT_OPEN_PANELS);
     message.info('Form cleared');
   };
 
-  useEffect(() => {
-    if (!pendingSubmitErrors?.length) {
-      return undefined;
-    }
-
-    const firstInvalidName = pendingSubmitErrors[0].name;
-    const timer = window.setTimeout(() => {
-      highlightAllInvalidFields(pendingSubmitErrors);
-      if (typeof form.scrollToField === 'function') {
-        form.scrollToField(firstInvalidName, {
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }
-      focusFormField(form, firstInvalidName);
-      setPendingSubmitErrors(null);
-    }, 50);
-
-    return () => window.clearTimeout(timer);
-  }, [pendingSubmitErrors, activePanels, form]);
-
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      setPendingSubmitErrors(null);
-      clearPatientRegValidationState();
 
       const payload = buildPatientPayload(values, {
-        hospitalID: 1,  // TODO: replace with value from your auth/session context
-        empID: 1,       // TODO: replace with logged-in user's empID
+        hospitalID: 1, // TODO: replace with value from your auth/session context
+        empID: 1, // TODO: replace with logged-in user's empID
       });
 
       await createPatient(payload).unwrap();
@@ -186,6 +154,7 @@ export default function PatientRegistrationForm() {
         message.error(error?.data?.message ?? 'Registration failed. Please try again.');
         return;
       }
+
       const errorFields = error?.errorFields ?? [];
       if (errorFields.length > 0) {
         const panelsToOpen = new Set(activePanels);
@@ -197,7 +166,6 @@ export default function PatientRegistrationForm() {
           }
         }
         setActivePanels([...panelsToOpen]);
-        setPendingSubmitErrors(errorFields);
       } else {
         setActivePanels(ALL_PANEL_KEYS);
       }
@@ -216,14 +184,8 @@ export default function PatientRegistrationForm() {
         scrollToFirstError
         initialValues={PATIENT_FORM_INITIAL_VALUES}
         onValuesChange={(changed) => {
-          handleFormChangeClearErrors(form, changed, (values) => {
-            if ('labCategory' in values && values.labCategory === 'b2b') {
-              form.setFieldValue('selectedLab', undefined);
-            }
-          });
-          const stillHasErrors = form.getFieldsError().some(({ errors }) => errors.length > 0);
-          if (!stillHasErrors) {
-            clearPatientRegValidationState();
+          if ('labCategory' in changed && changed.labCategory === 'b2b') {
+            form.setFieldValue('selectedLab', undefined);
           }
         }}
       >

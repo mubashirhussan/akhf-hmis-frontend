@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { env } from "@/config/env";
 import { logout } from "@/store/authSlice";
+import { clearAuthSession } from "@/features/auth/session";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: env.apiBaseUrl,
@@ -21,6 +22,14 @@ async function baseQueryWithAuth(args, api, extraOptions) {
 
   if (result.error?.status === 401 && !isLoginRequest) {
     api.dispatch(logout());
+    try {
+      await clearAuthSession();
+    } catch {
+      // Cookie clear is best-effort; redirect still happens.
+    }
+    if (typeof window !== "undefined") {
+      window.location.replace("/login");
+    }
   }
 
   return result;

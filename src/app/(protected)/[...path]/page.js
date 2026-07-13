@@ -1,5 +1,5 @@
 import ModulePlaceholder from '@/components/layout/ModulePlaceholder';
-import { findNavItemByHref, normalizePath } from '@/lib/navigation-utils';
+import { findNavItemByHref, normalizePath } from '@/components/layout/sidebar-nav';
 import { notFound } from 'next/navigation';
 
 export default async function ModulePage({ params }) {

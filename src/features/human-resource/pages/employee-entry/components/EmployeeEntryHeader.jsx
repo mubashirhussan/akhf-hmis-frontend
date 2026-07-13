@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { ROUTES } from '@/config/routes';
 
 export default function EmployeeEntryHeader({ isEditMode, onNewEmployee }) {
   return (
@@ -11,7 +10,7 @@ export default function EmployeeEntryHeader({ isEditMode, onNewEmployee }) {
       className={`employee-entry-header${isEditMode ? '' : ' employee-entry-header--end'}`}
     >
       {isEditMode ? (
-        <Link href={ROUTES.humanResource.searchAllEmployee} className="employee-entry-back-link">
+        <Link href="/human-resource/search-all-employee" className="employee-entry-back-link">
           <ArrowLeftOutlined aria-hidden />
           <span>Search Employees</span>
         </Link>
@@ -27,7 +26,7 @@ export default function EmployeeEntryHeader({ isEditMode, onNewEmployee }) {
             New Employee
           </Button>
         ) : (
-          <Link href={ROUTES.humanResource.searchAllEmployee}>
+          <Link href="/human-resource/search-all-employee">
             <Button>Search Employees</Button>
           </Link>
         )}

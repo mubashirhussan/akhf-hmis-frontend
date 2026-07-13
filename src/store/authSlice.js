@@ -1,46 +1,45 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const TOKEN_KEY = 'akhf_token';
-const LEGACY_TOKEN_KEY = 'akhf_access_token';
-const USER_KEY = 'akhf_user';
+const LEGACY_TOKEN_KEYS = ['akhf_token', 'akhf_access_token'];
+const LEGACY_USER_KEY = 'akhf_user';
 
-function readStoredToken() {
-  if (typeof window === 'undefined') return null;
-  return (
-    sessionStorage.getItem(TOKEN_KEY) ||
-    localStorage.getItem(TOKEN_KEY) ||
-    sessionStorage.getItem(LEGACY_TOKEN_KEY) ||
-    localStorage.getItem(LEGACY_TOKEN_KEY)
-  );
-}
-
-function readStoredUser() {
-  if (typeof window === 'undefined') return null;
-  const raw = sessionStorage.getItem(USER_KEY) || localStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
+/** One-time migration from pre-cookie localStorage / sessionStorage. */
+export function readLegacyStoredAuth() {
+  if (typeof window === 'undefined') {
+    return { token: null, user: null, remember: false };
   }
+
+  const remember = LEGACY_TOKEN_KEYS.some((key) => localStorage.getItem(key));
+
+  const token =
+    sessionStorage.getItem('akhf_token') ||
+    localStorage.getItem('akhf_token') ||
+    sessionStorage.getItem('akhf_access_token') ||
+    localStorage.getItem('akhf_access_token');
+
+  let user = null;
+  const raw =
+    sessionStorage.getItem(LEGACY_USER_KEY) ||
+    localStorage.getItem(LEGACY_USER_KEY);
+  if (raw) {
+    try {
+      user = JSON.parse(raw);
+    } catch {
+      user = null;
+    }
+  }
+
+  return { token, user, remember };
 }
 
-function clearStoredAuth() {
+export function clearLegacyStoredAuth() {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_KEY);
-  sessionStorage.removeItem(LEGACY_TOKEN_KEY);
-  localStorage.removeItem(LEGACY_TOKEN_KEY);
-  sessionStorage.removeItem(USER_KEY);
-  localStorage.removeItem(USER_KEY);
-}
-
-export function getInitialAuthState() {
-  return {
-    token: readStoredToken(),
-    user: readStoredUser(),
-    isHydrated: true,
-  };
+  for (const key of LEGACY_TOKEN_KEYS) {
+    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
+  }
+  sessionStorage.removeItem(LEGACY_USER_KEY);
+  localStorage.removeItem(LEGACY_USER_KEY);
 }
 
 const initialState = {
@@ -53,28 +52,21 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    hydrateAuth(state) {
-      state.token = readStoredToken();
-      state.user = readStoredUser();
+    hydrateAuth(state, action) {
+      const { token = null, user = null } = action.payload ?? {};
+      state.token = token;
+      state.user = user;
       state.isHydrated = true;
     },
     setCredentials(state, action) {
-      const { token, user, remember } = action.payload;
+      const { token, user } = action.payload;
       state.token = token;
       state.user = user ?? null;
-      clearStoredAuth();
-      if (typeof window !== 'undefined') {
-        const storage = remember ? localStorage : sessionStorage;
-        storage.setItem(TOKEN_KEY, token);
-        if (user) {
-          storage.setItem(USER_KEY, JSON.stringify(user));
-        }
-      }
+      state.isHydrated = true;
     },
     logout(state) {
       state.token = null;
       state.user = null;
-      clearStoredAuth();
     },
   },
 });

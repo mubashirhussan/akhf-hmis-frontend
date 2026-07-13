@@ -1,4 +1,4 @@
-import { findNavItemByHref } from '@/lib/navigation-utils';
+import { findNavItemByHref } from '@/components/layout/sidebar-nav';
 
 export default function ModulePlaceholder({ pathname }) {
   const item = findNavItemByHref(pathname);

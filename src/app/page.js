@@ -1,5 +1,4 @@
-import HomeRedirect from '@/components/auth/HomeRedirect';
-
 export default function RootPage() {
-  return <HomeRedirect />;
+  // Auth redirects for `/` are handled by `src/proxy.js`.
+  return null;
 }
